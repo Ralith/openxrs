@@ -761,9 +761,8 @@ impl Parser {
                 impl #ident {
                     #(#values)*
 
-                    pub fn from_raw(x: i32) -> Self { Self(x) }
-                    pub fn into_raw(self) -> i32 { self.0 }
                 }
+                bitmask!(#ident);
             }
         });
 
@@ -774,7 +773,9 @@ impl Parser {
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
                 impl #ident {
+                    #[inline]
                     pub fn from_raw(x: u64) -> Self { Self(x) }
+                    #[inline]
                     pub fn into_raw(self) -> u64 { self.0 }
                 }
             }

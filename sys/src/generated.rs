@@ -832,13 +832,8 @@ impl CompositionLayerFlags {
         CompositionLayerFlags(1 << 0i32);
     #[doc = "Enables the layer texture alpha channel."]
     pub const BLEND_TEXTURE_SOURCE_ALPHA: CompositionLayerFlags = CompositionLayerFlags(1 << 1i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(CompositionLayerFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessageSeverityFlagsEXT(i32);
@@ -855,13 +850,8 @@ impl DebugUtilsMessageSeverityFlagsEXT {
     #[doc = "Indicates that the item is definitely related to erroneous behavior."]
     pub const ERROR: DebugUtilsMessageSeverityFlagsEXT =
         DebugUtilsMessageSeverityFlagsEXT(1 << 12i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(DebugUtilsMessageSeverityFlagsEXT);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessageTypeFlagsEXT(i32);
@@ -872,13 +862,8 @@ impl DebugUtilsMessageTypeFlagsEXT {
     pub const VALIDATION: DebugUtilsMessageTypeFlagsEXT = DebugUtilsMessageTypeFlagsEXT(1 << 1i32);
     #[doc = "Indicates the message is related to a potential performance situation"]
     pub const PERFORMANCE: DebugUtilsMessageTypeFlagsEXT = DebugUtilsMessageTypeFlagsEXT(1 << 2i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(DebugUtilsMessageTypeFlagsEXT);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct InputSourceLocalizedNameFlags(i32);
@@ -890,35 +875,18 @@ impl InputSourceLocalizedNameFlags {
         InputSourceLocalizedNameFlags(1 << 1i32);
     #[doc = "Asks for the part of the string which represents the component on the device which needs to be interacted with"]
     pub const COMPONENT: InputSourceLocalizedNameFlags = InputSourceLocalizedNameFlags(1 << 2i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(InputSourceLocalizedNameFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct InstanceCreateFlags(i32);
-impl InstanceCreateFlags {
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
-}
+impl InstanceCreateFlags {}
+bitmask!(InstanceCreateFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SessionCreateFlags(i32);
-impl SessionCreateFlags {
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
-}
+impl SessionCreateFlags {}
+bitmask!(SessionCreateFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SpaceRelationFlags(i32);
@@ -939,13 +907,8 @@ impl SpaceRelationFlags {
     pub const ORIENTATION_TRACKED: SpaceRelationFlags = SpaceRelationFlags(1 << 6i32);
     #[doc = "Indicates whether pose member contains an actively tracked position"]
     pub const POSITION_TRACKED: SpaceRelationFlags = SpaceRelationFlags(1 << 7i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(SpaceRelationFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SwapchainCreateFlags(i32);
@@ -954,13 +917,8 @@ impl SwapchainCreateFlags {
     pub const PROTECTED_CONTENT: SwapchainCreateFlags = SwapchainCreateFlags(1 << 0i32);
     #[doc = "Only one image will be acquired from this swapchain over its lifetime"]
     pub const STATIC_IMAGE: SwapchainCreateFlags = SwapchainCreateFlags(1 << 1i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(SwapchainCreateFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SwapchainUsageFlags(i32);
@@ -979,13 +937,8 @@ impl SwapchainUsageFlags {
     pub const SAMPLED: SwapchainUsageFlags = SwapchainUsageFlags(1 << 5i32);
     #[doc = "Specifies that the image can: be reinterpreted as another image format."]
     pub const MUTABLE_FORMAT: SwapchainUsageFlags = SwapchainUsageFlags(1 << 6i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(SwapchainUsageFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ViewStateFlags(i32);
@@ -998,20 +951,17 @@ impl ViewStateFlags {
     pub const ORIENTATION_TRACKED: ViewStateFlags = ViewStateFlags(1 << 2i32);
     #[doc = "Indicates whether all XrView positions are actively tracked"]
     pub const POSITION_TRACKED: ViewStateFlags = ViewStateFlags(1 << 3i32);
-    pub fn from_raw(x: i32) -> Self {
-        Self(x)
-    }
-    pub fn into_raw(self) -> i32 {
-        self.0
-    }
 }
+bitmask!(ViewStateFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Instance(u64);
 impl Instance {
+    #[inline]
     pub fn from_raw(x: u64) -> Self {
         Self(x)
     }
+    #[inline]
     pub fn into_raw(self) -> u64 {
         self.0
     }
@@ -1020,9 +970,11 @@ impl Instance {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Session(u64);
 impl Session {
+    #[inline]
     pub fn from_raw(x: u64) -> Self {
         Self(x)
     }
+    #[inline]
     pub fn into_raw(self) -> u64 {
         self.0
     }
@@ -1031,9 +983,11 @@ impl Session {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Swapchain(u64);
 impl Swapchain {
+    #[inline]
     pub fn from_raw(x: u64) -> Self {
         Self(x)
     }
+    #[inline]
     pub fn into_raw(self) -> u64 {
         self.0
     }
@@ -1042,9 +996,11 @@ impl Swapchain {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Space(u64);
 impl Space {
+    #[inline]
     pub fn from_raw(x: u64) -> Self {
         Self(x)
     }
+    #[inline]
     pub fn into_raw(self) -> u64 {
         self.0
     }
@@ -1053,9 +1009,11 @@ impl Space {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ActionSet(u64);
 impl ActionSet {
+    #[inline]
     pub fn from_raw(x: u64) -> Self {
         Self(x)
     }
+    #[inline]
     pub fn into_raw(self) -> u64 {
         self.0
     }
@@ -1064,9 +1022,11 @@ impl ActionSet {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Action(u64);
 impl Action {
+    #[inline]
     pub fn from_raw(x: u64) -> Self {
         Self(x)
     }
+    #[inline]
     pub fn into_raw(self) -> u64 {
         self.0
     }
@@ -1075,9 +1035,11 @@ impl Action {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessengerEXT(u64);
 impl DebugUtilsMessengerEXT {
+    #[inline]
     pub fn from_raw(x: u64) -> Self {
         Self(x)
     }
+    #[inline]
     pub fn into_raw(self) -> u64 {
         self.0
     }
