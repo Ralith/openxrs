@@ -1,4 +1,5 @@
 //! Static helpers called from generated code
+use std::os::raw::{c_ulong, c_void};
 use std::fmt;
 
 #[macro_export]
@@ -25,19 +26,19 @@ pub fn fmt_enum(f: &mut fmt::Formatter, value: i32, name: Option<&'static str>) 
 #[cfg(feature = "ash")]
 pub use ash::vk;
 
-#[cfg(feature = "x11")]
-pub use x11::glx::{
-    GLXFBConfig,
-    GLXDrawable,
-    GLXContext,
-};
+#[cfg(all(feature = "x11", feature = "opengl"))]
+mod x11 {
+    use super::*;
 
-#[cfg(feature = "x11-dl")]
-pub use x11_dl::glx::{
-    GLXFBConfig,
-    GLXDrawable,
-    GLXContext,
-};
+    pub type XID = c_ulong;
+    pub type GLXFBConfig = *mut c_void;
+    pub type GLXDrawable = XID;
+    pub type GLXContext = *mut c_void;
+}
+#[cfg(all(feature = "x11", feature = "opengl"))]
+pub use x11::*;
+#[cfg(feature = "x11")]
+pub type Display = c_void;
 
 #[cfg(feature = "libc")]
 pub use libc::timespec;

@@ -377,7 +377,13 @@ impl Parser {
                 _ => {}
             }
         }
-        self.structs.insert(name.into(), Struct { members, extension: None });
+        self.structs.insert(
+            name.into(),
+            Struct {
+                members,
+                extension: None,
+            },
+        );
     }
 
     fn parse_var(&mut self, elt_name: &'static str) -> Member {
@@ -789,32 +795,7 @@ impl Parser {
             } else {
                 quote! {}
             };
-            let mut conditions = Vec::new();
-            if name.contains("Android") {
-                conditions.push(quote! { target_os = "android" });
-            }
-            if name.contains("Vulkan") {
-                conditions.push(quote! { feature = "ash" });
-            }
-            if name.contains("D3D") {
-                conditions.push(quote! { feature = "d3d" });
-            }
-            if name.contains("OpenGLES") {
-                conditions.push(quote! { feature = "opengles" });
-            } else if name.contains("OpenGL") {
-                conditions.push(quote! { feature = "opengl" });
-            }
-            if name.contains("OpenGLXcb") {
-                conditions.push(quote! { feature = "xcb" });
-            }
-            if name.contains("OpenGLXlib") {
-                conditions.push(quote! { any(feature = "x11", feature = "x11-dl") });
-            }
-            let conditions = if conditions.is_empty() {
-                quote! {}
-            } else {
-                quote! { #[cfg(all(#(#conditions),*))] }
-            };
+            let conditions = conditions(&name);
             quote! {
                 #[repr(C)]
                 #[derive(Copy, Clone)]
@@ -828,11 +809,17 @@ impl Parser {
 
         let exts = self.extensions.iter().map(|ext| {
             assert!(ext.name.starts_with("XR_"));
-            let name_ident = Ident::new(&format!("{}_EXTENSION_NAME", ext.name[3..].to_uppercase()), Span::call_site());
+            let name_ident = Ident::new(
+                &format!("{}_EXTENSION_NAME", ext.name[3..].to_uppercase()),
+                Span::call_site(),
+            );
             let mut name_lit = ext.name.as_bytes().to_vec();
             name_lit.push(0);
             let name_lit = LitByteStr::new(&name_lit, Span::call_site());
-            let version_ident = Ident::new(&format!("{}_SPEC_VERSION", &ext.name[3..].to_uppercase()), Span::call_site());
+            let version_ident = Ident::new(
+                &format!("{}_SPEC_VERSION", &ext.name[3..].to_uppercase()),
+                Span::call_site(),
+            );
             let version_lit = ext.version;
             // TODO: &'static CStr
             quote! {
@@ -841,68 +828,45 @@ impl Parser {
             }
         });
 
-        let (pfns, protos) = self.commands.iter().map(|(name, command)| {
-            let ident = xr_command_name(&name);
-            let params = command.params.iter().map(|param| {
-                let ident = xr_var_name(&param.name);
-                let ty = xr_var_ty(&param);
-                quote! {
-                    #ident: #ty
-                }
-            });
-            let ext_note = if let Some(ref ext) = command.extension {
-                let doc = format!("From {}", ext);
-                quote! { #[doc = #doc] }
-            } else {
-                quote! {}
-            };
-            let mut conditions = Vec::new();
-            if name.contains("Win32") {
-                conditions.push(quote! { target_os = "windows" });
-            }
-            if name.contains("Android") {
-                conditions.push(quote! { target_os = "android" });
-            }
-            if name.contains("Vulkan") {
-                conditions.push(quote! { feature = "ash" });
-            }
-            if name.contains("D3D") {
-                conditions.push(quote! { feature = "d3d" });
-            }
-            if name.contains("OpenGLES") {
-                conditions.push(quote! { feature = "opengles" });
-            } else if name.contains("OpenGL") {
-                conditions.push(quote! { feature = "opengl" });
-            }
-            if name.contains("Timespec") {
-                conditions.push(quote! { feature = "libc" });
-            }
-            let conditions = if conditions.is_empty() {
-                quote! {}
-            } else {
-                quote! {
-                    #[cfg(all(#(#conditions),*))]
-                }
-            };
-            let conditions2 = conditions.clone();
-            let params1 = params.clone();
-            let params2 = params;
-            let pfn_def = quote! {
-                #conditions
-                #ext_note
-                pub type #ident = unsafe extern "C" fn(#(#params1),*) -> Result;
-            };
-            let raw_ident = Ident::new(&name, Span::call_site());
-            let proto = if command.extension.is_some() {
-                quote! {}
-            } else {
-                quote! {
-                    #conditions2
-                    fn #raw_ident(#(#params2),*) -> Result;
-                }
-            };
-            (pfn_def, proto)
-        }).unzip::<_, _, Vec<_>, Vec<_>>();
+        let (pfns, protos) = self
+            .commands
+            .iter()
+            .map(|(name, command)| {
+                let ident = xr_command_name(&name);
+                let params = command.params.iter().map(|param| {
+                    let ident = xr_var_name(&param.name);
+                    let ty = xr_var_ty(&param);
+                    quote! {
+                        #ident: #ty
+                    }
+                });
+                let ext_note = if let Some(ref ext) = command.extension {
+                    let doc = format!("From {}", ext);
+                    quote! { #[doc = #doc] }
+                } else {
+                    quote! {}
+                };
+                let conditions = conditions(&name);
+                let conditions2 = conditions.clone();
+                let params1 = params.clone();
+                let params2 = params;
+                let pfn_def = quote! {
+                    #conditions
+                    #ext_note
+                    pub type #ident = unsafe extern "C" fn(#(#params1),*) -> Result;
+                };
+                let raw_ident = Ident::new(&name, Span::call_site());
+                let proto = if command.extension.is_some() {
+                    quote! {}
+                } else {
+                    quote! {
+                        #conditions2
+                        pub fn #raw_ident(#(#params2),*) -> Result;
+                    }
+                };
+                (pfn_def, proto)
+            })
+            .unzip::<_, _, Vec<_>, Vec<_>>();
 
         quote! {
             use std::fmt;
@@ -1105,4 +1069,42 @@ fn xr_var_ty(member: &Member) -> TokenStream {
 fn xr_command_name(raw: &str) -> Ident {
     assert!(raw.starts_with("xr"));
     Ident::new(&raw[2..], Span::call_site())
+}
+
+fn conditions(name: &str) -> TokenStream {
+    let mut conditions = Vec::new();
+    if name.contains("Win32") {
+        conditions.push(quote! { target_os = "windows" });
+    }
+    if name.contains("Android") {
+        conditions.push(quote! { target_os = "android" });
+    }
+    if name.contains("Vulkan") {
+        conditions.push(quote! { feature = "ash" });
+    }
+    if name.contains("D3D") {
+        conditions.push(quote! { feature = "d3d" });
+    }
+    if name.contains("OpenGLES") {
+        conditions.push(quote! { feature = "opengles" });
+    } else if name.contains("OpenGL") {
+        conditions.push(quote! { feature = "opengl" });
+    }
+    if name.contains("Timespec") {
+        conditions.push(quote! { feature = "libc" });
+    }
+    if name.contains("OpenGLXcb") {
+        conditions.push(quote! { feature = "xcb" });
+    }
+    if name.contains("OpenGLXlib") {
+        conditions.push(quote! { feature = "x11" });
+    }
+    if name.contains("Wayland") {
+        conditions.push(quote! { feature = "wayland" });
+    }
+    match conditions.len() {
+        0 => quote! {},
+        1 => quote! { #[cfg(#(#conditions)*)] },
+        _ => quote! { #[cfg(all(#(#conditions),*))] },
+    }
 }

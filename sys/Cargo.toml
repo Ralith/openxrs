@@ -2,7 +2,7 @@
 name = "openxr-sys"
 description = "OpenXR FFI bindings"
 repository = "https://github.com/Ralith/openxrs"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
 categories = ["external-ffi-bindings", "rendering"]
 keywords = ["openxr", "vr"]
@@ -13,13 +13,12 @@ edition = "2018"
 maintenance = { status = "experimental" }
 
 [features]
-d3d = []
 prototypes = []
+opengl = []
+x11 = []
 
 [dependencies]
 ash = { version = "0.27", optional = true }
-x11 = { version = "2.18", optional = true }
-x11-dl = { version = "2.18", optional = true }
 libc = { version = "0.2.50", optional = true }
 
 [package.metadata.docs.rs]

@@ -1480,7 +1480,7 @@ pub struct FrameWaitInfo {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct GraphicsBindingD3D10KHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1489,7 +1489,7 @@ pub struct GraphicsBindingD3D10KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D11_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct GraphicsBindingD3D11KHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1498,7 +1498,7 @@ pub struct GraphicsBindingD3D11KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D12_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct GraphicsBindingD3D12KHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1519,7 +1519,7 @@ pub struct GraphicsBindingOpenGLESAndroidKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl"))]
+#[cfg(all(feature = "opengl", feature = "wayland"))]
 pub struct GraphicsBindingOpenGLWaylandKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1528,7 +1528,7 @@ pub struct GraphicsBindingOpenGLWaylandKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl"))]
+#[cfg(all(target_os = "windows", feature = "opengl"))]
 pub struct GraphicsBindingOpenGLWin32KHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1552,7 +1552,7 @@ pub struct GraphicsBindingOpenGLXcbKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl", any(feature = "x11", feature = "x11-dl")))]
+#[cfg(all(feature = "opengl", feature = "x11"))]
 pub struct GraphicsBindingOpenGLXlibKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1565,7 +1565,7 @@ pub struct GraphicsBindingOpenGLXlibKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(all(feature = "ash"))]
+#[cfg(feature = "ash")]
 pub struct GraphicsBindingVulkanKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1578,7 +1578,7 @@ pub struct GraphicsBindingVulkanKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct GraphicsRequirementsD3D10KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1588,7 +1588,7 @@ pub struct GraphicsRequirementsD3D10KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D11_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct GraphicsRequirementsD3D11KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1598,7 +1598,7 @@ pub struct GraphicsRequirementsD3D11KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D12_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct GraphicsRequirementsD3D12KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1608,7 +1608,7 @@ pub struct GraphicsRequirementsD3D12KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_es_enable"]
-#[cfg(all(feature = "opengles"))]
+#[cfg(feature = "opengles")]
 pub struct GraphicsRequirementsOpenGLESKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1618,7 +1618,7 @@ pub struct GraphicsRequirementsOpenGLESKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl"))]
+#[cfg(feature = "opengl")]
 pub struct GraphicsRequirementsOpenGLKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1628,7 +1628,7 @@ pub struct GraphicsRequirementsOpenGLKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(all(feature = "ash"))]
+#[cfg(feature = "ash")]
 pub struct GraphicsRequirementsVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1665,7 +1665,7 @@ pub struct InstanceCreateInfo {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_android_create_instance"]
-#[cfg(all(target_os = "android"))]
+#[cfg(target_os = "android")]
 pub struct InstanceCreateInfoAndroidKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1800,7 +1800,7 @@ pub struct SwapchainImageBaseHeader {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct SwapchainImageD3D10KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1809,7 +1809,7 @@ pub struct SwapchainImageD3D10KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D11_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct SwapchainImageD3D11KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1818,7 +1818,7 @@ pub struct SwapchainImageD3D11KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D12_enable"]
-#[cfg(all(feature = "d3d"))]
+#[cfg(feature = "d3d")]
 pub struct SwapchainImageD3D12KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1827,7 +1827,7 @@ pub struct SwapchainImageD3D12KHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_es_enable"]
-#[cfg(all(feature = "opengles"))]
+#[cfg(feature = "opengles")]
 pub struct SwapchainImageOpenGLESKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1836,7 +1836,7 @@ pub struct SwapchainImageOpenGLESKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl"))]
+#[cfg(feature = "opengl")]
 pub struct SwapchainImageOpenGLKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1851,7 +1851,7 @@ pub struct SwapchainImageReleaseInfo {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(all(feature = "ash"))]
+#[cfg(feature = "ash")]
 pub struct SwapchainImageVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1981,7 +1981,7 @@ pub struct VisibilityMaskKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_swapchain_format_list"]
-#[cfg(all(feature = "ash"))]
+#[cfg(feature = "ash")]
 pub struct VulkanSwapchainFormatListCreateInfoKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2083,28 +2083,28 @@ pub mod pfn {
         unsafe extern "C" fn(session: Session, frame_begin_info: *const FrameBeginInfo) -> Result;
     pub type BeginSession =
         unsafe extern "C" fn(session: Session, begin_info: *const SessionBeginInfo) -> Result;
-    #[cfg(all(feature = "libc"))]
+    #[cfg(feature = "libc")]
     #[doc = "From XR_KHR_convert_timespec_time"]
     pub type ConvertTimeToTimespecTimeKHR = unsafe extern "C" fn(
         instance: Instance,
         time: Time,
         timespec_time: *mut timespec,
     ) -> Result;
-    #[cfg(all(target_os = "windows"))]
+    #[cfg(target_os = "windows")]
     #[doc = "From XR_KHR_win32_convert_performance_counter_time"]
     pub type ConvertTimeToWin32PerformanceCounterKHR = unsafe extern "C" fn(
         instance: Instance,
         time: Time,
         performance_counter: *mut LARGE_INTEGER,
     ) -> Result;
-    #[cfg(all(feature = "libc"))]
+    #[cfg(feature = "libc")]
     #[doc = "From XR_KHR_convert_timespec_time"]
     pub type ConvertTimespecTimeToTimeKHR = unsafe extern "C" fn(
         instance: Instance,
         timespec_time: *const timespec,
         time: *mut Time,
     ) -> Result;
-    #[cfg(all(target_os = "windows"))]
+    #[cfg(target_os = "windows")]
     #[doc = "From XR_KHR_win32_convert_performance_counter_time"]
     pub type ConvertWin32PerformanceCounterToTimeKHR = unsafe extern "C" fn(
         instance: Instance,
@@ -2151,7 +2151,7 @@ pub mod pfn {
         create_info: *const SwapchainCreateInfo,
         swapchain: *mut Swapchain,
     ) -> Result;
-    #[cfg(all(target_os = "android"))]
+    #[cfg(target_os = "android")]
     #[doc = "From XR_KHR_android_surface_swapchain"]
     pub type CreateSwapchainAndroidSurfaceKHR = unsafe extern "C" fn(
         session: Session,
@@ -2256,21 +2256,21 @@ pub mod pfn {
         top_level_user_path: Path,
         interaction_profile: *mut InteractionProfileInfo,
     ) -> Result;
-    #[cfg(all(feature = "d3d"))]
+    #[cfg(feature = "d3d")]
     #[doc = "From XR_KHR_D3D10_enable"]
     pub type GetD3D10GraphicsRequirementsKHR = unsafe extern "C" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsD3D10KHR,
     ) -> Result;
-    #[cfg(all(feature = "d3d"))]
+    #[cfg(feature = "d3d")]
     #[doc = "From XR_KHR_D3D11_enable"]
     pub type GetD3D11GraphicsRequirementsKHR = unsafe extern "C" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsD3D11KHR,
     ) -> Result;
-    #[cfg(all(feature = "d3d"))]
+    #[cfg(feature = "d3d")]
     #[doc = "From XR_KHR_D3D12_enable"]
     pub type GetD3D12GraphicsRequirementsKHR = unsafe extern "C" fn(
         instance: Instance,
@@ -2294,14 +2294,14 @@ pub mod pfn {
         instance: Instance,
         instance_properties: *mut InstanceProperties,
     ) -> Result;
-    #[cfg(all(feature = "opengles"))]
+    #[cfg(feature = "opengles")]
     #[doc = "From XR_KHR_opengl_es_enable"]
     pub type GetOpenGLESGraphicsRequirementsKHR = unsafe extern "C" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsOpenGLESKHR,
     ) -> Result;
-    #[cfg(all(feature = "opengl"))]
+    #[cfg(feature = "opengl")]
     #[doc = "From XR_KHR_opengl_enable"]
     pub type GetOpenGLGraphicsRequirementsKHR = unsafe extern "C" fn(
         instance: Instance,
@@ -2337,7 +2337,7 @@ pub mod pfn {
         visibility_mask_type: VisibilityMaskTypeKHR,
         visibility_mask: *mut VisibilityMaskKHR,
     ) -> Result;
-    #[cfg(all(feature = "ash"))]
+    #[cfg(feature = "ash")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanDeviceExtensionsKHR = unsafe extern "C" fn(
         instance: Instance,
@@ -2346,7 +2346,7 @@ pub mod pfn {
         names_count_output: *mut u32,
         names_string: *mut u8,
     ) -> Result;
-    #[cfg(all(feature = "ash"))]
+    #[cfg(feature = "ash")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanGraphicsDeviceKHR = unsafe extern "C" fn(
         instance: Instance,
@@ -2354,14 +2354,14 @@ pub mod pfn {
         vk_instance: vk::Instance,
         vk_physical_device: *mut vk::PhysicalDevice,
     ) -> Result;
-    #[cfg(all(feature = "ash"))]
+    #[cfg(feature = "ash")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanGraphicsRequirementsKHR = unsafe extern "C" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsVulkanKHR,
     ) -> Result;
-    #[cfg(all(feature = "ash"))]
+    #[cfg(feature = "ash")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanInstanceExtensionsKHR = unsafe extern "C" fn(
         instance: Instance,
@@ -2416,7 +2416,7 @@ pub mod pfn {
     #[doc = "From XR_EXT_debug_utils"]
     pub type SessionInsertDebugUtilsLabelEXT =
         unsafe extern "C" fn(session: Session, label_info: *const DebugUtilsLabelEXT) -> Result;
-    #[cfg(all(target_os = "android"))]
+    #[cfg(target_os = "android")]
     #[doc = "From XR_KHR_android_thread_settings"]
     pub type SetAndroidApplicationThreadKHR = unsafe extern "C" fn(
         session: Session,
@@ -2476,95 +2476,98 @@ pub mod pfn {
 }
 #[cfg(feature = "prototypes")]
 extern "C" {
-    fn xrAcquireSwapchainImage(
+    pub fn xrAcquireSwapchainImage(
         swapchain: Swapchain,
         acquire_info: *const SwapchainImageAcquireInfo,
         index: *mut u32,
     ) -> Result;
-    fn xrApplyHapticFeedback(
+    pub fn xrApplyHapticFeedback(
         haptic_action: Action,
         count_subaction_paths: u32,
         subaction_paths: *const Path,
         haptic_event: *const HapticBaseHeader,
     ) -> Result;
-    fn xrBeginFrame(session: Session, frame_begin_info: *const FrameBeginInfo) -> Result;
-    fn xrBeginSession(session: Session, begin_info: *const SessionBeginInfo) -> Result;
-    fn xrCreateAction(
+    pub fn xrBeginFrame(session: Session, frame_begin_info: *const FrameBeginInfo) -> Result;
+    pub fn xrBeginSession(session: Session, begin_info: *const SessionBeginInfo) -> Result;
+    pub fn xrCreateAction(
         action_set: ActionSet,
         create_info: *const ActionCreateInfo,
         action: *mut Action,
     ) -> Result;
-    fn xrCreateActionSet(
+    pub fn xrCreateActionSet(
         session: Session,
         create_info: *const ActionSetCreateInfo,
         action_set: *mut ActionSet,
     ) -> Result;
-    fn xrCreateActionSpace(
+    pub fn xrCreateActionSpace(
         action: Action,
         create_info: *const ActionSpaceCreateInfo,
         space: *mut Space,
     ) -> Result;
-    fn xrCreateInstance(create_info: *const InstanceCreateInfo, instance: *mut Instance) -> Result;
-    fn xrCreateReferenceSpace(
+    pub fn xrCreateInstance(
+        create_info: *const InstanceCreateInfo,
+        instance: *mut Instance,
+    ) -> Result;
+    pub fn xrCreateReferenceSpace(
         session: Session,
         create_info: *const ReferenceSpaceCreateInfo,
         space: *mut Space,
     ) -> Result;
-    fn xrCreateSession(
+    pub fn xrCreateSession(
         instance: Instance,
         create_info: *const SessionCreateInfo,
         session: *mut Session,
     ) -> Result;
-    fn xrCreateSwapchain(
+    pub fn xrCreateSwapchain(
         session: Session,
         create_info: *const SwapchainCreateInfo,
         swapchain: *mut Swapchain,
     ) -> Result;
-    fn xrDestroyAction(action: Action) -> Result;
-    fn xrDestroyActionSet(action_set: ActionSet) -> Result;
-    fn xrDestroyInstance(instance: Instance) -> Result;
-    fn xrDestroySession(session: Session) -> Result;
-    fn xrDestroySpace(space: Space) -> Result;
-    fn xrDestroySwapchain(swapchain: Swapchain) -> Result;
-    fn xrEndFrame(session: Session, frame_end_info: *const FrameEndInfo) -> Result;
-    fn xrEndSession(session: Session) -> Result;
-    fn xrEnumerateApiLayerProperties(
+    pub fn xrDestroyAction(action: Action) -> Result;
+    pub fn xrDestroyActionSet(action_set: ActionSet) -> Result;
+    pub fn xrDestroyInstance(instance: Instance) -> Result;
+    pub fn xrDestroySession(session: Session) -> Result;
+    pub fn xrDestroySpace(space: Space) -> Result;
+    pub fn xrDestroySwapchain(swapchain: Swapchain) -> Result;
+    pub fn xrEndFrame(session: Session, frame_end_info: *const FrameEndInfo) -> Result;
+    pub fn xrEndSession(session: Session) -> Result;
+    pub fn xrEnumerateApiLayerProperties(
         property_capacity_input: u32,
         property_count_output: *mut u32,
         properties: *mut ApiLayerProperties,
     ) -> Result;
-    fn xrEnumerateEnvironmentBlendModes(
+    pub fn xrEnumerateEnvironmentBlendModes(
         instance: Instance,
         system_id: SystemId,
         environment_blend_mode_capacity_input: u32,
         environment_blend_mode_count_output: *mut u32,
         environment_blend_modes: *mut EnvironmentBlendMode,
     ) -> Result;
-    fn xrEnumerateInstanceExtensionProperties(
+    pub fn xrEnumerateInstanceExtensionProperties(
         layer_name: *const u8,
         property_capacity_input: u32,
         property_count_output: *mut u32,
         properties: *mut ExtensionProperties,
     ) -> Result;
-    fn xrEnumerateReferenceSpaces(
+    pub fn xrEnumerateReferenceSpaces(
         session: Session,
         space_capacity_input: u32,
         space_count_output: *mut u32,
         spaces: *mut ReferenceSpaceType,
     ) -> Result;
-    fn xrEnumerateSwapchainFormats(
+    pub fn xrEnumerateSwapchainFormats(
         session: Session,
         format_capacity_input: u32,
         format_count_output: *mut u32,
         formats: *mut i64,
     ) -> Result;
-    fn xrEnumerateSwapchainImages(
+    pub fn xrEnumerateSwapchainImages(
         swapchain: Swapchain,
         image_capacity_input: u32,
         image_count_output: *mut u32,
         images: *mut SwapchainImageBaseHeader,
     ) -> Result;
-    fn xrEnumerateViewConfigurationViews(
+    pub fn xrEnumerateViewConfigurationViews(
         instance: Instance,
         system_id: SystemId,
         view_configuration_type: ViewConfigurationType,
@@ -2572,48 +2575,48 @@ extern "C" {
         view_count_output: *mut u32,
         views: *mut ViewConfigurationView,
     ) -> Result;
-    fn xrEnumerateViewConfigurations(
+    pub fn xrEnumerateViewConfigurations(
         instance: Instance,
         system_id: SystemId,
         view_configuration_type_capacity_input: u32,
         view_configuration_type_count_output: *mut u32,
         view_configuration_types: *mut ViewConfigurationType,
     ) -> Result;
-    fn xrGetActionStateBoolean(
+    pub fn xrGetActionStateBoolean(
         action: Action,
         count_subaction_paths: u32,
         subaction_paths: *const Path,
         data: *mut ActionStateBoolean,
     ) -> Result;
-    fn xrGetActionStatePose(
+    pub fn xrGetActionStatePose(
         action: Action,
         subaction_path: Path,
         data: *mut ActionStatePose,
     ) -> Result;
-    fn xrGetActionStateVector1f(
+    pub fn xrGetActionStateVector1f(
         action: Action,
         count_subaction_paths: u32,
         subaction_paths: *const Path,
         data: *mut ActionStateVector1f,
     ) -> Result;
-    fn xrGetActionStateVector2f(
+    pub fn xrGetActionStateVector2f(
         action: Action,
         count_subaction_paths: u32,
         subaction_paths: *const Path,
         data: *mut ActionStateVector2f,
     ) -> Result;
-    fn xrGetBoundSourcesForAction(
+    pub fn xrGetBoundSourcesForAction(
         action: Action,
         source_capacity_input: u32,
         source_count_output: *mut u32,
         sources: *mut Path,
     ) -> Result;
-    fn xrGetCurrentInteractionProfile(
+    pub fn xrGetCurrentInteractionProfile(
         session: Session,
         top_level_user_path: Path,
         interaction_profile: *mut InteractionProfileInfo,
     ) -> Result;
-    fn xrGetInputSourceLocalizedName(
+    pub fn xrGetInputSourceLocalizedName(
         session: Session,
         source: Path,
         which_components: InputSourceLocalizedNameFlags,
@@ -2621,43 +2624,43 @@ extern "C" {
         buffer_count_output: *mut u32,
         buffer: *mut u8,
     ) -> Result;
-    fn xrGetInstanceProcAddr(
+    pub fn xrGetInstanceProcAddr(
         instance: Instance,
         name: *const u8,
         function: *mut pfn::VoidFunction,
     ) -> Result;
-    fn xrGetInstanceProperties(
+    pub fn xrGetInstanceProperties(
         instance: Instance,
         instance_properties: *mut InstanceProperties,
     ) -> Result;
-    fn xrGetReferenceSpaceBoundsRect(
+    pub fn xrGetReferenceSpaceBoundsRect(
         session: Session,
         reference_space_type: ReferenceSpaceType,
         bounds: *mut Extent2Df,
     ) -> Result;
-    fn xrGetSystem(
+    pub fn xrGetSystem(
         instance: Instance,
         get_info: *const SystemGetInfo,
         system_id: *mut SystemId,
     ) -> Result;
-    fn xrGetSystemProperties(
+    pub fn xrGetSystemProperties(
         instance: Instance,
         system_id: SystemId,
         properties: *mut SystemProperties,
     ) -> Result;
-    fn xrGetViewConfigurationProperties(
+    pub fn xrGetViewConfigurationProperties(
         instance: Instance,
         system_id: SystemId,
         view_configuration_type: ViewConfigurationType,
         configuration_properties: *mut ViewConfigurationProperties,
     ) -> Result;
-    fn xrLocateSpace(
+    pub fn xrLocateSpace(
         space: Space,
         base_space: Space,
         time: Time,
         relation: *mut SpaceRelation,
     ) -> Result;
-    fn xrLocateViews(
+    pub fn xrLocateViews(
         session: Session,
         view_locate_info: *const ViewLocateInfo,
         view_state: *mut ViewState,
@@ -2665,49 +2668,49 @@ extern "C" {
         view_count_output: *mut u32,
         views: *mut View,
     ) -> Result;
-    fn xrPathToString(
+    pub fn xrPathToString(
         instance: Instance,
         path: Path,
         buffer_capacity_input: u32,
         buffer_count_output: *mut u32,
         buffer: *mut u8,
     ) -> Result;
-    fn xrPollEvent(instance: Instance, event_data: *mut EventDataBuffer) -> Result;
-    fn xrReleaseSwapchainImage(
+    pub fn xrPollEvent(instance: Instance, event_data: *mut EventDataBuffer) -> Result;
+    pub fn xrReleaseSwapchainImage(
         swapchain: Swapchain,
         release_info: *const SwapchainImageReleaseInfo,
     ) -> Result;
-    fn xrResultToString(
+    pub fn xrResultToString(
         instance: Instance,
         value: Result,
         buffer: [u8; MAX_RESULT_STRING_SIZE],
     ) -> Result;
-    fn xrSetInteractionProfileSuggestedBindings(
+    pub fn xrSetInteractionProfileSuggestedBindings(
         session: Session,
         suggested_bindings: *const InteractionProfileSuggestedBinding,
     ) -> Result;
-    fn xrStopHapticFeedback(
+    pub fn xrStopHapticFeedback(
         haptic_action: Action,
         count_subaction_paths: u32,
         subaction_paths: *const Path,
     ) -> Result;
-    fn xrStringToPath(instance: Instance, path_string: *const u8, path: *mut Path) -> Result;
-    fn xrStructureTypeToString(
+    pub fn xrStringToPath(instance: Instance, path_string: *const u8, path: *mut Path) -> Result;
+    pub fn xrStructureTypeToString(
         instance: Instance,
         value: StructureType,
         buffer: [u8; MAX_STRUCTURE_NAME_SIZE],
     ) -> Result;
-    fn xrSyncActionData(
+    pub fn xrSyncActionData(
         session: Session,
         count_action_sets: u32,
         action_sets: *const ActiveActionSet,
     ) -> Result;
-    fn xrWaitFrame(
+    pub fn xrWaitFrame(
         session: Session,
         frame_wait_info: *const FrameWaitInfo,
         frame_state: *mut FrameState,
     ) -> Result;
-    fn xrWaitSwapchainImage(
+    pub fn xrWaitSwapchainImage(
         swapchain: Swapchain,
         wait_info: *const SwapchainImageWaitInfo,
     ) -> Result;
