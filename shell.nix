@@ -2,8 +2,8 @@ with import (fetchTarball https://github.com/NixOS/nixpkgs/archive/master.tar.gz
 let dlopen-libs = with xlibs; [ vulkan-loader vulkan-validation-layers libX11 libXcursor libXrandr libXi ]; in
 stdenv.mkDerivation {
   name = "openxrs";
-  nativeBuildInputs = with pkgs; [ rustChannels.stable.rust ];
-  buildInputs = [ (callPackage ./monado.nix {}) vulkan-headers ];
+  nativeBuildInputs = with pkgs; [ rustChannels.stable.rust cmake python3 pkgconfig ];
+  buildInputs = [ (callPackage ./monado.nix {}) vulkan-headers vulkan-loader libglvnd ] ++ (with xlibs; [ libX11 libXxf86vm libpthreadstubs libXrandr ]);
   shellHook = ''
     export RUST_BACKTRACE=1
     export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${stdenv.lib.makeLibraryPath dlopen-libs}"

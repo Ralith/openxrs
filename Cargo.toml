@@ -1,2 +1,2 @@
 [workspace]
-members = ["generator", "sys", "openxr"]
+members = ["generator", "sys", "static", "openxr"]
