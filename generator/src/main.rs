@@ -864,11 +864,9 @@ impl Parser {
             }
         });
 
-        let exts = self.extensions.iter().map(|(tag_name, tag)| {
-            if tag.extensions.is_empty() {
-                return quote! {};
-            }
-            let exts = tag.extensions.iter().map(|ext| {
+        let exts = self.extensions.iter().flat_map(|(tag_name, tag)| {
+            let tag_name = tag_name.clone();
+            tag.extensions.iter().map(move |ext| {
                 let pfns = ext.commands.iter().map(|cmd| {
                     let pfn_ident = xr_command_name(&cmd);
                     let camel_name = pfn_ident.to_string();
@@ -884,7 +882,8 @@ impl Parser {
                 let name_lit = LitByteStr::new(&name_lit, Span::call_site());
                 let version_ident = Ident::new("VERSION", Span::call_site());
                 let version_lit = ext.version;
-                let ty_ident = Ident::new(&split_ext_tag(&ext.name).1.to_camel_case(), Span::call_site());
+                let ext_name = split_ext_tag(&ext.name).1;
+                let ty_ident = Ident::new(&format!("{}{}", ext_name.to_camel_case(), tag_name), Span::call_site());
                 let conds = conditions(&ext.name);
                 let conds2 = conds.clone();
                 // TODO: &'static CStr name
@@ -899,16 +898,7 @@ impl Parser {
                         pub const #name_ident: &'static [u8] = #name_lit;
                     }
                 }
-            });
-            let doc = format!("{} extensions", tag.author);
-            let tag_mod = Ident::new(&tag_name.to_lowercase(), Span::call_site());
-            quote! {
-                #[doc = #doc]
-                pub mod #tag_mod {
-                    use super::*;
-                    #(#exts)*
-                }
-            }
+            })
         });
 
         let (pfns, protos) = self
@@ -951,6 +941,16 @@ impl Parser {
             })
             .unzip::<_, _, Vec<_>, Vec<_>>();
 
+        let core_dls = self.commands.iter().map(|(name, command)| {
+            let pfn_ident = xr_command_name(&name);
+            let field_ident = Ident::new(&pfn_ident.to_string().to_snake_case(), Span::call_site());
+            let conds = conditions(&name);
+            quote! {
+                #conds
+                pub #field_ident: pfn::#pfn_ident
+            }
+        });
+
         quote! {
             use std::fmt;
             use std::os::raw::c_void;
@@ -983,7 +983,14 @@ impl Parser {
                 #(#protos)*
             }
 
-            #(#exts)*
+            #[doc = "Dynamic loading function tables"]
+            pub mod dl {
+                use super::*;
+                pub struct Core {
+                    #(#core_dls,)*
+                }
+                #(#exts)*
+            }
         }
     }
 }

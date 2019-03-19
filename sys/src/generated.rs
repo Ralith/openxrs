@@ -2601,24 +2601,121 @@ extern "C" {
         wait_info: *const SwapchainImageWaitInfo,
     ) -> Result;
 }
-#[doc = "Multivendor extensions"]
-pub mod ext {
+#[doc = "Dynamic loading function tables"]
+pub mod dl {
     use super::*;
-    pub struct PerformanceSettings {
+    pub struct Core {
+        pub acquire_swapchain_image: pfn::AcquireSwapchainImage,
+        pub apply_haptic_feedback: pfn::ApplyHapticFeedback,
+        pub begin_frame: pfn::BeginFrame,
+        pub begin_session: pfn::BeginSession,
+        #[cfg(feature = "libc")]
+        pub convert_time_to_timespec_time_khr: pfn::ConvertTimeToTimespecTimeKHR,
+        #[cfg(target_os = "windows")]
+        pub convert_time_to_win32_performance_counter_khr:
+            pfn::ConvertTimeToWin32PerformanceCounterKHR,
+        #[cfg(feature = "libc")]
+        pub convert_timespec_time_to_time_khr: pfn::ConvertTimespecTimeToTimeKHR,
+        #[cfg(target_os = "windows")]
+        pub convert_win32_performance_counter_to_time_khr:
+            pfn::ConvertWin32PerformanceCounterToTimeKHR,
+        pub create_action: pfn::CreateAction,
+        pub create_action_set: pfn::CreateActionSet,
+        pub create_action_space: pfn::CreateActionSpace,
+        pub create_debug_utils_messenger_ext: pfn::CreateDebugUtilsMessengerEXT,
+        pub create_instance: pfn::CreateInstance,
+        pub create_reference_space: pfn::CreateReferenceSpace,
+        pub create_session: pfn::CreateSession,
+        pub create_swapchain: pfn::CreateSwapchain,
+        #[cfg(target_os = "android")]
+        pub create_swapchain_android_surface_khr: pfn::CreateSwapchainAndroidSurfaceKHR,
+        pub destroy_action: pfn::DestroyAction,
+        pub destroy_action_set: pfn::DestroyActionSet,
+        pub destroy_debug_utils_messenger_ext: pfn::DestroyDebugUtilsMessengerEXT,
+        pub destroy_instance: pfn::DestroyInstance,
+        pub destroy_session: pfn::DestroySession,
+        pub destroy_space: pfn::DestroySpace,
+        pub destroy_swapchain: pfn::DestroySwapchain,
+        pub end_frame: pfn::EndFrame,
+        pub end_session: pfn::EndSession,
+        pub enumerate_api_layer_properties: pfn::EnumerateApiLayerProperties,
+        pub enumerate_environment_blend_modes: pfn::EnumerateEnvironmentBlendModes,
+        pub enumerate_instance_extension_properties: pfn::EnumerateInstanceExtensionProperties,
+        pub enumerate_reference_spaces: pfn::EnumerateReferenceSpaces,
+        pub enumerate_swapchain_formats: pfn::EnumerateSwapchainFormats,
+        pub enumerate_swapchain_images: pfn::EnumerateSwapchainImages,
+        pub enumerate_view_configuration_views: pfn::EnumerateViewConfigurationViews,
+        pub enumerate_view_configurations: pfn::EnumerateViewConfigurations,
+        pub get_action_state_boolean: pfn::GetActionStateBoolean,
+        pub get_action_state_pose: pfn::GetActionStatePose,
+        pub get_action_state_vector1f: pfn::GetActionStateVector1f,
+        pub get_action_state_vector2f: pfn::GetActionStateVector2f,
+        pub get_bound_sources_for_action: pfn::GetBoundSourcesForAction,
+        pub get_current_interaction_profile: pfn::GetCurrentInteractionProfile,
+        #[cfg(feature = "d3d")]
+        pub get_d3d10_graphics_requirements_khr: pfn::GetD3D10GraphicsRequirementsKHR,
+        #[cfg(feature = "d3d")]
+        pub get_d3d11_graphics_requirements_khr: pfn::GetD3D11GraphicsRequirementsKHR,
+        #[cfg(feature = "d3d")]
+        pub get_d3d12_graphics_requirements_khr: pfn::GetD3D12GraphicsRequirementsKHR,
+        pub get_input_source_localized_name: pfn::GetInputSourceLocalizedName,
+        pub get_instance_proc_addr: pfn::GetInstanceProcAddr,
+        pub get_instance_properties: pfn::GetInstanceProperties,
+        #[cfg(feature = "opengles")]
+        pub get_open_gles_graphics_requirements_khr: pfn::GetOpenGLESGraphicsRequirementsKHR,
+        #[cfg(feature = "opengl")]
+        pub get_open_gl_graphics_requirements_khr: pfn::GetOpenGLGraphicsRequirementsKHR,
+        pub get_reference_space_bounds_rect: pfn::GetReferenceSpaceBoundsRect,
+        pub get_system: pfn::GetSystem,
+        pub get_system_properties: pfn::GetSystemProperties,
+        pub get_view_configuration_properties: pfn::GetViewConfigurationProperties,
+        pub get_visibility_mask_khr: pfn::GetVisibilityMaskKHR,
+        #[cfg(feature = "ash")]
+        pub get_vulkan_device_extensions_khr: pfn::GetVulkanDeviceExtensionsKHR,
+        #[cfg(feature = "ash")]
+        pub get_vulkan_graphics_device_khr: pfn::GetVulkanGraphicsDeviceKHR,
+        #[cfg(feature = "ash")]
+        pub get_vulkan_graphics_requirements_khr: pfn::GetVulkanGraphicsRequirementsKHR,
+        #[cfg(feature = "ash")]
+        pub get_vulkan_instance_extensions_khr: pfn::GetVulkanInstanceExtensionsKHR,
+        pub locate_space: pfn::LocateSpace,
+        pub locate_views: pfn::LocateViews,
+        pub path_to_string: pfn::PathToString,
+        pub perf_settings_set_performance_level_ext: pfn::PerfSettingsSetPerformanceLevelEXT,
+        pub poll_event: pfn::PollEvent,
+        pub release_swapchain_image: pfn::ReleaseSwapchainImage,
+        pub result_to_string: pfn::ResultToString,
+        pub session_begin_debug_utils_label_region_ext: pfn::SessionBeginDebugUtilsLabelRegionEXT,
+        pub session_end_debug_utils_label_region_ext: pfn::SessionEndDebugUtilsLabelRegionEXT,
+        pub session_insert_debug_utils_label_ext: pfn::SessionInsertDebugUtilsLabelEXT,
+        #[cfg(target_os = "android")]
+        pub set_android_application_thread_khr: pfn::SetAndroidApplicationThreadKHR,
+        pub set_debug_utils_object_name_ext: pfn::SetDebugUtilsObjectNameEXT,
+        pub set_interaction_profile_suggested_bindings: pfn::SetInteractionProfileSuggestedBindings,
+        pub stop_haptic_feedback: pfn::StopHapticFeedback,
+        pub string_to_path: pfn::StringToPath,
+        pub structure_type_to_string: pfn::StructureTypeToString,
+        pub submit_debug_utils_message_ext: pfn::SubmitDebugUtilsMessageEXT,
+        pub sync_action_data: pfn::SyncActionData,
+        pub thermal_get_temperature_trend_ext: pfn::ThermalGetTemperatureTrendEXT,
+        pub wait_frame: pfn::WaitFrame,
+        pub wait_swapchain_image: pfn::WaitSwapchainImage,
+    }
+    pub struct PerformanceSettingsEXT {
         pub perf_settings_set_performance_level: pfn::PerfSettingsSetPerformanceLevelEXT,
     }
-    impl PerformanceSettings {
+    impl PerformanceSettingsEXT {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_EXT_performance_settings\0";
     }
-    pub struct ThermalQuery {
+    pub struct ThermalQueryEXT {
         pub thermal_get_temperature_trend: pfn::ThermalGetTemperatureTrendEXT,
     }
-    impl ThermalQuery {
+    impl ThermalQueryEXT {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_EXT_thermal_query\0";
     }
-    pub struct DebugUtils {
+    pub struct DebugUtilsEXT {
         pub set_debug_utils_object_name: pfn::SetDebugUtilsObjectNameEXT,
         pub create_debug_utils_messenger: pfn::CreateDebugUtilsMessengerEXT,
         pub destroy_debug_utils_messenger: pfn::DestroyDebugUtilsMessengerEXT,
@@ -2627,152 +2724,148 @@ pub mod ext {
         pub session_end_debug_utils_label_region: pfn::SessionEndDebugUtilsLabelRegionEXT,
         pub session_insert_debug_utils_label: pfn::SessionInsertDebugUtilsLabelEXT,
     }
-    impl DebugUtils {
+    impl DebugUtilsEXT {
         pub const VERSION: u32 = 2u32;
         pub const NAME: &'static [u8] = b"XR_EXT_debug_utils\0";
     }
-}
-#[doc = "Khronos extensions"]
-pub mod khr {
-    use super::*;
     #[cfg(target_os = "android")]
-    pub struct AndroidThreadSettings {
+    pub struct AndroidThreadSettingsKHR {
         pub set_android_application_thread: pfn::SetAndroidApplicationThreadKHR,
     }
     #[cfg(target_os = "android")]
-    impl AndroidThreadSettings {
+    impl AndroidThreadSettingsKHR {
         pub const VERSION: u32 = 4u32;
         pub const NAME: &'static [u8] = b"XR_KHR_android_thread_settings\0";
     }
     #[cfg(target_os = "android")]
-    pub struct AndroidSurfaceSwapchain {
+    pub struct AndroidSurfaceSwapchainKHR {
         pub create_swapchain_android_surface: pfn::CreateSwapchainAndroidSurfaceKHR,
     }
     #[cfg(target_os = "android")]
-    impl AndroidSurfaceSwapchain {
+    impl AndroidSurfaceSwapchainKHR {
         pub const VERSION: u32 = 4u32;
         pub const NAME: &'static [u8] = b"XR_KHR_android_surface_swapchain\0";
     }
-    pub struct CompositionLayerCube {}
-    impl CompositionLayerCube {
+    pub struct CompositionLayerCubeKHR {}
+    impl CompositionLayerCubeKHR {
         pub const VERSION: u32 = 8u32;
         pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_cube\0";
     }
     #[cfg(target_os = "android")]
-    pub struct AndroidCreateInstance {}
+    pub struct AndroidCreateInstanceKHR {}
     #[cfg(target_os = "android")]
-    impl AndroidCreateInstance {
+    impl AndroidCreateInstanceKHR {
         pub const VERSION: u32 = 2u32;
         pub const NAME: &'static [u8] = b"XR_KHR_android_create_instance\0";
     }
-    pub struct CompositionLayerDepth {}
-    impl CompositionLayerDepth {
+    pub struct CompositionLayerDepthKHR {}
+    impl CompositionLayerDepthKHR {
         pub const VERSION: u32 = 5u32;
         pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_depth\0";
     }
-    pub struct Headless {}
-    impl Headless {
+    pub struct HeadlessKHR {}
+    impl HeadlessKHR {
         pub const VERSION: u32 = 2u32;
         pub const NAME: &'static [u8] = b"XR_KHR_headless\0";
     }
     #[cfg(feature = "ash")]
-    pub struct VulkanSwapchainFormatList {}
+    pub struct VulkanSwapchainFormatListKHR {}
     #[cfg(feature = "ash")]
-    impl VulkanSwapchainFormatList {
+    impl VulkanSwapchainFormatListKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_vulkan_swapchain_format_list\0";
     }
-    pub struct CompositionLayerCylinder {}
-    impl CompositionLayerCylinder {
+    pub struct CompositionLayerCylinderKHR {}
+    impl CompositionLayerCylinderKHR {
         pub const VERSION: u32 = 4u32;
         pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_cylinder\0";
     }
-    pub struct CompositionLayerEquirect {}
-    impl CompositionLayerEquirect {
+    pub struct CompositionLayerEquirectKHR {}
+    impl CompositionLayerEquirectKHR {
         pub const VERSION: u32 = 3u32;
         pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_equirect\0";
     }
     #[cfg(feature = "opengl")]
-    pub struct OpenglEnable {
+    pub struct OpenglEnableKHR {
         pub get_open_gl_graphics_requirements: pfn::GetOpenGLGraphicsRequirementsKHR,
     }
     #[cfg(feature = "opengl")]
-    impl OpenglEnable {
+    impl OpenglEnableKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_opengl_enable\0";
     }
     #[cfg(feature = "opengles")]
-    pub struct OpenglEsEnable {
+    pub struct OpenglEsEnableKHR {
         pub get_open_gles_graphics_requirements: pfn::GetOpenGLESGraphicsRequirementsKHR,
     }
     #[cfg(feature = "opengles")]
-    impl OpenglEsEnable {
+    impl OpenglEsEnableKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_opengl_es_enable\0";
     }
     #[cfg(feature = "ash")]
-    pub struct VulkanEnable {
+    pub struct VulkanEnableKHR {
         pub get_vulkan_instance_extensions: pfn::GetVulkanInstanceExtensionsKHR,
         pub get_vulkan_device_extensions: pfn::GetVulkanDeviceExtensionsKHR,
         pub get_vulkan_graphics_device: pfn::GetVulkanGraphicsDeviceKHR,
         pub get_vulkan_graphics_requirements: pfn::GetVulkanGraphicsRequirementsKHR,
     }
     #[cfg(feature = "ash")]
-    impl VulkanEnable {
+    impl VulkanEnableKHR {
         pub const VERSION: u32 = 6u32;
         pub const NAME: &'static [u8] = b"XR_KHR_vulkan_enable\0";
     }
     #[cfg(feature = "d3d")]
-    pub struct D3d10Enable {
+    pub struct D3d10EnableKHR {
         pub get_d3d10_graphics_requirements: pfn::GetD3D10GraphicsRequirementsKHR,
     }
     #[cfg(feature = "d3d")]
-    impl D3d10Enable {
+    impl D3d10EnableKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_D3D10_enable\0";
     }
     #[cfg(feature = "d3d")]
-    pub struct D3d11Enable {
+    pub struct D3d11EnableKHR {
         pub get_d3d11_graphics_requirements: pfn::GetD3D11GraphicsRequirementsKHR,
     }
     #[cfg(feature = "d3d")]
-    impl D3d11Enable {
+    impl D3d11EnableKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_D3D11_enable\0";
     }
     #[cfg(feature = "d3d")]
-    pub struct D3d12Enable {
+    pub struct D3d12EnableKHR {
         pub get_d3d12_graphics_requirements: pfn::GetD3D12GraphicsRequirementsKHR,
     }
     #[cfg(feature = "d3d")]
-    impl D3d12Enable {
+    impl D3d12EnableKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_D3D12_enable\0";
     }
-    pub struct VisibilityMask {
+    pub struct VisibilityMaskKHR {
         pub get_visibility_mask: pfn::GetVisibilityMaskKHR,
     }
-    impl VisibilityMask {
+    impl VisibilityMaskKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_visibility_mask\0";
     }
     #[cfg(target_os = "windows")]
-    pub struct Win32ConvertPerformanceCounterTime {
+    pub struct Win32ConvertPerformanceCounterTimeKHR {
         pub convert_win32_performance_counter_to_time: pfn::ConvertWin32PerformanceCounterToTimeKHR,
         pub convert_time_to_win32_performance_counter: pfn::ConvertTimeToWin32PerformanceCounterKHR,
     }
     #[cfg(target_os = "windows")]
-    impl Win32ConvertPerformanceCounterTime {
+    impl Win32ConvertPerformanceCounterTimeKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_win32_convert_performance_counter_time\0";
     }
     #[cfg(feature = "libc")]
-    pub struct ConvertTimespecTime {
+    pub struct ConvertTimespecTimeKHR {
         pub convert_timespec_time_to_time: pfn::ConvertTimespecTimeToTimeKHR,
         pub convert_time_to_timespec_time: pfn::ConvertTimeToTimespecTimeKHR,
     }
     #[cfg(feature = "libc")]
-    impl ConvertTimespecTime {
+    impl ConvertTimespecTimeKHR {
         pub const VERSION: u32 = 1u32;
         pub const NAME: &'static [u8] = b"XR_KHR_convert_timespec_time\0";
     }
