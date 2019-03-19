@@ -1,6 +1,5 @@
 //! Static helpers called from generated code
 use std::fmt;
-use std::os::raw::{c_ulong, c_void};
 
 #[macro_export]
 macro_rules! wrapper {
@@ -52,7 +51,7 @@ macro_rules! bitmask {
             }
         }
 
-        impl ::std::ops::BitOr for $name {
+        impl std::ops::BitOr for $name {
             type Output = $name;
 
             #[inline]
@@ -61,14 +60,14 @@ macro_rules! bitmask {
             }
         }
 
-        impl ::std::ops::BitOrAssign for $name {
+        impl std::ops::BitOrAssign for $name {
             #[inline]
             fn bitor_assign(&mut self, rhs: $name) {
                 *self = *self | rhs
             }
         }
 
-        impl ::std::ops::BitAnd for $name {
+        impl std::ops::BitAnd for $name {
             type Output = $name;
 
             #[inline]
@@ -77,14 +76,14 @@ macro_rules! bitmask {
             }
         }
 
-        impl ::std::ops::BitAndAssign for $name {
+        impl std::ops::BitAndAssign for $name {
             #[inline]
             fn bitand_assign(&mut self, rhs: $name) {
                 *self = *self & rhs
             }
         }
 
-        impl ::std::ops::BitXor for $name {
+        impl std::ops::BitXor for $name {
             type Output = $name;
 
             #[inline]
@@ -93,14 +92,14 @@ macro_rules! bitmask {
             }
         }
 
-        impl ::std::ops::BitXorAssign for $name {
+        impl std::ops::BitXorAssign for $name {
             #[inline]
             fn bitxor_assign(&mut self, rhs: $name) {
                 *self = *self ^ rhs
             }
         }
 
-        impl ::std::ops::Not for $name {
+        impl std::ops::Not for $name {
             type Output = $name;
 
             #[inline]
@@ -123,7 +122,7 @@ pub use ash::vk;
 
 #[cfg(all(feature = "x11", feature = "opengl"))]
 mod x11 {
-    use super::*;
+    use std::os::raw::{c_ulong, c_void};
 
     pub type XID = c_ulong;
     pub type GLXFBConfig = *mut c_void;
@@ -133,7 +132,7 @@ mod x11 {
 #[cfg(all(feature = "x11", feature = "opengl"))]
 pub use x11::*;
 #[cfg(feature = "x11")]
-pub type Display = c_void;
+pub type Display = std::os::raw::c_void;
 
 #[cfg(feature = "libc")]
 pub use libc::timespec;
