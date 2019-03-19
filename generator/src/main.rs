@@ -828,12 +828,8 @@ impl Parser {
                 #[repr(transparent)]
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
-                impl #ident {
-                    #[inline]
-                    pub fn from_raw(x: u64) -> Self { Self(x) }
-                    #[inline]
-                    pub fn into_raw(self) -> u64 { self.0 }
-                }
+                handle!(#ident);
+                
             }
         });
 

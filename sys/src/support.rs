@@ -18,10 +18,14 @@ macro_rules! bitmask {
     ($name:ident) => {
         impl $name {
             #[inline]
-            pub fn from_raw(x: i32) -> Self { Self(x) }
+            pub fn from_raw(x: i32) -> Self {
+                Self(x)
+            }
 
             #[inline]
-            pub fn into_raw(self) -> i32 { self.0 }
+            pub fn into_raw(self) -> i32 {
+                self.0
+            }
 
             #[inline]
             pub fn empty() -> $name {
@@ -56,7 +60,7 @@ macro_rules! bitmask {
 
             #[inline]
             fn bitor(self, rhs: $name) -> $name {
-                $name (self.0 | rhs.0 )
+                $name(self.0 | rhs.0)
             }
         }
 
@@ -72,7 +76,7 @@ macro_rules! bitmask {
 
             #[inline]
             fn bitand(self, rhs: $name) -> $name {
-                $name (self.0 & rhs.0)
+                $name(self.0 & rhs.0)
             }
         }
 
@@ -88,7 +92,7 @@ macro_rules! bitmask {
 
             #[inline]
             fn bitxor(self, rhs: $name) -> $name {
-                $name (self.0 ^ rhs.0 )
+                $name(self.0 ^ rhs.0)
             }
         }
 
@@ -105,6 +109,31 @@ macro_rules! bitmask {
             #[inline]
             fn not(self) -> $name {
                 Self(!self.0)
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! handle {
+    ($name:ident) => {
+        impl $name {
+            #[inline]
+            pub fn null() -> Self {
+                Self(0)
+            }
+            #[inline]
+            pub fn from_raw(x: u64) -> Self {
+                Self(x)
+            }
+            #[inline]
+            pub fn into_raw(self) -> u64 {
+                self.0
+            }
+        }
+        impl Default for $name {
+            fn default() -> Self {
+                Self::null()
             }
         }
     };

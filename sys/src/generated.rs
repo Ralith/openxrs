@@ -951,94 +951,31 @@ bitmask!(ViewStateFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Instance(u64);
-impl Instance {
-    #[inline]
-    pub fn from_raw(x: u64) -> Self {
-        Self(x)
-    }
-    #[inline]
-    pub fn into_raw(self) -> u64 {
-        self.0
-    }
-}
+handle!(Instance);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Session(u64);
-impl Session {
-    #[inline]
-    pub fn from_raw(x: u64) -> Self {
-        Self(x)
-    }
-    #[inline]
-    pub fn into_raw(self) -> u64 {
-        self.0
-    }
-}
+handle!(Session);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Swapchain(u64);
-impl Swapchain {
-    #[inline]
-    pub fn from_raw(x: u64) -> Self {
-        Self(x)
-    }
-    #[inline]
-    pub fn into_raw(self) -> u64 {
-        self.0
-    }
-}
+handle!(Swapchain);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Space(u64);
-impl Space {
-    #[inline]
-    pub fn from_raw(x: u64) -> Self {
-        Self(x)
-    }
-    #[inline]
-    pub fn into_raw(self) -> u64 {
-        self.0
-    }
-}
+handle!(Space);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ActionSet(u64);
-impl ActionSet {
-    #[inline]
-    pub fn from_raw(x: u64) -> Self {
-        Self(x)
-    }
-    #[inline]
-    pub fn into_raw(self) -> u64 {
-        self.0
-    }
-}
+handle!(ActionSet);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Action(u64);
-impl Action {
-    #[inline]
-    pub fn from_raw(x: u64) -> Self {
-        Self(x)
-    }
-    #[inline]
-    pub fn into_raw(self) -> u64 {
-        self.0
-    }
-}
+handle!(Action);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessengerEXT(u64);
-impl DebugUtilsMessengerEXT {
-    #[inline]
-    pub fn from_raw(x: u64) -> Self {
-        Self(x)
-    }
-    #[inline]
-    pub fn into_raw(self) -> u64 {
-        self.0
-    }
-}
+handle!(DebugUtilsMessengerEXT);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ActionCreateInfo {
