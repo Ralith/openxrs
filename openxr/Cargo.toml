@@ -1,7 +1,11 @@
 [package]
 name = "openxr"
+description = "OpenXR FFI bindings"
+repository = "https://github.com/Ralith/openxrs"
 version = "0.1.0"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
+categories = ["api-bindings", "rendering"]
+keywords = ["openxr", "vr"]
 license = "MIT/Apache-2.0"
 edition = "2018"
 
