@@ -8,7 +8,7 @@ use std::{
     rc::Rc,
 };
 
-use heck::{ShoutySnakeCase, SnakeCase};
+use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::{Ident, LitByteStr};
@@ -39,7 +39,7 @@ struct Parser {
     structs: BTreeMap<String, Struct>,
     api_constants: Vec<(String, usize)>,
     commands: BTreeMap<String, Command>,
-    extensions: Vec<Extension>,
+    extensions: BTreeMap<String, Tag>,
 }
 
 impl Parser {
@@ -56,7 +56,7 @@ impl Parser {
             structs: BTreeMap::new(),
             api_constants: Vec::new(),
             commands: BTreeMap::new(),
-            extensions: Vec::new(),
+            extensions: BTreeMap::new(),
         }
     }
 
@@ -69,7 +69,10 @@ impl Parser {
                 } => match &name.local_name[..] {
                     "types" => self.parse_types(),
                     "registry" => {}
-                    "comment" | "tags" => self.finish_element(),
+                    "comment" => self.finish_element(),
+                    "tags" => {
+                        self.parse_tags();
+                    }
                     "enums" => {
                         self.parse_enum_values(&attributes);
                     }
@@ -86,6 +89,46 @@ impl Parser {
                 },
                 EndDocument => {
                     break;
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn parse_tags(&mut self) {
+        loop {
+            use XmlEvent::*;
+            match self.reader.next().expect("failed to parse XML") {
+                StartElement {
+                    name, attributes, ..
+                } => match &name.local_name[..] {
+                    "tag" => {
+                        let name = attr(&attributes, "name").unwrap();
+                        let author = attr(&attributes, "author").unwrap();
+                        let contact = attr(&attributes, "contact").unwrap();
+                        self.extensions.insert(
+                            name.into(),
+                            Tag {
+                                author: author.into(),
+                                contact: contact.into(),
+                                extensions: Vec::new(),
+                            },
+                        );
+                        self.finish_element();
+                    }
+                    _ => {
+                        eprintln!("unimplemented extensions element: {}", name.local_name);
+                        self.finish_element();
+                    }
+                },
+                EndElement { name } => {
+                    if name.local_name == "tags" {
+                        break;
+                    }
+                    eprintln!("unexpected end element: {}", name);
+                }
+                EndDocument => {
+                    panic!("unexpected end of document");
                 }
                 _ => {}
             }
@@ -115,6 +158,7 @@ impl Parser {
                     }
                     _ => {
                         eprintln!("unimplemented extensions element: {}", name.local_name);
+                        self.finish_element();
                     }
                 },
                 EndElement { name } => {
@@ -135,6 +179,11 @@ impl Parser {
         let ext_name = Rc::<str>::from(attr(attrs, "name").unwrap());
         let ext_number = attr(attrs, "number").unwrap().parse::<i32>().unwrap();
         let mut ext_version = None;
+        let mut commands = Vec::new();
+        if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
+            self.finish_element();
+            return;
+        }
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
@@ -145,6 +194,7 @@ impl Parser {
                         "command" => {
                             let cmd = attr(&attributes, "name").unwrap();
                             self.commands.get_mut(cmd).unwrap().extension = Some(ext_name.clone());
+                            commands.push(cmd.into());
                         }
                         "enum" => {
                             let name = attr(&attributes, "name").unwrap();
@@ -199,10 +249,16 @@ impl Parser {
                 _ => {}
             }
         }
-        self.extensions.push(Extension {
-            name: ext_name,
-            version: ext_version.unwrap(),
-        });
+        let (tag, _) = split_ext_tag(&ext_name);
+        self.extensions
+            .get_mut(tag)
+            .unwrap()
+            .extensions
+            .push(Extension {
+                name: ext_name,
+                version: ext_version.unwrap(),
+                commands,
+            });
     }
 
     fn parse_commands(&mut self) {
@@ -808,24 +864,50 @@ impl Parser {
             }
         });
 
-        let exts = self.extensions.iter().map(|ext| {
-            assert!(ext.name.starts_with("XR_"));
-            let name_ident = Ident::new(
-                &format!("{}_EXTENSION_NAME", ext.name[3..].to_uppercase()),
-                Span::call_site(),
-            );
-            let mut name_lit = ext.name.as_bytes().to_vec();
-            name_lit.push(0);
-            let name_lit = LitByteStr::new(&name_lit, Span::call_site());
-            let version_ident = Ident::new(
-                &format!("{}_SPEC_VERSION", &ext.name[3..].to_uppercase()),
-                Span::call_site(),
-            );
-            let version_lit = ext.version;
-            // TODO: &'static CStr
+        let exts = self.extensions.iter().map(|(tag_name, tag)| {
+            if tag.extensions.is_empty() {
+                return quote! {};
+            }
+            let exts = tag.extensions.iter().map(|ext| {
+                let pfns = ext.commands.iter().map(|cmd| {
+                    let pfn_ident = xr_command_name(&cmd);
+                    let camel_name = pfn_ident.to_string();
+                    let field_ident = Ident::new(&camel_name[..camel_name.len()-tag_name.len()].to_snake_case(), Span::call_site());
+                    quote! {
+                        pub #field_ident: pfn::#pfn_ident
+                    }
+                });
+
+                let name_ident = Ident::new("NAME", Span::call_site());
+                let mut name_lit = ext.name.as_bytes().to_vec();
+                name_lit.push(0);
+                let name_lit = LitByteStr::new(&name_lit, Span::call_site());
+                let version_ident = Ident::new("VERSION", Span::call_site());
+                let version_lit = ext.version;
+                let ty_ident = Ident::new(&split_ext_tag(&ext.name).1.to_camel_case(), Span::call_site());
+                let conds = conditions(&ext.name);
+                let conds2 = conds.clone();
+                // TODO: &'static CStr name
+                quote! {
+                    #conds
+                    pub struct #ty_ident {
+                        #(#pfns,)*
+                    }
+                    #conds2
+                    impl #ty_ident {
+                        pub const #version_ident: u32 = #version_lit;
+                        pub const #name_ident: &'static [u8] = #name_lit;
+                    }
+                }
+            });
+            let doc = format!("{} extensions", tag.author);
+            let tag_mod = Ident::new(&tag_name.to_lowercase(), Span::call_site());
             quote! {
-                pub const #version_ident: u32 = #version_lit;
-                pub const #name_ident: &'static [u8] = #name_lit;
+                #[doc = #doc]
+                pub mod #tag_mod {
+                    use super::*;
+                    #(#exts)*
+                }
             }
         });
 
@@ -880,7 +962,6 @@ impl Parser {
             #(#bitmasks)*
             #(#handles)*
             #(#structs)*
-            #(#exts)*
 
             /// Function pointer prototypes
             pub mod pfn {
@@ -901,8 +982,16 @@ impl Parser {
             extern "C" {
                 #(#protos)*
             }
+
+            #(#exts)*
         }
     }
+}
+
+struct Tag {
+    author: String,
+    contact: String,
+    extensions: Vec<Extension>,
 }
 
 struct Command {
@@ -946,6 +1035,7 @@ struct Member {
 struct Extension {
     name: Rc<str>,
     version: u32,
+    commands: Vec<String>,
 }
 
 fn attr<'a>(attrs: &'a [OwnedAttribute], name: &str) -> Option<&'a str> {
@@ -1073,34 +1163,35 @@ fn xr_command_name(raw: &str) -> Ident {
 }
 
 fn conditions(name: &str) -> TokenStream {
+    let name = name.to_lowercase();
     let mut conditions = Vec::new();
-    if name.contains("Win32") {
+    if name.contains("win32") {
         conditions.push(quote! { target_os = "windows" });
     }
-    if name.contains("Android") {
+    if name.contains("android") {
         conditions.push(quote! { target_os = "android" });
     }
-    if name.contains("Vulkan") {
+    if name.contains("vulkan") {
         conditions.push(quote! { feature = "ash" });
     }
-    if name.contains("D3D") {
+    if name.contains("d3d") {
         conditions.push(quote! { feature = "d3d" });
     }
-    if name.contains("OpenGLES") {
+    if name.contains("opengles") || name.contains("opengl_es") {
         conditions.push(quote! { feature = "opengles" });
-    } else if name.contains("OpenGL") {
+    } else if name.contains("opengl") {
         conditions.push(quote! { feature = "opengl" });
     }
-    if name.contains("Timespec") {
+    if name.contains("timespec") {
         conditions.push(quote! { feature = "libc" });
     }
-    if name.contains("OpenGLXcb") {
+    if name.contains("openglxcb") {
         conditions.push(quote! { feature = "xcb" });
     }
-    if name.contains("OpenGLXlib") {
+    if name.contains("openglxlib") {
         conditions.push(quote! { feature = "x11" });
     }
-    if name.contains("Wayland") {
+    if name.contains("wayland") {
         conditions.push(quote! { feature = "wayland" });
     }
     match conditions.len() {
@@ -1108,4 +1199,12 @@ fn conditions(name: &str) -> TokenStream {
         1 => quote! { #[cfg(#(#conditions)*)] },
         _ => quote! { #[cfg(all(#(#conditions),*))] },
     }
+}
+
+fn split_ext_tag(name: &str) -> (&str, &str) {
+    assert_eq!(&name[..3], "XR_");
+    let name = &name[3..];
+    let tag_end = name.find("_").unwrap();
+    let (tag, tail) = name.split_at(tag_end);
+    (tag, &tail[1..])
 }

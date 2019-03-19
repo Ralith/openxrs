@@ -653,8 +653,6 @@ impl StructureType {
     pub const GRAPHICS_REQUIREMENTS_D3D12_KHR: StructureType = StructureType(1000028002i32);
     pub const VISIBILITY_MASK_KHR: StructureType = StructureType(1000031000i32);
     pub const EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR: StructureType = StructureType(1000031001i32);
-    pub const COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR: StructureType =
-        StructureType(1000034000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -762,9 +760,6 @@ impl fmt::Debug for StructureType {
             Self::VISIBILITY_MASK_KHR => Some("VISIBILITY_MASK_KHR"),
             Self::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
                 Some("EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR")
-            }
-            Self::COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR => {
-                Some("COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR")
             }
             _ => None,
         };
@@ -1172,7 +1167,6 @@ pub struct CompositionLayerBaseHeader {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_composition_layer_color_modulation"]
 pub struct CompositionLayerColorModulationInfoKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1950,76 +1944,6 @@ pub struct VulkanSwapchainFormatListCreateInfoKHR {
     pub view_format_count: u32,
     pub view_formats: *const vk::Format,
 }
-pub const KHR_ANDROID_THREAD_SETTINGS_SPEC_VERSION: u32 = 4u32;
-pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_android_thread_settings\0";
-pub const KHR_ANDROID_SURFACE_SWAPCHAIN_SPEC_VERSION: u32 = 4u32;
-pub const KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_android_surface_swapchain\0";
-pub const KHR_COMPOSITION_LAYER_CUBE_SPEC_VERSION: u32 = 8u32;
-pub const KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_composition_layer_cube\0";
-pub const KHR_ANDROID_CREATE_INSTANCE_SPEC_VERSION: u32 = 2u32;
-pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_android_create_instance\0";
-pub const KHR_COMPOSITION_LAYER_DEPTH_SPEC_VERSION: u32 = 5u32;
-pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_composition_layer_depth\0";
-pub const KHR_HEADLESS_SPEC_VERSION: u32 = 2u32;
-pub const KHR_HEADLESS_EXTENSION_NAME: &'static [u8] = b"XR_KHR_headless\0";
-pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_SPEC_VERSION: u32 = 1u32;
-pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_vulkan_swapchain_format_list\0";
-pub const EXT_PERFORMANCE_SETTINGS_SPEC_VERSION: u32 = 1u32;
-pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &'static [u8] = b"XR_EXT_performance_settings\0";
-pub const EXT_THERMAL_QUERY_SPEC_VERSION: u32 = 1u32;
-pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &'static [u8] = b"XR_EXT_thermal_query\0";
-pub const KHR_COMPOSITION_LAYER_CYLINDER_SPEC_VERSION: u32 = 4u32;
-pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_composition_layer_cylinder\0";
-pub const KHR_COMPOSITION_LAYER_EQUIRECT_SPEC_VERSION: u32 = 3u32;
-pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_composition_layer_equirect\0";
-pub const EXT_DEBUG_UTILS_SPEC_VERSION: u32 = 2u32;
-pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &'static [u8] = b"XR_EXT_debug_utils\0";
-pub const KHR_VARIABLE_RATE_RENDERING_SPEC_VERSION: u32 = 1u32;
-pub const KHR_VARIABLE_RATE_RENDERING_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_variable_rate_rendering\0";
-pub const KHR_OVERLAYS_SPEC_VERSION: u32 = 0u32;
-pub const KHR_OVERLAYS_EXTENSION_NAME: &'static [u8] = b"XR_KHR_overlays\0";
-pub const KHR_OPENGL_ENABLE_SPEC_VERSION: u32 = 1u32;
-pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_enable\0";
-pub const KHR_OPENGL_ES_ENABLE_SPEC_VERSION: u32 = 1u32;
-pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_es_enable\0";
-pub const KHR_VULKAN_ENABLE_SPEC_VERSION: u32 = 6u32;
-pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_vulkan_enable\0";
-pub const KHR_D3D10_ENABLE_SPEC_VERSION: u32 = 1u32;
-pub const KHR_D3D10_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D10_enable\0";
-pub const KHR_D3D11_ENABLE_SPEC_VERSION: u32 = 1u32;
-pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D11_enable\0";
-pub const KHR_D3D12_ENABLE_SPEC_VERSION: u32 = 1u32;
-pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D12_enable\0";
-pub const KHR_METAL_ENABLE_SPEC_VERSION: u32 = 1u32;
-pub const KHR_METAL_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_metal_enable\0";
-pub const KHR_EYE_TRACKING_SPEC_VERSION: u32 = 1u32;
-pub const KHR_EYE_TRACKING_EXTENSION_NAME: &'static [u8] = b"XR_KHR_eye_tracking\0";
-pub const KHR_VISIBILITY_MASK_SPEC_VERSION: u32 = 1u32;
-pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &'static [u8] = b"XR_KHR_visibility_mask\0";
-pub const GOOGLE_EXTENSION_32_SPEC_VERSION: u32 = 1u32;
-pub const GOOGLE_EXTENSION_32_EXTENSION_NAME: &'static [u8] = b"XR_GOOGLE_extension_32\0";
-pub const EXT_PERMISSIONS_SUPPORT_SPEC_VERSION: u32 = 1u32;
-pub const EXT_PERMISSIONS_SUPPORT_EXTENSION_NAME: &'static [u8] = b"XR_EXT_permissions_support\0";
-pub const EXT_OVERLAY_SPEC_VERSION: u32 = 1u32;
-pub const EXT_OVERLAY_EXTENSION_NAME: &'static [u8] = b"XR_EXT_overlay\0";
-pub const KHR_COMPOSITION_LAYER_COLOR_MODULATION_SPEC_VERSION: u32 = 2u32;
-pub const KHR_COMPOSITION_LAYER_COLOR_MODULATION_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_composition_layer_color_modulation\0";
-pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_SPEC_VERSION: u32 = 1u32;
-pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_win32_convert_performance_counter_time\0";
-pub const KHR_CONVERT_TIMESPEC_TIME_SPEC_VERSION: u32 = 1u32;
-pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_convert_timespec_time\0";
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
     use super::*;
@@ -2676,4 +2600,180 @@ extern "C" {
         swapchain: Swapchain,
         wait_info: *const SwapchainImageWaitInfo,
     ) -> Result;
+}
+#[doc = "Multivendor extensions"]
+pub mod ext {
+    use super::*;
+    pub struct PerformanceSettings {
+        pub perf_settings_set_performance_level: pfn::PerfSettingsSetPerformanceLevelEXT,
+    }
+    impl PerformanceSettings {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_EXT_performance_settings\0";
+    }
+    pub struct ThermalQuery {
+        pub thermal_get_temperature_trend: pfn::ThermalGetTemperatureTrendEXT,
+    }
+    impl ThermalQuery {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_EXT_thermal_query\0";
+    }
+    pub struct DebugUtils {
+        pub set_debug_utils_object_name: pfn::SetDebugUtilsObjectNameEXT,
+        pub create_debug_utils_messenger: pfn::CreateDebugUtilsMessengerEXT,
+        pub destroy_debug_utils_messenger: pfn::DestroyDebugUtilsMessengerEXT,
+        pub submit_debug_utils_message: pfn::SubmitDebugUtilsMessageEXT,
+        pub session_begin_debug_utils_label_region: pfn::SessionBeginDebugUtilsLabelRegionEXT,
+        pub session_end_debug_utils_label_region: pfn::SessionEndDebugUtilsLabelRegionEXT,
+        pub session_insert_debug_utils_label: pfn::SessionInsertDebugUtilsLabelEXT,
+    }
+    impl DebugUtils {
+        pub const VERSION: u32 = 2u32;
+        pub const NAME: &'static [u8] = b"XR_EXT_debug_utils\0";
+    }
+}
+#[doc = "Khronos extensions"]
+pub mod khr {
+    use super::*;
+    #[cfg(target_os = "android")]
+    pub struct AndroidThreadSettings {
+        pub set_android_application_thread: pfn::SetAndroidApplicationThreadKHR,
+    }
+    #[cfg(target_os = "android")]
+    impl AndroidThreadSettings {
+        pub const VERSION: u32 = 4u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_android_thread_settings\0";
+    }
+    #[cfg(target_os = "android")]
+    pub struct AndroidSurfaceSwapchain {
+        pub create_swapchain_android_surface: pfn::CreateSwapchainAndroidSurfaceKHR,
+    }
+    #[cfg(target_os = "android")]
+    impl AndroidSurfaceSwapchain {
+        pub const VERSION: u32 = 4u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_android_surface_swapchain\0";
+    }
+    pub struct CompositionLayerCube {}
+    impl CompositionLayerCube {
+        pub const VERSION: u32 = 8u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_cube\0";
+    }
+    #[cfg(target_os = "android")]
+    pub struct AndroidCreateInstance {}
+    #[cfg(target_os = "android")]
+    impl AndroidCreateInstance {
+        pub const VERSION: u32 = 2u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_android_create_instance\0";
+    }
+    pub struct CompositionLayerDepth {}
+    impl CompositionLayerDepth {
+        pub const VERSION: u32 = 5u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_depth\0";
+    }
+    pub struct Headless {}
+    impl Headless {
+        pub const VERSION: u32 = 2u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_headless\0";
+    }
+    #[cfg(feature = "ash")]
+    pub struct VulkanSwapchainFormatList {}
+    #[cfg(feature = "ash")]
+    impl VulkanSwapchainFormatList {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_vulkan_swapchain_format_list\0";
+    }
+    pub struct CompositionLayerCylinder {}
+    impl CompositionLayerCylinder {
+        pub const VERSION: u32 = 4u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_cylinder\0";
+    }
+    pub struct CompositionLayerEquirect {}
+    impl CompositionLayerEquirect {
+        pub const VERSION: u32 = 3u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_composition_layer_equirect\0";
+    }
+    #[cfg(feature = "opengl")]
+    pub struct OpenglEnable {
+        pub get_open_gl_graphics_requirements: pfn::GetOpenGLGraphicsRequirementsKHR,
+    }
+    #[cfg(feature = "opengl")]
+    impl OpenglEnable {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_opengl_enable\0";
+    }
+    #[cfg(feature = "opengles")]
+    pub struct OpenglEsEnable {
+        pub get_open_gles_graphics_requirements: pfn::GetOpenGLESGraphicsRequirementsKHR,
+    }
+    #[cfg(feature = "opengles")]
+    impl OpenglEsEnable {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_opengl_es_enable\0";
+    }
+    #[cfg(feature = "ash")]
+    pub struct VulkanEnable {
+        pub get_vulkan_instance_extensions: pfn::GetVulkanInstanceExtensionsKHR,
+        pub get_vulkan_device_extensions: pfn::GetVulkanDeviceExtensionsKHR,
+        pub get_vulkan_graphics_device: pfn::GetVulkanGraphicsDeviceKHR,
+        pub get_vulkan_graphics_requirements: pfn::GetVulkanGraphicsRequirementsKHR,
+    }
+    #[cfg(feature = "ash")]
+    impl VulkanEnable {
+        pub const VERSION: u32 = 6u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_vulkan_enable\0";
+    }
+    #[cfg(feature = "d3d")]
+    pub struct D3d10Enable {
+        pub get_d3d10_graphics_requirements: pfn::GetD3D10GraphicsRequirementsKHR,
+    }
+    #[cfg(feature = "d3d")]
+    impl D3d10Enable {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_D3D10_enable\0";
+    }
+    #[cfg(feature = "d3d")]
+    pub struct D3d11Enable {
+        pub get_d3d11_graphics_requirements: pfn::GetD3D11GraphicsRequirementsKHR,
+    }
+    #[cfg(feature = "d3d")]
+    impl D3d11Enable {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_D3D11_enable\0";
+    }
+    #[cfg(feature = "d3d")]
+    pub struct D3d12Enable {
+        pub get_d3d12_graphics_requirements: pfn::GetD3D12GraphicsRequirementsKHR,
+    }
+    #[cfg(feature = "d3d")]
+    impl D3d12Enable {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_D3D12_enable\0";
+    }
+    pub struct VisibilityMask {
+        pub get_visibility_mask: pfn::GetVisibilityMaskKHR,
+    }
+    impl VisibilityMask {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_visibility_mask\0";
+    }
+    #[cfg(target_os = "windows")]
+    pub struct Win32ConvertPerformanceCounterTime {
+        pub convert_win32_performance_counter_to_time: pfn::ConvertWin32PerformanceCounterToTimeKHR,
+        pub convert_time_to_win32_performance_counter: pfn::ConvertTimeToWin32PerformanceCounterKHR,
+    }
+    #[cfg(target_os = "windows")]
+    impl Win32ConvertPerformanceCounterTime {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_win32_convert_performance_counter_time\0";
+    }
+    #[cfg(feature = "libc")]
+    pub struct ConvertTimespecTime {
+        pub convert_timespec_time_to_time: pfn::ConvertTimespecTimeToTimeKHR,
+        pub convert_time_to_timespec_time: pfn::ConvertTimeToTimespecTimeKHR,
+    }
+    #[cfg(feature = "libc")]
+    impl ConvertTimespecTime {
+        pub const VERSION: u32 = 1u32;
+        pub const NAME: &'static [u8] = b"XR_KHR_convert_timespec_time\0";
+    }
 }
