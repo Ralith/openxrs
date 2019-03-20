@@ -37,3 +37,10 @@ fn cvt(x: sys::Result) -> Result<()> {
 unsafe fn fixed_str<'a>(x: &'a [std::os::raw::c_char]) -> &'a str {
     std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
 }
+
+// Reserved semantic paths
+pub const USER_HAND_LEFT: &str = "/user/hand/left";
+pub const USER_HAND_RIGHT: &str = "/user/hand/right";
+pub const USER_HEAD: &str = "/user/head";
+pub const USER_GAMEPAD: &str = "/user/gamepad";
+pub const USER_TREADMILL: &str = "/user/treadmill";
