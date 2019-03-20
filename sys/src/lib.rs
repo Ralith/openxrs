@@ -1,7 +1,7 @@
 use std::fmt;
 
-mod support;
 mod generated;
+mod support;
 
 // Hand-written bindings for cases which are too few or weird to bother automating
 
@@ -24,6 +24,12 @@ impl fmt::Display for Bool32 {
 impl fmt::Debug for Bool32 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         <Self as fmt::Display>::fmt(self, fmt)
+    }
+}
+
+impl From<Bool32> for bool {
+    fn from(x: Bool32) -> Self {
+        x != FALSE
     }
 }
 

@@ -1,5 +1,3 @@
-use std::sync::Arc;
-use std::ptr;
 use openxr as xr;
 
 fn main() {
@@ -7,12 +5,31 @@ fn main() {
     let entry = xr::LinkedEntry::new();
     #[cfg(not(feature = "static"))]
     let entry = xr::LoadedEntry::load().unwrap();
-    let instance = entry.create_instance(&xr::ApplicationInfo {
-        application_name: "hello openxrs",
-        application_version: 0,
-        engine_name: "openxrs",
-        engine_version: 0,
-    }).unwrap();
-    let props = instance.properties().unwrap();
-    println!("loaded {} v{}", props.runtime_name, props.runtime_version);
+    let instance = entry
+        .create_instance(&xr::ApplicationInfo {
+            application_name: "hello openxrs",
+            application_version: 0,
+            engine_name: "openxrs",
+            engine_version: 0,
+        })
+        .unwrap();
+    let instance_props = instance.properties().unwrap();
+    println!(
+        "loaded instance: {} v{}",
+        instance_props.runtime_name, instance_props.runtime_version
+    );
+    let system = instance
+        .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
+        .unwrap();
+    let system_props = instance.system_properties(system).unwrap();
+    println!(
+        "selected system {}: {}",
+        system_props.system_id.into_raw(),
+        if system_props.system_name.is_empty() {
+            "<unnamed>"
+        } else {
+            &system_props.system_name
+        }
+    );
+    
 }
