@@ -1113,17 +1113,17 @@ impl Parser {
                     quote! {}
                 } else {
                     quote! {
-                        pub fn load(instance: &Instance<E>) -> Result<Self>
+                        pub fn load(instance: Instance<E>) -> Result<Self>
                         where E: Clone
                         {
-                            let entry = instance.entry.clone();
-                            let handle = instance.handle;
+                            let entry = &instance.inner.entry;
+                            let handle = instance.inner.handle;
                             unsafe {
                                 Ok(Self {
                                     raw: raw::#ty_ident {
                                         #(#pfn_inits)*
                                     },
-                                    _entry_guard: entry,
+                                    _instance_guard: instance,
                                 })
                             }
                         }
@@ -1140,8 +1140,8 @@ impl Parser {
                 } else {
                     quote! {
                         #conds
-                        pub struct #ty_ident<E> {
-                            _entry_guard: E,
+                        pub struct #ty_ident<E: Entry> {
+                            _instance_guard: Instance<E>,
                             raw: raw::#ty_ident,
                         }
                         #conds2
@@ -1183,38 +1183,53 @@ impl Parser {
             .map(|x| xr_ty_name(x));
 
         quote! {
-            use std::{mem, ffi::CStr};
+            use std::{mem, ffi::CStr, sync::Arc};
 
             pub use sys::{#(#reexports),*};
 
             use crate::{Entry, Result};
 
-            pub struct Instance<E: Entry> {
+            struct InstanceInner<E: Entry> {
                 entry: E,
                 handle: sys::Instance,
                 raw: raw::Instance,
             }
 
+            impl<E: Entry> Drop for InstanceInner<E> {
+                fn drop(&mut self) {
+                    unsafe {
+                        (self.raw.destroy_instance)(self.handle);
+                    }
+                }
+            }
+
+            #[derive(Clone)]
+            pub struct Instance<E: Entry> {
+                inner: Arc<InstanceInner<E>>,
+            }
+
             impl<E: Entry> Instance<E> {
                 pub unsafe fn from_raw(entry: E, handle: sys::Instance) -> Result<Self> {
                     Ok(Self {
-                        raw: raw::Instance {
-                            #(#instance_pfn_inits)*
-                        },
-                        handle,
-                        entry,
+                        inner: Arc::new(InstanceInner {
+                            raw: raw::Instance {
+                                #(#instance_pfn_inits)*
+                            },
+                            handle,
+                            entry,
+                        }),
                     })
                 }
 
                 #[inline]
                 pub fn as_raw(&self) -> sys::Instance {
-                    self.handle
+                    self.inner.handle
                 }
 
                 /// Access the raw function pointers
                 #[inline]
                 pub fn raw(&self) -> &raw::Instance {
-                    &self.raw
+                    &self.inner.raw
                 }
             }
 

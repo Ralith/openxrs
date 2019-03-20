@@ -16,6 +16,7 @@ maintenance = { status = "experimental" }
 loaded = ["shared_library"]
 static = ["sys/static", "linked"]
 linked = ["sys/prototypes"]
+ash = ["sys/ash"]
 default = ["loaded"]
 
 [dependencies]

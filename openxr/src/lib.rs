@@ -23,12 +23,14 @@ mod entry;
 pub use entry::*;
 mod instance;
 pub use instance::*;
+mod session;
+pub use session::*;
 
 pub type Result<T> = std::result::Result<T, sys::Result>;
 
-fn cvt(x: sys::Result) -> Result<()> {
+fn cvt(x: sys::Result) -> Result<sys::Result> {
     if x.into_raw() >= 0 {
-        Ok(())
+        Ok(x)
     } else {
         Err(x)
     }

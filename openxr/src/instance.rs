@@ -1,4 +1,8 @@
 use std::{mem, ptr, ffi::CString};
+
+#[cfg(feature = "ash")]
+use ash::vk;
+
 use crate::*;
 
 impl<E: Entry> Instance<E> {
@@ -44,7 +48,7 @@ impl<E: Entry> Instance<E> {
         };
         let mut out = SystemId::NULL;
         unsafe {
-            cvt((self.raw().get_system)(self.as_raw(), &info, &mut out))?
+            cvt((self.raw().get_system)(self.as_raw(), &info, &mut out))?;
         }
         Ok(out)
     }
@@ -75,7 +79,7 @@ impl<E: Entry> Instance<E> {
         let string = CString::new(string).map_err(|_| sys::Result::ERROR_PATH_FORMAT_INVALID)?;
         let mut out = Path::NULL;
         unsafe {
-            cvt((self.raw().string_to_path)(self.as_raw(), string.as_ptr(), &mut out))?
+            cvt((self.raw().string_to_path)(self.as_raw(), string.as_ptr(), &mut out))?;
         }
         Ok(out)
     }
@@ -92,14 +96,41 @@ impl<E: Entry> Instance<E> {
             Ok(String::from_utf8_unchecked(out))
         }
     }
+
+    #[cfg(feature = "ash")]
+    pub fn create_session_vulkan(&self, info: &VulkanSessionCreateInfo) -> Result<Session<E>> {
+        let binding = sys::GraphicsBindingVulkanKHR {
+            ty: sys::GraphicsBindingVulkanKHR::TYPE,
+            next: ptr::null(),
+            instance: info.instance,
+            physical_device: info.physical_device,
+            device: info.device,
+            queue_family_index: info.queue_family_index,
+            queue_index: info.queue_index,
+        };
+        let info = sys::SessionCreateInfo {
+            ty: sys::SessionCreateInfo::TYPE,
+            next: &binding as _,
+            create_flags: Default::default(),
+            system_id: info.system_id,
+        };
+        let mut out = sys::Session::NULL;
+        unsafe {
+            cvt((self.raw().create_session)(self.as_raw(), &info, &mut out))?;
+        }
+        Ok(Session::new(self.clone(), out))
+    }
 }
 
-impl<E: Entry> Drop for Instance<E> {
-    fn drop(&mut self) {
-        unsafe {
-            (self.raw().destroy_instance)(self.as_raw());
-        }
-    }
+#[cfg(feature = "ash")]
+#[derive(Copy, Clone)]
+pub struct VulkanSessionCreateInfo {
+    pub system_id: SystemId,
+    pub instance: vk::Instance,
+    pub physical_device: vk::PhysicalDevice,
+    pub device: vk::Device,
+    pub queue_family_index: u32,
+    pub queue_index: u32,
 }
 
 #[derive(Clone)]
