@@ -234,10 +234,12 @@ impl<E: Entry> Instance<E> {
             entry,
         })
     }
+    #[inline]
     pub fn as_raw(&self) -> sys::Instance {
         self.handle
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::Instance {
         &self.raw
     }
@@ -270,6 +272,7 @@ impl<E: Entry> PerformanceSettingsEXT<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::PerformanceSettingsEXT {
         &self.raw
     }
@@ -298,6 +301,7 @@ impl<E: Entry> ThermalQueryEXT<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::ThermalQueryEXT {
         &self.raw
     }
@@ -362,6 +366,7 @@ impl<E: Entry> DebugUtilsEXT<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::DebugUtilsEXT {
         &self.raw
     }
@@ -392,6 +397,7 @@ impl<E: Entry> AndroidThreadSettingsKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::AndroidThreadSettingsKHR {
         &self.raw
     }
@@ -426,6 +432,7 @@ impl<E: Entry> AndroidSurfaceSwapchainKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::AndroidSurfaceSwapchainKHR {
         &self.raw
     }
@@ -460,6 +467,7 @@ impl<E: Entry> OpenglEnableKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::OpenglEnableKHR {
         &self.raw
     }
@@ -494,6 +502,7 @@ impl<E: Entry> OpenglEsEnableKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::OpenglEsEnableKHR {
         &self.raw
     }
@@ -540,6 +549,7 @@ impl<E: Entry> VulkanEnableKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::VulkanEnableKHR {
         &self.raw
     }
@@ -570,6 +580,7 @@ impl<E: Entry> D3d10EnableKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::D3d10EnableKHR {
         &self.raw
     }
@@ -600,6 +611,7 @@ impl<E: Entry> D3d11EnableKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::D3d11EnableKHR {
         &self.raw
     }
@@ -630,6 +642,7 @@ impl<E: Entry> D3d12EnableKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::D3d12EnableKHR {
         &self.raw
     }
@@ -658,6 +671,7 @@ impl<E: Entry> VisibilityMaskKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::VisibilityMaskKHR {
         &self.raw
     }
@@ -700,6 +714,7 @@ impl<E: Entry> Win32ConvertPerformanceCounterTimeKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::Win32ConvertPerformanceCounterTimeKHR {
         &self.raw
     }
@@ -734,6 +749,7 @@ impl<E: Entry> ConvertTimespecTimeKHR<E> {
         }
     }
     #[doc = r" Access the raw function pointers"]
+    #[inline]
     pub fn raw(&self) -> &raw::ConvertTimespecTimeKHR {
         &self.raw
     }

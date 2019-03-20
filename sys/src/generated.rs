@@ -2483,11 +2483,8 @@ pub mod pfn {
         swapchain: Swapchain,
         release_info: *const SwapchainImageReleaseInfo,
     ) -> Result;
-    pub type ResultToString = unsafe extern "system" fn(
-        instance: Instance,
-        value: Result,
-        buffer: [c_char; MAX_RESULT_STRING_SIZE],
-    ) -> Result;
+    pub type ResultToString =
+        unsafe extern "system" fn(instance: Instance, value: Result, buffer: *mut c_char) -> Result;
     #[doc = "From XR_EXT_debug_utils"]
     pub type SessionBeginDebugUtilsLabelRegionEXT = unsafe extern "system" fn(
         session: Session,
@@ -2530,7 +2527,7 @@ pub mod pfn {
     pub type StructureTypeToString = unsafe extern "system" fn(
         instance: Instance,
         value: StructureType,
-        buffer: [c_char; MAX_STRUCTURE_NAME_SIZE],
+        buffer: *mut c_char,
     ) -> Result;
     #[doc = "From XR_EXT_debug_utils"]
     pub type SubmitDebugUtilsMessageEXT = unsafe extern "system" fn(
@@ -2890,11 +2887,7 @@ extern "system" {
         release_info: *const SwapchainImageReleaseInfo,
     ) -> Result;
     #[link_name = "xrResultToString"]
-    pub fn result_to_string(
-        instance: Instance,
-        value: Result,
-        buffer: [c_char; MAX_RESULT_STRING_SIZE],
-    ) -> Result;
+    pub fn result_to_string(instance: Instance, value: Result, buffer: *mut c_char) -> Result;
     #[link_name = "xrSetInteractionProfileSuggestedBindings"]
     pub fn set_interaction_profile_suggested_bindings(
         session: Session,
@@ -2916,7 +2909,7 @@ extern "system" {
     pub fn structure_type_to_string(
         instance: Instance,
         value: StructureType,
-        buffer: [c_char; MAX_STRUCTURE_NAME_SIZE],
+        buffer: *mut c_char,
     ) -> Result;
     #[link_name = "xrSyncActionData"]
     pub fn sync_action_data(

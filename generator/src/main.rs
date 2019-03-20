@@ -956,7 +956,7 @@ impl Parser {
                 let ident = xr_command_name(&name);
                 let params = command.params.iter().map(|param| {
                     let ident = xr_var_name(&param.name);
-                    let ty = xr_var_ty(&param);
+                    let ty = xr_arg_ty(&param);
                     quote! {
                         #ident: #ty
                     }
@@ -1248,6 +1248,7 @@ struct Struct {
     ty: Option<String>,
 }
 
+#[derive(Clone)]
 struct Member {
     name: String,
     is_const: bool,
@@ -1333,6 +1334,17 @@ fn xr_var_name(raw: &str) -> Ident {
         _ => raw,
     };
     Ident::new(&raw.to_snake_case(), Span::call_site())
+}
+
+fn xr_arg_ty(member: &Member) -> TokenStream {
+    if member.static_array_len.is_some() {
+        let mut clone = member.clone();
+        clone.static_array_len = None;
+        clone.ptr_depth += 1;
+        xr_var_ty(&clone)
+    } else {
+        xr_var_ty(member)
+    }
 }
 
 fn xr_var_ty(member: &Member) -> TokenStream {
