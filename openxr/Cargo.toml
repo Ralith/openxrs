@@ -9,6 +9,15 @@ keywords = ["openxr", "vr"]
 license = "MIT/Apache-2.0"
 edition = "2018"
 
+[badges]
+maintenance = { status = "experimental" }
+
+[features]
+loaded = ["shared_library"]
+static = ["sys/static", "linked"]
+linked = ["sys/prototypes"]
+default = ["loaded"]
+
 [dependencies]
 sys = { package = "openxr-sys", path = "../sys", version = "0.1.0" }
-shared_library = "0.1.9"
+shared_library = { version = "0.1.9", optional = true }

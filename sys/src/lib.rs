@@ -59,4 +59,20 @@ wrapper! {
     SystemId(u64)
 }
 
+pub const fn make_version(major: u32, minor: u32, patch: u32) -> u32 {
+    major << 22 | minor << 12 | patch
+}
+
+pub const fn version_major(version: u32) -> u32 {
+    version >> 22
+}
+
+pub const fn version_minor(version: u32) -> u32 {
+    (version >> 12) & 0x3fff
+}
+
+pub const fn version_patch(version: u32) -> u32 {
+    version & 0xfff
+}
+
 pub use generated::*;

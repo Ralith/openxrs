@@ -1,4 +1,4 @@
-{ stdenv, cmake, fetchFromGitLab, glslang, eigen, pkgconfig, openhmd, vulkan-loader, vulkan-headers, mesa, xlibs, hidapi }:
+{ stdenv, cmake, fetchFromGitLab, glslang, eigen, pkgconfig, openhmd, vulkan-loader, vulkan-headers, mesa, xlibs, hidapi, libglvnd }:
 stdenv.mkDerivation {
   name = "monado";
 
@@ -11,5 +11,5 @@ stdenv.mkDerivation {
   };
 
   nativeBuildInputs = [ cmake glslang pkgconfig ];
-  buildInputs = [ eigen openhmd vulkan-loader vulkan-headers mesa xlibs.libX11 xlibs.libXrandr hidapi ];
+  buildInputs = [ eigen openhmd vulkan-loader vulkan-headers mesa hidapi libglvnd ] ++ (with xlibs; [libX11 libXrandr libpthreadstubs libXau libXdmcp]);
 }

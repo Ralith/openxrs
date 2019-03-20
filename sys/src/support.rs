@@ -17,29 +17,26 @@ macro_rules! wrapper {
 macro_rules! bitmask {
     ($name:ident) => {
         impl $name {
+            pub const EMPTY: Self = Self(0);
+
             #[inline]
-            pub fn from_raw(x: i32) -> Self {
+            pub fn from_raw(x: u64) -> Self {
                 Self(x)
             }
 
             #[inline]
-            pub fn into_raw(self) -> i32 {
+            pub fn into_raw(self) -> u64 {
                 self.0
             }
 
             #[inline]
-            pub fn empty() -> $name {
-                $name(0)
-            }
-
-            #[inline]
             pub fn is_empty(self) -> bool {
-                self == $name::empty()
+                self == $name::EMPTY
             }
 
             #[inline]
             pub fn intersects(self, other: $name) -> bool {
-                self & other != $name::empty()
+                self & other != $name::EMPTY
             }
 
             /// Returns whether `other` is a subset of `self`
@@ -51,7 +48,7 @@ macro_rules! bitmask {
 
         impl Default for $name {
             fn default() -> Self {
-                Self::empty()
+                Self::EMPTY
             }
         }
 
@@ -118,10 +115,7 @@ macro_rules! bitmask {
 macro_rules! handle {
     ($name:ident) => {
         impl $name {
-            #[inline]
-            pub fn null() -> Self {
-                Self(0)
-            }
+            pub const NULL: Self = Self(0);
             #[inline]
             pub fn from_raw(x: u64) -> Self {
                 Self(x)
@@ -133,7 +127,7 @@ macro_rules! handle {
         }
         impl Default for $name {
             fn default() -> Self {
-                Self::null()
+                Self::NULL
             }
         }
     };

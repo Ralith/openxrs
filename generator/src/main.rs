@@ -1,10 +1,10 @@
 #![recursion_limit = "128"]
 
 use std::{
-    collections::{BTreeMap, HashMap},
+    collections::{BTreeMap, HashMap, HashSet},
     env,
     fs::File,
-    io::{Seek, SeekFrom},
+    io::{Seek, SeekFrom, Write},
     rc::Rc,
 };
 
@@ -26,13 +26,16 @@ fn main() {
 
     let mut parser = Parser::new(source);
     parser.parse();
-    println!("{}", parser.generate());
+    let mut sys_out = File::create("../sys/src/generated.rs").unwrap();
+    let mut hl_out = File::create("../openxr/src/generated.rs").unwrap();
+    write!(sys_out, "{}", parser.generate_sys()).unwrap();
+    write!(hl_out, "{}", parser.generate_hl()).unwrap();
 }
 
 struct Parser {
     reader: EventReader<File>,
-    enums: BTreeMap<String, Enum>,
-    bitmasks: BTreeMap<String, Enum>,
+    enums: BTreeMap<String, Enum<i32>>,
+    bitmasks: BTreeMap<String, Enum<u64>>,
     /// *FlagBits -> *Flags
     bitvalues: HashMap<String, String>,
     handles: Vec<String>,
@@ -40,6 +43,9 @@ struct Parser {
     api_constants: Vec<(String, usize)>,
     commands: BTreeMap<String, Command>,
     extensions: BTreeMap<String, Tag>,
+    disabled_exts: HashSet<Rc<str>>,
+    api_version: Option<(u32, u32, u32)>,
+    header_version: Option<u32>,
 }
 
 impl Parser {
@@ -57,6 +63,9 @@ impl Parser {
             api_constants: Vec::new(),
             commands: BTreeMap::new(),
             extensions: BTreeMap::new(),
+            disabled_exts: HashSet::new(),
+            api_version: None,
+            header_version: None,
         }
     }
 
@@ -104,13 +113,9 @@ impl Parser {
                 } => match &name.local_name[..] {
                     "tag" => {
                         let name = attr(&attributes, "name").unwrap();
-                        let author = attr(&attributes, "author").unwrap();
-                        let contact = attr(&attributes, "contact").unwrap();
                         self.extensions.insert(
                             name.into(),
                             Tag {
-                                author: author.into(),
-                                contact: contact.into(),
                                 extensions: Vec::new(),
                             },
                         );
@@ -180,10 +185,6 @@ impl Parser {
         let ext_number = attr(attrs, "number").unwrap().parse::<i32>().unwrap();
         let mut ext_version = None;
         let mut commands = Vec::new();
-        if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
-            self.finish_element();
-            return;
-        }
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
@@ -210,7 +211,7 @@ impl Parser {
                                 };
                                 let value =
                                     sign * (EXT_BASE + (ext_number - 1) * EXT_BLOCK_SIZE + offset);
-                                self.enums.get_mut(extends).unwrap().values.push(EnumValue {
+                                self.enums.get_mut(extends).unwrap().values.push(Constant {
                                     name: name.into(),
                                     value,
                                     comment: attr(&attributes, "comment").map(|x| x.into()),
@@ -249,16 +250,20 @@ impl Parser {
                 _ => {}
             }
         }
-        let (tag, _) = split_ext_tag(&ext_name);
-        self.extensions
-            .get_mut(tag)
-            .unwrap()
-            .extensions
-            .push(Extension {
-                name: ext_name,
-                version: ext_version.unwrap(),
-                commands,
-            });
+        if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
+            self.disabled_exts.insert(ext_name.into());
+        } else {
+            let (tag, _) = split_ext_tag(&ext_name);
+            self.extensions
+                .get_mut(tag)
+                .unwrap()
+                .extensions
+                .push(Extension {
+                    name: ext_name,
+                    version: ext_version.unwrap(),
+                    commands,
+                });
+        }
     }
 
     fn parse_commands(&mut self) {
@@ -398,7 +403,10 @@ impl Parser {
             Some("struct") => {
                 self.parse_struct(attrs);
             }
-            Some("include") | Some("basetype") | Some("define") | Some("funcpointer") | None => {
+            Some("define") => {
+                self.parse_define();
+            }
+            Some("include") | Some("basetype") | Some("funcpointer") | None => {
                 // Intentionally skipped
                 self.finish_element();
             }
@@ -409,15 +417,79 @@ impl Parser {
         }
     }
 
-    fn parse_struct(&mut self, attrs: &[OwnedAttribute]) {
-        let name = attr(attrs, "name").unwrap();
-        let mut members = Vec::new();
+    fn parse_define(&mut self) {
+        let mut define_name = None;
+        let mut define_ty = None;
+        let mut define_val = None;
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
-                StartElement { name, .. } => match &name.local_name[..] {
+                StartElement { name, .. } => {
+                    match &name.local_name[..] {
+                        "name" => {
+                            define_name = Some(self.parse_characters());
+                        }
+                        "type" => {
+                            define_ty = Some(self.parse_characters());
+                        }
+                        x => {
+                            panic!("unexpected element: {}", x);
+                        }
+                    }
+                    self.finish_element();
+                }
+                Characters(ch) => {
+                    if define_ty.is_some()
+                        || define_name
+                            .as_ref()
+                            .map_or(false, |x| x == "XR_HEADER_VERSION")
+                    {
+                        define_val = Some(ch);
+                    }
+                }
+                EndElement { name } => {
+                    if name.local_name == "type" {
+                        break;
+                    }
+                    eprintln!("unexpected end element in define type: {}", name);
+                }
+                _ => {}
+            }
+        }
+        match define_name.as_ref().map(|x| &x[..]) {
+            Some("XR_CURRENT_API_VERSION") => {
+                let version = define_val.unwrap();
+                assert!(version.starts_with("("));
+                assert!(version.ends_with(")"));
+                let version = &version[1..version.len() - 1];
+                let mut iter = version.split(", ").map(|x| x.parse::<u32>().unwrap());
+                self.api_version = Some((
+                    iter.next().unwrap(),
+                    iter.next().unwrap(),
+                    iter.next().unwrap(),
+                ));
+            }
+            Some("XR_HEADER_VERSION") => {
+                self.header_version = Some(define_val.unwrap().parse().unwrap());
+            }
+            _ => {}
+        }
+    }
+
+    fn parse_struct(&mut self, attrs: &[OwnedAttribute]) {
+        let name = attr(attrs, "name").unwrap();
+        let mut members = Vec::new();
+        let mut ty = None;
+        loop {
+            use XmlEvent::*;
+            match self.reader.next().expect("failed to parse XML") {
+                StartElement { name, attributes, .. } => match &name.local_name[..] {
                     "member" => {
-                        members.push(self.parse_var("member"));
+                        let m = self.parse_var("member");
+                        if m.name == "type" && m.ty == "XrStructureType" {
+                            ty = attr(&attributes, "values").map(|x| x.into());
+                        }
+                        members.push(m);
                     }
                     _ => {
                         eprintln!("unimplemented struct element: {}", name.local_name);
@@ -437,6 +509,7 @@ impl Parser {
             name.into(),
             Struct {
                 members,
+                ty,
                 extension: None,
             },
         );
@@ -576,7 +649,7 @@ impl Parser {
                             let name = attr(&attributes, "name").unwrap();
                             let value = attr(&attributes, "value").unwrap();
                             let comment = attr(&attributes, "comment");
-                            item.values.push(EnumValue {
+                            item.values.push(Constant {
                                 name: name.into(),
                                 value: value.parse().unwrap(),
                                 comment: comment.map(|x| x.into()),
@@ -609,7 +682,7 @@ impl Parser {
                             let name = attr(&attributes, "name").unwrap();
                             let bitpos = attr(&attributes, "bitpos").unwrap();
                             let comment = attr(&attributes, "comment");
-                            bitmask.values.push(EnumValue {
+                            bitmask.values.push(Constant {
                                 name: name.into(),
                                 value: bitpos.parse().unwrap(),
                                 comment: comment.map(|x| x.into()),
@@ -689,14 +762,13 @@ impl Parser {
     }
 
     fn parse_characters(&mut self) -> String {
-        if let XmlEvent::Characters(x) = self.reader.next().expect("parse error") {
-            x
-        } else {
-            panic!("expected characters")
+        match self.reader.next().expect("parse error") {
+            XmlEvent::Characters(x) => x,
+            e => panic!("unexpected event: {:?}", e),
         }
     }
 
-    fn generate(&self) -> TokenStream {
+    fn generate_sys(&self) -> TokenStream {
         let consts = self.api_constants.iter().map(|(name, value)| {
             let ident = Ident::new(&name[3..], Span::call_site());
             quote! {
@@ -731,7 +803,7 @@ impl Parser {
                     Self::#ident => Some(#name)
                 }
             });
-            let display = if name == "XrResult" {
+            let result_extras = if name == "XrResult" {
                 let cases = e.values.iter().map(|v| {
                     let ident = xr_enum_value_name(&name, &v.name);
                     let reason = v.comment.as_ref().map_or_else(
@@ -761,6 +833,7 @@ impl Parser {
                             }
                         }
                     }
+                    impl std::error::Error for #ident {}
                 }
             } else {
                 quote! {}
@@ -785,7 +858,7 @@ impl Parser {
                         fmt_enum(fmt, self.0, name)
                     }
                 }
-                #display
+                #result_extras
             }
         });
 
@@ -813,7 +886,7 @@ impl Parser {
                 #doc
                 #[repr(transparent)]
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-                pub struct #ident(i32);
+                pub struct #ident(u64);
                 impl #ident {
                     #(#values)*
 
@@ -829,7 +902,7 @@ impl Parser {
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
                 handle!(#ident);
-                
+
             }
         });
 
@@ -843,12 +916,27 @@ impl Parser {
                 }
             });
             let ext_note = if let Some(ref ext) = s.extension {
+                if self.disabled_exts.contains(ext) {
+                    return quote! {};
+                }
                 let doc = format!("From {}", ext);
                 quote! { #[doc = #doc] }
             } else {
                 quote! {}
             };
             let conditions = conditions(&name);
+            let ty = if let Some(ref ty) = s.ty {
+                let conditions2 = conditions.clone();
+                let ty = xr_enum_value_name("XrStructureType", ty);
+                quote! {
+                    #conditions2
+                    impl #ident {
+                        pub const TYPE: StructureType = StructureType::#ty;
+                    }
+                }
+            } else {
+                quote! {}
+            };
             quote! {
                 #[repr(C)]
                 #[derive(Copy, Clone)]
@@ -857,44 +945,8 @@ impl Parser {
                 pub struct #ident {
                     #(#members)*
                 }
+                #ty
             }
-        });
-
-        let exts = self.extensions.iter().flat_map(|(tag_name, tag)| {
-            let tag_name = tag_name.clone();
-            tag.extensions.iter().map(move |ext| {
-                let pfns = ext.commands.iter().map(|cmd| {
-                    let pfn_ident = xr_command_name(&cmd);
-                    let camel_name = pfn_ident.to_string();
-                    let field_ident = Ident::new(&camel_name[..camel_name.len()-tag_name.len()].to_snake_case(), Span::call_site());
-                    quote! {
-                        pub #field_ident: pfn::#pfn_ident
-                    }
-                });
-
-                let name_ident = Ident::new("NAME", Span::call_site());
-                let mut name_lit = ext.name.as_bytes().to_vec();
-                name_lit.push(0);
-                let name_lit = LitByteStr::new(&name_lit, Span::call_site());
-                let version_ident = Ident::new("VERSION", Span::call_site());
-                let version_lit = ext.version;
-                let ext_name = split_ext_tag(&ext.name).1;
-                let ty_ident = Ident::new(&format!("{}{}", ext_name.to_camel_case(), tag_name), Span::call_site());
-                let conds = conditions(&ext.name);
-                let conds2 = conds.clone();
-                // TODO: &'static CStr name
-                quote! {
-                    #conds
-                    pub struct #ty_ident {
-                        #(#pfns,)*
-                    }
-                    #conds2
-                    impl #ty_ident {
-                        pub const #version_ident: u32 = #version_lit;
-                        pub const #name_ident: &'static [u8] = #name_lit;
-                    }
-                }
-            })
         });
 
         let (pfns, protos) = self
@@ -910,6 +962,9 @@ impl Parser {
                     }
                 });
                 let ext_note = if let Some(ref ext) = command.extension {
+                    if self.disabled_exts.contains(ext) {
+                        return (quote! {}, quote! {});
+                    }
                     let doc = format!("From {}", ext);
                     quote! { #[doc = #doc] }
                 } else {
@@ -917,42 +972,64 @@ impl Parser {
                 };
                 let conditions = conditions(&name);
                 let conditions2 = conditions.clone();
-                let params1 = params.clone();
-                let params2 = params;
+                let params2 = params.clone();
                 let pfn_def = quote! {
                     #conditions
                     #ext_note
-                    pub type #ident = unsafe extern "C" fn(#(#params1),*) -> Result;
+                    pub type #ident = unsafe extern "system" fn(#(#params),*) -> Result;
                 };
-                let raw_ident = Ident::new(&name, Span::call_site());
                 let proto = if command.extension.is_some() {
                     quote! {}
                 } else {
+                    let fn_ident =
+                        Ident::new(&ident.to_string().to_snake_case(), Span::call_site());
                     quote! {
                         #conditions2
-                        pub fn #raw_ident(#(#params2),*) -> Result;
+                        #[link_name = #name]
+                        pub fn #fn_ident(#(#params2),*) -> Result;
                     }
                 };
                 (pfn_def, proto)
             })
             .unzip::<_, _, Vec<_>, Vec<_>>();
 
-        let core_dls = self.commands.iter().map(|(name, command)| {
-            let pfn_ident = xr_command_name(&name);
-            let field_ident = Ident::new(&pfn_ident.to_string().to_snake_case(), Span::call_site());
-            let conds = conditions(&name);
-            quote! {
-                #conds
-                pub #field_ident: pfn::#pfn_ident
-            }
+        let ext_consts = self.extensions.iter().flat_map(|(_, tag)| {
+            tag.extensions.iter().map(move |ext| {
+                assert!(ext.name.starts_with("XR_"));
+                let trimmed = &ext.name[3..];
+                let name_ident = Ident::new(
+                    &format!("{}_EXTENSION_NAME", trimmed.to_uppercase()),
+                    Span::call_site(),
+                );
+                let name_lit = c_name(&ext.name);
+                let version_ident =
+                    Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
+                let version_lit = ext.version;
+                let conds = conditions(&ext.name);
+                // TODO: &'static CStr name
+                quote! {
+                    #conds
+                    pub const #version_ident: u32 = #version_lit;
+                    #conds
+                    pub const #name_ident: &'static [u8] = #name_lit;
+                }
+            })
         });
 
+        let (major, minor, patch) = self.api_version.unwrap();
+        let header_version = self.header_version.unwrap();
+
         quote! {
+            #![allow(non_upper_case_globals)]
             use std::fmt;
-            use std::os::raw::c_void;
+            use std::os::raw::{c_void, c_char};
 
             use crate::support::*;
             use crate::*;
+
+            pub const CURRENT_API_VERSION: u32 = make_version(#major, #minor, #patch);
+            pub const HEADER_VERSION: u32 = #header_version;
+
             #(#consts)*
             #(#enums)*
             #(#bitmasks)*
@@ -974,26 +1051,163 @@ impl Parser {
                 #(#pfns)*
             }
 
+            #(#ext_consts)*
+
             #[cfg(feature = "prototypes")]
-            extern "C" {
+            extern "system" {
                 #(#protos)*
             }
+        }
+    }
 
-            #[doc = "Dynamic loading function tables"]
-            pub mod dl {
-                use super::*;
-                pub struct Core {
-                    #(#core_dls,)*
+    /// Generate high-level code
+    fn generate_hl(&self) -> TokenStream {
+        let (instance_pfn_fields, instance_pfn_inits) = self.commands.iter().map(|(name, command)| {
+            if command.extension.is_some() {
+                return (quote! {}, quote! {});
+            }
+            let pfn_ident = xr_command_name(&name);
+            let field_ident = Ident::new(&pfn_ident.to_string().to_snake_case(), Span::call_site());
+            let field = quote! {
+                pub #field_ident: pfn::#pfn_ident,
+            };
+            let c_name = c_name(name);
+            let init = quote! {
+                #field_ident: mem::transmute(entry.get_instance_proc_addr(handle, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+            };
+            (field, init)
+        }).unzip::<_, _, Vec<_>, Vec<_>>();
+
+        let (exts, ext_raws) = self.extensions.iter().flat_map(|(tag_name, tag)| {
+            let tag_name = tag_name.clone();
+            tag.extensions.iter().map(move |ext| {
+                let (pfns, pfn_inits) = ext.commands.iter().map(|cmd| {
+                    let pfn_ident = xr_command_name(cmd);
+                    let camel_name = pfn_ident.to_string();
+                    let field_ident = Ident::new(&camel_name[..camel_name.len()-tag_name.len()].to_snake_case(), Span::call_site());
+                    let pfn = quote! {
+                        pub #field_ident: pfn::#pfn_ident
+                    };
+                    let c_name = c_name(cmd);
+                    let init = quote! {
+                        #field_ident: mem::transmute(entry.get_instance_proc_addr(handle, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+                    };
+                    (pfn, init)
+                }).unzip::<_, _, Vec<_>, Vec<_>>();
+
+                let name_ident = Ident::new("NAME", Span::call_site());
+                let version_ident = Ident::new("VERSION", Span::call_site());
+                assert!(ext.name.starts_with("XR_"));
+                let trimmed = &ext.name[3..];
+                let name_const = Ident::new(&format!("{}_EXTENSION_NAME", trimmed.to_uppercase()), Span::call_site());
+                let version_const = Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
+                let ext_name = split_ext_tag(&ext.name).1;
+                let ty_ident = Ident::new(&format!("{}{}", ext_name.to_camel_case(), tag_name), Span::call_site());
+                let conds = conditions(&ext.name);
+                let conds2 = conds.clone();
+                let conds3 = conds.clone();
+                // TODO: &'static CStr name
+                let methods = if ext.commands.is_empty() {
+                    quote! {}
+                } else {
+                    quote! {
+                        pub fn load(instance: &Instance<E>) -> Result<Self>
+                        where E: Clone
+                        {
+                            let entry = instance.entry.clone();
+                            let handle = instance.handle;
+                            unsafe {
+                                Ok(Self {
+                                    raw: raw::#ty_ident {
+                                        #(#pfn_inits)*
+                                    },
+                                    _entry_guard: entry,
+                                })
+                            }
+                        }
+
+                        /// Access the raw function pointers
+                        pub fn raw(&self) -> &raw::#ty_ident {
+                            &self.raw
+                        }
+                    }
+                };
+                let ext = if ext.commands.is_empty() {
+                    quote! {}
+                } else {
+                    quote! {
+                        #conds
+                        pub struct #ty_ident<E> {
+                            _entry_guard: E,
+                            raw: raw::#ty_ident,
+                        }
+                        #conds2
+                        impl<E: Entry> #ty_ident<E> {
+                            #methods
+                        }
+                    }
+                };
+                let conds4 = conds3.clone();
+                let raw = quote! {
+                    #conds3
+                    pub struct #ty_ident {
+                        #(#pfns,)*
+                    }
+                    #conds4
+                    impl #ty_ident {
+                        pub const #version_ident: u32 = sys::#version_const;
+                        pub const #name_ident: &'static [u8] = sys::#name_const;
+                    }
+                };
+                (ext, raw)
+            })
+        }).unzip::<_, _, Vec<_>, Vec<_>>();
+
+        quote! {
+            use std::{mem, ffi::CStr};
+
+            use crate::{entry::Entry, Result};
+
+            pub struct Instance<E> {
+                entry: E,
+                handle: sys::Instance,
+                raw: raw::Instance,
+            }
+
+            impl<E: Entry> Instance<E> {
+                pub unsafe fn create(entry: E, create_info: &sys::InstanceCreateInfo) -> Result<Self> {
+                    let handle = entry.create_instance(create_info)?;
+                    Ok(Self {
+                        raw: raw::Instance {
+                            #(#instance_pfn_inits)*
+                        },
+                        handle,
+                        entry,
+                    })
                 }
-                #(#exts)*
+
+                /// Access the raw function pointers
+                pub fn raw(&self) -> &raw::Instance {
+                    &self.raw
+                }
+            }
+
+            #(#exts)*
+
+            pub mod raw {
+                use sys::pfn;
+
+                pub struct Instance {
+                    #(#instance_pfn_fields)*
+                }
+
+                #(#ext_raws)*
             }
         }
     }
 }
 
 struct Tag {
-    author: String,
-    contact: String,
     extensions: Vec<Extension>,
 }
 
@@ -1002,12 +1216,12 @@ struct Command {
     extension: Option<Rc<str>>,
 }
 
-struct Enum {
+struct Enum<T> {
     comment: Option<String>,
-    values: Vec<EnumValue>,
+    values: Vec<Constant<T>>,
 }
 
-impl Enum {
+impl<T> Enum<T> {
     pub fn new() -> Self {
         Self {
             comment: None,
@@ -1016,15 +1230,16 @@ impl Enum {
     }
 }
 
-struct EnumValue {
+struct Constant<T> {
     name: String,
-    value: i32,
+    value: T,
     comment: Option<String>,
 }
 
 struct Struct {
     members: Vec<Member>,
     extension: Option<Rc<str>>,
+    ty: Option<String>,
 }
 
 struct Member {
@@ -1130,7 +1345,7 @@ fn xr_var_ty(member: &Member) -> TokenStream {
             "uint32_t" => "u32",
             "uint16_t" => "u16",
             "uint8_t" => "u8",
-            "char" => "u8",
+            "char" => "c_char",
             "int64_t" => "i64",
             "int32_t" => "i32",
             "int16_t" => "i16",
@@ -1210,4 +1425,10 @@ fn split_ext_tag(name: &str) -> (&str, &str) {
     let tag_end = name.find("_").unwrap();
     let (tag, tail) = name.split_at(tag_end);
     (tag, &tail[1..])
+}
+
+fn c_name(name: &str) -> LitByteStr {
+    let mut name = name.as_bytes().to_vec();
+    name.push(0);
+    LitByteStr::new(&name, Span::call_site())
 }

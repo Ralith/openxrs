@@ -16,10 +16,14 @@ maintenance = { status = "experimental" }
 prototypes = []
 opengl = []
 x11 = []
+static = ["cmake", "prototypes"]
 
 [dependencies]
 ash = { version = "0.27", optional = true }
 libc = { version = "0.2.50", optional = true }
+
+[build-dependencies]
+cmake = { version = "0.1.35", optional = true }
 
 [package.metadata.docs.rs]
 all-features = true
