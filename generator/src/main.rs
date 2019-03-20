@@ -1171,7 +1171,7 @@ impl Parser {
             .iter()
             .filter_map(|(name, s)| {
                 if s.members.iter().all(|x| {
-                    x.ptr_depth == 0 && x.static_array_len.is_none() && !x.name.starts_with("Xr")
+                    x.ptr_depth == 0 && x.static_array_len.is_none() && !x.ty.starts_with("Xr")
                 }) {
                     Some(name)
                 } else {
