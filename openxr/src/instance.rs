@@ -1,5 +1,5 @@
 use std::mem;
-use crate::{cvt, fixed_str, Entry, Instance, Result};
+use crate::{cvt, fixed_str, Entry, Instance, Result, StructureType};
 
 impl<E: Entry> Instance<E> {
     #[inline]
@@ -27,7 +27,7 @@ impl<E: Entry> Instance<E> {
     }
 
     #[inline]
-    pub fn structure_type_to_string(&self, ty: sys::StructureType) -> Result<String> {
+    pub fn structure_type_to_string(&self, ty: StructureType) -> Result<String> {
         unsafe {
             let mut s = [0; sys::MAX_STRUCTURE_NAME_SIZE];
             cvt((self.raw().structure_type_to_string)(self.as_raw(), ty, s.as_mut_ptr()))?;

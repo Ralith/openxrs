@@ -1164,8 +1164,14 @@ impl Parser {
             })
         }).unzip::<_, _, Vec<_>, Vec<_>>();
 
+        let reexports = self.enums.keys().filter(|&x| x != "XrResult")
+            .chain(self.bitmasks.keys())
+            .map(|x| xr_ty_name(x));
+
         quote! {
             use std::{mem, ffi::CStr};
+
+            pub use sys::{#(#reexports),*};
 
             use crate::{Entry, Result};
 

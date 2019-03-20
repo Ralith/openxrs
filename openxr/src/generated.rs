@@ -1,5 +1,14 @@
 use crate::{Entry, Result};
 use std::{ffi::CStr, mem};
+pub use sys::{
+    ActionType, AndroidThreadTypeKHR, CompositionLayerFlags, DebugUtilsMessageSeverityFlagsEXT,
+    DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode, EyeVisibility, FormFactor,
+    InputSourceLocalizedNameFlags, InstanceCreateFlags, ObjectType, PerfSettingsDomainEXT,
+    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT,
+    ReferenceSpaceType, SessionCreateFlags, SessionState, SpaceRelationFlags, StructureType,
+    SwapchainCreateFlags, SwapchainUsageFlags, ViewConfigurationType, ViewStateFlags,
+    VisibilityMaskTypeKHR,
+};
 pub struct Instance<E: Entry> {
     entry: E,
     handle: sys::Instance,
