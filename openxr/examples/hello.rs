@@ -12,5 +12,7 @@ fn main() {
         application_version: 0,
         engine_name: "openxrs",
         engine_version: 0,
-    });
+    }).unwrap();
+    let props = instance.properties().unwrap();
+    println!("loaded {} v{}", props.runtime_name, props.runtime_version);
 }

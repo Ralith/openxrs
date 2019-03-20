@@ -31,3 +31,7 @@ fn cvt(x: sys::Result) -> Result<()> {
     if x.into_raw() >= 0 { Ok(()) }
     else { Err(x) }
 }
+
+unsafe fn fixed_str<'a>(x: &'a [std::os::raw::c_char]) -> &'a str {
+    std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
+}

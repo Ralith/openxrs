@@ -1127,6 +1127,7 @@ impl Parser {
                         }
 
                         /// Access the raw function pointers
+                        #[inline]
                         pub fn raw(&self) -> &raw::#ty_ident {
                             &self.raw
                         }
@@ -1185,11 +1186,13 @@ impl Parser {
                     })
                 }
 
+                #[inline]
                 pub fn as_raw(&self) -> sys::Instance {
                     self.handle
                 }
 
                 /// Access the raw function pointers
+                #[inline]
                 pub fn raw(&self) -> &raw::Instance {
                     &self.raw
                 }
