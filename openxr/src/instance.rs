@@ -1,5 +1,5 @@
-use std::mem;
-use crate::{cvt, fixed_str, Entry, Instance, Result, StructureType};
+use std::{mem, ptr};
+use crate::*;
 
 impl<E: Entry> Instance<E> {
     #[inline]
@@ -33,6 +33,20 @@ impl<E: Entry> Instance<E> {
             cvt((self.raw().structure_type_to_string)(self.as_raw(), ty, s.as_mut_ptr()))?;
             Ok(fixed_str(&s).into())
         }
+    }
+
+    #[inline]
+    pub fn get_system(&self, form_factor: FormFactor) -> Result<SystemId> {
+        let info = sys::SystemGetInfo {
+            ty: sys::SystemGetInfo::TYPE,
+            next: ptr::null_mut(),
+            form_factor,
+        };
+        let mut out = SystemId::NULL;
+        unsafe {
+            cvt((self.raw().get_system)(self.as_raw(), &info, &mut out))?
+        }
+        Ok(out)
     }
 }
 

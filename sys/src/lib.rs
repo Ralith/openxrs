@@ -54,9 +54,17 @@ wrapper! {
     Path(u64)
 }
 
+impl Path {
+    pub const NULL: Path = Path(0);
+}
+
 wrapper! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     SystemId(u64)
+}
+
+impl SystemId {
+    pub const NULL: SystemId = SystemId(0);
 }
 
 pub const fn make_version(major: u32, minor: u32, patch: u32) -> u32 {
