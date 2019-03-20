@@ -50,12 +50,12 @@ impl fmt::Debug for Duration {
 }
 
 wrapper! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Path(u64)
 }
 
 wrapper! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     SystemId(u64)
 }
 
