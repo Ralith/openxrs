@@ -15,7 +15,7 @@ macro_rules! fixed_cstr {
     }};
 }
 
-pub use sys;
+pub use sys::{self, Time, Duration, Path, SystemId};
 
 mod generated;
 pub use generated::*;
