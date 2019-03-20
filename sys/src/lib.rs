@@ -49,6 +49,12 @@ wrapper! {
     Duration(i64)
 }
 
+impl Duration {
+    pub const NONE: Self = Self(0);
+    pub const INFINITE: Self = Self(0x7fffffffffffffff);
+    pub const MIN_HAPTIC: Self = Self(-1);
+}
+
 impl fmt::Debug for Duration {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         self.0.fmt(fmt)
