@@ -12,9 +12,8 @@ macro_rules! fixed_cstr {
             x[s.len()] = 0;
             x
         }
-    }}
+    }};
 }
-
 
 pub use sys;
 
@@ -28,8 +27,11 @@ pub use instance::*;
 pub type Result<T> = std::result::Result<T, sys::Result>;
 
 fn cvt(x: sys::Result) -> Result<()> {
-    if x.into_raw() >= 0 { Ok(()) }
-    else { Err(x) }
+    if x.into_raw() >= 0 {
+        Ok(())
+    } else {
+        Err(x)
+    }
 }
 
 unsafe fn fixed_str<'a>(x: &'a [std::os::raw::c_char]) -> &'a str {

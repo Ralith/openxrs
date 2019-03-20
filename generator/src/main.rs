@@ -483,7 +483,9 @@ impl Parser {
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
-                StartElement { name, attributes, .. } => match &name.local_name[..] {
+                StartElement {
+                    name, attributes, ..
+                } => match &name.local_name[..] {
                     "member" => {
                         let m = self.parse_var("member");
                         if m.name == "type" && m.ty == "XrStructureType" {
@@ -1164,7 +1166,19 @@ impl Parser {
             })
         }).unzip::<_, _, Vec<_>, Vec<_>>();
 
-        let reexports = self.enums.keys().filter(|&x| x != "XrResult")
+        let reexports = self
+            .structs
+            .iter()
+            .filter_map(|(name, s)| {
+                if s.members.iter().all(|x| {
+                    x.ptr_depth == 0 && x.static_array_len.is_none() && !x.name.starts_with("Xr")
+                }) {
+                    Some(name)
+                } else {
+                    None
+                }
+            })
+            .chain(self.enums.keys().filter(|&x| x != "XrResult"))
             .chain(self.bitmasks.keys())
             .map(|x| xr_ty_name(x));
 

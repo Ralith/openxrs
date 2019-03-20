@@ -1,13 +1,15 @@
 use crate::{Entry, Result};
 use std::{ffi::CStr, mem};
 pub use sys::{
-    ActionType, AndroidThreadTypeKHR, CompositionLayerFlags, DebugUtilsMessageSeverityFlagsEXT,
-    DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode, EyeVisibility, FormFactor,
-    InputSourceLocalizedNameFlags, InstanceCreateFlags, ObjectType, PerfSettingsDomainEXT,
-    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT,
-    ReferenceSpaceType, SessionCreateFlags, SessionState, SpaceRelationFlags, StructureType,
-    SwapchainCreateFlags, SwapchainUsageFlags, ViewConfigurationType, ViewStateFlags,
-    VisibilityMaskTypeKHR,
+    ActionSuggestedBinding, ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
+    DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
+    Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, InputSourceLocalizedNameFlags,
+    InstanceCreateFlags, ObjectType, Offset2Df, Offset2Di, PerfSettingsDomainEXT,
+    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
+    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState,
+    SpaceRelationFlags, StructureType, SwapchainCreateFlags, SwapchainSubImage,
+    SwapchainUsageFlags, SystemGraphicsProperties, SystemTrackingProperties, Vector2f, Vector3f,
+    Vector4f, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
 };
 pub struct Instance<E: Entry> {
     entry: E,
