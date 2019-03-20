@@ -1166,17 +1166,16 @@ impl Parser {
         quote! {
             use std::{mem, ffi::CStr};
 
-            use crate::{entry::Entry, Result};
+            use crate::{Entry, Result};
 
-            pub struct Instance<E> {
+            pub struct Instance<E: Entry> {
                 entry: E,
                 handle: sys::Instance,
                 raw: raw::Instance,
             }
 
             impl<E: Entry> Instance<E> {
-                pub unsafe fn create(entry: E, create_info: &sys::InstanceCreateInfo) -> Result<Self> {
-                    let handle = entry.create_instance(create_info)?;
+                pub unsafe fn from_raw(entry: E, handle: sys::Instance) -> Result<Self> {
                     Ok(Self {
                         raw: raw::Instance {
                             #(#instance_pfn_inits)*
@@ -1184,6 +1183,10 @@ impl Parser {
                         handle,
                         entry,
                     })
+                }
+
+                pub fn as_raw(&self) -> sys::Instance {
+                    self.handle
                 }
 
                 /// Access the raw function pointers
