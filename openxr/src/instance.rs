@@ -201,6 +201,79 @@ impl Instance {
         }
     }
 
+    /// Enumerates the supported view configuration types
+    #[inline]
+    pub fn enumerate_view_configurations(
+        &self,
+        system: SystemId,
+    ) -> Result<Vec<ViewConfigurationType>> {
+        get_arr(|cap, count, buf| unsafe {
+            (self.fp().enumerate_view_configurations)(self.as_raw(), system, cap, count, buf)
+        })
+    }
+
+    /// Query properties of an individual view configuration
+    #[inline]
+    pub fn view_configuration_properties(
+        &self,
+        system: SystemId,
+        ty: ViewConfigurationType,
+    ) -> Result<ViewConfigurationProperties> {
+        let mut out;
+        unsafe {
+            out = sys::ViewConfigurationProperties {
+                ty: sys::ViewConfigurationProperties::TYPE,
+                next: ptr::null_mut(),
+                ..mem::uninitialized()
+            };
+            cvt((self.fp().get_view_configuration_properties)(
+                self.as_raw(),
+                system,
+                ty,
+                &mut out,
+            ))?;
+        }
+        Ok(ViewConfigurationProperties {
+            view_configuration_type: out.view_configuration_type,
+            fov_mutable: out.fov_mutable != sys::FALSE,
+        })
+    }
+
+    #[inline]
+    pub fn enumerate_view_configuration_views(
+        &self,
+        system: SystemId,
+        ty: ViewConfigurationType,
+    ) -> Result<Vec<ViewConfigurationView>> {
+        let views = get_arr_init(
+            unsafe {
+                sys::ViewConfigurationView {
+                    ty: sys::ViewConfigurationView::TYPE,
+                    next: ptr::null_mut(),
+                    ..mem::uninitialized()
+                }
+            },
+            |capacity, count, buf| unsafe {
+                (self.fp().enumerate_view_configuration_views)(
+                    self.as_raw(),
+                    system,
+                    ty,
+                    capacity,
+                    count,
+                    buf as *mut _,
+                )
+            },
+        )?;
+        Ok(views.into_iter().map(|x| ViewConfigurationView {
+            recommended_image_rect_width: x.recommended_image_rect_width,
+            max_image_rect_width: x.max_image_rect_width,
+            recommended_image_rect_height: x.recommended_image_rect_height,
+            max_image_rect_height: x.max_image_rect_height,
+            recommended_swapchain_sample_count: x.recommended_swapchain_sample_count,
+            max_swapchain_sample_count: x.max_swapchain_sample_count,
+        }).collect())
+    }
+
     //
     // Internal helpers
     //
@@ -234,4 +307,20 @@ pub struct SystemProperties {
 pub struct SystemTrackingProperties {
     pub orientation_tracking: bool,
     pub position_tracking: bool,
+}
+
+#[derive(Copy, Clone)]
+pub struct ViewConfigurationProperties {
+    pub view_configuration_type: ViewConfigurationType,
+    pub fov_mutable: bool,
+}
+
+#[derive(Copy, Clone)]
+pub struct ViewConfigurationView {
+    pub recommended_image_rect_width: u32,
+    pub max_image_rect_width: u32,
+    pub recommended_image_rect_height: u32,
+    pub max_image_rect_height: u32,
+    pub recommended_swapchain_sample_count: u32,
+    pub max_swapchain_sample_count: u32,
 }
