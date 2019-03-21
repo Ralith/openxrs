@@ -58,6 +58,7 @@ unsafe fn fixed_str<'a>(x: &'a [c_char]) -> &'a str {
     std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
 }
 
+/// Includes null for convenience of comparison with C string constants
 fn fixed_str_bytes<'a>(x: &'a [c_char]) -> &'a [u8] {
     let end = x.iter().position(|&x| x == 0).unwrap();
     unsafe { std::mem::transmute(&x[..end + 1]) }

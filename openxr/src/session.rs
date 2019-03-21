@@ -2,6 +2,7 @@ use std::{marker::PhantomData, mem, ptr, sync::Arc};
 
 use crate::*;
 
+/// A rendering session using a particular graphics API `G`
 pub struct Session<G: Graphics> {
     pub(crate) inner: Arc<SessionInner>,
     _marker: PhantomData<G>,
@@ -51,6 +52,7 @@ impl<G: Graphics> Session<G> {
         unsafe { cvt((self.fp().end_session)(self.as_raw())) }
     }
 
+    #[inline]
     pub fn reference_space_bounds_rect(&self, ty: ReferenceSpaceType) -> Result<Option<Extent2Df>> {
         unsafe {
             let mut out = mem::uninitialized();
@@ -70,6 +72,7 @@ impl<G: Graphics> Session<G> {
     /// Enumerates the set of reference space types supported for this session
     ///
     /// Constant for the lifetime of the session.
+    #[inline]
     pub fn enumerate_reference_spaces(&self) -> Result<Vec<ReferenceSpaceType>> {
         get_arr(|cap, count, buf| unsafe {
             (self.fp().enumerate_reference_spaces)(self.as_raw(), cap, count, buf)
@@ -111,6 +114,7 @@ impl<G: Graphics> Session<G> {
         Ok(raw.into_iter().map(G::raise_format).collect())
     }
 
+    #[inline]
     pub fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
         let mut out = sys::Swapchain::NULL;
         let info = sys::SwapchainCreateInfo {

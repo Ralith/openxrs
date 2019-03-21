@@ -2,6 +2,7 @@ use std::{ptr, marker::PhantomData};
 
 use crate::*;
 
+/// A set of images to be rendered to using a particular graphics API `G`
 pub struct Swapchain<G: Graphics> {
     session: Session<G>,
     handle: sys::Swapchain,

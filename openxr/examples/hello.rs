@@ -41,4 +41,17 @@ fn main() {
             &system_props.system_name
         }
     );
+
+    if !instance
+        .enumerate_view_configurations(system)
+        .unwrap()
+        .contains(&xr::ViewConfigurationType::PRIMARY_STEREO)
+    {
+        panic!("no primary stereo views");
+    }
+
+    let view_config_views = instance
+        .enumerate_view_configuration_views(system, xr::ViewConfigurationType::PRIMARY_STEREO)
+        .unwrap();
+    println!("view configuration views: {:?}", view_config_views);
 }

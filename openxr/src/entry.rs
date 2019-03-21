@@ -100,10 +100,7 @@ impl Entry {
         &self,
         app_info: &ApplicationInfo,
         graphics_bindings: &GraphicsBindings,
-    ) -> Result<Instance>
-    where
-        Self: Sized + Clone,
-    {
+    ) -> Result<Instance> {
         let mut ext_names = Vec::<*const c_char>::new();
         #[cfg(feature = "vulkan")]
         {
@@ -156,38 +153,30 @@ impl Entry {
     }
 
     pub fn enumerate_graphics_bindings(&self) -> Result<GraphicsBindings> {
+        let exts = unsafe {
+            get_arr_init(
+                sys::ExtensionProperties {
+                    ty: sys::ExtensionProperties::TYPE,
+                    next: ptr::null_mut(),
+                    ..mem::uninitialized()
+                },
+                |cap, count, buf| {
+                    (self.raw().enumerate_instance_extension_properties)(
+                        ptr::null(),
+                        cap,
+                        count,
+                        buf,
+                    )
+                },
+            )?
+        };
         let mut bindings = GraphicsBindings {
             #[cfg(feature = "vulkan")]
             vulkan: false,
             #[cfg(feature = "opengl")]
             opengl: false,
         };
-        let mut count = 0;
-        let mut out;
-        unsafe {
-            cvt((self.raw().enumerate_instance_extension_properties)(
-                ptr::null(),
-                0,
-                &mut count,
-                ptr::null_mut(),
-            ))?;
-            let capacity = count;
-            out = vec![
-                sys::ExtensionProperties {
-                    ty: sys::ExtensionProperties::TYPE,
-                    ..mem::zeroed()
-                };
-                capacity as usize
-            ];
-            cvt((self.raw().enumerate_instance_extension_properties)(
-                ptr::null(),
-                capacity,
-                &mut count,
-                out.as_mut_ptr(),
-            ))?;
-            out.truncate(count as usize);
-        }
-        for ext in &out {
+        for ext in &exts {
             match fixed_str_bytes(&ext.extension_name) {
                 #[cfg(feature = "vulkan")]
                 raw::VulkanEnableKHR::NAME => {

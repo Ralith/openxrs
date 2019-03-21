@@ -288,7 +288,7 @@ impl Instance {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct InstanceProperties {
     pub runtime_version: u32,
     pub runtime_name: String,
@@ -303,19 +303,19 @@ pub struct SystemProperties {
     pub tracking_properties: SystemTrackingProperties,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct SystemTrackingProperties {
     pub orientation_tracking: bool,
     pub position_tracking: bool,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct ViewConfigurationProperties {
     pub view_configuration_type: ViewConfigurationType,
     pub fov_mutable: bool,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct ViewConfigurationView {
     pub recommended_image_rect_width: u32,
     pub max_image_rect_width: u32,
