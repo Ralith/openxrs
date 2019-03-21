@@ -22,6 +22,6 @@ xlib = ["sys/xlib"]
 default = ["loaded", "vulkan", "opengl", "xlib"]
 
 [dependencies]
-sys = { package = "openxr-sys", path = "../sys", version = "0.1.0" }
+sys = { package = "openxr-sys", path = "../sys", version = "0.1.0", default-features = false }
 shared_library = { version = "0.1.9", optional = true }
 ash = { version = "0.27", optional = true }
