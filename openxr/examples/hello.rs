@@ -2,22 +2,32 @@ use openxr as xr;
 
 fn main() {
     #[cfg(feature = "static")]
-    let entry = xr::LinkedEntry::new();
+    let entry = xr::Entry::linked();
     #[cfg(not(feature = "static"))]
-    let entry = xr::LoadedEntry::load().unwrap();
+    let entry = xr::Entry::load().unwrap();
+
+    let bindings = entry.enumerate_graphics_bindings().unwrap();
+    println!("supported graphics bindings: {:?}", bindings);
+    if !bindings.vulkan {
+        panic!("vulkan unsupported");
+    }
     let instance = entry
-        .create_instance(&xr::ApplicationInfo {
-            application_name: "hello openxrs",
-            application_version: 0,
-            engine_name: "openxrs",
-            engine_version: 0,
-        })
+        .create_instance(
+            &xr::ApplicationInfo {
+                application_name: "hello openxrs",
+                application_version: 0,
+                engine_name: "openxrs",
+                engine_version: 0,
+            },
+            &xr::GraphicsBindings::VULKAN,
+        )
         .unwrap();
     let instance_props = instance.properties().unwrap();
     println!(
         "loaded instance: {} v{}",
         instance_props.runtime_name, instance_props.runtime_version
     );
+
     let system = instance
         .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
         .unwrap();
@@ -31,5 +41,4 @@ fn main() {
             &system_props.system_name
         }
     );
-    
 }

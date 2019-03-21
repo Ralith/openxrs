@@ -16,9 +16,12 @@ maintenance = { status = "experimental" }
 loaded = ["shared_library"]
 static = ["sys/static", "linked"]
 linked = ["sys/prototypes"]
-ash = ["sys/ash"]
-default = ["loaded"]
+vulkan = ["sys/vulkan", "ash"]
+opengl = ["sys/opengl"]
+xlib = ["sys/xlib"]
+default = ["loaded", "vulkan", "opengl", "xlib"]
 
 [dependencies]
 sys = { package = "openxr-sys", path = "../sys", version = "0.1.0" }
 shared_library = { version = "0.1.9", optional = true }
+ash = { version = "0.27", optional = true }

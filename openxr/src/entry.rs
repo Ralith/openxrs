@@ -1,14 +1,87 @@
-use std::{ptr, ffi::CStr};
+#[cfg(feature = "loaded")]
+use shared_library::dynamic_library::DynamicLibrary;
+use std::{ffi::CStr, mem, os::raw::c_char, ptr, sync::Arc};
+#[cfg(feature = "loaded")]
+use std::{fmt, os::raw::c_void, path::Path};
 
-use crate::{cvt, Result, Instance};
+use crate::*;
 
-pub trait Entry {
+#[derive(Clone)]
+pub struct Entry {
+    inner: Arc<Inner>,
+}
+
+impl Entry {
+    /// Access entry points linked directly into the binary at compile time
+    ///
+    /// Available if the `linked` feature is enabled. You must ensure that the entry points are
+    /// actually linked into the binary, e.g. by enabling the `static` feature.
+    #[cfg(feature = "linked")]
+    pub fn linked() -> Self {
+        Self {
+            inner: Arc::new(Inner {
+                raw: RawEntry {
+                    get_instance_proc_addr: sys::get_instance_proc_addr,
+                    create_instance: sys::create_instance,
+                    enumerate_instance_extension_properties:
+                        sys::enumerate_instance_extension_properties,
+                    enumerate_api_layer_properties: sys::enumerate_api_layer_properties,
+                },
+                #[cfg(feature = "loaded")]
+                _lib_guard: None,
+            }),
+        }
+    }
+
+    /// Load entry points at run time from the dynamic library `openxr_loader`
+    ///
+    /// Available if the `loaded` feature is enabled.
+    #[cfg(feature = "loaded")]
+    pub fn load() -> std::result::Result<Self, LoadError> {
+        Self::load_from(Path::new("openxr_loader"))
+    }
+
+    /// Load entry points at run time from the dynamic library identified by `path`
+    ///
+    /// Available if the `loaded` feature is enabled.
+    #[cfg(feature = "loaded")]
+    pub fn load_from(path: &Path) -> std::result::Result<Self, LoadError> {
+        let lib = DynamicLibrary::open(Some(path)).map_err(LoadError)?;
+        Ok(Self {
+            inner: Arc::new(Inner {
+                raw: unsafe {
+                    RawEntry {
+                        get_instance_proc_addr: mem::transmute(
+                            lib.symbol::<c_void>("xrGetInstanceProcAddr")
+                                .map_err(LoadError)?,
+                        ),
+                        create_instance: mem::transmute(
+                            lib.symbol::<c_void>("xrCreateInstance")
+                                .map_err(LoadError)?,
+                        ),
+                        enumerate_instance_extension_properties: mem::transmute(
+                            lib.symbol::<c_void>("xrEnumerateInstanceExtensionProperties")
+                                .map_err(LoadError)?,
+                        ),
+                        enumerate_api_layer_properties: mem::transmute(
+                            lib.symbol::<c_void>("xrEnumerateApiLayerProperties")
+                                .map_err(LoadError)?,
+                        ),
+                    }
+                },
+                _lib_guard: Some(lib),
+            }),
+        })
+    }
+
     /// Access the raw function pointers
-    fn raw(&self) -> &RawEntry;
+    #[inline]
+    pub fn raw(&self) -> &RawEntry {
+        &self.inner.raw
+    }
 
     #[inline]
-    #[doc(hidden)]
-    unsafe fn get_instance_proc_addr(
+    pub(crate) unsafe fn get_instance_proc_addr(
         &self,
         instance: sys::Instance,
         name: &CStr,
@@ -22,9 +95,28 @@ pub trait Entry {
         Ok(f.unwrap())
     }
 
-    fn create_instance(&self, app_info: &ApplicationInfo) -> Result<Instance<Self>>
-        where Self: Sized + Clone
+    /// Create an OpenXR instance for use with a particular set of graphics APIs
+    pub fn create_instance(
+        &self,
+        app_info: &ApplicationInfo,
+        graphics_bindings: &GraphicsBindings,
+    ) -> Result<Instance>
+    where
+        Self: Sized + Clone,
     {
+        let mut ext_names = Vec::<*const c_char>::new();
+        #[cfg(feature = "vulkan")]
+        {
+            if graphics_bindings.vulkan {
+                ext_names.push(raw::VulkanEnableKHR::NAME.as_ptr() as _);
+            }
+        }
+        #[cfg(feature = "opengl")]
+        {
+            if graphics_bindings.opengl {
+                ext_names.push(raw::OpenglEnableKHR::NAME.as_ptr() as _);
+            }
+        }
         let info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
             next: ptr::null(),
@@ -34,21 +126,126 @@ pub trait Entry {
                 application_version: app_info.application_version,
                 engine_name: fixed_cstr!(app_info.engine_name, MAX_ENGINE_NAME_SIZE),
                 engine_version: app_info.engine_version,
-                api_version: sys::CURRENT_API_VERSION,
+                api_version: sys::CURRENT_API_VERSION.into_raw(),
             },
             enabled_api_layer_count: 0,
             enabled_api_layer_names: ptr::null(),
-            enabled_extension_count: 0,
-            enabled_extension_names: ptr::null(),
+            enabled_extension_count: ext_names.len() as _,
+            enabled_extension_names: ext_names.as_ptr(),
         };
         unsafe {
-            let mut i = sys::Instance::NULL;
-            cvt((self.raw().create_instance)(&info, &mut i))?;
-            Instance::from_raw(self.clone(), i)
+            let mut handle = sys::Instance::NULL;
+            cvt((self.raw().create_instance)(&info, &mut handle))?;
+
+            let mut exts = InstanceExtensions::default();
+            #[cfg(feature = "vulkan")]
+            {
+                if graphics_bindings.vulkan {
+                    exts.khr_vulkan_enable = Some(raw::VulkanEnableKHR::load(self, handle)?);
+                }
+            }
+            #[cfg(feature = "opengl")]
+            {
+                if graphics_bindings.opengl {
+                    exts.khr_opengl_enable = Some(raw::OpenglEnableKHR::load(self, handle)?);
+                }
+            }
+
+            Instance::from_raw(self.clone(), handle, exts)
         }
+    }
+
+    pub fn enumerate_graphics_bindings(&self) -> Result<GraphicsBindings> {
+        let mut bindings = GraphicsBindings {
+            #[cfg(feature = "vulkan")]
+            vulkan: false,
+            #[cfg(feature = "opengl")]
+            opengl: false,
+        };
+        let mut count = 0;
+        let mut out;
+        unsafe {
+            cvt((self.raw().enumerate_instance_extension_properties)(
+                ptr::null(),
+                0,
+                &mut count,
+                ptr::null_mut(),
+            ))?;
+            let capacity = count;
+            out = vec![
+                sys::ExtensionProperties {
+                    ty: sys::ExtensionProperties::TYPE,
+                    ..mem::zeroed()
+                };
+                capacity as usize
+            ];
+            cvt((self.raw().enumerate_instance_extension_properties)(
+                ptr::null(),
+                capacity,
+                &mut count,
+                out.as_mut_ptr(),
+            ))?;
+            out.truncate(count as usize);
+        }
+        for ext in &out {
+            match fixed_str_bytes(&ext.extension_name) {
+                #[cfg(feature = "vulkan")]
+                raw::VulkanEnableKHR::NAME => {
+                    bindings.vulkan = true;
+                }
+                #[cfg(feature = "opengl")]
+                raw::OpenglEnableKHR::NAME => {
+                    bindings.opengl = true;
+                }
+                _ => {}
+            }
+        }
+        Ok(bindings)
     }
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct GraphicsBindings {
+    #[cfg(feature = "vulkan")]
+    pub vulkan: bool,
+    #[cfg(feature = "opengl")]
+    pub opengl: bool,
+}
+
+impl GraphicsBindings {
+    pub const NONE: Self = Self {
+        #[cfg(feature = "vulkan")]
+        vulkan: false,
+        #[cfg(feature = "opengl")]
+        opengl: false,
+    };
+
+    #[cfg(feature = "vulkan")]
+    pub const VULKAN: Self = Self {
+        vulkan: true,
+        ..Self::NONE
+    };
+
+    #[cfg(feature = "opengl")]
+    pub const OPENGL: Self = Self {
+        opengl: true,
+        ..Self::NONE
+    };
+}
+
+impl Default for GraphicsBindings {
+    fn default() -> Self {
+        Self::NONE
+    }
+}
+
+struct Inner {
+    raw: RawEntry,
+    #[cfg(feature = "loaded")]
+    _lib_guard: Option<DynamicLibrary>,
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ApplicationInfo<'a> {
     pub application_name: &'a str,
     pub application_version: u32,
@@ -63,101 +260,24 @@ pub struct RawEntry {
     pub enumerate_api_layer_properties: sys::pfn::EnumerateApiLayerProperties,
 }
 
-#[cfg(feature = "linked")]
-mod linked {
-    use super::*;
-
-    /// Entry point to an OpenXR implementation linked at compile time
-    ///
-    /// Requires the `linked` feature.
-    #[derive(Copy, Clone)]
-    pub struct LinkedEntry;
-
-    impl LinkedEntry {
-        #[inline]
-        pub fn new() -> Self {
-            Self
-        }
-
-        pub fn create_instance(&self, app_info: &ApplicationInfo) -> Result<Instance<Self>> {
-            Entry::create_instance(self, app_info)
-        }
-    }
-
-    impl Entry for LinkedEntry {
-        #[inline]
-        fn raw(&self) -> &RawEntry {
-            &RawEntry {
-                get_instance_proc_addr: sys::get_instance_proc_addr,
-                create_instance: sys::create_instance,
-                enumerate_instance_extension_properties:
-                    sys::enumerate_instance_extension_properties,
-                enumerate_api_layer_properties: sys::enumerate_api_layer_properties,
-            }
-        }
-    }
-}
-#[cfg(feature = "linked")]
-pub use linked::LinkedEntry;
+/// An error encountered while loading entry points from a dynamic library at run time
+#[cfg(feature = "loaded")]
+#[derive(Clone)]
+pub struct LoadError(String);
 
 #[cfg(feature = "loaded")]
-mod loaded {
-    use super::*;
-
-    use shared_library::dynamic_library::DynamicLibrary;
-    use std::{mem, os::raw::c_void, path::Path, sync::Arc};
-
-    /// Entry point to an OpenXR implementation loaded from a dynamic library at run time
-    ///
-    /// Requires the `loaded` future.
-    #[derive(Clone)]
-    pub struct LoadedEntry {
-        inner: Arc<Inner>,
-    }
-
-    struct Inner {
-        raw: RawEntry,
-        _lib_guard: DynamicLibrary,
-    }
-
-    impl LoadedEntry {
-        pub fn load() -> std::result::Result<Self, String> {
-            Self::load_from(Path::new("openxr_loader"))
-        }
-
-        pub fn load_from(path: &Path) -> std::result::Result<Self, String> {
-            let lib = DynamicLibrary::open(Some(path))?;
-            Ok(Self {
-                inner: Arc::new(Inner {
-                    raw: unsafe {
-                        RawEntry {
-                            get_instance_proc_addr: mem::transmute(
-                                lib.symbol::<c_void>("xrGetInstanceProcAddr")?,
-                            ),
-                            create_instance: mem::transmute(lib.symbol::<c_void>("xrCreateInstance")?),
-                            enumerate_instance_extension_properties: mem::transmute(
-                                lib.symbol::<c_void>("xrEnumerateInstanceExtensionProperties")?,
-                            ),
-                            enumerate_api_layer_properties: mem::transmute(
-                                lib.symbol::<c_void>("xrEnumerateApiLayerProperties")?,
-                            ),
-                        }
-                    },
-                    _lib_guard: lib,
-                })
-            })
-        }
-
-        pub fn create_instance(&self, app_info: &ApplicationInfo) -> Result<Instance<Self>> {
-            Entry::create_instance(self, app_info)
-        }
-    }
-
-    impl Entry for LoadedEntry {
-        fn raw(&self) -> &RawEntry {
-            &self.inner.raw
-        }
+impl fmt::Debug for LoadError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(f)
     }
 }
+
 #[cfg(feature = "loaded")]
-pub use loaded::LoadedEntry;
+impl fmt::Display for LoadError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+#[cfg(feature = "loaded")]
+impl std::error::Error for LoadError {}

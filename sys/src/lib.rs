@@ -13,17 +13,13 @@ pub const TRUE: Bool32 = Bool32(1);
 pub const FALSE: Bool32 = Bool32(0);
 impl fmt::Display for Bool32 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.pad(match *self {
-            TRUE => "true",
-            FALSE => "false",
-            _ => unreachable!("invalid Bool32 value"),
-        })
+        (*self != FALSE).fmt(fmt)
     }
 }
 
 impl fmt::Debug for Bool32 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        <Self as fmt::Display>::fmt(self, fmt)
+        (*self != FALSE).fmt(fmt)
     }
 }
 
@@ -79,20 +75,54 @@ impl SystemId {
     pub const NULL: SystemId = SystemId(0);
 }
 
-pub const fn make_version(major: u32, minor: u32, patch: u32) -> u32 {
-    major << 22 | minor << 12 | patch
+wrapper! {
+    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    Version(u32)
 }
 
-pub const fn version_major(version: u32) -> u32 {
-    version >> 22
+impl Version {
+    #[inline]
+    pub const fn new(major: u32, minor: u32, patch: u32) -> Self {
+        Self(major << 22 | minor << 12 | patch)
+    }
+
+    #[inline]
+    pub const fn major(self) -> u32 {
+        self.0 >> 22
+    }
+
+    #[inline]
+    pub const fn minor(self) -> u32 {
+        (self.0 >> 12) & 0x3fff
+    }
+
+    #[inline]
+    pub const fn patch(self) -> u32 {
+        self.0 & 0xfff
+    }
 }
 
-pub const fn version_minor(version: u32) -> u32 {
-    (version >> 12) & 0x3fff
+impl fmt::Display for Version {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "{}.{}.{}", self.major(), self.minor(), self.patch())
+    }
 }
 
-pub const fn version_patch(version: u32) -> u32 {
-    version & 0xfff
+
+#[cfg(all(feature = "xlib", feature = "opengl"))]
+mod xlib {
+    use std::os::raw::{c_ulong, c_void};
+
+    pub type XID = c_ulong;
+    pub type GLXFBConfig = *mut c_void;
+    pub type GLXDrawable = XID;
+    pub type GLXContext = *mut c_void;
 }
+#[cfg(all(feature = "xlib", feature = "opengl"))]
+pub use xlib::*;
+#[cfg(feature = "xlib")]
+pub type Display = std::os::raw::c_void;
+
+// TODO: XCB, OpenGLES, D3D, windows
 
 pub use generated::*;

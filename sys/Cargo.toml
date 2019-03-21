@@ -14,13 +14,15 @@ maintenance = { status = "experimental" }
 
 [features]
 prototypes = []
+vulkan = ["ash"]
 opengl = []
-x11 = []
+xlib = []
+xcb = []
 static = ["cmake", "prototypes"]
 
 [dependencies]
 ash = { version = "0.27", optional = true }
-libc = { version = "0.2.50", optional = true }
+libc = "0.2.50"
 
 [build-dependencies]
 cmake = { version = "0.1.35", optional = true }

@@ -548,6 +548,9 @@ impl Parser {
                         is_const = ch.starts_with("const");
                     } else if member_name.is_none() {
                         ptr_depth = ch.chars().filter(|&x| x == '*').count();
+                    } else if ch.starts_with("[") && ch.len() > 1 {
+                        assert!(ch.ends_with("]"));
+                        static_array_len = Some(ch[1..ch.len() - 1].into());
                     }
                 }
                 EndElement { name } => {
@@ -1025,11 +1028,12 @@ impl Parser {
             #![allow(non_upper_case_globals)]
             use std::fmt;
             use std::os::raw::{c_void, c_char};
+            use libc::timespec;
 
             use crate::support::*;
             use crate::*;
 
-            pub const CURRENT_API_VERSION: u32 = make_version(#major, #minor, #patch);
+            pub const CURRENT_API_VERSION: Version = Version::new(#major, #minor, #patch);
             pub const HEADER_VERSION: u32 = #header_version;
 
             #(#consts)*
@@ -1075,12 +1079,12 @@ impl Parser {
             };
             let c_name = c_name(name);
             let init = quote! {
-                #field_ident: mem::transmute(entry.get_instance_proc_addr(handle, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+                #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))?),
             };
             (field, init)
         }).unzip::<_, _, Vec<_>, Vec<_>>();
 
-        let (exts, ext_raws) = self.extensions.iter().flat_map(|(tag_name, tag)| {
+        let exts = self.extensions.iter().flat_map(|(tag_name, tag)| {
             let tag_name = tag_name.clone();
             tag.extensions.iter().map(move |ext| {
                 let (pfns, pfn_inits) = ext.commands.iter().map(|cmd| {
@@ -1092,7 +1096,7 @@ impl Parser {
                     };
                     let c_name = c_name(cmd);
                     let init = quote! {
-                        #field_ident: mem::transmute(entry.get_instance_proc_addr(handle, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+                        #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))?),
                     };
                     (pfn, init)
                 }).unzip::<_, _, Vec<_>, Vec<_>>();
@@ -1107,72 +1111,44 @@ impl Parser {
                 let ty_ident = Ident::new(&format!("{}{}", ext_name.to_camel_case(), tag_name), Span::call_site());
                 let conds = conditions(&ext.name);
                 let conds2 = conds.clone();
-                let conds3 = conds.clone();
-                // TODO: &'static CStr name
-                let methods = if ext.commands.is_empty() {
+                let load = if ext.commands.is_empty() {
                     quote! {}
                 } else {
                     quote! {
-                        pub fn load(instance: Instance<E>) -> Result<Self>
-                        where E: Clone
-                        {
-                            let entry = &instance.inner.entry;
-                            let handle = instance.inner.handle;
-                            unsafe {
-                                Ok(Self {
-                                    raw: raw::#ty_ident {
-                                        #(#pfn_inits)*
-                                    },
-                                    _instance_guard: instance,
-                                })
-                            }
-                        }
-
-                        /// Access the raw function pointers
-                        #[inline]
-                        pub fn raw(&self) -> &raw::#ty_ident {
-                            &self.raw
+                        /// Load the extension's function pointer table
+                        ///
+                        /// # Safety
+                        ///
+                        /// `instance` must be a valid instance handle.
+                        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+                            Ok(Self {
+                                #(#pfn_inits)*
+                            })
                         }
                     }
                 };
-                let ext = if ext.commands.is_empty() {
-                    quote! {}
-                } else {
-                    quote! {
-                        #conds
-                        pub struct #ty_ident<E: Entry> {
-                            _instance_guard: Instance<E>,
-                            raw: raw::#ty_ident,
-                        }
-                        #conds2
-                        impl<E: Entry> #ty_ident<E> {
-                            #methods
-                        }
-                    }
-                };
-                let conds4 = conds3.clone();
-                let raw = quote! {
-                    #conds3
+                quote! {
+                    #conds
+                    #[derive(Copy, Clone)]
                     pub struct #ty_ident {
                         #(#pfns,)*
                     }
-                    #conds4
+
+                    #conds2
                     impl #ty_ident {
                         pub const #version_ident: u32 = sys::#version_const;
                         pub const #name_ident: &'static [u8] = sys::#name_const;
+                        #load
                     }
-                };
-                (ext, raw)
+                }
             })
-        }).unzip::<_, _, Vec<_>, Vec<_>>();
+        });
 
         let reexports = self
             .structs
             .iter()
             .filter_map(|(name, s)| {
-                if s.members.iter().all(|x| {
-                    x.ptr_depth == 0 && x.static_array_len.is_none() && !x.ty.starts_with("Xr")
-                }) {
+                if self.is_simple_struct(s) {
                     Some(name)
                 } else {
                     None
@@ -1182,20 +1158,79 @@ impl Parser {
             .chain(self.bitmasks.keys())
             .map(|x| xr_ty_name(x));
 
+        let (event_cases, event_decodes) = self.structs.iter()
+            .filter(|(name, _)| {
+                name.starts_with("XrEventData")
+                    && !name.ends_with("BaseHeader")
+                    && !name.ends_with("Buffer")
+            })
+            .map(|(raw_name, evt)| {
+                let raw_ident = xr_ty_name(&raw_name);
+                let name = &raw_name["XrEventData".len()..];
+                let ident = Ident::new(name, Span::call_site());
+                // Skip "type", "next"
+                let members = evt.members.iter().skip(2).map(|m| {
+                    let ident = xr_var_name(&m.name);
+                    let ty = match &m.ty[..] {
+                        "XrBool32" => quote! { bool },
+                        "XrSession" => quote! { sys::Session },
+                        _ => xr_var_ty(&m),
+                    };
+                    quote! {
+                        #ident: #ty
+                    }
+                });
+                let case = if evt.members.len() <= 2 {
+                    assert_eq!(evt.members.len(), 2);
+                    quote! { #ident }
+                } else {
+                    quote! {
+                        #ident {
+                            #(#members,)*
+                        }
+                    }
+                };
+                let member_names = evt.members.iter().skip(2).map(|m| xr_var_name(&m.name));
+                let member_inits = evt.members.iter().skip(2).map(|m| {
+                    let ident = xr_var_name(&m.name);
+                    match &m.ty[..] {
+                        "XrBool32" => quote! { #ident: #ident != sys::FALSE },
+                        _ => quote! { #ident },
+                    }
+                });
+                let tag = xr_enum_value_name("XrStructureType", evt.ty.as_ref().unwrap());
+                let decode = if evt.members.len() <= 2 {
+                    quote! {
+                        sys::StructureType::#tag => Event::#ident,
+                    }
+                } else {
+                    quote! {
+                        sys::StructureType::#tag => {
+                            let sys::#raw_ident { #(#member_names,)* ..} = *(raw as *const _ as *const sys::#raw_ident);
+                            Event::#ident {
+                                #(#member_inits,)*
+                            }
+                        }
+                    }
+                };
+                (case, decode)
+            }).unzip::<_, _, Vec<_>, Vec<_>>();
+
         quote! {
-            use std::{mem, ffi::CStr, sync::Arc};
+            use std::sync::Arc;
 
             pub use sys::{#(#reexports),*};
 
-            use crate::{Entry, Result};
+            use crate::{Entry, Result, Time};
 
-            struct InstanceInner<E: Entry> {
-                entry: E,
+            struct InstanceInner {
+                entry: Entry,
                 handle: sys::Instance,
                 raw: raw::Instance,
+                exts: InstanceExtensions,
             }
 
-            impl<E: Entry> Drop for InstanceInner<E> {
+            impl Drop for InstanceInner {
                 fn drop(&mut self) {
                     unsafe {
                         (self.raw.destroy_instance)(self.handle);
@@ -1204,17 +1239,21 @@ impl Parser {
             }
 
             #[derive(Clone)]
-            pub struct Instance<E: Entry> {
-                inner: Arc<InstanceInner<E>>,
+            pub struct Instance {
+                inner: Arc<InstanceInner>,
             }
 
-            impl<E: Entry> Instance<E> {
-                pub unsafe fn from_raw(entry: E, handle: sys::Instance) -> Result<Self> {
+            impl Instance {
+                /// Take ownership of an existing instance handle
+                ///
+                /// # Safety
+                ///
+                /// `handle` must be a valid instance handle.
+                pub unsafe fn from_raw(entry: Entry, handle: sys::Instance, exts: InstanceExtensions) -> Result<Self> {
                     Ok(Self {
                         inner: Arc::new(InstanceInner {
-                            raw: raw::Instance {
-                                #(#instance_pfn_inits)*
-                            },
+                            raw: raw::Instance::load(&entry, handle)?,
+                            exts,
                             handle,
                             entry,
                         }),
@@ -1226,25 +1265,93 @@ impl Parser {
                     self.inner.handle
                 }
 
-                /// Access the raw function pointers
+                /// Access the entry points used to create self
                 #[inline]
-                pub fn raw(&self) -> &raw::Instance {
+                pub fn entry(&self) -> &Entry {
+                    &self.inner.entry
+                }
+
+                /// Access the core function pointers
+                #[inline]
+                pub fn fp(&self) -> &raw::Instance {
                     &self.inner.raw
+                }
+
+                /// Access the internal extension function pointers
+                #[inline]
+                pub fn exts(&self) -> &InstanceExtensions {
+                    &self.inner.exts
                 }
             }
 
-            #(#exts)*
+            /// Extensions used internally by the bindings
+            #[derive(Default, Copy, Clone)]
+            pub struct InstanceExtensions {
+                #[cfg(feature = "vulkan")]
+                pub khr_vulkan_enable: Option<raw::VulkanEnableKHR>,
+                #[cfg(feature = "opengl")]
+                pub khr_opengl_enable: Option<raw::OpenglEnableKHR>,
+            }
+
+            pub enum Event {
+                #(#event_cases,)*
+            }
+
+            impl Event {
+                /// Decode an event
+                ///
+                /// Returns `None` if the event type is not recognized, e.g. if it's from an unknown extension
+                ///
+                /// # Safety
+                ///
+                /// `raw` must refer to an `EventDataBuffer` populated by a successful call to `xrPollEvent`.
+                pub unsafe fn from_raw(raw: &sys::EventDataBuffer) -> Option<Self> {
+                    Some(match raw.ty {
+                        #(#event_decodes)*
+                        _ => { return None; }
+                    })
+                }
+            }
 
             pub mod raw {
+                use std::{mem, ffi::CStr};
                 use sys::pfn;
+                use crate::{Entry, Result};
 
+                #[derive(Copy, Clone)]
                 pub struct Instance {
                     #(#instance_pfn_fields)*
                 }
 
-                #(#ext_raws)*
+                impl Instance {
+                    /// Load the core function pointer table
+                    ///
+                    /// # Safety
+                    ///
+                    /// `instance` must be a valid instance handle.
+                    pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+                        Ok(Self {
+                            #(#instance_pfn_inits)*
+                        })
+                    }
+                }
+
+                #(#exts)*
             }
         }
+    }
+
+    /// Determine whether a struct is simple enough to be reexported directly from the high-level API
+    fn is_simple_struct(&self, s: &Struct) -> bool {
+        s.members.iter().all(|x| {
+            x.ptr_depth == 0
+                && x.static_array_len.is_none()
+                && x.ty != "XrBool32"
+                && self
+                    .structs
+                    .get(&x.ty)
+                    .map_or(true, |x| self.is_simple_struct(x))
+        })
     }
 }
 
@@ -1412,9 +1519,13 @@ fn xr_var_ty(member: &Member) -> TokenStream {
         quote! { #ident }
     };
     let mut ty = if let Some(ref len) = member.static_array_len {
-        assert!(len.starts_with("XR_MAX_"));
-        let len = Ident::new(&len[3..], Span::call_site());
-        quote! { [#ty; #len] }
+        if let Ok(len) = len.parse::<usize>() {
+            quote! { [#ty; #len] }
+        } else {
+            assert!(len.starts_with("XR_MAX_"));
+            let len = Ident::new(&len[3..], Span::call_site());
+            quote! { [#ty; #len] }
+        }
     } else {
         quote! { #ty }
     };
@@ -1443,7 +1554,7 @@ fn conditions(name: &str) -> TokenStream {
         conditions.push(quote! { target_os = "android" });
     }
     if name.contains("vulkan") {
-        conditions.push(quote! { feature = "ash" });
+        conditions.push(quote! { feature = "vulkan" });
     }
     if name.contains("d3d") {
         conditions.push(quote! { feature = "d3d" });
@@ -1453,14 +1564,11 @@ fn conditions(name: &str) -> TokenStream {
     } else if name.contains("opengl") {
         conditions.push(quote! { feature = "opengl" });
     }
-    if name.contains("timespec") {
-        conditions.push(quote! { feature = "libc" });
-    }
     if name.contains("openglxcb") {
         conditions.push(quote! { feature = "xcb" });
     }
     if name.contains("openglxlib") {
-        conditions.push(quote! { feature = "x11" });
+        conditions.push(quote! { feature = "xlib" });
     }
     if name.contains("wayland") {
         conditions.push(quote! { feature = "wayland" });

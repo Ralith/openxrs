@@ -1,9 +1,10 @@
 #![allow(non_upper_case_globals)]
 use crate::support::*;
 use crate::*;
+use libc::timespec;
 use std::fmt;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: u32 = make_version(0u32, 90u32, 0u32);
+pub const CURRENT_API_VERSION: Version = Version::new(0u32, 90u32, 0u32);
 pub const HEADER_VERSION: u32 = 42u32;
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
@@ -1312,7 +1313,7 @@ pub struct EventDataBaseHeader {
 pub struct EventDataBuffer {
     pub ty: StructureType,
     pub next: *const c_void,
-    pub varying: u8,
+    pub varying: [u8; 4000usize],
 }
 impl EventDataBuffer {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_BUFFER;
@@ -1573,7 +1574,7 @@ impl GraphicsBindingOpenGLXcbKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl", feature = "x11"))]
+#[cfg(all(feature = "opengl", feature = "xlib"))]
 pub struct GraphicsBindingOpenGLXlibKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1583,14 +1584,14 @@ pub struct GraphicsBindingOpenGLXlibKHR {
     pub glx_drawable: GLXDrawable,
     pub glx_context: GLXContext,
 }
-#[cfg(all(feature = "opengl", feature = "x11"))]
+#[cfg(all(feature = "opengl", feature = "xlib"))]
 impl GraphicsBindingOpenGLXlibKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XLIB_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub struct GraphicsBindingVulkanKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1600,7 +1601,7 @@ pub struct GraphicsBindingVulkanKHR {
     pub queue_family_index: u32,
     pub queue_index: u32,
 }
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 impl GraphicsBindingVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_VULKAN_KHR;
 }
@@ -1677,14 +1678,14 @@ impl GraphicsRequirementsOpenGLKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub struct GraphicsRequirementsVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub min_api_version_supported: u32,
     pub max_api_version_supported: u32,
 }
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 impl GraphicsRequirementsVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
 }
@@ -1964,13 +1965,13 @@ impl SwapchainImageReleaseInfo {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub struct SwapchainImageVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub image: vk::Image,
 }
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 impl SwapchainImageVulkanKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_VULKAN_KHR;
 }
@@ -2125,14 +2126,14 @@ impl VisibilityMaskKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_swapchain_format_list"]
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub struct VulkanSwapchainFormatListCreateInfoKHR {
     pub ty: StructureType,
     pub next: *const c_void,
     pub view_format_count: u32,
     pub view_formats: *const vk::Format,
 }
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 impl VulkanSwapchainFormatListCreateInfoKHR {
     pub const TYPE: StructureType = StructureType::VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR;
 }
@@ -2163,7 +2164,6 @@ pub mod pfn {
     ) -> Result;
     pub type BeginSession =
         unsafe extern "system" fn(session: Session, begin_info: *const SessionBeginInfo) -> Result;
-    #[cfg(feature = "libc")]
     #[doc = "From XR_KHR_convert_timespec_time"]
     pub type ConvertTimeToTimespecTimeKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2177,7 +2177,6 @@ pub mod pfn {
         time: Time,
         performance_counter: *mut LARGE_INTEGER,
     ) -> Result;
-    #[cfg(feature = "libc")]
     #[doc = "From XR_KHR_convert_timespec_time"]
     pub type ConvertTimespecTimeToTimeKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2417,7 +2416,7 @@ pub mod pfn {
         visibility_mask_type: VisibilityMaskTypeKHR,
         visibility_mask: *mut VisibilityMaskKHR,
     ) -> Result;
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanDeviceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2426,7 +2425,7 @@ pub mod pfn {
         names_count_output: *mut u32,
         names_string: *mut c_char,
     ) -> Result;
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanGraphicsDeviceKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2434,14 +2433,14 @@ pub mod pfn {
         vk_instance: vk::Instance,
         vk_physical_device: *mut vk::PhysicalDevice,
     ) -> Result;
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanGraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsVulkanKHR,
     ) -> Result;
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanInstanceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2588,9 +2587,9 @@ pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_composition_layer_depth\0";
 pub const KHR_headless_SPEC_VERSION: u32 = 2u32;
 pub const KHR_HEADLESS_EXTENSION_NAME: &'static [u8] = b"XR_KHR_headless\0";
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_vulkan_swapchain_format_list\0";
 pub const KHR_composition_layer_cylinder_SPEC_VERSION: u32 = 4u32;
@@ -2607,9 +2606,9 @@ pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_enab
 pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(feature = "opengles")]
 pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_es_enable\0";
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 6u32;
-#[cfg(feature = "ash")]
+#[cfg(feature = "vulkan")]
 pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_vulkan_enable\0";
 #[cfg(feature = "d3d")]
 pub const KHR_D3D10_enable_SPEC_VERSION: u32 = 1u32;
@@ -2630,9 +2629,7 @@ pub const KHR_win32_convert_performance_counter_time_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "windows")]
 pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_win32_convert_performance_counter_time\0";
-#[cfg(feature = "libc")]
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "libc")]
 pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_convert_timespec_time\0";
 #[cfg(feature = "prototypes")]

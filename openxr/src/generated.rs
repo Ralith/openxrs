@@ -1,21 +1,23 @@
-use crate::{Entry, Result};
-use std::{ffi::CStr, mem, sync::Arc};
+use crate::{Entry, Result, Time};
+use std::sync::Arc;
 pub use sys::{
-    ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
+    ActionSuggestedBinding, ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
     Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, InputSourceLocalizedNameFlags,
     InstanceCreateFlags, ObjectType, Offset2Df, Offset2Di, PerfSettingsDomainEXT,
-    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Quaternionf,
-    ReferenceSpaceType, SessionCreateFlags, SessionState, SpaceRelationFlags, StructureType,
-    SwapchainCreateFlags, SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f,
-    Vector4f, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
+    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
+    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState,
+    SpaceRelationFlags, StructureType, SwapchainCreateFlags, SwapchainSubImage,
+    SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f, Vector4f,
+    ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
 };
-struct InstanceInner<E: Entry> {
-    entry: E,
+struct InstanceInner {
+    entry: Entry,
     handle: sys::Instance,
     raw: raw::Instance,
+    exts: InstanceExtensions,
 }
-impl<E: Entry> Drop for InstanceInner<E> {
+impl Drop for InstanceInner {
     fn drop(&mut self) {
         unsafe {
             (self.raw.destroy_instance)(self.handle);
@@ -23,247 +25,24 @@ impl<E: Entry> Drop for InstanceInner<E> {
     }
 }
 #[derive(Clone)]
-pub struct Instance<E: Entry> {
-    inner: Arc<InstanceInner<E>>,
+pub struct Instance {
+    inner: Arc<InstanceInner>,
 }
-impl<E: Entry> Instance<E> {
-    pub unsafe fn from_raw(entry: E, handle: sys::Instance) -> Result<Self> {
+impl Instance {
+    #[doc = r" Take ownership of an existing instance handle"]
+    #[doc = r""]
+    #[doc = r" # Safety"]
+    #[doc = r""]
+    #[doc = r" `handle` must be a valid instance handle."]
+    pub unsafe fn from_raw(
+        entry: Entry,
+        handle: sys::Instance,
+        exts: InstanceExtensions,
+    ) -> Result<Self> {
         Ok(Self {
             inner: Arc::new(InstanceInner {
-                raw: raw::Instance {
-                    acquire_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrAcquireSwapchainImage\0"),
-                    )?),
-                    apply_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrApplyHapticFeedback\0"),
-                    )?),
-                    begin_frame: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrBeginFrame\0"),
-                    )?),
-                    begin_session: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrBeginSession\0"),
-                    )?),
-                    create_action: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateAction\0"),
-                    )?),
-                    create_action_set: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSet\0"),
-                    )?),
-                    create_action_space: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSpace\0"),
-                    )?),
-                    create_instance: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
-                    )?),
-                    create_reference_space: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateReferenceSpace\0"),
-                    )?),
-                    create_session: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSession\0"),
-                    )?),
-                    create_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSwapchain\0"),
-                    )?),
-                    destroy_action: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyAction\0"),
-                    )?),
-                    destroy_action_set: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyActionSet\0"),
-                    )?),
-                    destroy_instance: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyInstance\0"),
-                    )?),
-                    destroy_session: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySession\0"),
-                    )?),
-                    destroy_space: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySpace\0"),
-                    )?),
-                    destroy_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySwapchain\0"),
-                    )?),
-                    end_frame: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEndFrame\0"),
-                    )?),
-                    end_session: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEndSession\0"),
-                    )?),
-                    enumerate_api_layer_properties: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
-                    )?),
-                    enumerate_environment_blend_modes: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateEnvironmentBlendModes\0",
-                            ),
-                        )?,
-                    ),
-                    enumerate_instance_extension_properties: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateInstanceExtensionProperties\0",
-                            ),
-                        )?,
-                    ),
-                    enumerate_reference_spaces: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReferenceSpaces\0"),
-                    )?),
-                    enumerate_swapchain_formats: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainFormats\0"),
-                    )?),
-                    enumerate_swapchain_images: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainImages\0"),
-                    )?),
-                    enumerate_view_configuration_views: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateViewConfigurationViews\0",
-                            ),
-                        )?,
-                    ),
-                    enumerate_view_configurations: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViewConfigurations\0"),
-                    )?),
-                    get_action_state_boolean: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateBoolean\0"),
-                    )?),
-                    get_action_state_pose: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStatePose\0"),
-                    )?),
-                    get_action_state_vector1f: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector1f\0"),
-                    )?),
-                    get_action_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector2f\0"),
-                    )?),
-                    get_bound_sources_for_action: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetBoundSourcesForAction\0"),
-                    )?),
-                    get_current_interaction_profile: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetCurrentInteractionProfile\0"),
-                    )?),
-                    get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetInputSourceLocalizedName\0"),
-                    )?),
-                    get_instance_proc_addr: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProcAddr\0"),
-                    )?),
-                    get_instance_properties: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProperties\0"),
-                    )?),
-                    get_reference_space_bounds_rect: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetReferenceSpaceBoundsRect\0"),
-                    )?),
-                    get_system: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSystem\0"),
-                    )?),
-                    get_system_properties: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSystemProperties\0"),
-                    )?),
-                    get_view_configuration_properties: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetViewConfigurationProperties\0",
-                            ),
-                        )?,
-                    ),
-                    locate_space: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLocateSpace\0"),
-                    )?),
-                    locate_views: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLocateViews\0"),
-                    )?),
-                    path_to_string: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPathToString\0"),
-                    )?),
-                    poll_event: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPollEvent\0"),
-                    )?),
-                    release_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrReleaseSwapchainImage\0"),
-                    )?),
-                    result_to_string: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrResultToString\0"),
-                    )?),
-                    set_interaction_profile_suggested_bindings: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSetInteractionProfileSuggestedBindings\0",
-                            ),
-                        )?,
-                    ),
-                    stop_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrStopHapticFeedback\0"),
-                    )?),
-                    string_to_path: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrStringToPath\0"),
-                    )?),
-                    structure_type_to_string: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrStructureTypeToString\0"),
-                    )?),
-                    sync_action_data: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSyncActionData\0"),
-                    )?),
-                    wait_frame: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrWaitFrame\0"),
-                    )?),
-                    wait_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrWaitSwapchainImage\0"),
-                    )?),
-                },
+                raw: raw::Instance::load(&entry, handle)?,
+                exts,
                 handle,
                 entry,
             }),
@@ -273,524 +52,149 @@ impl<E: Entry> Instance<E> {
     pub fn as_raw(&self) -> sys::Instance {
         self.inner.handle
     }
-    #[doc = r" Access the raw function pointers"]
+    #[doc = r" Access the entry points used to create self"]
     #[inline]
-    pub fn raw(&self) -> &raw::Instance {
+    pub fn entry(&self) -> &Entry {
+        &self.inner.entry
+    }
+    #[doc = r" Access the core function pointers"]
+    #[inline]
+    pub fn fp(&self) -> &raw::Instance {
         &self.inner.raw
     }
-}
-pub struct PerformanceSettingsEXT<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::PerformanceSettingsEXT,
-}
-impl<E: Entry> PerformanceSettingsEXT<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::PerformanceSettingsEXT {
-                    perf_settings_set_performance_level: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrPerfSettingsSetPerformanceLevelEXT\0",
-                            ),
-                        )?,
-                    ),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
+    #[doc = r" Access the internal extension function pointers"]
     #[inline]
-    pub fn raw(&self) -> &raw::PerformanceSettingsEXT {
-        &self.raw
+    pub fn exts(&self) -> &InstanceExtensions {
+        &self.inner.exts
     }
 }
-pub struct ThermalQueryEXT<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::ThermalQueryEXT,
+#[doc = r" Extensions used internally by the bindings"]
+#[derive(Default, Copy, Clone)]
+pub struct InstanceExtensions {
+    #[cfg(feature = "vulkan")]
+    pub khr_vulkan_enable: Option<raw::VulkanEnableKHR>,
+    #[cfg(feature = "opengl")]
+    pub khr_opengl_enable: Option<raw::OpenglEnableKHR>,
 }
-impl<E: Entry> ThermalQueryEXT<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::ThermalQueryEXT {
-                    thermal_get_temperature_trend: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrThermalGetTemperatureTrendEXT\0"),
-                    )?),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::ThermalQueryEXT {
-        &self.raw
-    }
+pub enum Event {
+    EventsLost {
+        lost_event_count: u32,
+    },
+    InstanceLossPending {
+        loss_time: Time,
+    },
+    InteractionProfileChanged,
+    PerfSettingsEXT {
+        domain: PerfSettingsDomainEXT,
+        sub_domain: PerfSettingsSubDomainEXT,
+        from_level: PerfSettingsNotificationLevelEXT,
+        to_level: PerfSettingsNotificationLevelEXT,
+    },
+    ReferenceSpaceChangePending {
+        reference_space_type: ReferenceSpaceType,
+        change_time: Time,
+        pose_valid: bool,
+        pose_in_previous_space: Posef,
+    },
+    SessionStateChanged {
+        session: sys::Session,
+        state: SessionState,
+        time: Time,
+    },
+    VisibilityMaskChangedKHR {
+        view_configuration_type: ViewConfigurationType,
+        view_index: u32,
+    },
 }
-pub struct DebugUtilsEXT<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::DebugUtilsEXT,
-}
-impl<E: Entry> DebugUtilsEXT<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::DebugUtilsEXT {
-                    set_debug_utils_object_name: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetDebugUtilsObjectNameEXT\0"),
-                    )?),
-                    create_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateDebugUtilsMessengerEXT\0"),
-                    )?),
-                    destroy_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyDebugUtilsMessengerEXT\0"),
-                    )?),
-                    submit_debug_utils_message: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSubmitDebugUtilsMessageEXT\0"),
-                    )?),
-                    session_begin_debug_utils_label_region: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSessionBeginDebugUtilsLabelRegionEXT\0",
-                            ),
-                        )?,
-                    ),
-                    session_end_debug_utils_label_region: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSessionEndDebugUtilsLabelRegionEXT\0",
-                            ),
-                        )?,
-                    ),
-                    session_insert_debug_utils_label: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSessionInsertDebugUtilsLabelEXT\0",
-                            ),
-                        )?,
-                    ),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::DebugUtilsEXT {
-        &self.raw
-    }
-}
-#[cfg(target_os = "android")]
-pub struct AndroidThreadSettingsKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::AndroidThreadSettingsKHR,
-}
-#[cfg(target_os = "android")]
-impl<E: Entry> AndroidThreadSettingsKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::AndroidThreadSettingsKHR {
-                    set_android_application_thread: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetAndroidApplicationThreadKHR\0"),
-                    )?),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::AndroidThreadSettingsKHR {
-        &self.raw
-    }
-}
-#[cfg(target_os = "android")]
-pub struct AndroidSurfaceSwapchainKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::AndroidSurfaceSwapchainKHR,
-}
-#[cfg(target_os = "android")]
-impl<E: Entry> AndroidSurfaceSwapchainKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::AndroidSurfaceSwapchainKHR {
-                    create_swapchain_android_surface: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateSwapchainAndroidSurfaceKHR\0",
-                            ),
-                        )?,
-                    ),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::AndroidSurfaceSwapchainKHR {
-        &self.raw
-    }
-}
-#[cfg(feature = "opengl")]
-pub struct OpenglEnableKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::OpenglEnableKHR,
-}
-#[cfg(feature = "opengl")]
-impl<E: Entry> OpenglEnableKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::OpenglEnableKHR {
-                    get_open_gl_graphics_requirements: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetOpenGLGraphicsRequirementsKHR\0",
-                            ),
-                        )?,
-                    ),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::OpenglEnableKHR {
-        &self.raw
-    }
-}
-#[cfg(feature = "opengles")]
-pub struct OpenglEsEnableKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::OpenglEsEnableKHR,
-}
-#[cfg(feature = "opengles")]
-impl<E: Entry> OpenglEsEnableKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::OpenglEsEnableKHR {
-                    get_open_gles_graphics_requirements: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetOpenGLESGraphicsRequirementsKHR\0",
-                            ),
-                        )?,
-                    ),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::OpenglEsEnableKHR {
-        &self.raw
-    }
-}
-#[cfg(feature = "ash")]
-pub struct VulkanEnableKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::VulkanEnableKHR,
-}
-#[cfg(feature = "ash")]
-impl<E: Entry> VulkanEnableKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::VulkanEnableKHR {
-                    get_vulkan_instance_extensions: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanInstanceExtensionsKHR\0"),
-                    )?),
-                    get_vulkan_device_extensions: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanDeviceExtensionsKHR\0"),
-                    )?),
-                    get_vulkan_graphics_device: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDeviceKHR\0"),
-                    )?),
-                    get_vulkan_graphics_requirements: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetVulkanGraphicsRequirementsKHR\0",
-                            ),
-                        )?,
-                    ),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::VulkanEnableKHR {
-        &self.raw
-    }
-}
-#[cfg(feature = "d3d")]
-pub struct D3d10EnableKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::D3d10EnableKHR,
-}
-#[cfg(feature = "d3d")]
-impl<E: Entry> D3d10EnableKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::D3d10EnableKHR {
-                    get_d3d10_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetD3D10GraphicsRequirementsKHR\0"),
-                    )?),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::D3d10EnableKHR {
-        &self.raw
-    }
-}
-#[cfg(feature = "d3d")]
-pub struct D3d11EnableKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::D3d11EnableKHR,
-}
-#[cfg(feature = "d3d")]
-impl<E: Entry> D3d11EnableKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::D3d11EnableKHR {
-                    get_d3d11_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetD3D11GraphicsRequirementsKHR\0"),
-                    )?),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::D3d11EnableKHR {
-        &self.raw
-    }
-}
-#[cfg(feature = "d3d")]
-pub struct D3d12EnableKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::D3d12EnableKHR,
-}
-#[cfg(feature = "d3d")]
-impl<E: Entry> D3d12EnableKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::D3d12EnableKHR {
-                    get_d3d12_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetD3D12GraphicsRequirementsKHR\0"),
-                    )?),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::D3d12EnableKHR {
-        &self.raw
-    }
-}
-pub struct VisibilityMaskKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::VisibilityMaskKHR,
-}
-impl<E: Entry> VisibilityMaskKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::VisibilityMaskKHR {
-                    get_visibility_mask: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVisibilityMaskKHR\0"),
-                    )?),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::VisibilityMaskKHR {
-        &self.raw
-    }
-}
-#[cfg(target_os = "windows")]
-pub struct Win32ConvertPerformanceCounterTimeKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::Win32ConvertPerformanceCounterTimeKHR,
-}
-#[cfg(target_os = "windows")]
-impl<E: Entry> Win32ConvertPerformanceCounterTimeKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::Win32ConvertPerformanceCounterTimeKHR {
-                    convert_win32_performance_counter_to_time: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrConvertWin32PerformanceCounterToTimeKHR\0",
-                            ),
-                        )?,
-                    ),
-                    convert_time_to_win32_performance_counter: mem::transmute(
-                        entry.get_instance_proc_addr(
-                            handle,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrConvertTimeToWin32PerformanceCounterKHR\0",
-                            ),
-                        )?,
-                    ),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::Win32ConvertPerformanceCounterTimeKHR {
-        &self.raw
-    }
-}
-#[cfg(feature = "libc")]
-pub struct ConvertTimespecTimeKHR<E: Entry> {
-    _instance_guard: Instance<E>,
-    raw: raw::ConvertTimespecTimeKHR,
-}
-#[cfg(feature = "libc")]
-impl<E: Entry> ConvertTimespecTimeKHR<E> {
-    pub fn load(instance: Instance<E>) -> Result<Self>
-    where
-        E: Clone,
-    {
-        let entry = &instance.inner.entry;
-        let handle = instance.inner.handle;
-        unsafe {
-            Ok(Self {
-                raw: raw::ConvertTimespecTimeKHR {
-                    convert_timespec_time_to_time: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrConvertTimespecTimeToTimeKHR\0"),
-                    )?),
-                    convert_time_to_timespec_time: mem::transmute(entry.get_instance_proc_addr(
-                        handle,
-                        CStr::from_bytes_with_nul_unchecked(b"xrConvertTimeToTimespecTimeKHR\0"),
-                    )?),
-                },
-                _instance_guard: instance,
-            })
-        }
-    }
-    #[doc = r" Access the raw function pointers"]
-    #[inline]
-    pub fn raw(&self) -> &raw::ConvertTimespecTimeKHR {
-        &self.raw
+impl Event {
+    #[doc = r" Decode an event"]
+    #[doc = r""]
+    #[doc = r" Returns `None` if the event type is not recognized, e.g. if it's from an unknown extension"]
+    #[doc = r""]
+    #[doc = r" # Safety"]
+    #[doc = r""]
+    #[doc = r" `raw` must refer to an `EventDataBuffer` populated by a successful call to `xrPollEvent`."]
+    pub unsafe fn from_raw(raw: &sys::EventDataBuffer) -> Option<Self> {
+        Some(match raw.ty {
+            sys::StructureType::EVENT_DATA_EVENTS_LOST => {
+                let sys::EventDataEventsLost {
+                    lost_event_count, ..
+                } = *(raw as *const _ as *const sys::EventDataEventsLost);
+                Event::EventsLost { lost_event_count }
+            }
+            sys::StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING => {
+                let sys::EventDataInstanceLossPending { loss_time, .. } =
+                    *(raw as *const _ as *const sys::EventDataInstanceLossPending);
+                Event::InstanceLossPending { loss_time }
+            }
+            sys::StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED => {
+                Event::InteractionProfileChanged
+            }
+            sys::StructureType::EVENT_DATA_PERF_SETTINGS_EXT => {
+                let sys::EventDataPerfSettingsEXT {
+                    domain,
+                    sub_domain,
+                    from_level,
+                    to_level,
+                    ..
+                } = *(raw as *const _ as *const sys::EventDataPerfSettingsEXT);
+                Event::PerfSettingsEXT {
+                    domain,
+                    sub_domain,
+                    from_level,
+                    to_level,
+                }
+            }
+            sys::StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING => {
+                let sys::EventDataReferenceSpaceChangePending {
+                    reference_space_type,
+                    change_time,
+                    pose_valid,
+                    pose_in_previous_space,
+                    ..
+                } = *(raw as *const _ as *const sys::EventDataReferenceSpaceChangePending);
+                Event::ReferenceSpaceChangePending {
+                    reference_space_type,
+                    change_time,
+                    pose_valid: pose_valid != sys::FALSE,
+                    pose_in_previous_space,
+                }
+            }
+            sys::StructureType::EVENT_DATA_SESSION_STATE_CHANGED => {
+                let sys::EventDataSessionStateChanged {
+                    session,
+                    state,
+                    time,
+                    ..
+                } = *(raw as *const _ as *const sys::EventDataSessionStateChanged);
+                Event::SessionStateChanged {
+                    session,
+                    state,
+                    time,
+                }
+            }
+            sys::StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
+                let sys::EventDataVisibilityMaskChangedKHR {
+                    view_configuration_type,
+                    view_index,
+                    ..
+                } = *(raw as *const _ as *const sys::EventDataVisibilityMaskChangedKHR);
+                Event::VisibilityMaskChangedKHR {
+                    view_configuration_type,
+                    view_index,
+                }
+            }
+            _ => {
+                return None;
+            }
+        })
     }
 }
 pub mod raw {
+    use crate::{Entry, Result};
+    use std::{ffi::CStr, mem};
     use sys::pfn;
+    #[derive(Copy, Clone)]
     pub struct Instance {
         pub acquire_swapchain_image: pfn::AcquireSwapchainImage,
         pub apply_haptic_feedback: pfn::ApplyHapticFeedback,
@@ -846,20 +250,280 @@ pub mod raw {
         pub wait_frame: pfn::WaitFrame,
         pub wait_swapchain_image: pfn::WaitSwapchainImage,
     }
+    impl Instance {
+        #[doc = r" Load the core function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                acquire_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrAcquireSwapchainImage\0"),
+                )?),
+                apply_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrApplyHapticFeedback\0"),
+                )?),
+                begin_frame: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrBeginFrame\0"),
+                )?),
+                begin_session: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrBeginSession\0"),
+                )?),
+                create_action: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateAction\0"),
+                )?),
+                create_action_set: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSet\0"),
+                )?),
+                create_action_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSpace\0"),
+                )?),
+                create_instance: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
+                )?),
+                create_reference_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateReferenceSpace\0"),
+                )?),
+                create_session: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSession\0"),
+                )?),
+                create_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSwapchain\0"),
+                )?),
+                destroy_action: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyAction\0"),
+                )?),
+                destroy_action_set: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyActionSet\0"),
+                )?),
+                destroy_instance: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyInstance\0"),
+                )?),
+                destroy_session: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySession\0"),
+                )?),
+                destroy_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpace\0"),
+                )?),
+                destroy_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySwapchain\0"),
+                )?),
+                end_frame: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEndFrame\0"),
+                )?),
+                end_session: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEndSession\0"),
+                )?),
+                enumerate_api_layer_properties: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
+                )?),
+                enumerate_environment_blend_modes: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateEnvironmentBlendModes\0"),
+                )?),
+                enumerate_instance_extension_properties: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrEnumerateInstanceExtensionProperties\0",
+                        ),
+                    )?,
+                ),
+                enumerate_reference_spaces: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReferenceSpaces\0"),
+                )?),
+                enumerate_swapchain_formats: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainFormats\0"),
+                )?),
+                enumerate_swapchain_images: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainImages\0"),
+                )?),
+                enumerate_view_configuration_views: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViewConfigurationViews\0"),
+                )?),
+                enumerate_view_configurations: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViewConfigurations\0"),
+                )?),
+                get_action_state_boolean: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateBoolean\0"),
+                )?),
+                get_action_state_pose: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStatePose\0"),
+                )?),
+                get_action_state_vector1f: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector1f\0"),
+                )?),
+                get_action_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector2f\0"),
+                )?),
+                get_bound_sources_for_action: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetBoundSourcesForAction\0"),
+                )?),
+                get_current_interaction_profile: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetCurrentInteractionProfile\0"),
+                )?),
+                get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetInputSourceLocalizedName\0"),
+                )?),
+                get_instance_proc_addr: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProcAddr\0"),
+                )?),
+                get_instance_properties: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProperties\0"),
+                )?),
+                get_reference_space_bounds_rect: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetReferenceSpaceBoundsRect\0"),
+                )?),
+                get_system: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSystem\0"),
+                )?),
+                get_system_properties: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSystemProperties\0"),
+                )?),
+                get_view_configuration_properties: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetViewConfigurationProperties\0"),
+                )?),
+                locate_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrLocateSpace\0"),
+                )?),
+                locate_views: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrLocateViews\0"),
+                )?),
+                path_to_string: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPathToString\0"),
+                )?),
+                poll_event: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPollEvent\0"),
+                )?),
+                release_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrReleaseSwapchainImage\0"),
+                )?),
+                result_to_string: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrResultToString\0"),
+                )?),
+                set_interaction_profile_suggested_bindings: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrSetInteractionProfileSuggestedBindings\0",
+                        ),
+                    )?,
+                ),
+                stop_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrStopHapticFeedback\0"),
+                )?),
+                string_to_path: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrStringToPath\0"),
+                )?),
+                structure_type_to_string: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrStructureTypeToString\0"),
+                )?),
+                sync_action_data: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSyncActionData\0"),
+                )?),
+                wait_frame: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrWaitFrame\0"),
+                )?),
+                wait_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrWaitSwapchainImage\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct PerformanceSettingsEXT {
         pub perf_settings_set_performance_level: pfn::PerfSettingsSetPerformanceLevelEXT,
     }
     impl PerformanceSettingsEXT {
         pub const VERSION: u32 = sys::EXT_performance_settings_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                perf_settings_set_performance_level: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPerfSettingsSetPerformanceLevelEXT\0"),
+                )?),
+            })
+        }
     }
+    #[derive(Copy, Clone)]
     pub struct ThermalQueryEXT {
         pub thermal_get_temperature_trend: pfn::ThermalGetTemperatureTrendEXT,
     }
     impl ThermalQueryEXT {
         pub const VERSION: u32 = sys::EXT_thermal_query_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXT_THERMAL_QUERY_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                thermal_get_temperature_trend: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrThermalGetTemperatureTrendEXT\0"),
+                )?),
+            })
+        }
     }
+    #[derive(Copy, Clone)]
     pub struct DebugUtilsEXT {
         pub set_debug_utils_object_name: pfn::SetDebugUtilsObjectNameEXT,
         pub create_debug_utils_messenger: pfn::CreateDebugUtilsMessengerEXT,
@@ -872,8 +536,54 @@ pub mod raw {
     impl DebugUtilsEXT {
         pub const VERSION: u32 = sys::EXT_debug_utils_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXT_DEBUG_UTILS_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                set_debug_utils_object_name: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetDebugUtilsObjectNameEXT\0"),
+                )?),
+                create_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateDebugUtilsMessengerEXT\0"),
+                )?),
+                destroy_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyDebugUtilsMessengerEXT\0"),
+                )?),
+                submit_debug_utils_message: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSubmitDebugUtilsMessageEXT\0"),
+                )?),
+                session_begin_debug_utils_label_region: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrSessionBeginDebugUtilsLabelRegionEXT\0",
+                        ),
+                    )?,
+                ),
+                session_end_debug_utils_label_region: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrSessionEndDebugUtilsLabelRegionEXT\0",
+                        ),
+                    )?,
+                ),
+                session_insert_debug_utils_label: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSessionInsertDebugUtilsLabelEXT\0"),
+                )?),
+            })
+        }
     }
     #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
     pub struct AndroidThreadSettingsKHR {
         pub set_android_application_thread: pfn::SetAndroidApplicationThreadKHR,
     }
@@ -881,8 +591,22 @@ pub mod raw {
     impl AndroidThreadSettingsKHR {
         pub const VERSION: u32 = sys::KHR_android_thread_settings_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                set_android_application_thread: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetAndroidApplicationThreadKHR\0"),
+                )?),
+            })
+        }
     }
     #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
     pub struct AndroidSurfaceSwapchainKHR {
         pub create_swapchain_android_surface: pfn::CreateSwapchainAndroidSurfaceKHR,
     }
@@ -890,47 +614,68 @@ pub mod raw {
     impl AndroidSurfaceSwapchainKHR {
         pub const VERSION: u32 = sys::KHR_android_surface_swapchain_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_swapchain_android_surface: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSwapchainAndroidSurfaceKHR\0"),
+                )?),
+            })
+        }
     }
+    #[derive(Copy, Clone)]
     pub struct CompositionLayerCubeKHR {}
     impl CompositionLayerCubeKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_cube_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
     pub struct AndroidCreateInstanceKHR {}
     #[cfg(target_os = "android")]
     impl AndroidCreateInstanceKHR {
         pub const VERSION: u32 = sys::KHR_android_create_instance_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME;
     }
+    #[derive(Copy, Clone)]
     pub struct CompositionLayerDepthKHR {}
     impl CompositionLayerDepthKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_depth_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME;
     }
+    #[derive(Copy, Clone)]
     pub struct HeadlessKHR {}
     impl HeadlessKHR {
         pub const VERSION: u32 = sys::KHR_headless_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_HEADLESS_EXTENSION_NAME;
     }
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
+    #[derive(Copy, Clone)]
     pub struct VulkanSwapchainFormatListKHR {}
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
     impl VulkanSwapchainFormatListKHR {
         pub const VERSION: u32 = sys::KHR_vulkan_swapchain_format_list_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME;
     }
+    #[derive(Copy, Clone)]
     pub struct CompositionLayerCylinderKHR {}
     impl CompositionLayerCylinderKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_cylinder_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME;
     }
+    #[derive(Copy, Clone)]
     pub struct CompositionLayerEquirectKHR {}
     impl CompositionLayerEquirectKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_equirect_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME;
     }
     #[cfg(feature = "opengl")]
+    #[derive(Copy, Clone)]
     pub struct OpenglEnableKHR {
         pub get_open_gl_graphics_requirements: pfn::GetOpenGLGraphicsRequirementsKHR,
     }
@@ -938,8 +683,22 @@ pub mod raw {
     impl OpenglEnableKHR {
         pub const VERSION: u32 = sys::KHR_opengl_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_OPENGL_ENABLE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_open_gl_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetOpenGLGraphicsRequirementsKHR\0"),
+                )?),
+            })
+        }
     }
     #[cfg(feature = "opengles")]
+    #[derive(Copy, Clone)]
     pub struct OpenglEsEnableKHR {
         pub get_open_gles_graphics_requirements: pfn::GetOpenGLESGraphicsRequirementsKHR,
     }
@@ -947,20 +706,60 @@ pub mod raw {
     impl OpenglEsEnableKHR {
         pub const VERSION: u32 = sys::KHR_opengl_es_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_open_gles_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetOpenGLESGraphicsRequirementsKHR\0"),
+                )?),
+            })
+        }
     }
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
+    #[derive(Copy, Clone)]
     pub struct VulkanEnableKHR {
         pub get_vulkan_instance_extensions: pfn::GetVulkanInstanceExtensionsKHR,
         pub get_vulkan_device_extensions: pfn::GetVulkanDeviceExtensionsKHR,
         pub get_vulkan_graphics_device: pfn::GetVulkanGraphicsDeviceKHR,
         pub get_vulkan_graphics_requirements: pfn::GetVulkanGraphicsRequirementsKHR,
     }
-    #[cfg(feature = "ash")]
+    #[cfg(feature = "vulkan")]
     impl VulkanEnableKHR {
         pub const VERSION: u32 = sys::KHR_vulkan_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_VULKAN_ENABLE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_vulkan_instance_extensions: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanInstanceExtensionsKHR\0"),
+                )?),
+                get_vulkan_device_extensions: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanDeviceExtensionsKHR\0"),
+                )?),
+                get_vulkan_graphics_device: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDeviceKHR\0"),
+                )?),
+                get_vulkan_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsRequirementsKHR\0"),
+                )?),
+            })
+        }
     }
     #[cfg(feature = "d3d")]
+    #[derive(Copy, Clone)]
     pub struct D3d10EnableKHR {
         pub get_d3d10_graphics_requirements: pfn::GetD3D10GraphicsRequirementsKHR,
     }
@@ -968,8 +767,22 @@ pub mod raw {
     impl D3d10EnableKHR {
         pub const VERSION: u32 = sys::KHR_D3D10_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_D3D10_ENABLE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_d3d10_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetD3D10GraphicsRequirementsKHR\0"),
+                )?),
+            })
+        }
     }
     #[cfg(feature = "d3d")]
+    #[derive(Copy, Clone)]
     pub struct D3d11EnableKHR {
         pub get_d3d11_graphics_requirements: pfn::GetD3D11GraphicsRequirementsKHR,
     }
@@ -977,8 +790,22 @@ pub mod raw {
     impl D3d11EnableKHR {
         pub const VERSION: u32 = sys::KHR_D3D11_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_D3D11_ENABLE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_d3d11_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetD3D11GraphicsRequirementsKHR\0"),
+                )?),
+            })
+        }
     }
     #[cfg(feature = "d3d")]
+    #[derive(Copy, Clone)]
     pub struct D3d12EnableKHR {
         pub get_d3d12_graphics_requirements: pfn::GetD3D12GraphicsRequirementsKHR,
     }
@@ -986,15 +813,43 @@ pub mod raw {
     impl D3d12EnableKHR {
         pub const VERSION: u32 = sys::KHR_D3D12_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_D3D12_ENABLE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_d3d12_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetD3D12GraphicsRequirementsKHR\0"),
+                )?),
+            })
+        }
     }
+    #[derive(Copy, Clone)]
     pub struct VisibilityMaskKHR {
         pub get_visibility_mask: pfn::GetVisibilityMaskKHR,
     }
     impl VisibilityMaskKHR {
         pub const VERSION: u32 = sys::KHR_visibility_mask_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_VISIBILITY_MASK_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_visibility_mask: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetVisibilityMaskKHR\0"),
+                )?),
+            })
+        }
     }
     #[cfg(target_os = "windows")]
+    #[derive(Copy, Clone)]
     pub struct Win32ConvertPerformanceCounterTimeKHR {
         pub convert_win32_performance_counter_to_time: pfn::ConvertWin32PerformanceCounterToTimeKHR,
         pub convert_time_to_win32_performance_counter: pfn::ConvertTimeToWin32PerformanceCounterKHR,
@@ -1004,15 +859,56 @@ pub mod raw {
         pub const VERSION: u32 = sys::KHR_win32_convert_performance_counter_time_SPEC_VERSION;
         pub const NAME: &'static [u8] =
             sys::KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                convert_win32_performance_counter_to_time: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrConvertWin32PerformanceCounterToTimeKHR\0",
+                        ),
+                    )?,
+                ),
+                convert_time_to_win32_performance_counter: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrConvertTimeToWin32PerformanceCounterKHR\0",
+                        ),
+                    )?,
+                ),
+            })
+        }
     }
-    #[cfg(feature = "libc")]
+    #[derive(Copy, Clone)]
     pub struct ConvertTimespecTimeKHR {
         pub convert_timespec_time_to_time: pfn::ConvertTimespecTimeToTimeKHR,
         pub convert_time_to_timespec_time: pfn::ConvertTimeToTimespecTimeKHR,
     }
-    #[cfg(feature = "libc")]
     impl ConvertTimespecTimeKHR {
         pub const VERSION: u32 = sys::KHR_convert_timespec_time_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                convert_timespec_time_to_time: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrConvertTimespecTimeToTimeKHR\0"),
+                )?),
+                convert_time_to_timespec_time: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrConvertTimeToTimespecTimeKHR\0"),
+                )?),
+            })
+        }
     }
 }
