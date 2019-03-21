@@ -111,6 +111,7 @@ impl Instance {
     ///
     /// Returns a space-delimited list of Vulkan instance extension names
     #[cfg(feature = "vulkan")]
+    #[inline]
     pub fn vulkan_instance_extensions(&self, system: SystemId) -> Result<String> {
         get_str(|input, output, buf| unsafe {
             (self.vulkan().get_vulkan_instance_extensions)(
@@ -127,6 +128,7 @@ impl Instance {
     ///
     /// Returns a space-delimited list of Vulkan device extension names
     #[cfg(feature = "vulkan")]
+    #[inline]
     pub fn vulkan_device_extensions(&self, system: SystemId) -> Result<String> {
         get_str(|input, output, buf| unsafe {
             (self.vulkan().get_vulkan_device_extensions)(self.as_raw(), system, input, output, buf)
@@ -135,6 +137,7 @@ impl Instance {
 
     /// Identify the Vulkan graphics device to use for a system
     #[cfg(feature = "vulkan")]
+    #[inline]
     pub fn vulkan_graphics_device(
         &self,
         system: SystemId,
@@ -165,6 +168,7 @@ impl Instance {
     /// requirements, `info` must contain valid handles, and certain operations must be externally
     /// synchronized.
     #[cfg(feature = "vulkan")]
+    #[inline]
     pub unsafe fn create_session<G: Graphics>(
         &self,
         system: SystemId,
@@ -176,6 +180,7 @@ impl Instance {
     /// Get the next event, if available
     ///
     /// Returns immediately regardless of whether an event was available.
+    #[inline]
     pub fn poll_event(&self) -> Result<Option<Event>> {
         unsafe {
             let mut out = sys::EventDataBuffer {
