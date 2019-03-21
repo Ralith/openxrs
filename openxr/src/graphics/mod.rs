@@ -5,14 +5,13 @@ use crate::*;
 /// The types and functions defined by this trait are an implementation detail, and should not be
 /// referenced externally.
 pub trait Graphics: Sized {
-    #[doc(hidden)]
+    /// Compatibility details within this graphics API
     type Requirements;
-    #[doc(hidden)]
+    /// Parameters required to construct a session for use with this graphics API
     type SessionCreateInfo;
     /// Swapchain image formats
-    #[doc(hidden)]
     type Format: Copy;
-    #[doc(hidden)]
+    /// Identifiers for images to render to
     type SwapchainImage;
 
     #[doc(hidden)]
