@@ -2,7 +2,7 @@
 name = "openxr-sys"
 description = "OpenXR FFI bindings"
 repository = "https://github.com/Ralith/openxrs"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
 categories = ["external-ffi-bindings", "rendering"]
 keywords = ["openxr", "vr"]
@@ -28,4 +28,4 @@ libc = "0.2.50"
 cmake = { version = "0.1.35", optional = true }
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["vulkan", "opengl", "xlib"]
