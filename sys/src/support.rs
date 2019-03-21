@@ -1,7 +1,6 @@
 //! Static helpers called from generated code
 use std::fmt;
 
-#[macro_export]
 macro_rules! wrapper {
     {$(#[$meta: meta])* $ident:ident($ty:ty)} => {
         $(#[$meta])* #[repr(transparent)]
@@ -13,7 +12,6 @@ macro_rules! wrapper {
     }
 }
 
-#[macro_export]
 macro_rules! bitmask {
     ($name:ident) => {
         impl $name {
@@ -111,7 +109,6 @@ macro_rules! bitmask {
     };
 }
 
-#[macro_export]
 macro_rules! handle {
     ($name:ident) => {
         impl $name {

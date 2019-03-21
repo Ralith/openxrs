@@ -1,7 +1,8 @@
 use std::fmt;
 
-mod generated;
+#[macro_use]
 mod support;
+mod generated;
 
 // Hand-written bindings for cases which are too few or weird to bother automating
 
