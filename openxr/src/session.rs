@@ -1,9 +1,9 @@
-use std::{marker::PhantomData, ptr, sync::Arc};
+use std::{marker::PhantomData, mem, ptr, sync::Arc};
 
 use crate::*;
 
 pub struct Session<G: Graphics> {
-    inner: Arc<SessionInner>,
+    pub(crate) inner: Arc<SessionInner>,
     _marker: PhantomData<G>,
 }
 
@@ -49,6 +49,54 @@ impl<G: Graphics> Session<G> {
     #[inline]
     pub fn end(&self) -> Result<sys::Result> {
         unsafe { cvt((self.fp().end_session)(self.as_raw())) }
+    }
+
+    pub fn reference_space_bounds_rect(&self, ty: ReferenceSpaceType) -> Result<Option<Extent2Df>> {
+        unsafe {
+            let mut out = mem::uninitialized();
+            let status = cvt((self.fp().get_reference_space_bounds_rect)(
+                self.as_raw(),
+                ty,
+                &mut out,
+            ))?;
+            Ok(if status == sys::Result::SPACE_BOUNDS_UNAVAILABLE {
+                None
+            } else {
+                Some(out)
+            })
+        }
+    }
+
+    /// Enumerates the set of reference space types supported for this session
+    ///
+    /// Constant for the lifetime of the session.
+    pub fn enumerate_reference_spaces(&self) -> Result<Vec<ReferenceSpaceType>> {
+        get_arr(|cap, count, buf| unsafe {
+            (self.fp().enumerate_reference_spaces)(self.as_raw(), cap, count, buf)
+        })
+    }
+
+    /// Creates a `Space` based on a chosen reference space
+    pub fn create_reference_space(
+        &self,
+        reference_space_type: ReferenceSpaceType,
+        pose_in_reference_space: Posef,
+    ) -> Result<Space> {
+        let info = sys::ReferenceSpaceCreateInfo {
+            ty: sys::ReferenceSpaceCreateInfo::TYPE,
+            next: ptr::null(),
+            reference_space_type,
+            pose_in_reference_space,
+        };
+        let mut out = sys::Space::NULL;
+        unsafe {
+            cvt((self.fp().create_reference_space)(
+                self.as_raw(),
+                &info,
+                &mut out,
+            ))?;
+            Ok(Space::from_raw(self.clone(), out))
+        }
     }
 
     /// Enumerate texture formats supported by the current session
@@ -100,8 +148,8 @@ impl<G: Graphics> Clone for Session<G> {
     }
 }
 
-struct SessionInner {
-    instance: Instance,
+pub(crate) struct SessionInner {
+    pub(crate) instance: Instance,
     handle: sys::Session,
 }
 

@@ -31,6 +31,10 @@ mod graphics;
 pub use graphics::*;
 mod swapchain;
 pub use swapchain::*;
+mod space;
+pub use space::*;
+mod action;
+pub use action::*;
 
 pub type Result<T> = std::result::Result<T, sys::Result>;
 
