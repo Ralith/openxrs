@@ -64,32 +64,55 @@ fn fixed_str_bytes<'a>(x: &'a [c_char]) -> &'a [u8] {
 }
 
 fn get_str(mut getter: impl FnMut(u32, &mut u32, *mut c_char) -> sys::Result) -> Result<String> {
-    unsafe {
-        Ok(String::from_utf8_unchecked(get_arr(|x, y, z| {
-            getter(x, y, z as _)
-        })?))
-    }
+    let mut bytes = get_arr(|x, y, z| getter(x, y, z as _))?;
+    // Strip null byte
+    bytes.truncate(bytes.len() - 1);
+    unsafe { Ok(String::from_utf8_unchecked(bytes)) }
 }
 
-fn get_arr<T>(mut getter: impl FnMut(u32, &mut u32, *mut T) -> sys::Result) -> Result<Vec<T>> {
+fn get_arr<T: Copy>(
+    mut getter: impl FnMut(u32, &mut u32, *mut T) -> sys::Result,
+) -> Result<Vec<T>> {
     let mut output = 0;
     cvt(getter(0, &mut output, std::ptr::null_mut()))?;
     let mut buffer = Vec::with_capacity(output as usize);
-    cvt(getter(output, &mut output, buffer.as_mut_ptr() as _))?;
-    unsafe {
-        buffer.set_len(output as usize);
+    loop {
+        match cvt(getter(buffer.capacity() as u32, &mut output, buffer.as_mut_ptr() as _)) {
+            Ok(_) => {
+                unsafe {
+                    buffer.set_len(output as usize);
+                }
+                return Ok(buffer);
+            }
+            Err(sys::Result::ERROR_SIZE_INSUFFICIENT) => {
+                buffer.reserve(output as usize - buffer.capacity());
+            }
+            Err(e) => {
+                return Err(e);
+            }
+        }
     }
-    Ok(buffer)
 }
 
-fn get_arr_init<T: Clone>(
+fn get_arr_init<T: Copy>(
     init: T,
     mut getter: impl FnMut(u32, &mut u32, *mut T) -> sys::Result,
 ) -> Result<Vec<T>> {
     let mut output = 0;
     cvt(getter(0, &mut output, std::ptr::null_mut()))?;
     let mut buffer = vec![init; output as usize];
-    cvt(getter(output, &mut output, buffer.as_mut_ptr() as _))?;
-    buffer.truncate(output as usize);
-    Ok(buffer)
+    loop {
+        match cvt(getter(output, &mut output, buffer.as_mut_ptr() as _)) {
+            Ok(_) => {
+                buffer.truncate(output as usize);
+                return Ok(buffer);
+            }
+            Err(sys::Result::ERROR_SIZE_INSUFFICIENT) => {
+                buffer.resize(output as usize, init);
+            }
+            Err(e) => {
+                return Err(e);
+            }
+        }
+    }
 }
