@@ -304,6 +304,16 @@ impl Instance {
             .collect())
     }
 
+    #[inline]
+    pub fn enumerate_environment_blend_modes(
+        &self,
+        system: SystemId,
+    ) -> Result<Vec<EnvironmentBlendMode>> {
+        get_arr(|cap, count, buf| unsafe {
+            (self.fp().enumerate_environment_blend_modes)(self.as_raw(), system, cap, count, buf)
+        })
+    }
+
     //
     // Internal helpers
     //

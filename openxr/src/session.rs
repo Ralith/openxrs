@@ -159,6 +159,7 @@ impl<G: Graphics> Session<G> {
     }
 
     /// Returns the view and projection info for a particular display time
+    #[inline]
     pub fn locate_views(
         &self,
         display_time: Time,
@@ -204,6 +205,7 @@ impl<G: Graphics> Session<G> {
     /// # Safety
     ///
     /// Must be externally synchronized.
+    #[inline]
     pub unsafe fn wait_frame(&self) -> Result<FrameState> {
         let info = sys::FrameWaitInfo {
             ty: sys::FrameWaitInfo::TYPE,
@@ -226,6 +228,7 @@ impl<G: Graphics> Session<G> {
     /// # Safety
     ///
     /// Must be externally synchronized with respect to both itself and `end_frame`.
+    #[inline]
     pub unsafe fn begin_frame(&self) -> Result<sys::Result> {
         let info = sys::FrameBeginInfo {
             ty: sys::FrameWaitInfo::TYPE,
@@ -240,6 +243,7 @@ impl<G: Graphics> Session<G> {
     ///
     /// Must only be called after a successful call to `begin_frame, and be externally synchronized
     /// with respect to both itself and `begin_frame`.
+    #[inline]
     pub unsafe fn end_frame(
         &self,
         display_time: Time,
