@@ -960,6 +960,18 @@ impl ViewStateFlags {
 bitmask!(ViewStateFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Action(u64);
+handle!(Action);
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct ActionSet(u64);
+handle!(ActionSet);
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct DebugUtilsMessengerEXT(u64);
+handle!(DebugUtilsMessengerEXT);
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Instance(u64);
 handle!(Instance);
 #[repr(transparent)]
@@ -968,24 +980,12 @@ pub struct Session(u64);
 handle!(Session);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Swapchain(u64);
-handle!(Swapchain);
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Space(u64);
 handle!(Space);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct ActionSet(u64);
-handle!(ActionSet);
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Action(u64);
-handle!(Action);
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct DebugUtilsMessengerEXT(u64);
-handle!(DebugUtilsMessengerEXT);
+pub struct Swapchain(u64);
+handle!(Swapchain);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ActionCreateInfo {

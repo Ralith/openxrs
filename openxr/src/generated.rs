@@ -1,15 +1,15 @@
 use crate::{Entry, Result, Time};
 use std::{os::raw::c_char, sync::Arc};
 pub use sys::{
-    ActionSuggestedBinding, ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
+    ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
     Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, InputSourceLocalizedNameFlags,
     InstanceCreateFlags, ObjectType, Offset2Df, Offset2Di, PerfSettingsDomainEXT,
     PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
     Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState,
-    SpaceRelationFlags, StructureType, SwapchainCreateFlags, SwapchainSubImage,
-    SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f, Vector4f,
-    ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
+    SpaceRelationFlags, StructureType, SwapchainCreateFlags, SwapchainUsageFlags,
+    SystemGraphicsProperties, Vector2f, Vector3f, Vector4f, ViewConfigurationType, ViewStateFlags,
+    VisibilityMaskTypeKHR,
 };
 struct InstanceInner {
     entry: Entry,

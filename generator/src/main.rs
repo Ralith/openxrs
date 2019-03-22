@@ -1,7 +1,7 @@
 #![recursion_limit = "128"]
 
 use std::{
-    collections::{BTreeMap, HashMap, HashSet},
+    collections::{BTreeMap, BTreeSet, HashMap, HashSet},
     env,
     fs::File,
     io::{Seek, SeekFrom, Write},
@@ -38,7 +38,7 @@ struct Parser {
     bitmasks: BTreeMap<String, Enum<u64>>,
     /// *FlagBits -> *Flags
     bitvalues: HashMap<String, String>,
-    handles: Vec<String>,
+    handles: BTreeSet<String>,
     structs: BTreeMap<String, Struct>,
     api_constants: Vec<(String, usize)>,
     commands: BTreeMap<String, Command>,
@@ -58,7 +58,7 @@ impl Parser {
             enums: BTreeMap::new(),
             bitmasks: BTreeMap::new(),
             bitvalues: HashMap::new(),
-            handles: Vec::new(),
+            handles: BTreeSet::new(),
             structs: BTreeMap::new(),
             api_constants: Vec::new(),
             commands: BTreeMap::new(),
@@ -579,7 +579,7 @@ impl Parser {
                     match &name.local_name[..] {
                         "name" => {
                             let name = self.parse_characters();
-                            self.handles.push(name);
+                            self.handles.insert(name);
                         }
                         "type" => {
                             assert_eq!(self.parse_characters(), "XR_DEFINE_HANDLE");
@@ -1428,9 +1428,10 @@ impl Parser {
                 && x.static_array_len.is_none()
                 && x.ty != "XrBool32"
                 && self
-                    .structs
-                    .get(&x.ty)
-                    .map_or(true, |x| self.is_simple_struct(x))
+                .structs
+                .get(&x.ty)
+                .map_or(true, |x| self.is_simple_struct(x))
+                && !self.handles.contains(&x.ty)
         })
     }
 }
