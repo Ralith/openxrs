@@ -35,6 +35,8 @@ mod space;
 pub use space::*;
 mod action;
 pub use action::*;
+mod composition_layers;
+pub use composition_layers::*;
 
 pub type Result<T> = std::result::Result<T, sys::Result>;
 
@@ -78,7 +80,11 @@ fn get_arr<T: Copy>(
     cvt(getter(0, &mut output, std::ptr::null_mut()))?;
     let mut buffer = Vec::with_capacity(output as usize);
     loop {
-        match cvt(getter(buffer.capacity() as u32, &mut output, buffer.as_mut_ptr() as _)) {
+        match cvt(getter(
+            buffer.capacity() as u32,
+            &mut output,
+            buffer.as_mut_ptr() as _,
+        )) {
             Ok(_) => {
                 unsafe {
                     buffer.set_len(output as usize);

@@ -234,6 +234,31 @@ impl<G: Graphics> Session<G> {
         cvt((self.fp().begin_frame)(self.as_raw(), &info))
     }
 
+    /// Indicate that all graphics work for the frame has been submitted
+    ///
+    /// # Safety
+    ///
+    /// Must only be called after a successful call to `begin_frame, and be externally synchronized
+    /// with respect to both itself and `begin_frame`.
+    pub unsafe fn end_frame(
+        &self,
+        display_time: Time,
+        environment_blend_mode: EnvironmentBlendMode,
+        layers: &[&CompositionLayer<'_, G>],
+    ) -> Result<()> {
+        assert!(layers.len() <= u32::max_value() as usize);
+        let info = sys::FrameEndInfo {
+            ty: sys::FrameEndInfo::TYPE,
+            next: ptr::null(),
+            display_time,
+            environment_blend_mode,
+            layer_count: layers.len() as u32,
+            layers: layers.as_ptr() as _,
+        };
+        cvt((self.fp().end_frame)(self.as_raw(), &info))?;
+        Ok(())
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
