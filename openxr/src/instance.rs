@@ -6,6 +6,25 @@ use ash::vk;
 use crate::*;
 
 impl Instance {
+    /// Set the debug name of this `Instance`, if `XR_EXT_debug_utils` is loaded
+    #[inline]
+    pub fn set_name(&self, name: &str) -> Result<()> {
+        if let Some(fp) = self.exts().ext_debug_utils.as_ref() {
+            let name = CString::new(name).unwrap();
+            let info = sys::DebugUtilsObjectNameInfoEXT {
+                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
+                next: ptr::null(),
+                object_type: ObjectType::INSTANCE,
+                object_handle: self.as_raw().into_raw(),
+                object_name: name.as_ptr(),
+            };
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(self.as_raw(), &info))?;
+            }
+        }
+        Ok(())
+    }
+
     #[inline]
     pub fn properties(&self) -> Result<InstanceProperties> {
         unsafe {
@@ -86,17 +105,20 @@ impl Instance {
         }
     }
 
+    /// Construct a `Path` from a string
+    ///
+    /// # Safety
+    ///
+    /// A returned `Path` must not used with any other instance.
     #[inline]
-    pub fn string_to_path(&self, string: &str) -> Result<Path> {
+    pub unsafe fn string_to_path(&self, string: &str) -> Result<Path> {
         let string = CString::new(string).map_err(|_| sys::Result::ERROR_PATH_FORMAT_INVALID)?;
         let mut out = Path::NULL;
-        unsafe {
-            cvt((self.fp().string_to_path)(
-                self.as_raw(),
-                string.as_ptr(),
-                &mut out,
-            ))?;
-        }
+        cvt((self.fp().string_to_path)(
+            self.as_raw(),
+            string.as_ptr(),
+            &mut out,
+        ))?;
         Ok(out)
     }
 
@@ -109,7 +131,7 @@ impl Instance {
 
     /// Identify the Vulkan instance extensions required by a system
     ///
-    /// Returns a space-delimited list of Vulkan instance extension names
+    /// Returns a space-delimited list of Vulkan instance extension names.
     #[cfg(feature = "vulkan")]
     #[inline]
     pub fn vulkan_instance_extensions(&self, system: SystemId) -> Result<String> {
@@ -126,7 +148,7 @@ impl Instance {
 
     /// Identify the Vulkan device extensions required by a system
     ///
-    /// Returns a space-delimited list of Vulkan device extension names
+    /// Returns a space-delimited list of Vulkan device extension names.
     #[cfg(feature = "vulkan")]
     #[inline]
     pub fn vulkan_device_extensions(&self, system: SystemId) -> Result<String> {
@@ -160,14 +182,13 @@ impl Instance {
         G::requirements(self, system)
     }
 
-    /// Create a session for Vulkan graphics
+    /// Create a session for a particular graphics API
     ///
     /// # Safety
     ///
     /// The requirements documented by the graphics API extension must be respected. Among other
     /// requirements, `info` must contain valid handles, and certain operations must be externally
     /// synchronized.
-    #[cfg(feature = "vulkan")]
     #[inline]
     pub unsafe fn create_session<G: Graphics>(
         &self,
@@ -175,6 +196,12 @@ impl Instance {
         info: &G::SessionCreateInfo,
     ) -> Result<Session<G>> {
         G::create_session(self.clone(), system, info)
+    }
+
+    /// Create a session without graphics support
+    #[inline]
+    pub fn create_session_headless(&self, system: SystemId) -> Result<Session<Headless>> {
+        unsafe { self.create_session(system, &()) }
     }
 
     /// Get the next event, if available
@@ -264,14 +291,17 @@ impl Instance {
                 )
             },
         )?;
-        Ok(views.into_iter().map(|x| ViewConfigurationView {
-            recommended_image_rect_width: x.recommended_image_rect_width,
-            max_image_rect_width: x.max_image_rect_width,
-            recommended_image_rect_height: x.recommended_image_rect_height,
-            max_image_rect_height: x.max_image_rect_height,
-            recommended_swapchain_sample_count: x.recommended_swapchain_sample_count,
-            max_swapchain_sample_count: x.max_swapchain_sample_count,
-        }).collect())
+        Ok(views
+            .into_iter()
+            .map(|x| ViewConfigurationView {
+                recommended_image_rect_width: x.recommended_image_rect_width,
+                max_image_rect_width: x.max_image_rect_width,
+                recommended_image_rect_height: x.recommended_image_rect_height,
+                max_image_rect_height: x.max_image_rect_height,
+                recommended_swapchain_sample_count: x.recommended_swapchain_sample_count,
+                max_swapchain_sample_count: x.max_swapchain_sample_count,
+            })
+            .collect())
     }
 
     //

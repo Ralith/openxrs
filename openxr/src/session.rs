@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, mem, ptr, sync::Arc};
+use std::{ffi::CString, marker::PhantomData, mem, ptr, sync::Arc};
 
 use crate::*;
 
@@ -32,6 +32,28 @@ impl<G: Graphics> Session<G> {
     #[inline]
     pub fn instance(&self) -> &Instance {
         &self.inner.instance
+    }
+
+    /// Set the debug name of this `Session`, if `XR_EXT_debug_utils` is loaded
+    #[inline]
+    pub fn set_name(&self, name: &str) -> Result<()> {
+        if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
+            let name = CString::new(name).unwrap();
+            let info = sys::DebugUtilsObjectNameInfoEXT {
+                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
+                next: ptr::null(),
+                object_type: ObjectType::SESSION,
+                object_handle: self.as_raw().into_raw(),
+                object_name: name.as_ptr(),
+            };
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
+        }
+        Ok(())
     }
 
     /// Request that the runtime show the application's rendered output to the user
@@ -136,6 +158,82 @@ impl<G: Graphics> Session<G> {
         }
     }
 
+    /// Returns the view and projection info for a particular display time
+    pub fn locate_views(
+        &self,
+        display_time: Time,
+        space: &Space,
+    ) -> Result<(ViewStateFlags, Vec<View>)> {
+        let info = sys::ViewLocateInfo {
+            ty: sys::ViewLocateInfo::TYPE,
+            next: ptr::null(),
+            display_time,
+            space: space.as_raw(),
+        };
+        let (flags, raw) = unsafe {
+            let mut out = sys::ViewState {
+                ty: sys::ViewState::TYPE,
+                next: ptr::null_mut(),
+                ..mem::uninitialized()
+            };
+            let raw = get_arr_init(
+                sys::View {
+                    ty: sys::View::TYPE,
+                    next: ptr::null_mut(),
+                    ..mem::uninitialized()
+                },
+                |cap, count, buf| {
+                    (self.fp().locate_views)(self.as_raw(), &info, &mut out, cap, count, buf)
+                },
+            )?;
+            (out.view_state_flags, raw)
+        };
+        Ok((
+            flags,
+            raw.into_iter()
+                .map(|x| View {
+                    pose: x.pose,
+                    fov: x.fov,
+                })
+                .collect(),
+        ))
+    }
+
+    /// Block until rendering should begin
+    ///
+    /// # Safety
+    ///
+    /// Must be externally synchronized.
+    pub unsafe fn wait_frame(&self) -> Result<FrameState> {
+        let info = sys::FrameWaitInfo {
+            ty: sys::FrameWaitInfo::TYPE,
+            next: ptr::null(),
+        };
+        let mut out = sys::FrameState {
+            ty: sys::FrameState::TYPE,
+            next: ptr::null_mut(),
+            ..mem::uninitialized()
+        };
+        cvt((self.fp().wait_frame)(self.as_raw(), &info, &mut out))?;
+        Ok(FrameState {
+            predicted_display_time: out.predicted_display_time,
+            predicted_display_period: out.predicted_display_period,
+        })
+    }
+
+    /// Indicate that graphics device work is beginning
+    ///
+    /// # Safety
+    ///
+    /// Must be externally synchronized with respect to both itself and `end_frame`.
+    pub unsafe fn begin_frame(&self) -> Result<sys::Result> {
+        let info = sys::FrameBeginInfo {
+            ty: sys::FrameWaitInfo::TYPE,
+            next: ptr::null(),
+        };
+        cvt((self.fp().begin_frame)(self.as_raw(), &info))
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
@@ -176,4 +274,16 @@ pub struct SwapchainCreateInfo<G: Graphics> {
     pub face_count: u32,
     pub array_size: u32,
     pub mip_count: u32,
+}
+
+#[derive(Copy, Clone)]
+pub struct View {
+    pub pose: Posef,
+    pub fov: Fovf,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct FrameState {
+    pub predicted_display_time: Time,
+    pub predicted_display_period: Duration,
 }

@@ -6,9 +6,9 @@ fn main() {
     #[cfg(not(feature = "static"))]
     let entry = xr::Entry::load().unwrap();
 
-    let bindings = entry.enumerate_graphics_bindings().unwrap();
-    println!("supported graphics bindings: {:?}", bindings);
-    if !bindings.vulkan {
+    let extensions = entry.enumerate_extensions().unwrap();
+    println!("supported extensions: {:?}", extensions);
+    if !extensions.khr_vulkan_enable {
         panic!("vulkan unsupported");
     }
     let instance = entry
@@ -19,7 +19,10 @@ fn main() {
                 engine_name: "openxrs",
                 engine_version: 0,
             },
-            &xr::GraphicsBindings::VULKAN,
+            &xr::ExtensionSet {
+                khr_vulkan_enable: true,
+                ..Default::default()
+            },
         )
         .unwrap();
     let instance_props = instance.properties().unwrap();

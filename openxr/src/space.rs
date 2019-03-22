@@ -1,4 +1,4 @@
-use std::{mem, ptr, sync::Arc};
+use std::{ffi::CString, mem, ptr, sync::Arc};
 
 use crate::*;
 
@@ -35,6 +35,28 @@ impl Space {
     #[inline]
     pub fn instance(&self) -> &Instance {
         &self.session.instance
+    }
+
+    /// Set the debug name of this `Space`, if `XR_EXT_debug_utils` is loaded
+    #[inline]
+    pub fn set_name(&self, name: &str) -> Result<()> {
+        if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
+            let name = CString::new(name).unwrap();
+            let info = sys::DebugUtilsObjectNameInfoEXT {
+                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
+                next: ptr::null(),
+                object_type: ObjectType::SPACE,
+                object_handle: self.as_raw().into_raw(),
+                object_name: name.as_ptr(),
+            };
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
+        }
+        Ok(())
     }
 
     /// Determine the physical relationship of a space relative to a base space at a specified time,

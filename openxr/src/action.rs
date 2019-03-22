@@ -1,4 +1,4 @@
-use std::{ptr, sync::Arc};
+use std::{ptr, sync::Arc, ffi::CString};
 
 use crate::*;
 
@@ -33,8 +33,34 @@ impl Action {
         &self.session.instance
     }
 
+    /// Set the debug name of this `Action`, if `XR_EXT_debug_utils` is loaded
+    #[inline]
+    pub fn set_name(&self, name: &str) -> Result<()> {
+        if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
+            let name = CString::new(name).unwrap();
+            let info = sys::DebugUtilsObjectNameInfoEXT {
+                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
+                next: ptr::null(),
+                object_type: ObjectType::ACTION,
+                object_handle: self.as_raw().into_raw(),
+                object_name: name.as_ptr(),
+            };
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
+        }
+        Ok(())
+    }
+
     /// Creates a `Space` based on a chosen action space
-    pub fn create_action_space(&self, subaction_path: Path, pose_in_action_space: Posef) -> Result<Space> {
+    pub fn create_action_space(
+        &self,
+        subaction_path: Path,
+        pose_in_action_space: Posef,
+    ) -> Result<Space> {
         let info = sys::ActionSpaceCreateInfo {
             ty: sys::ActionSpaceCreateInfo::TYPE,
             next: ptr::null(),
@@ -43,7 +69,11 @@ impl Action {
         };
         let mut out = sys::Space::NULL;
         unsafe {
-            cvt((self.fp().create_action_space)(self.as_raw(), &info, &mut out))?;
+            cvt((self.fp().create_action_space)(
+                self.as_raw(),
+                &info,
+                &mut out,
+            ))?;
             Ok(Space::new(self.session.clone(), out))
         }
     }

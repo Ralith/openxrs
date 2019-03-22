@@ -1,5 +1,5 @@
 use crate::{Entry, Result, Time};
-use std::sync::Arc;
+use std::{os::raw::c_char, sync::Arc};
 pub use sys::{
     ActionSuggestedBinding, ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
@@ -33,7 +33,7 @@ impl Instance {
     #[doc = r""]
     #[doc = r" # Safety"]
     #[doc = r""]
-    #[doc = r" `handle` must be a valid instance handle."]
+    #[doc = r" `handle` must be the instance handle that was used to load `exts`."]
     pub unsafe fn from_raw(
         entry: Entry,
         handle: sys::Instance,
@@ -68,14 +68,421 @@ impl Instance {
         &self.inner.exts
     }
 }
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
+pub struct ExtensionSet {
+    pub ext_performance_settings: bool,
+    pub ext_thermal_query: bool,
+    pub ext_debug_utils: bool,
+    #[cfg(target_os = "android")]
+    pub khr_android_thread_settings: bool,
+    #[cfg(target_os = "android")]
+    pub khr_android_surface_swapchain: bool,
+    pub khr_composition_layer_cube: bool,
+    #[cfg(target_os = "android")]
+    pub khr_android_create_instance: bool,
+    pub khr_composition_layer_depth: bool,
+    pub khr_headless: bool,
+    #[cfg(feature = "vulkan")]
+    pub khr_vulkan_swapchain_format_list: bool,
+    pub khr_composition_layer_cylinder: bool,
+    pub khr_composition_layer_equirect: bool,
+    #[cfg(feature = "opengl")]
+    pub khr_opengl_enable: bool,
+    #[cfg(feature = "opengles")]
+    pub khr_opengl_es_enable: bool,
+    #[cfg(feature = "vulkan")]
+    pub khr_vulkan_enable: bool,
+    #[cfg(feature = "d3d")]
+    pub khr_d3d10_enable: bool,
+    #[cfg(feature = "d3d")]
+    pub khr_d3d11_enable: bool,
+    #[cfg(feature = "d3d")]
+    pub khr_d3d12_enable: bool,
+    pub khr_visibility_mask: bool,
+    #[cfg(target_os = "windows")]
+    pub khr_win32_convert_performance_counter_time: bool,
+    pub khr_convert_timespec_time: bool,
+}
+impl ExtensionSet {
+    pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+        let mut out = Self::default();
+        for ext in properties {
+            match crate::fixed_str_bytes(&ext.extension_name) {
+                raw::PerformanceSettingsEXT::NAME => {
+                    out.ext_performance_settings = true;
+                }
+                raw::ThermalQueryEXT::NAME => {
+                    out.ext_thermal_query = true;
+                }
+                raw::DebugUtilsEXT::NAME => {
+                    out.ext_debug_utils = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::AndroidThreadSettingsKHR::NAME => {
+                    out.khr_android_thread_settings = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::AndroidSurfaceSwapchainKHR::NAME => {
+                    out.khr_android_surface_swapchain = true;
+                }
+                raw::CompositionLayerCubeKHR::NAME => {
+                    out.khr_composition_layer_cube = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::AndroidCreateInstanceKHR::NAME => {
+                    out.khr_android_create_instance = true;
+                }
+                raw::CompositionLayerDepthKHR::NAME => {
+                    out.khr_composition_layer_depth = true;
+                }
+                raw::HeadlessKHR::NAME => {
+                    out.khr_headless = true;
+                }
+                #[cfg(feature = "vulkan")]
+                raw::VulkanSwapchainFormatListKHR::NAME => {
+                    out.khr_vulkan_swapchain_format_list = true;
+                }
+                raw::CompositionLayerCylinderKHR::NAME => {
+                    out.khr_composition_layer_cylinder = true;
+                }
+                raw::CompositionLayerEquirectKHR::NAME => {
+                    out.khr_composition_layer_equirect = true;
+                }
+                #[cfg(feature = "opengl")]
+                raw::OpenglEnableKHR::NAME => {
+                    out.khr_opengl_enable = true;
+                }
+                #[cfg(feature = "opengles")]
+                raw::OpenglEsEnableKHR::NAME => {
+                    out.khr_opengl_es_enable = true;
+                }
+                #[cfg(feature = "vulkan")]
+                raw::VulkanEnableKHR::NAME => {
+                    out.khr_vulkan_enable = true;
+                }
+                #[cfg(feature = "d3d")]
+                raw::D3d10EnableKHR::NAME => {
+                    out.khr_d3d10_enable = true;
+                }
+                #[cfg(feature = "d3d")]
+                raw::D3d11EnableKHR::NAME => {
+                    out.khr_d3d11_enable = true;
+                }
+                #[cfg(feature = "d3d")]
+                raw::D3d12EnableKHR::NAME => {
+                    out.khr_d3d12_enable = true;
+                }
+                raw::VisibilityMaskKHR::NAME => {
+                    out.khr_visibility_mask = true;
+                }
+                #[cfg(target_os = "windows")]
+                raw::Win32ConvertPerformanceCounterTimeKHR::NAME => {
+                    out.khr_win32_convert_performance_counter_time = true;
+                }
+                raw::ConvertTimespecTimeKHR::NAME => {
+                    out.khr_convert_timespec_time = true;
+                }
+                _ => {}
+            }
+        }
+        out
+    }
+    pub(crate) fn names(&self) -> Vec<*const c_char> {
+        let mut out = Vec::new();
+        {
+            if self.ext_performance_settings {
+                out.push(raw::PerformanceSettingsEXT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.ext_thermal_query {
+                out.push(raw::ThermalQueryEXT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.ext_debug_utils {
+                out.push(raw::DebugUtilsEXT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.khr_android_thread_settings {
+                out.push(raw::AndroidThreadSettingsKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.khr_android_surface_swapchain {
+                out.push(raw::AndroidSurfaceSwapchainKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.khr_composition_layer_cube {
+                out.push(raw::CompositionLayerCubeKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.khr_android_create_instance {
+                out.push(raw::AndroidCreateInstanceKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.khr_composition_layer_depth {
+                out.push(raw::CompositionLayerDepthKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.khr_headless {
+                out.push(raw::HeadlessKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(feature = "vulkan")]
+        {
+            if self.khr_vulkan_swapchain_format_list {
+                out.push(raw::VulkanSwapchainFormatListKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.khr_composition_layer_cylinder {
+                out.push(raw::CompositionLayerCylinderKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.khr_composition_layer_equirect {
+                out.push(raw::CompositionLayerEquirectKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(feature = "opengl")]
+        {
+            if self.khr_opengl_enable {
+                out.push(raw::OpenglEnableKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(feature = "opengles")]
+        {
+            if self.khr_opengl_es_enable {
+                out.push(raw::OpenglEsEnableKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(feature = "vulkan")]
+        {
+            if self.khr_vulkan_enable {
+                out.push(raw::VulkanEnableKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(feature = "d3d")]
+        {
+            if self.khr_d3d10_enable {
+                out.push(raw::D3d10EnableKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(feature = "d3d")]
+        {
+            if self.khr_d3d11_enable {
+                out.push(raw::D3d11EnableKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(feature = "d3d")]
+        {
+            if self.khr_d3d12_enable {
+                out.push(raw::D3d12EnableKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.khr_visibility_mask {
+                out.push(raw::VisibilityMaskKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(target_os = "windows")]
+        {
+            if self.khr_win32_convert_performance_counter_time {
+                out.push(
+                    raw::Win32ConvertPerformanceCounterTimeKHR::NAME.as_ptr() as *const _ as _,
+                );
+            }
+        }
+        {
+            if self.khr_convert_timespec_time {
+                out.push(raw::ConvertTimespecTimeKHR::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        out
+    }
+}
 #[doc = r" Extensions used internally by the bindings"]
 #[derive(Default, Copy, Clone)]
 pub struct InstanceExtensions {
+    pub ext_performance_settings: Option<raw::PerformanceSettingsEXT>,
+    pub ext_thermal_query: Option<raw::ThermalQueryEXT>,
+    pub ext_debug_utils: Option<raw::DebugUtilsEXT>,
+    #[cfg(target_os = "android")]
+    pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
+    #[cfg(target_os = "android")]
+    pub khr_android_surface_swapchain: Option<raw::AndroidSurfaceSwapchainKHR>,
+    pub khr_composition_layer_cube: Option<raw::CompositionLayerCubeKHR>,
+    #[cfg(target_os = "android")]
+    pub khr_android_create_instance: Option<raw::AndroidCreateInstanceKHR>,
+    pub khr_composition_layer_depth: Option<raw::CompositionLayerDepthKHR>,
+    pub khr_headless: Option<raw::HeadlessKHR>,
     #[cfg(feature = "vulkan")]
-    pub khr_vulkan_enable: Option<raw::VulkanEnableKHR>,
+    pub khr_vulkan_swapchain_format_list: Option<raw::VulkanSwapchainFormatListKHR>,
+    pub khr_composition_layer_cylinder: Option<raw::CompositionLayerCylinderKHR>,
+    pub khr_composition_layer_equirect: Option<raw::CompositionLayerEquirectKHR>,
     #[cfg(feature = "opengl")]
     pub khr_opengl_enable: Option<raw::OpenglEnableKHR>,
+    #[cfg(feature = "opengles")]
+    pub khr_opengl_es_enable: Option<raw::OpenglEsEnableKHR>,
+    #[cfg(feature = "vulkan")]
+    pub khr_vulkan_enable: Option<raw::VulkanEnableKHR>,
+    #[cfg(feature = "d3d")]
+    pub khr_d3d10_enable: Option<raw::D3d10EnableKHR>,
+    #[cfg(feature = "d3d")]
+    pub khr_d3d11_enable: Option<raw::D3d11EnableKHR>,
+    #[cfg(feature = "d3d")]
+    pub khr_d3d12_enable: Option<raw::D3d12EnableKHR>,
+    pub khr_visibility_mask: Option<raw::VisibilityMaskKHR>,
+    #[cfg(target_os = "windows")]
+    pub khr_win32_convert_performance_counter_time:
+        Option<raw::Win32ConvertPerformanceCounterTimeKHR>,
+    pub khr_convert_timespec_time: Option<raw::ConvertTimespecTimeKHR>,
 }
+impl InstanceExtensions {
+    #[doc = r" Load extension function pointer tables"]
+    #[doc = r""]
+    #[doc = r" # Safety"]
+    #[doc = r""]
+    #[doc = r" `instance` must be a valid instance handle."]
+    pub unsafe fn load(
+        entry: &Entry,
+        instance: sys::Instance,
+        required: &ExtensionSet,
+    ) -> Result<Self> {
+        Ok(Self {
+            ext_performance_settings: if required.ext_performance_settings {
+                Some(raw::PerformanceSettingsEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            ext_thermal_query: if required.ext_thermal_query {
+                Some(raw::ThermalQueryEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            ext_debug_utils: if required.ext_debug_utils {
+                Some(raw::DebugUtilsEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            khr_android_thread_settings: if required.khr_android_thread_settings {
+                Some(raw::AndroidThreadSettingsKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            khr_android_surface_swapchain: if required.khr_android_surface_swapchain {
+                Some(raw::AndroidSurfaceSwapchainKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            khr_composition_layer_cube: if required.khr_composition_layer_cube {
+                Some(raw::CompositionLayerCubeKHR {})
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            khr_android_create_instance: if required.khr_android_create_instance {
+                Some(raw::AndroidCreateInstanceKHR {})
+            } else {
+                None
+            },
+            khr_composition_layer_depth: if required.khr_composition_layer_depth {
+                Some(raw::CompositionLayerDepthKHR {})
+            } else {
+                None
+            },
+            khr_headless: if required.khr_headless {
+                Some(raw::HeadlessKHR {})
+            } else {
+                None
+            },
+            #[cfg(feature = "vulkan")]
+            khr_vulkan_swapchain_format_list: if required.khr_vulkan_swapchain_format_list {
+                Some(raw::VulkanSwapchainFormatListKHR {})
+            } else {
+                None
+            },
+            khr_composition_layer_cylinder: if required.khr_composition_layer_cylinder {
+                Some(raw::CompositionLayerCylinderKHR {})
+            } else {
+                None
+            },
+            khr_composition_layer_equirect: if required.khr_composition_layer_equirect {
+                Some(raw::CompositionLayerEquirectKHR {})
+            } else {
+                None
+            },
+            #[cfg(feature = "opengl")]
+            khr_opengl_enable: if required.khr_opengl_enable {
+                Some(raw::OpenglEnableKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(feature = "opengles")]
+            khr_opengl_es_enable: if required.khr_opengl_es_enable {
+                Some(raw::OpenglEsEnableKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(feature = "vulkan")]
+            khr_vulkan_enable: if required.khr_vulkan_enable {
+                Some(raw::VulkanEnableKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(feature = "d3d")]
+            khr_d3d10_enable: if required.khr_d3d10_enable {
+                Some(raw::D3d10EnableKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(feature = "d3d")]
+            khr_d3d11_enable: if required.khr_d3d11_enable {
+                Some(raw::D3d11EnableKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(feature = "d3d")]
+            khr_d3d12_enable: if required.khr_d3d12_enable {
+                Some(raw::D3d12EnableKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            khr_visibility_mask: if required.khr_visibility_mask {
+                Some(raw::VisibilityMaskKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_os = "windows")]
+            khr_win32_convert_performance_counter_time: if required
+                .khr_win32_convert_performance_counter_time
+            {
+                Some(raw::Win32ConvertPerformanceCounterTimeKHR::load(
+                    entry, instance,
+                )?)
+            } else {
+                None
+            },
+            khr_convert_timespec_time: if required.khr_convert_timespec_time {
+                Some(raw::ConvertTimespecTimeKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+        })
+    }
+}
+#[derive(Copy, Clone)]
 pub enum Event {
     EventsLost {
         lost_event_count: u32,

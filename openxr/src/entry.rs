@@ -1,6 +1,6 @@
 #[cfg(feature = "loaded")]
 use shared_library::dynamic_library::DynamicLibrary;
-use std::{ffi::CStr, mem, os::raw::c_char, ptr, sync::Arc};
+use std::{ffi::CStr, mem, ptr, sync::Arc};
 #[cfg(feature = "loaded")]
 use std::{fmt, os::raw::c_void, path::Path};
 
@@ -76,7 +76,7 @@ impl Entry {
 
     /// Access the raw function pointers
     #[inline]
-    pub fn raw(&self) -> &RawEntry {
+    pub fn fp(&self) -> &RawEntry {
         &self.inner.raw
     }
 
@@ -87,7 +87,7 @@ impl Entry {
         name: &CStr,
     ) -> Result<unsafe extern "system" fn()> {
         let mut f = None;
-        cvt((self.raw().get_instance_proc_addr)(
+        cvt((self.fp().get_instance_proc_addr)(
             instance,
             name.as_ptr(),
             &mut f,
@@ -99,21 +99,9 @@ impl Entry {
     pub fn create_instance(
         &self,
         app_info: &ApplicationInfo,
-        graphics_bindings: &GraphicsBindings,
+        required_extensions: &ExtensionSet,
     ) -> Result<Instance> {
-        let mut ext_names = Vec::<*const c_char>::new();
-        #[cfg(feature = "vulkan")]
-        {
-            if graphics_bindings.vulkan {
-                ext_names.push(raw::VulkanEnableKHR::NAME.as_ptr() as _);
-            }
-        }
-        #[cfg(feature = "opengl")]
-        {
-            if graphics_bindings.opengl {
-                ext_names.push(raw::OpenglEnableKHR::NAME.as_ptr() as _);
-            }
-        }
+        let ext_names = required_extensions.names();
         let info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
             next: ptr::null(),
@@ -132,27 +120,14 @@ impl Entry {
         };
         unsafe {
             let mut handle = sys::Instance::NULL;
-            cvt((self.raw().create_instance)(&info, &mut handle))?;
+            cvt((self.fp().create_instance)(&info, &mut handle))?;
 
-            let mut exts = InstanceExtensions::default();
-            #[cfg(feature = "vulkan")]
-            {
-                if graphics_bindings.vulkan {
-                    exts.khr_vulkan_enable = Some(raw::VulkanEnableKHR::load(self, handle)?);
-                }
-            }
-            #[cfg(feature = "opengl")]
-            {
-                if graphics_bindings.opengl {
-                    exts.khr_opengl_enable = Some(raw::OpenglEnableKHR::load(self, handle)?);
-                }
-            }
-
+            let exts = InstanceExtensions::load(self, handle, required_extensions)?;
             Instance::from_raw(self.clone(), handle, exts)
         }
     }
 
-    pub fn enumerate_graphics_bindings(&self) -> Result<GraphicsBindings> {
+    pub fn enumerate_extensions(&self) -> Result<ExtensionSet> {
         let exts = unsafe {
             get_arr_init(
                 sys::ExtensionProperties {
@@ -161,7 +136,7 @@ impl Entry {
                     ..mem::uninitialized()
                 },
                 |cap, count, buf| {
-                    (self.raw().enumerate_instance_extension_properties)(
+                    (self.fp().enumerate_instance_extension_properties)(
                         ptr::null(),
                         cap,
                         count,
@@ -170,61 +145,7 @@ impl Entry {
                 },
             )?
         };
-        let mut bindings = GraphicsBindings {
-            #[cfg(feature = "vulkan")]
-            vulkan: false,
-            #[cfg(feature = "opengl")]
-            opengl: false,
-        };
-        for ext in &exts {
-            match fixed_str_bytes(&ext.extension_name) {
-                #[cfg(feature = "vulkan")]
-                raw::VulkanEnableKHR::NAME => {
-                    bindings.vulkan = true;
-                }
-                #[cfg(feature = "opengl")]
-                raw::OpenglEnableKHR::NAME => {
-                    bindings.opengl = true;
-                }
-                _ => {}
-            }
-        }
-        Ok(bindings)
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct GraphicsBindings {
-    #[cfg(feature = "vulkan")]
-    pub vulkan: bool,
-    #[cfg(feature = "opengl")]
-    pub opengl: bool,
-}
-
-impl GraphicsBindings {
-    pub const NONE: Self = Self {
-        #[cfg(feature = "vulkan")]
-        vulkan: false,
-        #[cfg(feature = "opengl")]
-        opengl: false,
-    };
-
-    #[cfg(feature = "vulkan")]
-    pub const VULKAN: Self = Self {
-        vulkan: true,
-        ..Self::NONE
-    };
-
-    #[cfg(feature = "opengl")]
-    pub const OPENGL: Self = Self {
-        opengl: true,
-        ..Self::NONE
-    };
-}
-
-impl Default for GraphicsBindings {
-    fn default() -> Self {
-        Self::NONE
+        Ok(ExtensionSet::from_properties(&exts))
     }
 }
 

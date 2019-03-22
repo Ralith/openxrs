@@ -1084,9 +1084,14 @@ impl Parser {
             (field, init)
         }).unzip::<_, _, Vec<_>, Vec<_>>();
 
-        let exts = self.extensions.iter().flat_map(|(tag_name, tag)| {
-            let tag_name = tag_name.clone();
-            tag.extensions.iter().map(move |ext| {
+        let mut exts = Vec::new();
+        let mut ext_fields = Vec::new();
+        let mut ext_field_inits = Vec::new();
+        let mut ext_set_names = Vec::new();
+        let mut ext_set_fields = Vec::new();
+        let mut ext_set_inits = Vec::new();
+        for (tag_name, tag) in &self.extensions {
+            for ext in &tag.extensions {
                 let (pfns, pfn_inits) = ext.commands.iter().map(|cmd| {
                     let pfn_ident = xr_command_name(cmd);
                     let camel_name = pfn_ident.to_string();
@@ -1105,12 +1110,24 @@ impl Parser {
                 let version_ident = Ident::new("VERSION", Span::call_site());
                 assert!(ext.name.starts_with("XR_"));
                 let trimmed = &ext.name[3..];
-                let name_const = Ident::new(&format!("{}_EXTENSION_NAME", trimmed.to_uppercase()), Span::call_site());
-                let version_const = Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
+                let name_const = Ident::new(
+                    &format!("{}_EXTENSION_NAME", trimmed.to_uppercase()),
+                    Span::call_site(),
+                );
+                let version_const =
+                    Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
                 let ext_name = split_ext_tag(&ext.name).1;
-                let ty_ident = Ident::new(&format!("{}{}", ext_name.to_camel_case(), tag_name), Span::call_site());
+                let ty_ident = Ident::new(
+                    &format!("{}{}", ext_name.to_camel_case(), tag_name),
+                    Span::call_site(),
+                );
                 let conds = conditions(&ext.name);
                 let conds2 = conds.clone();
+                let conds3 = conds.clone();
+                let conds4 = conds.clone();
+                let conds5 = conds.clone();
+                let conds6 = conds.clone();
+                let conds7 = conds.clone();
                 let load = if ext.commands.is_empty() {
                     quote! {}
                 } else {
@@ -1127,7 +1144,7 @@ impl Parser {
                         }
                     }
                 };
-                quote! {
+                exts.push(quote! {
                     #conds
                     #[derive(Copy, Clone)]
                     pub struct #ty_ident {
@@ -1140,9 +1157,37 @@ impl Parser {
                         pub const #name_ident: &'static [u8] = sys::#name_const;
                         #load
                     }
-                }
-            })
-        });
+                });
+                let field_ident = Ident::new(&trimmed.to_snake_case(), Span::call_site());
+                ext_fields.push(quote! {
+                    #conds3
+                    pub #field_ident: Option<raw::#ty_ident>,
+                });
+                ext_field_inits.push(if ext.commands.is_empty() {
+                    quote! {
+                        #conds4
+                        #field_ident: if required.#field_ident { Some(raw::#ty_ident {}) } else { None },
+                    }
+                } else {
+                    quote! {
+                        #conds4
+                        #field_ident: if required.#field_ident { Some(raw::#ty_ident::load(entry, instance)?) } else { None },
+                    }
+                });
+                ext_set_names.push(quote! {
+                    #conds5
+                    { if self.#field_ident { out.push(raw::#ty_ident::NAME.as_ptr() as *const _ as _); } }
+                });
+                ext_set_inits.push(quote! {
+                    #conds6
+                    raw::#ty_ident::NAME => { out.#field_ident = true; }
+                });
+                ext_set_fields.push(quote! {
+                    #conds7
+                    pub #field_ident: bool,
+                });
+            }
+        }
 
         let reexports = self
             .structs
@@ -1217,7 +1262,7 @@ impl Parser {
             }).unzip::<_, _, Vec<_>, Vec<_>>();
 
         quote! {
-            use std::sync::Arc;
+            use std::{sync::Arc, os::raw::c_char};
 
             pub use sys::{#(#reexports),*};
 
@@ -1248,7 +1293,7 @@ impl Parser {
                 ///
                 /// # Safety
                 ///
-                /// `handle` must be a valid instance handle.
+                /// `handle` must be the instance handle that was used to load `exts`.
                 pub unsafe fn from_raw(entry: Entry, handle: sys::Instance, exts: InstanceExtensions) -> Result<Self> {
                     Ok(Self {
                         inner: Arc::new(InstanceInner {
@@ -1284,15 +1329,50 @@ impl Parser {
                 }
             }
 
+            #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
+            pub struct ExtensionSet {
+                #(#ext_set_fields)*
+            }
+
+            impl ExtensionSet {
+                pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+                    let mut out = Self::default();
+                    for ext in properties {
+                        match crate::fixed_str_bytes(&ext.extension_name) {
+                            #(#ext_set_inits)*
+                            _ => {}
+                        }
+                    }
+                    out
+                }
+
+                pub(crate) fn names(&self) -> Vec<*const c_char> {
+                    let mut out = Vec::new();
+                    #(#ext_set_names)*
+                    out
+                }
+            }
+
             /// Extensions used internally by the bindings
             #[derive(Default, Copy, Clone)]
             pub struct InstanceExtensions {
-                #[cfg(feature = "vulkan")]
-                pub khr_vulkan_enable: Option<raw::VulkanEnableKHR>,
-                #[cfg(feature = "opengl")]
-                pub khr_opengl_enable: Option<raw::OpenglEnableKHR>,
+                #(#ext_fields)*
             }
 
+            impl InstanceExtensions {
+                /// Load extension function pointer tables
+                ///
+                /// # Safety
+                ///
+                /// `instance` must be a valid instance handle.
+                pub unsafe fn load(entry: &Entry, instance: sys::Instance, required: &ExtensionSet) -> Result<Self> {
+                    Ok(Self {
+                        #(#ext_field_inits)*
+                    })
+                }
+            }
+
+            #[derive(Copy, Clone)]
             pub enum Event {
                 #(#event_cases,)*
             }

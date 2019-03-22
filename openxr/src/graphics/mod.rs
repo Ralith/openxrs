@@ -33,6 +33,9 @@ pub trait Graphics: Sized {
     fn enumerate_swapchain_images(swapchain: &Swapchain<Self>) -> Result<Vec<Self::SwapchainImage>>;
 }
 
+mod headless;
+pub use headless::Headless;
+
 #[cfg(feature = "vulkan")]
 pub mod vulkan;
 #[cfg(feature = "vulkan")]

@@ -1,4 +1,4 @@
-use std::{ptr, marker::PhantomData};
+use std::{ffi::CString, marker::PhantomData, ptr};
 
 use crate::*;
 
@@ -36,6 +36,28 @@ impl<G: Graphics> Swapchain<G> {
         self.session.instance()
     }
 
+    /// Set the debug name of this `Swapchain`, if `XR_EXT_debug_utils` is loaded
+    #[inline]
+    pub fn set_name(&self, name: &str) -> Result<()> {
+        if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
+            let name = CString::new(name).unwrap();
+            let info = sys::DebugUtilsObjectNameInfoEXT {
+                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
+                next: ptr::null(),
+                object_type: ObjectType::SWAPCHAIN,
+                object_handle: self.as_raw().into_raw(),
+                object_name: name.as_ptr(),
+            };
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
+        }
+        Ok(())
+    }
+
     pub fn enumerate_images(&self) -> Result<Vec<G::SwapchainImage>> {
         G::enumerate_swapchain_images(self)
     }
@@ -48,7 +70,11 @@ impl<G: Graphics> Swapchain<G> {
         };
         let mut out = 0;
         unsafe {
-            cvt((self.fp().acquire_swapchain_image)(self.as_raw(), &info, &mut out))?;
+            cvt((self.fp().acquire_swapchain_image)(
+                self.as_raw(),
+                &info,
+                &mut out,
+            ))?;
         }
         Ok(out)
     }

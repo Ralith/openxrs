@@ -25,3 +25,4 @@ default = ["loaded", "vulkan", "opengl", "xlib"]
 sys = { package = "openxr-sys", path = "../sys", version = "0.1.0", default-features = false }
 shared_library = { version = "0.1.9", optional = true }
 ash = { version = "0.27", optional = true }
+void = "1"
