@@ -5,9 +5,9 @@ stdenv.mkDerivation {
   src = fetchFromGitLab {
     owner = "monado";
     repo = "monado";
-    rev = "0b7a620c020beed4c62b0354bae0b570e35f3028";
+    rev = "f016492a81574c9d3e17cd6dcab1a6119d30182c";
     domain = "gitlab.freedesktop.org";
-    sha256 = "1q8n04g2i9af3h3v3mxzflhq4cd2xkz79b25sd028przvdmd0sz9";
+    sha256 = "1p58mdwgqahyhm4mj0qvc7rzkdxz3y82cm03y91r1p9rnp5khvgz";
   };
 
   nativeBuildInputs = [ cmake glslang pkgconfig ];
