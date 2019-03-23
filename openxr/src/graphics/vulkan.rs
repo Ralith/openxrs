@@ -1,6 +1,6 @@
 use std::{mem, ptr};
 
-use ash::vk::{self, Handle};
+use sys::platform::*;
 
 use crate::*;
 
@@ -13,15 +13,15 @@ pub enum Vulkan {}
 
 impl Graphics for Vulkan {
     type Requirements = Requirements;
-    type Format = vk::Format;
+    type Format = VkFormat;
     type SessionCreateInfo = SessionCreateInfo;
-    type SwapchainImage = vk::Image;
+    type SwapchainImage = VkImage;
 
     fn raise_format(x: i64) -> Self::Format {
-        vk::Format::from_raw(x as _)
+        x as _
     }
     fn lower_format(x: Self::Format) -> i64 {
-        x.as_raw().into()
+        x as _
     }
 
     fn requirements(instance: &Instance, system: SystemId) -> Result<Requirements> {
@@ -52,9 +52,9 @@ impl Graphics for Vulkan {
         let binding = sys::GraphicsBindingVulkanKHR {
             ty: sys::GraphicsBindingVulkanKHR::TYPE,
             next: ptr::null(),
-            instance: info.instance.as_raw() as _,
-            physical_device: info.physical_device.as_raw() as _,
-            device: info.device.as_raw() as _,
+            instance: info.instance,
+            physical_device: info.physical_device,
+            device: info.device,
             queue_family_index: info.queue_family_index,
             queue_index: info.queue_index,
         };
@@ -89,7 +89,7 @@ impl Graphics for Vulkan {
                 )
             },
         )?;
-        Ok(images.into_iter().map(|x| vk::Image::from_raw(x.image)).collect())
+        Ok(images.into_iter().map(|x| x.image as _).collect())
     }
 }
 
@@ -101,9 +101,9 @@ pub struct Requirements {
 
 #[derive(Copy, Clone)]
 pub struct SessionCreateInfo {
-    pub instance: vk::Instance,
-    pub physical_device: vk::PhysicalDevice,
-    pub device: vk::Device,
+    pub instance: VkInstance,
+    pub physical_device: VkPhysicalDevice,
+    pub device: VkDevice,
     pub queue_family_index: u32,
     pub queue_index: u32,
 }

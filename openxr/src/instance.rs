@@ -1,6 +1,6 @@
 use std::{ffi::CString, mem, ptr};
 
-use ash::vk::{self, Handle};
+use sys::platform::*;
 
 use crate::*;
 
@@ -159,15 +159,15 @@ impl Instance {
     pub fn vulkan_graphics_device(
         &self,
         system: SystemId,
-        vk_instance: vk::Instance,
-    ) -> Result<vk::PhysicalDevice> {
-        let mut out = vk::PhysicalDevice::null();
+        vk_instance: VkInstance,
+    ) -> Result<VkPhysicalDevice> {
+        let mut out = ptr::null();
         unsafe {
             cvt((self.vulkan().get_vulkan_graphics_device)(
                 self.as_raw(),
                 system,
-                vk_instance.as_raw() as _,
-                &mut out as *mut _ as _,
+                vk_instance,
+                &mut out,
             ))?;
         }
         Ok(out)
