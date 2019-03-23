@@ -30,6 +30,12 @@ impl From<Bool32> for bool {
     }
 }
 
+impl From<bool> for Bool32 {
+    fn from(x: bool) -> Self {
+        Self(x as _)
+    }
+}
+
 wrapper! {
     #[derive(Copy, Clone, Eq, PartialEq)]
     Time(i64)

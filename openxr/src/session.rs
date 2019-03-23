@@ -13,7 +13,7 @@ impl<G: Graphics> Session<G> {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid session handle.
+    /// `handle` must be a valid session handle associated with `instance`.
     #[inline]
     pub unsafe fn from_raw(instance: Instance, handle: sys::Session) -> Self {
         Self {
@@ -204,19 +204,19 @@ impl<G: Graphics> Session<G> {
     ///
     /// # Safety
     ///
-    /// Must be externally synchronized.
+    /// Must be externally synchronized, and must not be called on `Headless` sessions.
     #[inline]
     pub unsafe fn wait_frame(&self) -> Result<FrameState> {
-        let info = sys::FrameWaitInfo {
-            ty: sys::FrameWaitInfo::TYPE,
-            next: ptr::null(),
-        };
         let mut out = sys::FrameState {
             ty: sys::FrameState::TYPE,
             next: ptr::null_mut(),
             ..mem::uninitialized()
         };
-        cvt((self.fp().wait_frame)(self.as_raw(), &info, &mut out))?;
+        cvt((self.fp().wait_frame)(
+            self.as_raw(),
+            builder::FrameWaitInfo::new().as_raw(),
+            &mut out,
+        ))?;
         Ok(FrameState {
             predicted_display_time: out.predicted_display_time,
             predicted_display_period: out.predicted_display_period,
@@ -230,11 +230,10 @@ impl<G: Graphics> Session<G> {
     /// Must be externally synchronized with respect to both itself and `end_frame`.
     #[inline]
     pub unsafe fn begin_frame(&self) -> Result<sys::Result> {
-        let info = sys::FrameBeginInfo {
-            ty: sys::FrameWaitInfo::TYPE,
-            next: ptr::null(),
-        };
-        cvt((self.fp().begin_frame)(self.as_raw(), &info))
+        cvt((self.fp().begin_frame)(
+            self.as_raw(),
+            builder::FrameBeginInfo::new().as_raw(),
+        ))
     }
 
     /// Indicate that all graphics work for the frame has been submitted
@@ -248,7 +247,7 @@ impl<G: Graphics> Session<G> {
         &self,
         display_time: Time,
         environment_blend_mode: EnvironmentBlendMode,
-        layers: &[&CompositionLayer<'_, G>],
+        layers: &[&CompositionLayerBase<'_, G>],
     ) -> Result<()> {
         assert!(layers.len() <= u32::max_value() as usize);
         let info = sys::FrameEndInfo {
@@ -261,6 +260,96 @@ impl<G: Graphics> Session<G> {
         };
         cvt((self.fp().end_frame)(self.as_raw(), &info))?;
         Ok(())
+    }
+
+    /// Allocate a new [`ActionSet`]
+    ///
+    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html#input-action-creation
+    #[inline]
+    pub fn create_action_set(
+        &self,
+        name: &str,
+        localized_name: &str,
+        priority: u32,
+    ) -> Result<ActionSet> {
+        let info = builder::ActionSetCreateInfo::new()
+            .action_set_name(name)
+            .localized_action_set_name(localized_name)
+            .priority(priority);
+        unsafe {
+            let mut out = sys::ActionSet::NULL;
+            cvt((self.fp().create_action_set)(
+                self.as_raw(),
+                info.as_raw(),
+                &mut out,
+            ))?;
+            Ok(ActionSet::from_raw(self.clone(), out))
+        }
+    }
+
+    #[inline]
+    pub fn set_interaction_profile_suggested_bindings(
+        &self,
+        interaction_profile: Path,
+        bindings: &[Binding],
+    ) -> Result<()> {
+        let info = sys::InteractionProfileSuggestedBinding {
+            ty: sys::InteractionProfileSuggestedBinding::TYPE,
+            next: ptr::null(),
+            interaction_profile,
+            count_suggested_bindings: bindings.len() as u32,
+            suggested_bindings: bindings.as_ptr() as *const _ as _,
+        };
+        unsafe {
+            cvt((self.fp().set_interaction_profile_suggested_bindings)(
+                self.as_raw(),
+                &info,
+            ))?;
+        }
+        Ok(())
+    }
+
+    /// Get the suggested interaction profile in use for a top level user path
+    ///
+    /// May be NULL.
+    #[inline]
+    pub fn current_interaction_profile(&self, top_level_user_path: Path) -> Result<Path> {
+        unsafe {
+            let mut out = sys::InteractionProfileInfo {
+                ty: sys::InteractionProfileInfo::TYPE,
+                next: ptr::null(),
+                ..mem::uninitialized()
+            };
+            cvt((self.fp().get_current_interaction_profile)(
+                self.as_raw(),
+                top_level_user_path,
+                &mut out,
+            ))?;
+            Ok(out.interaction_profile)
+        }
+    }
+
+    /// Designate active input actions and update their states
+    #[inline]
+    pub fn sync_action_data(&self, action_sets: &[ActiveActionSet<'_>]) -> Result<()> {
+        unsafe {
+            cvt((self.fp().sync_action_data)(
+                self.as_raw(),
+                action_sets.len() as u32,
+                action_sets.as_ptr() as _,
+            ))?;
+        }
+        Ok(())
+    }
+
+    /// Returns a string for the input source in the current system locale
+    #[inline]
+    pub fn input_source_localized_name(
+        &self,
+        source: Path,
+        flags: InputSourceLocalizedNameFlags,
+    ) -> Result<String> {
+        get_str(|cap, count, buf| unsafe { (self.fp().get_input_source_localized_name)(self.as_raw(), source, flags, cap, count, buf) })
     }
 
     // Private helper
@@ -315,4 +404,44 @@ pub struct View {
 pub struct FrameState {
     pub predicted_display_time: Time,
     pub predicted_display_period: Duration,
+}
+
+#[repr(transparent)]
+#[derive(Copy, Clone)]
+pub struct Binding<'a> {
+    _inner: sys::ActionSuggestedBinding,
+    _marker: PhantomData<&'a ()>,
+}
+
+impl<'a> Binding<'a> {
+    pub fn new<T: ActionTy>(action: &'a Action<T>, binding: Path) -> Self {
+        Self {
+            _inner: sys::ActionSuggestedBinding {
+                action: action.as_raw(),
+                binding: binding,
+            },
+            _marker: PhantomData,
+        }
+    }
+}
+
+#[repr(transparent)]
+#[derive(Copy, Clone)]
+pub struct ActiveActionSet<'a> {
+    _inner: sys::ActiveActionSet,
+    _marker: PhantomData<&'a ActionSet>,
+}
+
+impl<'a> ActiveActionSet<'a> {
+    pub fn new(action_set: &'a ActionSet, subaction_path: Path) -> Self {
+        Self {
+            _inner: sys::ActiveActionSet {
+                ty: sys::ActiveActionSet::TYPE,
+                next: ptr::null(),
+                action_set: action_set.as_raw(),
+                subaction_path,
+            },
+            _marker: PhantomData,
+        }
+    }
 }

@@ -1,7 +1,7 @@
-#![recursion_limit = "128"]
+#![recursion_limit = "256"]
 
 use std::{
-    collections::{BTreeMap, BTreeSet, HashMap, HashSet},
+    collections::{HashMap, HashSet},
     env,
     fs::File,
     io::{Seek, SeekFrom, Write},
@@ -9,6 +9,7 @@ use std::{
 };
 
 use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
+use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::{Ident, LitByteStr};
@@ -34,18 +35,19 @@ fn main() {
 
 struct Parser {
     reader: EventReader<File>,
-    enums: BTreeMap<String, Enum<i32>>,
-    bitmasks: BTreeMap<String, Enum<u64>>,
+    enums: IndexMap<String, Enum<i32>>,
+    bitmasks: IndexMap<String, Enum<u64>>,
     /// *FlagBits -> *Flags
     bitvalues: HashMap<String, String>,
-    handles: BTreeSet<String>,
-    structs: BTreeMap<String, Struct>,
+    handles: IndexSet<String>,
+    structs: IndexMap<String, Struct>,
     api_constants: Vec<(String, usize)>,
-    commands: BTreeMap<String, Command>,
-    extensions: BTreeMap<String, Tag>,
+    commands: IndexMap<String, Command>,
+    extensions: IndexMap<String, Tag>,
     disabled_exts: HashSet<Rc<str>>,
     api_version: Option<(u32, u32, u32)>,
     header_version: Option<u32>,
+    base_headers: IndexMap<String, Vec<String>>,
 }
 
 impl Parser {
@@ -55,17 +57,18 @@ impl Parser {
                 .trim_whitespace(true)
                 .ignore_comments(true)
                 .create_reader(source),
-            enums: BTreeMap::new(),
-            bitmasks: BTreeMap::new(),
+            enums: IndexMap::new(),
+            bitmasks: IndexMap::new(),
             bitvalues: HashMap::new(),
-            handles: BTreeSet::new(),
-            structs: BTreeMap::new(),
+            handles: IndexSet::new(),
+            structs: IndexMap::new(),
             api_constants: Vec::new(),
-            commands: BTreeMap::new(),
-            extensions: BTreeMap::new(),
+            commands: IndexMap::new(),
+            extensions: IndexMap::new(),
             disabled_exts: HashSet::new(),
             api_version: None,
             header_version: None,
+            base_headers: IndexMap::new(),
         }
     }
 
@@ -300,7 +303,9 @@ impl Parser {
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
-                StartElement { name, .. } => match &name.local_name[..] {
+                StartElement {
+                    name, attributes, ..
+                } => match &name.local_name[..] {
                     "proto" => {
                         if let StartElement { name, .. } =
                             self.reader.next().expect("failed to parse XML")
@@ -329,7 +334,7 @@ impl Parser {
                         self.finish_element();
                     }
                     "param" => {
-                        params.push(self.parse_var("param"));
+                        params.push(self.parse_var("param", &attributes));
                     }
                     _ => {
                         eprintln!("unimplemented command element: {}", name.local_name);
@@ -477,7 +482,7 @@ impl Parser {
     }
 
     fn parse_struct(&mut self, attrs: &[OwnedAttribute]) {
-        let name = attr(attrs, "name").unwrap();
+        let struct_name = attr(attrs, "name").unwrap();
         let mut members = Vec::new();
         let mut ty = None;
         loop {
@@ -487,9 +492,25 @@ impl Parser {
                     name, attributes, ..
                 } => match &name.local_name[..] {
                     "member" => {
-                        let m = self.parse_var("member");
+                        let mut m = self.parse_var("member", &attributes);
                         if m.name == "type" && m.ty == "XrStructureType" {
                             ty = attr(&attributes, "values").map(|x| x.into());
+                        }
+                        if struct_name == "XrVisibilityMaskKHR"
+                            && m.ptr_depth != 0
+                            && m.name != "next"
+                        {
+                            // Work around XML bug
+                            assert!(
+                                m.len.is_none(),
+                                "bug has been fixed; remove this special case"
+                            );
+                            let len = match &m.name[..] {
+                                "vertices" => "vertexCount",
+                                "indices" => "indexCount",
+                                _ => unreachable!(),
+                            };
+                            m.len = Some(vec![len.into()]);
                         }
                         members.push(m);
                     }
@@ -507,17 +528,25 @@ impl Parser {
                 _ => {}
             }
         }
+        let parent: Option<String> = attr(attrs, "parentstruct").map(|x| x.into());
+        if let Some(ref parent) = parent {
+            self.base_headers
+                .entry(parent.clone())
+                .or_insert_with(Vec::new)
+                .push(struct_name.into());
+        }
         self.structs.insert(
-            name.into(),
+            struct_name.into(),
             Struct {
                 members,
                 ty,
                 extension: None,
+                parent,
             },
         );
     }
 
-    fn parse_var(&mut self, elt_name: &'static str) -> Member {
+    fn parse_var(&mut self, elt_name: &'static str, attrs: &[OwnedAttribute]) -> Member {
         let mut member_name = None;
         let mut member_ty = None;
         let mut is_const = false;
@@ -568,6 +597,7 @@ impl Parser {
             ptr_depth,
             ty: member_ty.unwrap(),
             static_array_len,
+            len: attr(attrs, "len").map(|x| x.split(",").map(|x| x.into()).collect()),
         }
     }
 
@@ -907,7 +937,6 @@ impl Parser {
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
                 handle!(#ident);
-
             }
         });
 
@@ -1046,7 +1075,7 @@ impl Parser {
             pub mod pfn {
                 use super::*;
 
-                pub type VoidFunction = Option<unsafe extern "system" fn()>;
+                pub type VoidFunction = unsafe extern "system" fn();
                 pub type DebugUtilsMessengerCallbackEXT = unsafe extern "system" fn(
                     DebugUtilsMessageSeverityFlagsEXT,
                     DebugUtilsMessageTypeFlagsEXT,
@@ -1189,84 +1218,117 @@ impl Parser {
             }
         }
 
-        let reexports = self
+        let simple_structs = self
             .structs
             .iter()
             .filter_map(|(name, s)| {
                 if self.is_simple_struct(s) {
-                    Some(name)
+                    Some(&name[..])
                 } else {
                     None
                 }
             })
-            .chain(self.enums.keys().filter(|&x| x != "XrResult"))
-            .chain(self.bitmasks.keys())
-            .map(|x| xr_ty_name(x));
+            .collect::<IndexSet<&str>>();
+        let reexports = simple_structs
+            .iter()
+            .cloned()
+            .chain(
+                self.enums
+                    .keys()
+                    .filter(|&x| x != "XrResult")
+                    .map(|x| &x[..]),
+            )
+            .chain(self.bitmasks.keys().map(|x| &x[..]))
+            .map(xr_ty_name);
 
-        let (event_cases, event_decodes) = self.structs.iter()
+        let mut event_cases = Vec::new();
+        let mut event_decodes = Vec::new();
+        let mut event_readers = Vec::new();
+        for (raw_name, evt) in self.structs.iter()
             .filter(|(name, _)| {
                 name.starts_with("XrEventData")
                     && !name.ends_with("BaseHeader")
                     && !name.ends_with("Buffer")
             })
-            .map(|(raw_name, evt)| {
-                let raw_ident = xr_ty_name(&raw_name);
-                let name = &raw_name["XrEventData".len()..];
-                let ident = Ident::new(name, Span::call_site());
-                // Skip "type", "next"
-                let members = evt.members.iter().skip(2).map(|m| {
-                    let ident = xr_var_name(&m.name);
-                    let ty = match &m.ty[..] {
-                        "XrBool32" => quote! { bool },
-                        "XrSession" => quote! { sys::Session },
-                        _ => xr_var_ty(&m),
-                    };
-                    quote! {
-                        #ident: #ty
+        {
+            let raw_ident = xr_ty_name(&raw_name);
+            let name = &raw_name["XrEventData".len()..];
+            let ident = Ident::new(name, Span::call_site());
+            event_cases.push(if evt.members.len() <= 2 {
+                assert_eq!(evt.members.len(), 2);
+                quote! { #ident }
+            } else {
+                quote! {
+                    #ident(#ident<'a>)
+                }
+            });
+            let tag = xr_enum_value_name("XrStructureType", evt.ty.as_ref().unwrap());
+            event_decodes.push(if evt.members.len() <= 2 {
+                quote! {
+                    sys::StructureType::#tag => Event::#ident,
+                }
+            } else {
+                quote! {
+                    sys::StructureType::#tag => {
+                        let typed = &*(raw as *const _ as *const sys::#raw_ident);
+                        Event::#ident(#ident::new(typed))
                     }
-                });
-                let case = if evt.members.len() <= 2 {
-                    assert_eq!(evt.members.len(), 2);
-                    quote! { #ident }
-                } else {
-                    quote! {
-                        #ident {
-                            #(#members,)*
-                        }
-                    }
-                };
-                let member_names = evt.members.iter().skip(2).map(|m| xr_var_name(&m.name));
-                let member_inits = evt.members.iter().skip(2).map(|m| {
-                    let ident = xr_var_name(&m.name);
-                    match &m.ty[..] {
-                        "XrBool32" => quote! { #ident: #ident != sys::FALSE },
-                        _ => quote! { #ident },
-                    }
-                });
-                let tag = xr_enum_value_name("XrStructureType", evt.ty.as_ref().unwrap());
-                let decode = if evt.members.len() <= 2 {
-                    quote! {
-                        sys::StructureType::#tag => Event::#ident,
-                    }
-                } else {
-                    quote! {
-                        sys::StructureType::#tag => {
-                            let sys::#raw_ident { #(#member_names,)* ..} = *(raw as *const _ as *const sys::#raw_ident);
-                            Event::#ident {
-                                #(#member_inits,)*
-                            }
-                        }
-                    }
-                };
-                (case, decode)
-            }).unzip::<_, _, Vec<_>, Vec<_>>();
+                }
+            });
+            event_readers.push(self.generate_reader(&ident, &raw_ident, evt));
+        }
+
+        let mut struct_meta = HashMap::<&str, StructMeta>::new();
+        for (name, s) in &self.structs {
+            if name.starts_with("XrBase") {
+                continue;
+            }
+            struct_meta.insert(name, self.compute_meta(&s));
+        }
+
+        let polymorphic_builders = self.base_headers.iter().filter_map(|(name, children)| {
+            if name == "XrSwapchainImageBaseHeader" || name == "XrEventDataBaseHeader" {
+                return None;
+            }
+            Some(self.generate_polymorphic_builders(&struct_meta, &simple_structs, name, children))
+        });
+
+        let blacklist = [
+            "XrInstanceCreateInfo",
+            "XrInstanceCreateInfoAndroidKHR",
+            "XrFrameEndInfo",
+            "XrDebugUtilsMessengerCallbackDataEXT",
+            "XrDebugUtilsLabelEXT",
+            "XrDebugUtilsObjectNameInfoEXT",
+            "XrDebugUtilsMessengerCreateInfoEXT",
+            "XrActionSuggestedBinding",
+            "XrInteractionProfileSuggestedBinding",
+        ]
+        .iter()
+        .cloned()
+        .collect::<HashSet<&str>>();
+        let builders = self.structs.iter().filter_map(|(name, s)| {
+            if !simple_structs.contains(&name[..])
+                && !name.starts_with("XrBase")
+                && !name.ends_with("BaseHeader")
+                && !blacklist.contains(&name[..])
+                && s.parent.is_none()
+                && s.extension
+                    .as_ref()
+                    .map_or(true, |ext| !self.disabled_exts.contains(ext))
+            {
+                Some(self.generate_builder(&struct_meta, &simple_structs, name, s))
+            } else {
+                None
+            }
+        });
 
         quote! {
             use std::{sync::Arc, os::raw::c_char};
 
             pub use sys::{#(#reexports),*};
 
-            use crate::{Entry, Result, Time};
+            use crate::*;
 
             struct InstanceInner {
                 entry: Entry,
@@ -1373,25 +1435,28 @@ impl Parser {
             }
 
             #[derive(Copy, Clone)]
-            pub enum Event {
+            pub enum Event<'a> {
                 #(#event_cases,)*
             }
 
-            impl Event {
+            impl<'a> Event<'a> {
                 /// Decode an event
                 ///
                 /// Returns `None` if the event type is not recognized, e.g. if it's from an unknown extension
                 ///
                 /// # Safety
                 ///
-                /// `raw` must refer to an `EventDataBuffer` populated by a successful call to `xrPollEvent`.
-                pub unsafe fn from_raw(raw: &sys::EventDataBuffer) -> Option<Self> {
+                /// `raw` must refer to an `EventDataBuffer` populated by a successful call to
+                /// `xrPollEvent`, which has not been moved since.
+                pub unsafe fn from_raw(raw: &'a sys::EventDataBuffer) -> Option<Self> {
                     Some(match raw.ty {
                         #(#event_decodes)*
                         _ => { return None; }
                     })
                 }
             }
+
+            #(#event_readers)*
 
             pub mod raw {
                 use std::{mem, ffi::CStr};
@@ -1418,6 +1483,337 @@ impl Parser {
 
                 #(#exts)*
             }
+
+            #[allow(unused)]
+            pub(crate) mod builder {
+                use std::{mem, marker::PhantomData, ops::Deref};
+
+                #[cfg(feature = "vulkan")]
+                use ash::vk;
+                #[cfg(all(feature = "opengl", feature = "xlib"))]
+                use sys::{GLXFBConfig, GLXDrawable, GLXContext, Display};
+
+                use crate::*;
+
+                #(#builders)*
+                #(#polymorphic_builders)*
+            }
+        }
+    }
+
+    fn compute_meta(&self, s: &Struct) -> StructMeta {
+        let mut out = StructMeta::default();
+        for member in &s.members {
+            out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
+            out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
+            if let Some(x) = self.structs.get(&member.ty) {
+                out |= self.compute_meta(x);
+            }
+        }
+        out
+    }
+
+    fn generate_polymorphic_builders(
+        &self,
+        meta: &HashMap<&str, StructMeta>,
+        simple: &IndexSet<&str>,
+        base_name: &str,
+        children: &[String],
+    ) -> TokenStream {
+        let sys_ident = xr_ty_name(base_name);
+        assert!(base_name.starts_with("Xr") && base_name.ends_with("BaseHeader"));
+        let base_ident = Ident::new(
+            &base_name[2..base_name.len() - "Header".len()],
+            Span::call_site(),
+        );
+        let mut base_meta = StructMeta::default();
+        for name in children {
+            base_meta |= *meta.get(&name[..]).unwrap();
+        }
+
+        let (type_params, type_args, marker, marker_init) = base_meta.type_params();
+        let builders = children.iter().map(|name| {
+            let ident = xr_ty_name(name);
+            let s = self.structs.get(name).unwrap();
+            let inits = self.generate_builder_inits(s);
+            let setters = self.generate_setters(meta, simple, s);
+            quote! {
+                #[derive(Copy, Clone)]
+                #[repr(transparent)]
+                pub struct #ident #type_params {
+                    inner: sys::#ident,
+                    #marker
+                }
+                impl #type_params #ident #type_args {
+                    #[inline]
+                    pub fn new() -> Self {
+                        Self {
+                            inner: sys::#ident {
+                                #inits
+                                ..unsafe { mem::zeroed() }
+                            },
+                            #marker_init
+                        }
+                    }
+
+                    /// Initialize with the supplied raw values
+                    ///
+                    /// # Safety
+                    ///
+                    /// The guarantees normally enforced by this builder (e.g. lifetimes) must be
+                    /// preserved.
+                    #[inline]
+                    pub unsafe fn from_raw(inner: sys::#ident) -> Self {
+                        Self {
+                            inner,
+                            #marker_init
+                        }
+                    }
+
+                    #[inline]
+                    pub fn into_raw(self) -> sys::#ident {
+                        self.inner
+                    }
+                    
+                    #[inline]
+                    pub fn as_raw(&self) -> &sys::#ident {
+                        &self.inner
+                    }
+
+                    #(#setters)*
+                }
+                impl #type_params Deref for #ident #type_args {
+                    type Target = #base_ident #type_args;
+
+                    #[inline]
+                    fn deref(&self) -> &Self::Target {
+                        unsafe { mem::transmute(&self.inner) }
+                    }
+                }
+            }
+        });
+
+        quote! {
+            #[repr(transparent)]
+            pub struct #base_ident #type_params {
+                _inner: sys::#sys_ident,
+                #marker
+            }
+            #(#builders)*
+        }
+    }
+
+    fn generate_setters(
+        &self,
+        meta: &HashMap<&str, StructMeta>,
+        simple: &IndexSet<&str>,
+        s: &Struct,
+    ) -> TokenStream {
+        let lens = s
+            .members
+            .iter()
+            .filter_map(|m| m.len.as_ref())
+            .flat_map(|x| x.iter().filter(|&x| x != "null-terminated"))
+            .map(|x| &x[..])
+            .collect::<HashSet<&str>>();
+        let setters = s.members.iter().filter_map(|m| {
+            if m.name == "type" || m.name == "next" || lens.contains(&m.name[..]) {
+                return None;
+            }
+            let ident = xr_var_name(&m.name);
+            let type_args = if let Some(meta) = meta.get(&m.ty[..]) {
+                let (_, type_args, _, _) = meta.type_params();
+                type_args
+            } else if m.ty == "XrSwapchain" || m.ty == "XrSession" {
+                quote! { <G> }
+            } else {
+                quote! {}
+            };
+            let (ty, init) = match &m.ty[..] {
+                "XrBool32" => (
+                    quote! { bool },
+                    quote! { self.inner.#ident = value.into(); },
+                ),
+                x if self.handles.contains(x) => {
+                    assert!(m.len.is_none());
+                    let ty = xr_var_ty(&m);
+                    (
+                        quote! { &'a #ty #type_args },
+                        quote! { self.inner.#ident = value.as_raw(); },
+                    )
+                }
+                _ => {
+                    if let Some(_) = m.static_array_len {
+                        if m.ty != "char" {
+                            return None;
+                        }
+                        (
+                            quote! { &str },
+                            quote! { place_cstr(&mut self.inner.#ident, value); },
+                        )
+                    } else if let Some(ref len) = m.len {
+                        let mut inner = m.clone();
+                        inner.ptr_depth -= 1;
+                        assert_eq!(inner.ptr_depth, 0, "nested arrays are unimplemented");
+                        let ty = xr_var_ty(&inner);
+                        let len = xr_var_name(&len[0]);
+                        (
+                            quote! { &'a [#ty #type_args] },
+                            quote! {
+                                self.inner.#ident = value.as_ptr() as *const _ as _;
+                                self.inner.#len = value.len() as u32;
+                            },
+                        )
+                    } else if m.ptr_depth != 0 {
+                        let mut inner = m.clone();
+                        inner.ptr_depth -= 1;
+                        let ty = xr_var_ty(&inner);
+                        (
+                            quote! { &'a #ty #type_args },
+                            quote! { self.inner.#ident = value as *const _ as _; },
+                        )
+                    } else if self.structs.contains_key(&m.ty) && !simple.contains(&m.ty[..]) {
+                        let ty = xr_var_ty(&m);
+                        (
+                            quote! { #ty #type_args },
+                            quote! { self.inner.#ident = value.inner; },
+                        )
+                    } else {
+                        (xr_var_ty(&m), quote! { self.inner.#ident = value; })
+                    }
+                }
+            };
+            Some(quote! {
+                #[inline]
+                pub fn #ident(mut self, value: #ty) -> Self {
+                    #init
+                    self
+                }
+            })
+        });
+        quote! {
+            #(#setters)*
+        }
+    }
+
+    fn generate_builder_inits(&self, s: &Struct) -> TokenStream {
+        let inits = s.members.iter().filter_map(|m| {
+            let ident = xr_var_name(&m.name);
+            if m.name == "type" {
+                let tag = xr_enum_value_name("XrStructureType", s.ty.as_ref().unwrap());
+                return Some(quote! { #ident: sys::StructureType::#tag });
+            }
+            None
+        });
+        quote! {
+            #(#inits,)*
+        }
+    }
+
+    fn generate_builder(
+        &self,
+        meta: &HashMap<&str, StructMeta>,
+        simple: &IndexSet<&str>,
+        name: &str,
+        s: &Struct,
+    ) -> TokenStream {
+        let setters = self.generate_setters(meta, simple, s);
+        let ident = xr_ty_name(name);
+        let (type_params, type_args, marker, marker_init) = meta.get(name).unwrap().type_params();
+        let inits = self.generate_builder_inits(s);
+        let conds = conditions(&name);
+        let conds2 = conds.clone();
+        quote! {
+            #[derive(Copy, Clone)]
+            #[repr(transparent)]
+            #conds
+            pub struct #ident #type_params {
+                inner: sys::#ident,
+                #marker
+            }
+            #conds2
+            impl #type_params #ident #type_args {
+                #[inline]
+                pub fn new() -> Self {
+                    Self {
+                        inner: sys::#ident {
+                            #inits
+                            ..unsafe { mem::zeroed() }
+                        },
+                        #marker_init
+                    }
+                }
+
+                /// Initialize with the supplied raw values
+                ///
+                /// # Safety
+                ///
+                /// The guarantees normally enforced by this builder (e.g. lifetimes) must be
+                /// preserved.
+                #[inline]
+                pub unsafe fn from_raw(inner: sys::#ident) -> Self {
+                    Self {
+                        inner,
+                        #marker_init
+                    }
+                }
+
+                #[inline]
+                pub fn into_raw(self) -> sys::#ident {
+                    self.inner
+                }
+
+                #[inline]
+                pub fn as_raw(&self) -> &sys::#ident {
+                    &self.inner
+                }
+
+                #(#setters)*
+            }
+        }
+    }
+
+    fn generate_reader(&self, ident: &Ident, raw_ident: &Ident, s: &Struct) -> TokenStream {
+        let lens = s
+            .members
+            .iter()
+            .filter_map(|m| m.len.as_ref())
+            .flat_map(|x| x.iter().filter(|&x| x != "null-terminated"))
+            .map(|x| &x[..])
+            .collect::<HashSet<&str>>();
+        let readers = s.members.iter().filter_map(|m| {
+            if m.name == "type" || m.name == "next" || lens.contains(&m.name[..]) {
+                return None;
+            }
+            let ident = xr_var_name(&m.name);
+            let (ty, value) = if m.ty == "XrBool32" {
+                (quote! { bool }, quote! { (self.0).#ident.into() })
+            } else if self.handles.contains(&m.ty) {
+                let ty = xr_var_ty(&m);
+                (quote! { sys::#ty }, quote! { (self.0).#ident })
+            } else {
+                (xr_var_ty(&m), quote! { (self.0).#ident })
+            };
+            Some(quote! {
+                #[inline]
+                pub fn #ident(&self) -> #ty {
+                    #value
+                }
+            })
+        });
+
+        quote! {
+            #[derive(Copy, Clone)]
+            pub struct #ident<'a>(&'a sys::#raw_ident);
+
+            impl<'a> #ident<'a> {
+                #[inline]
+                pub fn new(inner: &'a sys::#raw_ident) -> Self {
+                    Self(inner)
+                }
+
+                #(#readers)*
+            }
         }
     }
 
@@ -1428,11 +1824,67 @@ impl Parser {
                 && x.static_array_len.is_none()
                 && x.ty != "XrBool32"
                 && self
-                .structs
-                .get(&x.ty)
-                .map_or(true, |x| self.is_simple_struct(x))
+                    .structs
+                    .get(&x.ty)
+                    .map_or(true, |x| self.is_simple_struct(x))
                 && !self.handles.contains(&x.ty)
         })
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+struct StructMeta {
+    has_pointer: bool,
+    has_graphics: bool,
+}
+
+impl StructMeta {
+    fn type_params(&self) -> (TokenStream, TokenStream, TokenStream, TokenStream) {
+        let mut params = Vec::new();
+        let mut args = Vec::new();
+        if self.has_pointer {
+            params.push(quote! { 'a });
+            args.push(quote! { 'a });
+        }
+        if self.has_graphics {
+            params.push(quote! { G: Graphics });
+            args.push(quote! { G });
+        }
+        let phantom = if self.has_pointer && self.has_graphics {
+            quote! { &'a G }
+        } else if self.has_pointer {
+            quote! { &'a () }
+        } else if self.has_graphics {
+            quote! { G }
+        } else {
+            quote! {}
+        };
+        if params.is_empty() {
+            (quote! {}, quote! {}, quote! {}, quote! {})
+        } else {
+            (
+                quote! { <#(#params),*> },
+                quote! { <#(#args),*> },
+                quote! { _marker: PhantomData<#phantom> },
+                quote! { _marker: PhantomData },
+            )
+        }
+    }
+}
+
+impl Default for StructMeta {
+    fn default() -> Self {
+        Self {
+            has_pointer: false,
+            has_graphics: false,
+        }
+    }
+}
+
+impl std::ops::BitOrAssign for StructMeta {
+    fn bitor_assign(&mut self, rhs: Self) {
+        self.has_pointer |= rhs.has_pointer;
+        self.has_graphics |= rhs.has_graphics;
     }
 }
 
@@ -1469,15 +1921,17 @@ struct Struct {
     members: Vec<Member>,
     extension: Option<Rc<str>>,
     ty: Option<String>,
+    parent: Option<String>,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct Member {
     name: String,
     is_const: bool,
     ptr_depth: usize,
     ty: String,
     static_array_len: Option<String>,
+    len: Option<Vec<String>>,
 }
 
 struct Extension {
@@ -1576,7 +2030,7 @@ fn xr_var_ty(member: &Member) -> TokenStream {
         quote! { #ident }
     } else if member.ty.starts_with("PFN_") {
         let ident = xr_command_name(&member.ty["PFN_".len()..]);
-        quote! { pfn::#ident }
+        quote! { Option<pfn::#ident> }
     } else if member.ty.starts_with("Vk") {
         let ident = Ident::new(&member.ty[2..], Span::call_site());
         quote! { vk::#ident }

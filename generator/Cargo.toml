@@ -12,3 +12,4 @@ quote = "0.6"
 syn = { version = "0.15", default-features = false, features = ["derive", "printing"] }
 proc-macro2 = "0.4"
 heck = "0.3"
+indexmap = "1"

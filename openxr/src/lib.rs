@@ -1,22 +1,5 @@
 use std::os::raw::c_char;
 
-macro_rules! fixed_cstr {
-    ($str:expr, $n:ident) => {{
-        let s = $str;
-        unsafe {
-            if s.len() + 1 > sys::$n {
-                panic!("string exceeds {}", stringify!($n));
-            }
-            let mut x: [std::os::raw::c_char; sys::$n] = std::mem::uninitialized();
-            for (i, o) in s.bytes().zip(x.iter_mut()) {
-                *o = i as std::os::raw::c_char;
-            }
-            x[s.len()] = 0;
-            x
-        }
-    }};
-}
-
 pub use sys::{self, Duration, Path, SystemId, Time, Version, CURRENT_API_VERSION};
 
 mod generated;
@@ -33,10 +16,17 @@ mod swapchain;
 pub use swapchain::*;
 mod space;
 pub use space::*;
+mod action_set;
+pub use action_set::*;
 mod action;
 pub use action::*;
-mod composition_layers;
-pub use composition_layers::*;
+
+pub use builder::{
+    ApplicationInfo,
+    CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
+    CompositionLayerEquirectKHR, CompositionLayerProjection, CompositionLayerQuad, HapticBase,
+    HapticVibration,
+};
 
 pub type Result<T> = std::result::Result<T, sys::Result>;
 
@@ -54,6 +44,20 @@ fn cvt(x: sys::Result) -> Result<sys::Result> {
     } else {
         Err(x)
     }
+}
+
+fn place_cstr(out: &mut [c_char], s: &str) {
+    if s.len() + 1 > out.len() {
+        panic!(
+            "string requires {} > {} bytes (including trailing null)",
+            s.len(),
+            out.len()
+        );
+    }
+    for (i, o) in s.bytes().zip(out.iter_mut()) {
+        *o = i as std::os::raw::c_char;
+    }
+    out[s.len()] = 0;
 }
 
 unsafe fn fixed_str<'a>(x: &'a [c_char]) -> &'a str {

@@ -8,19 +8,16 @@ fn main() {
 
     let extensions = entry.enumerate_extensions().unwrap();
     println!("supported extensions: {:?}", extensions);
-    if !extensions.khr_vulkan_enable {
-        panic!("vulkan unsupported");
+    if !extensions.khr_headless {
+        panic!("headless unsupported");
     }
     let instance = entry
         .create_instance(
-            &xr::ApplicationInfo {
-                application_name: "hello openxrs",
-                application_version: 0,
-                engine_name: "openxrs",
-                engine_version: 0,
-            },
+            xr::ApplicationInfo::new()
+                .application_name("hello openxrs")
+                .engine_name("hello openxrs"),
             &xr::ExtensionSet {
-                khr_vulkan_enable: true,
+                khr_headless: true,
                 ..Default::default()
             },
         )
@@ -57,4 +54,63 @@ fn main() {
         .enumerate_view_configuration_views(system, xr::ViewConfigurationType::PRIMARY_STEREO)
         .unwrap();
     println!("view configuration views: {:?}", view_config_views);
+
+    let session = instance.create_session_headless(system).unwrap();
+    session.begin(xr::ViewConfigurationType::PRIMARY_STEREO).unwrap();
+    
+    let space_tys = session.enumerate_reference_spaces().unwrap();
+    println!("reference spaces: {:?}", space_tys);
+    let has_stage = space_tys.contains(&xr::ReferenceSpaceType::STAGE);
+    let has_view = space_tys.contains(&xr::ReferenceSpaceType::VIEW);
+
+    let stage = if has_stage {
+        Some(session.create_reference_space(
+            xr::ReferenceSpaceType::STAGE,
+            xr::Posef {
+                position: xr::Vector3f { x: 0.0, y: 0.0, z: 0.0 },
+                orientation: xr::Quaternionf { w: 1.0, x: 0.0, y: 0.0, z: 0.0 },
+            }).unwrap())
+    } else { None };
+
+    let view = if has_view {
+        Some(session.create_reference_space(
+            xr::ReferenceSpaceType::VIEW,
+            xr::Posef {
+                position: xr::Vector3f { x: 0.0, y: 0.0, z: 0.0 },
+                orientation: xr::Quaternionf { w: 1.0, x: 0.0, y: 0.0, z: 0.0 },
+            }).unwrap())
+    } else { None };
+
+    let mut buffer = xr::EventDataBuffer::new();
+    while let Some(e) = instance.poll_event(&mut buffer).unwrap() {
+        use xr::Event::*;
+        match e {
+            SessionStateChanged(e) => {
+                println!("session stage changed to {:?} at t={:?}", e.state(), e.time());
+            }
+            _ => {
+                println!("unhand led event");
+            }
+        }
+    }
+
+    if let (&Some(ref stage), &Some(ref view)) = (&stage, &view) {
+        let relation = view.locate(&stage, xr::Time::from_raw(0)).unwrap();
+        let p = relation.pose.position;
+        println!("view space is at: {} {} {}", p.x, p.y, p.z);
+    }
+
+    if let Some(ref stage) = stage {
+        let (flags, views) = session.locate_views(xr::Time::from_raw(0), stage).unwrap();
+        println!("view flags: {:?}", flags);
+        for (i, view) in views.iter().enumerate() {
+            println!("view {}:", i);
+            let p = view.pose.position;
+            println!("\tposition: {} {} {}", p.x, p.y, p.z);
+            let f = view.fov;
+            println!("\tfov: {} {} {} {}", f.angle_left, f.angle_right, f.angle_up, f.angle_down);
+        }
+    }
+
+    session.end().unwrap();
 }

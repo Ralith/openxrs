@@ -16,7 +16,7 @@ impl Space {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid swapchain handle.
+    /// `handle` must be a valid swapchain handle associated with `session`.
     #[inline]
     pub unsafe fn from_raw<G: Graphics>(session: Session<G>, handle: sys::Space) -> Self {
         Self {

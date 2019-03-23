@@ -1,23 +1,25 @@
-use std::{ptr, sync::Arc, ffi::CString};
+use std::{ffi::CString, marker::PhantomData, mem, ptr};
 
 use crate::*;
 
-pub struct Action {
-    session: Arc<session::SessionInner>,
+pub struct Action<T: ActionTy> {
+    set: ActionSet,
     handle: sys::Action,
+    _marker: PhantomData<T>,
 }
 
-impl Action {
+impl<T: ActionTy> Action<T> {
     /// Take ownership of an existing action handle
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid action handle.
+    /// `handle` must be a valid action handle associated with `set`.
     #[inline]
-    pub unsafe fn from_raw<G: Graphics>(session: Session<G>, handle: sys::Action) -> Self {
+    pub unsafe fn from_raw(set: ActionSet, handle: sys::Action) -> Self {
         Self {
-            session: session.inner,
+            set,
             handle,
+            _marker: PhantomData,
         }
     }
 
@@ -30,7 +32,7 @@ impl Action {
     /// Access the `Instance` self is descended from
     #[inline]
     pub fn instance(&self) -> &Instance {
-        &self.session.instance
+        self.set.instance()
     }
 
     /// Set the debug name of this `Action`, if `XR_EXT_debug_utils` is loaded
@@ -55,8 +57,31 @@ impl Action {
         Ok(())
     }
 
-    /// Creates a `Space` based on a chosen action space
-    pub fn create_action_space(
+    /// Input sources currently bound to this action
+    #[inline]
+    pub fn bound_sources(&self) -> Result<Vec<Path>> {
+        get_arr(|cap, count, buf| unsafe {
+            (self.fp().get_bound_sources_for_action)(self.as_raw(), cap, count, buf)
+        })
+    }
+
+    // Private helper
+    #[inline]
+    fn fp(&self) -> &raw::Instance {
+        self.instance().fp()
+    }
+}
+
+impl<T: ActionInput> Action<T> {
+    /// Retrieve the current state
+    pub fn state(&self, subaction_paths: &[Path]) -> Result<ActionState<T>> {
+        T::get(self, subaction_paths)
+    }
+}
+
+impl Action<Posef> {
+    /// Creates a `Space` relative to this action
+    pub fn create_space(
         &self,
         subaction_path: Path,
         pose_in_action_space: Posef,
@@ -74,21 +99,137 @@ impl Action {
                 &info,
                 &mut out,
             ))?;
-            Ok(Space::new(self.session.clone(), out))
+            Ok(Space::new(self.set.session().clone(), out))
         }
-    }
-
-    // Private helper
-    #[inline]
-    fn fp(&self) -> &raw::Instance {
-        self.session.instance.fp()
     }
 }
 
-impl Drop for Action {
+impl Action<Haptic> {
+    pub fn apply_feedback(&self, subaction_paths: &[Path], event: &HapticBase) -> Result<()> {
+        unsafe {
+            cvt((self.fp().apply_haptic_feedback)(self.as_raw(), subaction_paths.len() as u32, subaction_paths.as_ptr(), event as *const _ as _))?;
+        }
+        Ok(())
+    }
+}
+
+impl<T: ActionTy> Drop for Action<T> {
     fn drop(&mut self) {
         unsafe {
             (self.fp().destroy_action)(self.handle);
         }
     }
+}
+
+pub trait ActionTy: Sized {
+    #[doc(hidden)]
+    const TYPE: ActionType;
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct ActionState<T: ActionInput> {
+    pub current_state: T,
+    pub changed_since_last_sync: bool,
+    pub last_change_time: Time,
+    pub is_active: bool,
+}
+
+pub trait ActionInput: ActionTy {
+    #[doc(hidden)]
+    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>>;
+}
+
+impl ActionTy for bool {
+    const TYPE: ActionType = ActionType::INPUT_BOOLEAN;
+}
+
+impl ActionInput for bool {
+    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>> {
+        unsafe {
+            let mut out = sys::ActionStateBoolean {
+                ty: sys::ActionStateBoolean::TYPE,
+                next: ptr::null_mut(),
+                ..mem::uninitialized()
+            };
+            cvt((action.fp().get_action_state_boolean)(
+                action.as_raw(),
+                subaction_paths.len() as u32,
+                subaction_paths.as_ptr(),
+                &mut out,
+            ))?;
+            Ok(ActionState {
+                current_state: out.current_state.into(),
+                changed_since_last_sync: out.changed_since_last_sync.into(),
+                last_change_time: out.last_change_time,
+                is_active: out.is_active.into(),
+            })
+        }
+    }
+}
+
+impl ActionTy for f32 {
+    const TYPE: ActionType = ActionType::INPUT_BOOLEAN;
+}
+
+impl ActionInput for f32 {
+    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>> {
+        unsafe {
+            let mut out = sys::ActionStateVector1f {
+                ty: sys::ActionStateBoolean::TYPE,
+                next: ptr::null_mut(),
+                ..mem::uninitialized()
+            };
+            cvt((action.fp().get_action_state_vector1f)(
+                action.as_raw(),
+                subaction_paths.len() as u32,
+                subaction_paths.as_ptr(),
+                &mut out,
+            ))?;
+            Ok(ActionState {
+                current_state: out.current_state,
+                changed_since_last_sync: out.changed_since_last_sync.into(),
+                last_change_time: out.last_change_time,
+                is_active: out.is_active.into(),
+            })
+        }
+    }
+}
+
+impl ActionTy for Vector2f {
+    const TYPE: ActionType = ActionType::INPUT_BOOLEAN;
+}
+
+impl ActionInput for Vector2f {
+    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>> {
+        unsafe {
+            let mut out = sys::ActionStateVector2f {
+                ty: sys::ActionStateBoolean::TYPE,
+                next: ptr::null_mut(),
+                ..mem::uninitialized()
+            };
+            cvt((action.fp().get_action_state_vector2f)(
+                action.as_raw(),
+                subaction_paths.len() as u32,
+                subaction_paths.as_ptr(),
+                &mut out,
+            ))?;
+            Ok(ActionState {
+                current_state: out.current_state,
+                changed_since_last_sync: out.changed_since_last_sync.into(),
+                last_change_time: out.last_change_time,
+                is_active: out.is_active.into(),
+            })
+        }
+    }
+}
+
+impl ActionTy for Posef {
+    const TYPE: ActionType = ActionType::INPUT_POSE;
+}
+
+/// Tag for haptic output actions
+pub struct Haptic;
+
+impl ActionTy for Haptic {
+    const TYPE: ActionType = ActionType::OUTPUT_VIBRATION;
 }

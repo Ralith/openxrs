@@ -98,7 +98,7 @@ impl Entry {
     /// Create an OpenXR instance for use with a particular set of graphics APIs
     pub fn create_instance(
         &self,
-        app_info: &ApplicationInfo,
+        app_info: ApplicationInfo,
         required_extensions: &ExtensionSet,
     ) -> Result<Instance> {
         let ext_names = required_extensions.names();
@@ -106,13 +106,7 @@ impl Entry {
             ty: sys::InstanceCreateInfo::TYPE,
             next: ptr::null(),
             create_flags: Default::default(),
-            application_info: sys::ApplicationInfo {
-                application_name: fixed_cstr!(app_info.application_name, MAX_APPLICATION_NAME_SIZE),
-                application_version: app_info.application_version,
-                engine_name: fixed_cstr!(app_info.engine_name, MAX_ENGINE_NAME_SIZE),
-                engine_version: app_info.engine_version,
-                api_version: sys::CURRENT_API_VERSION.into_raw(),
-            },
+            application_info: app_info.into_raw(),
             enabled_api_layer_count: 0,
             enabled_api_layer_names: ptr::null(),
             enabled_extension_count: ext_names.len() as _,
@@ -153,14 +147,6 @@ struct Inner {
     raw: RawEntry,
     #[cfg(feature = "loaded")]
     _lib_guard: Option<DynamicLibrary>,
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct ApplicationInfo<'a> {
-    pub application_name: &'a str,
-    pub application_version: u32,
-    pub engine_name: &'a str,
-    pub engine_version: u32,
 }
 
 pub struct RawEntry {

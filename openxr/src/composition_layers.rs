@@ -110,13 +110,6 @@ setters!(CompositionLayerProjectionView {
 });
 
 #[derive(Copy, Clone)]
-pub struct SwapchainSubImage<'a, G: Graphics> {
-    pub swapchain: &'a Swapchain<G>,
-    pub image_rect: Rect2Di,
-    pub image_array_index: u32,
-}
-
-#[derive(Copy, Clone)]
 #[repr(transparent)]
 pub struct CompositionLayerDepthInfoKHR<'a, G: Graphics> {
     inner: sys::CompositionLayerDepthInfoKHR,

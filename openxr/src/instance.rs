@@ -208,20 +208,17 @@ impl Instance {
     ///
     /// Returns immediately regardless of whether an event was available.
     #[inline]
-    pub fn poll_event(&self) -> Result<Option<Event>> {
+    pub fn poll_event<'a>(&self, storage: &'a mut EventDataBuffer) -> Result<Option<Event<'a>>> {
         unsafe {
-            let mut out = sys::EventDataBuffer {
-                ty: sys::EventDataBuffer::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+            // Work around a shortcoming in NLL as of 2019-03-22
+            let storage: *mut EventDataBuffer = storage;
             loop {
-                let status = cvt((self.fp().poll_event)(self.as_raw(), &mut out))?;
+                let status = cvt((self.fp().poll_event)(self.as_raw(), &mut (*storage).inner))?;
                 if status == sys::Result::EVENT_UNAVAILABLE {
                     return Ok(None);
                 }
                 debug_assert_eq!(status, sys::Result::SUCCESS);
-                if let x @ Some(_) = Event::from_raw(&out) {
+                if let x @ Some(_) = Event::from_raw(&(*storage).inner) {
                     return Ok(x);
                 }
             }
@@ -363,4 +360,20 @@ pub struct ViewConfigurationView {
     pub max_image_rect_height: u32,
     pub recommended_swapchain_sample_count: u32,
     pub max_swapchain_sample_count: u32,
+}
+
+pub struct EventDataBuffer {
+    inner: sys::EventDataBuffer,
+}
+
+impl EventDataBuffer {
+    pub fn new() -> Self {
+        Self {
+            inner: sys::EventDataBuffer {
+                ty: sys::EventDataBuffer::TYPE,
+                next: ptr::null_mut(),
+                ..unsafe { mem::uninitialized() }
+            }
+        }
+    }
 }
