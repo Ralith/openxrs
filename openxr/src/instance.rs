@@ -1,7 +1,6 @@
 use std::{ffi::CString, mem, ptr};
 
-#[cfg(feature = "vulkan")]
-use ash::vk;
+use ash::vk::{self, Handle};
 
 use crate::*;
 
@@ -132,7 +131,6 @@ impl Instance {
     /// Identify the Vulkan instance extensions required by a system
     ///
     /// Returns a space-delimited list of Vulkan instance extension names.
-    #[cfg(feature = "vulkan")]
     #[inline]
     pub fn vulkan_instance_extensions(&self, system: SystemId) -> Result<String> {
         get_str(|input, output, buf| unsafe {
@@ -149,7 +147,6 @@ impl Instance {
     /// Identify the Vulkan device extensions required by a system
     ///
     /// Returns a space-delimited list of Vulkan device extension names.
-    #[cfg(feature = "vulkan")]
     #[inline]
     pub fn vulkan_device_extensions(&self, system: SystemId) -> Result<String> {
         get_str(|input, output, buf| unsafe {
@@ -158,7 +155,6 @@ impl Instance {
     }
 
     /// Identify the Vulkan graphics device to use for a system
-    #[cfg(feature = "vulkan")]
     #[inline]
     pub fn vulkan_graphics_device(
         &self,
@@ -170,8 +166,8 @@ impl Instance {
             cvt((self.vulkan().get_vulkan_graphics_device)(
                 self.as_raw(),
                 system,
-                vk_instance,
-                &mut out,
+                vk_instance.as_raw() as _,
+                &mut out as *mut _ as _,
             ))?;
         }
         Ok(out)
@@ -315,11 +311,9 @@ impl Instance {
     // Internal helpers
     //
 
-    #[cfg(feature = "vulkan")]
     pub(crate) fn vulkan(&self) -> &raw::VulkanEnableKHR {
         self.exts().khr_vulkan_enable.as_ref().unwrap()
     }
-    #[cfg(feature = "opengl")]
     pub(crate) fn opengl(&self) -> &raw::OpenglEnableKHR {
         self.exts().khr_opengl_enable.as_ref().unwrap()
     }

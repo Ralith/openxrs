@@ -3,6 +3,7 @@ use std::fmt;
 #[macro_use]
 mod support;
 mod generated;
+pub mod platform;
 
 // Hand-written bindings for cases which are too few or weird to bother automating
 
@@ -114,22 +115,5 @@ impl fmt::Display for Version {
         write!(fmt, "{}.{}.{}", self.major(), self.minor(), self.patch())
     }
 }
-
-
-#[cfg(all(feature = "xlib", feature = "opengl"))]
-mod xlib {
-    use std::os::raw::{c_ulong, c_void};
-
-    pub type XID = c_ulong;
-    pub type GLXFBConfig = *mut c_void;
-    pub type GLXDrawable = XID;
-    pub type GLXContext = *mut c_void;
-}
-#[cfg(all(feature = "xlib", feature = "opengl"))]
-pub use xlib::*;
-#[cfg(feature = "xlib")]
-pub type Display = std::os::raw::c_void;
-
-// TODO: XCB, OpenGLES, D3D, windows
 
 pub use generated::*;

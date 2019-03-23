@@ -1062,6 +1062,7 @@ impl Parser {
             use libc::timespec;
 
             use crate::support::*;
+            use crate::platform::*;
             use crate::*;
 
             pub const CURRENT_API_VERSION: Version = Version::new(#major, #minor, #patch);
@@ -1295,30 +1296,20 @@ impl Parser {
             Some(self.generate_polymorphic_builders(&struct_meta, &simple_structs, name, children))
         });
 
-        let blacklist = [
-            "XrInstanceCreateInfo",
-            "XrInstanceCreateInfoAndroidKHR",
-            "XrFrameEndInfo",
-            "XrDebugUtilsMessengerCallbackDataEXT",
-            "XrDebugUtilsLabelEXT",
-            "XrDebugUtilsObjectNameInfoEXT",
-            "XrDebugUtilsMessengerCreateInfoEXT",
-            "XrActionSuggestedBinding",
-            "XrInteractionProfileSuggestedBinding",
+        let whitelist = [
+            "XrApplicationInfo",
+            "XrCompositionLayerProjectionView",
+            "XrSwapchainSubImage",
+            "XrFrameWaitInfo",
+            "XrFrameBeginInfo",
+            "XrActionSetCreateInfo",
+            "XrActionCreateInfo",
         ]
         .iter()
         .cloned()
         .collect::<HashSet<&str>>();
         let builders = self.structs.iter().filter_map(|(name, s)| {
-            if !simple_structs.contains(&name[..])
-                && !name.starts_with("XrBase")
-                && !name.ends_with("BaseHeader")
-                && !blacklist.contains(&name[..])
-                && s.parent.is_none()
-                && s.extension
-                    .as_ref()
-                    .map_or(true, |ext| !self.disabled_exts.contains(ext))
-            {
+            if whitelist.contains(&name[..]) {
                 Some(self.generate_builder(&struct_meta, &simple_structs, name, s))
             } else {
                 None
@@ -1491,11 +1482,6 @@ impl Parser {
             #[allow(unused)]
             pub(crate) mod builder {
                 use std::{mem, marker::PhantomData, ops::Deref};
-
-                #[cfg(feature = "vulkan")]
-                use ash::vk;
-                #[cfg(all(feature = "opengl", feature = "xlib"))]
-                use sys::{GLXFBConfig, GLXDrawable, GLXContext, Display};
 
                 use crate::*;
 
@@ -2035,9 +2021,6 @@ fn xr_var_ty(member: &Member) -> TokenStream {
     } else if member.ty.starts_with("PFN_") {
         let ident = xr_command_name(&member.ty["PFN_".len()..]);
         quote! { Option<pfn::#ident> }
-    } else if member.ty.starts_with("Vk") {
-        let ident = Ident::new(&member.ty[2..], Span::call_site());
-        quote! { vk::#ident }
     } else {
         let ty = match &member.ty[..] {
             "uint64_t" => "u64",
@@ -2086,31 +2069,11 @@ fn xr_command_name(raw: &str) -> Ident {
 fn conditions(name: &str) -> TokenStream {
     let name = name.to_lowercase();
     let mut conditions = Vec::new();
-    if name.contains("win32") {
-        conditions.push(quote! { target_os = "windows" });
+    if name.contains("win32") || name.contains("d3d") {
+        conditions.push(quote! { windows });
     }
     if name.contains("android") {
         conditions.push(quote! { target_os = "android" });
-    }
-    if name.contains("vulkan") {
-        conditions.push(quote! { feature = "vulkan" });
-    }
-    if name.contains("d3d") {
-        conditions.push(quote! { feature = "d3d" });
-    }
-    if name.contains("opengles") || name.contains("opengl_es") {
-        conditions.push(quote! { feature = "opengles" });
-    } else if name.contains("opengl") {
-        conditions.push(quote! { feature = "opengl" });
-    }
-    if name.contains("openglxcb") {
-        conditions.push(quote! { feature = "xcb" });
-    }
-    if name.contains("openglxlib") {
-        conditions.push(quote! { feature = "xlib" });
-    }
-    if name.contains("wayland") {
-        conditions.push(quote! { feature = "wayland" });
     }
     match conditions.len() {
         0 => quote! {},

@@ -36,12 +36,8 @@ pub trait Graphics: Sized {
 mod headless;
 pub use headless::Headless;
 
-#[cfg(feature = "vulkan")]
 pub mod vulkan;
-#[cfg(feature = "vulkan")]
 pub use vulkan::Vulkan;
 
-#[cfg(feature = "opengl")]
 pub mod opengl;
-#[cfg(feature = "opengl")]
 pub use opengl::OpenGL;

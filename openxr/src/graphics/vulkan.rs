@@ -1,6 +1,6 @@
 use std::{mem, ptr};
 
-use ash::vk;
+use ash::vk::{self, Handle};
 
 use crate::*;
 
@@ -52,9 +52,9 @@ impl Graphics for Vulkan {
         let binding = sys::GraphicsBindingVulkanKHR {
             ty: sys::GraphicsBindingVulkanKHR::TYPE,
             next: ptr::null(),
-            instance: info.instance,
-            physical_device: info.physical_device,
-            device: info.device,
+            instance: info.instance.as_raw() as _,
+            physical_device: info.physical_device.as_raw() as _,
+            device: info.device.as_raw() as _,
             queue_family_index: info.queue_family_index,
             queue_index: info.queue_index,
         };
@@ -78,7 +78,7 @@ impl Graphics for Vulkan {
             sys::SwapchainImageVulkanKHR {
                 ty: sys::SwapchainImageVulkanKHR::TYPE,
                 next: ptr::null_mut(),
-                image: vk::Image::null(),
+                image: 0,
             },
             |capacity, count, buf| unsafe {
                 (swapchain.instance().fp().enumerate_swapchain_images)(
@@ -89,7 +89,7 @@ impl Graphics for Vulkan {
                 )
             },
         )?;
-        Ok(images.into_iter().map(|x| x.image).collect())
+        Ok(images.into_iter().map(|x| vk::Image::from_raw(x.image)).collect())
     }
 }
 

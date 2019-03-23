@@ -1,5 +1,6 @@
 #![doc = r" Automatically generated code; do not edit!"]
 #![allow(non_upper_case_globals)]
+use crate::platform::*;
 use crate::support::*;
 use crate::*;
 use libc::timespec;
@@ -1178,21 +1179,20 @@ pub struct SystemTrackingProperties {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(target_os = "windows", feature = "opengl"))]
+#[cfg(windows)]
 pub struct GraphicsBindingOpenGLWin32KHR {
     pub ty: StructureType,
     pub next: *const c_void,
     pub h_dc: HDC,
     pub h_glrc: HGLRC,
 }
-#[cfg(all(target_os = "windows", feature = "opengl"))]
+#[cfg(windows)]
 impl GraphicsBindingOpenGLWin32KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WIN32_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl", feature = "xlib"))]
 pub struct GraphicsBindingOpenGLXlibKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1202,14 +1202,12 @@ pub struct GraphicsBindingOpenGLXlibKHR {
     pub glx_drawable: GLXDrawable,
     pub glx_context: GLXContext,
 }
-#[cfg(all(feature = "opengl", feature = "xlib"))]
 impl GraphicsBindingOpenGLXlibKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XLIB_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl", feature = "xcb"))]
 pub struct GraphicsBindingOpenGLXcbKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1220,67 +1218,64 @@ pub struct GraphicsBindingOpenGLXcbKHR {
     pub glx_drawable: xcb_glx_drawable_t,
     pub glx_context: xcb_glx_context_t,
 }
-#[cfg(all(feature = "opengl", feature = "xcb"))]
 impl GraphicsBindingOpenGLXcbKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XCB_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(all(feature = "opengl", feature = "wayland"))]
 pub struct GraphicsBindingOpenGLWaylandKHR {
     pub ty: StructureType,
     pub next: *const c_void,
     pub display: *mut wl_display,
 }
-#[cfg(all(feature = "opengl", feature = "wayland"))]
 impl GraphicsBindingOpenGLWaylandKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WAYLAND_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct GraphicsBindingD3D10KHR {
     pub ty: StructureType,
     pub next: *const c_void,
     pub device: *mut ID3D10Device,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl GraphicsBindingD3D10KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D10_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D11_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct GraphicsBindingD3D11KHR {
     pub ty: StructureType,
     pub next: *const c_void,
     pub device: *mut ID3D11Device,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl GraphicsBindingD3D11KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D11_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D12_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct GraphicsBindingD3D12KHR {
     pub ty: StructureType,
     pub next: *const c_void,
     pub device: *mut ID3D12Device,
     pub queue: *mut ID3D12CommandQueue,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl GraphicsBindingD3D12KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D12_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_es_enable"]
-#[cfg(all(target_os = "android", feature = "opengles"))]
+#[cfg(target_os = "android")]
 pub struct GraphicsBindingOpenGLESAndroidKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1288,24 +1283,22 @@ pub struct GraphicsBindingOpenGLESAndroidKHR {
     pub config: EGLConfig,
     pub context: EGLContext,
 }
-#[cfg(all(target_os = "android", feature = "opengles"))]
+#[cfg(target_os = "android")]
 impl GraphicsBindingOpenGLESAndroidKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(feature = "vulkan")]
 pub struct GraphicsBindingVulkanKHR {
     pub ty: StructureType,
     pub next: *const c_void,
-    pub instance: vk::Instance,
-    pub physical_device: vk::PhysicalDevice,
-    pub device: vk::Device,
+    pub instance: VkInstance,
+    pub physical_device: VkPhysicalDevice,
+    pub device: VkDevice,
     pub queue_family_index: u32,
     pub queue_index: u32,
 }
-#[cfg(feature = "vulkan")]
 impl GraphicsBindingVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_VULKAN_KHR;
 }
@@ -1357,78 +1350,72 @@ pub struct SwapchainImageBaseHeader {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(feature = "opengl")]
 pub struct SwapchainImageOpenGLKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub image: u32,
 }
-#[cfg(feature = "opengl")]
 impl SwapchainImageOpenGLKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_es_enable"]
-#[cfg(feature = "opengles")]
 pub struct SwapchainImageOpenGLESKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub image: u32,
 }
-#[cfg(feature = "opengles")]
 impl SwapchainImageOpenGLESKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(feature = "vulkan")]
 pub struct SwapchainImageVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub image: vk::Image,
+    pub image: VkImage,
 }
-#[cfg(feature = "vulkan")]
 impl SwapchainImageVulkanKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_VULKAN_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct SwapchainImageD3D10KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub texture: *mut ID3D10Texture2D,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl SwapchainImageD3D10KHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D10_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D11_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct SwapchainImageD3D11KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub texture: *mut ID3D11Texture2D,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl SwapchainImageD3D11KHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D11_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D12_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct SwapchainImageD3D12KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub texture: *mut ID3D12Resource,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl SwapchainImageD3D12KHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D12_KHR;
 }
@@ -1974,14 +1961,12 @@ impl InstanceCreateInfoAndroidKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_swapchain_format_list"]
-#[cfg(feature = "vulkan")]
 pub struct VulkanSwapchainFormatListCreateInfoKHR {
     pub ty: StructureType,
     pub next: *const c_void,
     pub view_format_count: u32,
-    pub view_formats: *const vk::Format,
+    pub view_formats: *const VkFormat,
 }
-#[cfg(feature = "vulkan")]
 impl VulkanSwapchainFormatListCreateInfoKHR {
     pub const TYPE: StructureType = StructureType::VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR;
 }
@@ -2057,84 +2042,78 @@ impl VisibilityMaskKHR {
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_enable"]
-#[cfg(feature = "opengl")]
 pub struct GraphicsRequirementsOpenGLKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub min_api_version_supported: u32,
     pub max_api_version_supported: u32,
 }
-#[cfg(feature = "opengl")]
 impl GraphicsRequirementsOpenGLKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_opengl_es_enable"]
-#[cfg(feature = "opengles")]
 pub struct GraphicsRequirementsOpenGLESKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub min_api_version_supported: u32,
     pub max_api_version_supported: u32,
 }
-#[cfg(feature = "opengles")]
 impl GraphicsRequirementsOpenGLESKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_vulkan_enable"]
-#[cfg(feature = "vulkan")]
 pub struct GraphicsRequirementsVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub min_api_version_supported: u32,
     pub max_api_version_supported: u32,
 }
-#[cfg(feature = "vulkan")]
 impl GraphicsRequirementsVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct GraphicsRequirementsD3D10KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub adapter_luid: LUID,
     pub min_feature_level: D3D10_FEATURE_LEVEL1,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl GraphicsRequirementsD3D10KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D10_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D11_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct GraphicsRequirementsD3D11KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub adapter_luid: LUID,
     pub min_feature_level: D3D_FEATURE_LEVEL,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl GraphicsRequirementsD3D11KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D11_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D12_enable"]
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub struct GraphicsRequirementsD3D12KHR {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub adapter_luid: LUID,
     pub min_feature_level: D3D_FEATURE_LEVEL,
 }
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 impl GraphicsRequirementsD3D12KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D12_KHR;
 }
@@ -2408,7 +2387,6 @@ pub mod pfn {
         buffer_count_output: *mut u32,
         buffer: *mut c_char,
     ) -> Result;
-    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanInstanceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2417,7 +2395,6 @@ pub mod pfn {
         names_count_output: *mut u32,
         names_string: *mut c_char,
     ) -> Result;
-    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanDeviceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2426,50 +2403,46 @@ pub mod pfn {
         names_count_output: *mut u32,
         names_string: *mut c_char,
     ) -> Result;
-    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanGraphicsDeviceKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
-        vk_instance: vk::Instance,
-        vk_physical_device: *mut vk::PhysicalDevice,
+        vk_instance: VkInstance,
+        vk_physical_device: *mut VkPhysicalDevice,
     ) -> Result;
-    #[cfg(feature = "opengl")]
     #[doc = "From XR_KHR_opengl_enable"]
     pub type GetOpenGLGraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsOpenGLKHR,
     ) -> Result;
-    #[cfg(feature = "opengles")]
     #[doc = "From XR_KHR_opengl_es_enable"]
     pub type GetOpenGLESGraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsOpenGLESKHR,
     ) -> Result;
-    #[cfg(feature = "vulkan")]
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanGraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsVulkanKHR,
     ) -> Result;
-    #[cfg(feature = "d3d")]
+    #[cfg(windows)]
     #[doc = "From XR_KHR_D3D10_enable"]
     pub type GetD3D10GraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsD3D10KHR,
     ) -> Result;
-    #[cfg(feature = "d3d")]
+    #[cfg(windows)]
     #[doc = "From XR_KHR_D3D11_enable"]
     pub type GetD3D11GraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsD3D11KHR,
     ) -> Result;
-    #[cfg(feature = "d3d")]
+    #[cfg(windows)]
     #[doc = "From XR_KHR_D3D12_enable"]
     pub type GetD3D12GraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2524,14 +2497,14 @@ pub mod pfn {
         session: Session,
         label_info: *const DebugUtilsLabelEXT,
     ) -> Result;
-    #[cfg(target_os = "windows")]
+    #[cfg(windows)]
     #[doc = "From XR_KHR_win32_convert_performance_counter_time"]
     pub type ConvertTimeToWin32PerformanceCounterKHR = unsafe extern "system" fn(
         instance: Instance,
         time: Time,
         performance_counter: *mut LARGE_INTEGER,
     ) -> Result;
-    #[cfg(target_os = "windows")]
+    #[cfg(windows)]
     #[doc = "From XR_KHR_win32_convert_performance_counter_time"]
     pub type ConvertWin32PerformanceCounterToTimeKHR = unsafe extern "system" fn(
         instance: Instance,
@@ -2588,9 +2561,7 @@ pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_composition_layer_depth\0";
 pub const KHR_headless_SPEC_VERSION: u32 = 2u32;
 pub const KHR_HEADLESS_EXTENSION_NAME: &'static [u8] = b"XR_KHR_headless\0";
-#[cfg(feature = "vulkan")]
 pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "vulkan")]
 pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_vulkan_swapchain_format_list\0";
 pub const KHR_composition_layer_cylinder_SPEC_VERSION: u32 = 4u32;
@@ -2599,35 +2570,29 @@ pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &'static [u8] =
 pub const KHR_composition_layer_equirect_SPEC_VERSION: u32 = 3u32;
 pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_composition_layer_equirect\0";
-#[cfg(feature = "opengl")]
 pub const KHR_opengl_enable_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "opengl")]
 pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_enable\0";
-#[cfg(feature = "opengles")]
 pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "opengles")]
 pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_es_enable\0";
-#[cfg(feature = "vulkan")]
 pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 6u32;
-#[cfg(feature = "vulkan")]
 pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_vulkan_enable\0";
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub const KHR_D3D10_enable_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub const KHR_D3D10_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D10_enable\0";
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D11_enable\0";
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 1u32;
-#[cfg(feature = "d3d")]
+#[cfg(windows)]
 pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D12_enable\0";
 pub const KHR_visibility_mask_SPEC_VERSION: u32 = 1u32;
 pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &'static [u8] = b"XR_KHR_visibility_mask\0";
-#[cfg(target_os = "windows")]
+#[cfg(windows)]
 pub const KHR_win32_convert_performance_counter_time_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "windows")]
+#[cfg(windows)]
 pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_win32_convert_performance_counter_time\0";
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;

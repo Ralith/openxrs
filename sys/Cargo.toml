@@ -3,7 +3,7 @@ name = "openxr-sys"
 description = "OpenXR FFI bindings"
 repository = "https://github.com/Ralith/openxrs"
 readme = "../README.md"
-version = "0.1.7"
+version = "0.2.0"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
 categories = ["external-ffi-bindings", "rendering"]
 keywords = ["openxr", "vr"]
@@ -15,19 +15,16 @@ maintenance = { status = "experimental" }
 
 [features]
 prototypes = []
-vulkan = ["ash"]
-opengl = []
-xlib = []
-xcb = []
 static = ["cmake", "prototypes"]
-default = ["vulkan", "opengl", "xlib"]
 
 [dependencies]
-ash = { version = "0.27", optional = true }
 libc = "0.2.50"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["windef", "ntdef", "d3dcommon", "d3d11", "d3d12"] }
 
 [build-dependencies]
 cmake = { version = "0.1.35", optional = true }
 
 [package.metadata.docs.rs]
-features = ["prototypes", "vulkan", "opengl", "xlib"]
+features = ["prototypes"]

@@ -1,5 +1,7 @@
 use std::{mem, ptr};
 
+use sys::platform::*;
+
 use crate::*;
 
 /// The OpenGL graphics API
@@ -48,7 +50,6 @@ impl Graphics for OpenGL {
         info: &Self::SessionCreateInfo,
     ) -> Result<Session<Self>> {
         match *info {
-            #[cfg(feature = "xlib")]
             SessionCreateInfo::Xlib {
                 x_display,
                 visualid,
@@ -109,12 +110,11 @@ pub struct Requirements {
 }
 
 pub enum SessionCreateInfo {
-    #[cfg(feature = "xlib")]
     Xlib {
-        x_display: *mut sys::Display,
+        x_display: *mut Display,
         visualid: u32,
-        glx_fb_config: sys::GLXFBConfig,
-        glx_drawable: sys::GLXDrawable,
-        glx_context: sys::GLXContext,
+        glx_fb_config: GLXFBConfig,
+        glx_drawable: GLXDrawable,
+        glx_context: GLXContext,
     },
 }

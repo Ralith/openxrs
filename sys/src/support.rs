@@ -1,4 +1,4 @@
-//! Static helpers called from generated code
+//! Static helpers used by generated code
 use std::fmt;
 
 macro_rules! wrapper {
@@ -136,6 +136,3 @@ pub fn fmt_enum(f: &mut fmt::Formatter, value: i32, name: Option<&'static str>) 
         None => <i32 as fmt::Debug>::fmt(&value, f),
     }
 }
-
-#[cfg(feature = "ash")]
-pub use ash::vk;
