@@ -58,11 +58,13 @@ impl<G: Graphics> Swapchain<G> {
         Ok(())
     }
 
+    #[inline]
     pub fn enumerate_images(&self) -> Result<Vec<G::SwapchainImage>> {
         G::enumerate_swapchain_images(self)
     }
 
     /// Determine the index of the next image to render to in the swapchain image array
+    #[inline]
     pub fn acquire_image(&self) -> Result<u32> {
         let info = sys::SwapchainImageAcquireInfo {
             ty: sys::SwapchainImageAcquireInfo::TYPE,
@@ -85,6 +87,7 @@ impl<G: Graphics> Swapchain<G> {
     ///
     /// Once a swapchain image has been successfully waited on, it must be released before waiting
     /// on the next acquired swapchain image.
+    #[inline]
     pub unsafe fn wait_image(&self, timeout: Duration) -> Result<()> {
         let info = sys::SwapchainImageWaitInfo {
             ty: sys::SwapchainImageWaitInfo::TYPE,
@@ -100,6 +103,7 @@ impl<G: Graphics> Swapchain<G> {
     /// # Safety
     ///
     /// The swapchain image must have been successfully waited on before it is released.
+    #[inline]
     pub unsafe fn release_image(&self) -> Result<()> {
         let info = sys::SwapchainImageReleaseInfo {
             ty: sys::SwapchainImageReleaseInfo::TYPE,
