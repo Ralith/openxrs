@@ -1,3 +1,5 @@
+//! To get started, construct an `Entry` object.
+
 use std::os::raw::c_char;
 
 pub use sys::{self, Duration, Path, SystemId, Time, Version, CURRENT_API_VERSION};

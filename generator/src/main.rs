@@ -1054,6 +1054,8 @@ impl Parser {
         let header_version = self.header_version.unwrap();
 
         quote! {
+            //! Automatically generated code; do not edit!
+
             #![allow(non_upper_case_globals)]
             use std::fmt;
             use std::os::raw::{c_void, c_char};
@@ -1324,6 +1326,8 @@ impl Parser {
         });
 
         quote! {
+            //! Automatically generated code; do not edit!
+
             use std::{sync::Arc, os::raw::c_char};
 
             pub use sys::{#(#reexports),*};

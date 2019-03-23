@@ -6,6 +6,13 @@ use std::{fmt, os::raw::c_void, path::Path};
 
 use crate::*;
 
+/// Entry point to the API. Start here.
+///
+/// An `Entry` represents access to an OpenXR implementation. When the crate is built with the
+/// `linked` feature, this can be obtained at compile time with the `linked` constructor. The
+/// `static` feature provides a built-in copy of the Khronos OpenXR loader for use in this
+/// pattern. Alternatively, the `loaded` feature exposes the `load` and `load_from` constructors to
+/// manually load an OpenXR implementation at run-time.
 #[derive(Clone)]
 pub struct Entry {
     inner: Arc<Inner>,
@@ -95,7 +102,10 @@ impl Entry {
         Ok(f.unwrap())
     }
 
-    /// Create an OpenXR instance for use with a particular set of graphics APIs
+    /// Create an OpenXR instance with certain extensions enabled
+    ///
+    /// Most applications will want to enable at least one graphics API extension
+    /// (e.g. `khr_vulkan_enable`) so that a `Session` can be created for rendering.
     pub fn create_instance(
         &self,
         app_info: ApplicationInfo,
@@ -121,6 +131,7 @@ impl Entry {
         }
     }
 
+    /// Determine the set of extensions supported by this OpenXR implementation
     pub fn enumerate_extensions(&self) -> Result<ExtensionSet> {
         let exts = unsafe {
             get_arr_init(

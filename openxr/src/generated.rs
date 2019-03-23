@@ -1,3 +1,4 @@
+#![doc = r" Automatically generated code; do not edit!"]
 use crate::*;
 use std::{os::raw::c_char, sync::Arc};
 pub use sys::{

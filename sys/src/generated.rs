@@ -1,3 +1,4 @@
+#![doc = r" Automatically generated code; do not edit!"]
 #![allow(non_upper_case_globals)]
 use crate::support::*;
 use crate::*;
