@@ -2,7 +2,7 @@
 name = "openxr-sys"
 description = "OpenXR FFI bindings"
 repository = "https://github.com/Ralith/openxrs"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
 categories = ["external-ffi-bindings", "rendering"]
 keywords = ["openxr", "vr"]

@@ -1,6 +1,6 @@
 [package]
 name = "openxr"
-description = "OpenXR FFI bindings"
+description = "High-level, mostly-safe OpenXR bindings"
 repository = "https://github.com/Ralith/openxrs"
 version = "0.1.0"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
@@ -22,7 +22,7 @@ xlib = ["sys/xlib"]
 default = ["loaded", "vulkan", "opengl", "xlib"]
 
 [dependencies]
-sys = { package = "openxr-sys", path = "../sys", version = "0.1.0", default-features = false }
+sys = { package = "openxr-sys", path = "../sys", version = "0.1.7", default-features = false }
 shared_library = { version = "0.1.9", optional = true }
 ash = { version = "0.27", optional = true }
 void = "1"
