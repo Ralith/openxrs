@@ -1,10 +1,9 @@
-use std::{ffi::CString, marker::PhantomData, mem, ptr};
+use std::{ffi::CString, marker::PhantomData, mem, ptr, sync::Arc};
 
 use crate::*;
 
 pub struct Action<T: ActionTy> {
-    set: ActionSet,
-    handle: sys::Action,
+    inner: Arc<ActionInner>,
     _marker: PhantomData<T>,
 }
 
@@ -17,8 +16,10 @@ impl<T: ActionTy> Action<T> {
     #[inline]
     pub unsafe fn from_raw(set: ActionSet, handle: sys::Action) -> Self {
         Self {
-            set,
-            handle,
+            inner: Arc::new(ActionInner {
+                set,
+                handle
+            }),
             _marker: PhantomData,
         }
     }
@@ -26,13 +27,13 @@ impl<T: ActionTy> Action<T> {
     /// Access the raw swapchain handle
     #[inline]
     pub fn as_raw(&self) -> sys::Action {
-        self.handle
+        self.inner.handle
     }
 
     /// Access the `Instance` self is descended from
     #[inline]
     pub fn instance(&self) -> &Instance {
-        self.set.instance()
+        self.inner.set.instance()
     }
 
     /// Set the debug name of this `Action`, if `XR_EXT_debug_utils` is loaded
@@ -65,10 +66,23 @@ impl<T: ActionTy> Action<T> {
         })
     }
 
+    pub(crate) fn set(&self) -> &ActionSet {
+        &self.inner.set
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.instance().fp()
+    }
+}
+
+impl<T: ActionTy> Clone for Action<T> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+            _marker: PhantomData,
+        }
     }
 }
 
@@ -99,7 +113,7 @@ impl Action<Posef> {
                 &info,
                 &mut out,
             ))?;
-            Ok(Space::new(self.set.session().clone(), out))
+            Ok(Space::action_from_raw(self.clone(), out))
         }
     }
 }
@@ -110,14 +124,6 @@ impl Action<Haptic> {
             cvt((self.fp().apply_haptic_feedback)(self.as_raw(), subaction_paths.len() as u32, subaction_paths.as_ptr(), event as *const _ as _))?;
         }
         Ok(())
-    }
-}
-
-impl<T: ActionTy> Drop for Action<T> {
-    fn drop(&mut self) {
-        unsafe {
-            (self.fp().destroy_action)(self.handle);
-        }
     }
 }
 
@@ -232,4 +238,17 @@ pub struct Haptic;
 
 impl ActionTy for Haptic {
     const TYPE: ActionType = ActionType::OUTPUT_VIBRATION;
+}
+
+pub(crate) struct ActionInner {
+    set: ActionSet,
+    handle: sys::Action,
+}
+
+impl Drop for ActionInner {
+    fn drop(&mut self) {
+        unsafe {
+            (self.set.instance().fp().destroy_action)(self.handle);
+        }
+    }
 }

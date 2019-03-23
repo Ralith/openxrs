@@ -4,23 +4,41 @@ use crate::*;
 
 pub struct Space {
     session: Arc<session::SessionInner>,
+    _action_guard: Option<Action<Posef>>,
     handle: sys::Space,
 }
 
 impl Space {
-    pub(crate) fn new(session: Arc<session::SessionInner>, handle: sys::Space) -> Self {
-        Self { session, handle }
-    }
-
-    /// Take ownership of an existing space handle
+    /// Take ownership of an existing reference space handle
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid swapchain handle associated with `session`.
+    /// `handle` must be a valid reference space handle associated with `session`.
     #[inline]
-    pub unsafe fn from_raw<G: Graphics>(session: Session<G>, handle: sys::Space) -> Self {
+    pub unsafe fn reference_from_raw<G: Graphics>(
+        session: Session<G>,
+        handle: sys::Space,
+    ) -> Self {
         Self {
             session: session.inner,
+            _action_guard: None,
+            handle,
+        }
+    }
+
+    /// Take ownership of an existing action space handle
+    ///
+    /// # Safety
+    ///
+    /// `handle` must be a valid action space handle associated with `session`.
+    #[inline]
+    pub unsafe fn action_from_raw(
+        action: Action<Posef>,
+        handle: sys::Space,
+    ) -> Self {
+        Self {
+            session: action.set().session().clone(),
+            _action_guard: Some(action),
             handle,
         }
     }

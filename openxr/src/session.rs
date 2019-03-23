@@ -120,7 +120,7 @@ impl<G: Graphics> Session<G> {
                 &info,
                 &mut out,
             ))?;
-            Ok(Space::from_raw(self.clone(), out))
+            Ok(Space::reference_from_raw(self.clone(), out))
         }
     }
 
