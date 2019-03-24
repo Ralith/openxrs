@@ -174,7 +174,7 @@ impl ActionInput for bool {
 }
 
 impl ActionTy for f32 {
-    const TYPE: ActionType = ActionType::INPUT_BOOLEAN;
+    const TYPE: ActionType = ActionType::INPUT_VECTOR1F;
 }
 
 impl ActionInput for f32 {
@@ -202,7 +202,7 @@ impl ActionInput for f32 {
 }
 
 impl ActionTy for Vector2f {
-    const TYPE: ActionType = ActionType::INPUT_BOOLEAN;
+    const TYPE: ActionType = ActionType::INPUT_VECTOR2F;
 }
 
 impl ActionInput for Vector2f {
