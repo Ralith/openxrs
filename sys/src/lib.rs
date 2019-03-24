@@ -5,6 +5,9 @@ mod support;
 mod generated;
 pub mod platform;
 
+#[cfg(feature = "nalgebra")]
+mod nalgebra;
+
 // Hand-written bindings for cases which are too few or weird to bother automating
 
 wrapper! {
