@@ -28,6 +28,8 @@ The crate exposes a number of cargo features:
   application. This is useful when the target environment guarantees
   the presence of an OpenXR implementation at a specific location,
   making the loader redundant.
+- `nalgebra` exposes `Into` and `From` impls for converting to and
+  from nalgebra types where appropriate.
 
 ## `openxr-sys`
 
