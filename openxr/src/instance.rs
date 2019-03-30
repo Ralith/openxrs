@@ -307,6 +307,21 @@ impl Instance {
         })
     }
 
+    /// Obtain the current `Time`
+    ///
+    /// Requires KHR_convert_timespec_time
+    #[inline]
+    pub fn now(&self) -> Result<Time> {
+        unsafe {
+            let mut now = mem::uninitialized();
+            libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now);
+            let mut out = mem::uninitialized();
+            cvt((self.exts().khr_convert_timespec_time.as_ref().expect("KHR_convert_timespec_time not loaded")
+                 .convert_timespec_time_to_time)(self.as_raw(), &now, &mut out))?;
+            Ok(out)
+        }
+    }
+
     //
     // Internal helpers
     //

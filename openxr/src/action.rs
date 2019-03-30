@@ -125,6 +125,13 @@ impl Action<Haptic> {
         }
         Ok(())
     }
+
+    pub fn stop_feedback(&self, subaction_paths: &[Path]) -> Result<()> {
+        unsafe {
+            cvt((self.fp().stop_haptic_feedback)(self.as_raw(), subaction_paths.len() as u32, subaction_paths.as_ptr()))?;
+        }
+        Ok(())
+    }
 }
 
 pub trait ActionTy: Sized {
