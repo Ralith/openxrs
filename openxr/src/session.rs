@@ -35,8 +35,12 @@ impl<G: Graphics> Session<G> {
     }
 
     /// Set the debug name of this `Session`, if `XR_EXT_debug_utils` is loaded
+    ///
+    /// # Safety
+    ///
+    /// Must be externally synchronized.
     #[inline]
-    pub fn set_name(&self, name: &str) -> Result<()> {
+    pub unsafe fn set_name(&self, name: &str) -> Result<()> {
         if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
             let name = CString::new(name).unwrap();
             let info = sys::DebugUtilsObjectNameInfoEXT {
@@ -46,12 +50,10 @@ impl<G: Graphics> Session<G> {
                 object_handle: self.as_raw().into_raw(),
                 object_name: name.as_ptr(),
             };
-            unsafe {
-                cvt((fp.set_debug_utils_object_name)(
-                    self.instance().as_raw(),
-                    &info,
-                ))?;
-            }
+            cvt((fp.set_debug_utils_object_name)(
+                self.instance().as_raw(),
+                &info,
+            ))?;
         }
         Ok(())
     }
