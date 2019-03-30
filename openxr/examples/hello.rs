@@ -4,7 +4,7 @@ fn main() {
     #[cfg(feature = "static")]
     let entry = xr::Entry::linked();
     #[cfg(not(feature = "static"))]
-    let entry = xr::Entry::load().unwrap();
+    let entry = xr::Entry::load().expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
 
     let extensions = entry.enumerate_extensions().unwrap();
     println!("supported extensions: {:?}", extensions);

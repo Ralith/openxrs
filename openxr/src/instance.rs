@@ -329,10 +329,10 @@ impl Instance {
     //
 
     pub(crate) fn vulkan(&self) -> &raw::VulkanEnableKHR {
-        self.exts().khr_vulkan_enable.as_ref().unwrap()
+        self.exts().khr_vulkan_enable.as_ref().expect("KHR_vulkan_enable not loaded")
     }
     pub(crate) fn opengl(&self) -> &raw::OpenglEnableKHR {
-        self.exts().khr_opengl_enable.as_ref().unwrap()
+        self.exts().khr_opengl_enable.as_ref().expect("KHR_opengl_enable not loaded")
     }
 }
 
