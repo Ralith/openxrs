@@ -6,7 +6,12 @@ use crate::*;
 pub struct Swapchain<G: Graphics> {
     session: Session<G>,
     handle: sys::Swapchain,
+    flags: SwapchainCreateFlags,
     _marker: PhantomData<G>,
+    /// Whether `wait_image` was called more recently than `release_image`
+    waited: bool,
+    /// Whether any image has ever been acquired from this swapchain
+    acquired: bool,
 }
 
 impl<G: Graphics> Swapchain<G> {
@@ -14,13 +19,20 @@ impl<G: Graphics> Swapchain<G> {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid swapchain handle associated with `session`.
+    /// `handle` must be a valid swapchain handle associated with `session` and created with `flags`.
     #[inline]
-    pub unsafe fn from_raw(session: Session<G>, handle: sys::Swapchain) -> Self {
+    pub unsafe fn from_raw(
+        session: Session<G>,
+        handle: sys::Swapchain,
+        flags: SwapchainCreateFlags,
+    ) -> Self {
         Self {
             session,
             handle,
+            flags,
             _marker: PhantomData,
+            waited: false,
+            acquired: false,
         }
     }
 
@@ -37,12 +49,8 @@ impl<G: Graphics> Swapchain<G> {
     }
 
     /// Set the debug name of this `Swapchain`, if `XR_EXT_debug_utils` is loaded
-    ///
-    /// # Safety
-    ///
-    /// Must be externally synchronized.
     #[inline]
-    pub unsafe fn set_name(&self, name: &str) -> Result<()> {
+    pub fn set_name(&mut self, name: &str) -> Result<()> {
         if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
             let name = CString::new(name).unwrap();
             let info = sys::DebugUtilsObjectNameInfoEXT {
@@ -52,10 +60,12 @@ impl<G: Graphics> Swapchain<G> {
                 object_handle: self.as_raw().into_raw(),
                 object_name: name.as_ptr(),
             };
-            cvt((fp.set_debug_utils_object_name)(
-                self.instance().as_raw(),
-                &info,
-            ))?;
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
         }
         Ok(())
     }
@@ -67,7 +77,10 @@ impl<G: Graphics> Swapchain<G> {
 
     /// Determine the index of the next image to render to in the swapchain image array
     #[inline]
-    pub fn acquire_image(&self) -> Result<u32> {
+    pub fn acquire_image(&mut self) -> Result<u32> {
+        if self.flags.contains(SwapchainCreateFlags::STATIC_IMAGE) {
+            assert!(!self.acquired, "static image swapchains must have exactly one image acquired");
+        }
         let info = sys::SwapchainImageAcquireInfo {
             ty: sys::SwapchainImageAcquireInfo::TYPE,
             next: ptr::null_mut(),
@@ -80,23 +93,26 @@ impl<G: Graphics> Swapchain<G> {
                 &mut out,
             ))?;
         }
+        self.acquired = true;
         Ok(out)
     }
 
     /// Wait for the compositor to finish reading from the oldest unwaited acquired image
-    ///
-    /// # Safety
-    ///
-    /// Once a swapchain image has been successfully waited on, it must be released before waiting
-    /// on the next acquired swapchain image.
     #[inline]
-    pub unsafe fn wait_image(&self, timeout: Duration) -> Result<()> {
+    pub fn wait_image(&mut self, timeout: Duration) -> Result<()> {
+        assert!(
+            !self.waited,
+            "release_image must be called before wait_image can be called again"
+        );
         let info = sys::SwapchainImageWaitInfo {
             ty: sys::SwapchainImageWaitInfo::TYPE,
             next: ptr::null_mut(),
             timeout,
         };
-        cvt((self.fp().wait_swapchain_image)(self.as_raw(), &info))?;
+        unsafe {
+            cvt((self.fp().wait_swapchain_image)(self.as_raw(), &info))?;
+        }
+        self.waited = true;
         Ok(())
     }
 
@@ -106,12 +122,19 @@ impl<G: Graphics> Swapchain<G> {
     ///
     /// The swapchain image must have been successfully waited on before it is released.
     #[inline]
-    pub unsafe fn release_image(&self) -> Result<()> {
+    pub fn release_image(&mut self) -> Result<()> {
+        assert!(
+            self.waited,
+            "wait_image must be called before release_image"
+        );
         let info = sys::SwapchainImageReleaseInfo {
             ty: sys::SwapchainImageReleaseInfo::TYPE,
             next: ptr::null_mut(),
         };
-        cvt((self.fp().release_swapchain_image)(self.as_raw(), &info))?;
+        unsafe {
+            cvt((self.fp().release_swapchain_image)(self.as_raw(), &info))?;
+        }
+        self.waited = false;
         Ok(())
     }
 

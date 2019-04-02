@@ -45,10 +45,10 @@ impl Graphics for Vulkan {
     }
 
     unsafe fn create_session(
-        instance: Instance,
+        instance: &Instance,
         system: SystemId,
         info: &Self::SessionCreateInfo,
-    ) -> Result<Session<Self>> {
+    ) -> Result<sys::Session> {
         let binding = sys::GraphicsBindingVulkanKHR {
             ty: sys::GraphicsBindingVulkanKHR::TYPE,
             next: ptr::null(),
@@ -70,7 +70,7 @@ impl Graphics for Vulkan {
             &info,
             &mut out,
         ))?;
-        Ok(Session::from_raw(instance.clone(), out))
+        Ok(out)
     }
 
     fn enumerate_swapchain_images(swapchain: &Swapchain<Self>) -> Result<Vec<Self::SwapchainImage>> {

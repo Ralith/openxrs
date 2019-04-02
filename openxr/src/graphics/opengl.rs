@@ -45,10 +45,10 @@ impl Graphics for OpenGL {
     }
 
     unsafe fn create_session(
-        instance: Instance,
+        instance: &Instance,
         system: SystemId,
         info: &Self::SessionCreateInfo,
-    ) -> Result<Session<Self>> {
+    ) -> Result<sys::Session> {
         match *info {
             SessionCreateInfo::Xlib {
                 x_display,
@@ -78,7 +78,7 @@ impl Graphics for OpenGL {
                     &info,
                     &mut out,
                 ))?;
-                Ok(Session::from_raw(instance.clone(), out))
+                Ok(out)
             }
         }
     }

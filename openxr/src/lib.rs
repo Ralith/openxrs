@@ -12,6 +12,8 @@ mod instance;
 pub use instance::*;
 mod session;
 pub use session::*;
+mod frame_stream;
+pub use frame_stream::*;
 mod graphics;
 pub use graphics::*;
 mod swapchain;

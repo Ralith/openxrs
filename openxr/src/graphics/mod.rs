@@ -24,10 +24,10 @@ pub trait Graphics: Sized {
 
     #[doc(hidden)]
     unsafe fn create_session(
-        instance: Instance,
+        instance: &Instance,
         system: SystemId,
         info: &Self::SessionCreateInfo,
-    ) -> Result<Session<Self>>;
+    ) -> Result<sys::Session>;
 
     #[doc(hidden)]
     fn enumerate_swapchain_images(swapchain: &Swapchain<Self>) -> Result<Vec<Self::SwapchainImage>>;

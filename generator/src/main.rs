@@ -1340,7 +1340,6 @@ impl Parser {
                 }
             }
 
-            #[derive(Clone)]
             pub struct Instance {
                 inner: Arc<InstanceInner>,
             }
@@ -1383,6 +1382,13 @@ impl Parser {
                 #[inline]
                 pub fn exts(&self) -> &InstanceExtensions {
                     &self.inner.exts
+                }
+
+                // Private to ensure at most one `Instance` exists externally for safety
+                pub(crate) fn clone(&self) -> Self {
+                    Self {
+                        inner: self.inner.clone()
+                    }
                 }
             }
 

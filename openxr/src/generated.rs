@@ -25,7 +25,6 @@ impl Drop for InstanceInner {
         }
     }
 }
-#[derive(Clone)]
 pub struct Instance {
     inner: Arc<InstanceInner>,
 }
@@ -67,6 +66,11 @@ impl Instance {
     #[inline]
     pub fn exts(&self) -> &InstanceExtensions {
         &self.inner.exts
+    }
+    pub(crate) fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+        }
     }
 }
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]

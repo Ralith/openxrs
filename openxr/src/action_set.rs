@@ -2,7 +2,6 @@ use std::{ptr, sync::Arc, ffi::CString};
 
 use crate::*;
 
-#[derive(Clone)]
 pub struct ActionSet {
     inner: Arc<ActionSetInner>
 }
@@ -36,12 +35,8 @@ impl ActionSet {
     }
 
     /// Set the debug name of this `ActionSet`, if `XR_EXT_debug_utils` is loaded
-    ///
-    /// # Safety
-    ///
-    /// Must be externally synchronized.
     #[inline]
-    pub unsafe fn set_name(&self, name: &str) -> Result<()> {
+    pub fn set_name(&mut self, name: &str) -> Result<()> {
         if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
             let name = CString::new(name).unwrap();
             let info = sys::DebugUtilsObjectNameInfoEXT {
@@ -51,10 +46,12 @@ impl ActionSet {
                 object_handle: self.as_raw().into_raw(),
                 object_name: name.as_ptr(),
             };
-            cvt((fp.set_debug_utils_object_name)(
-                self.instance().as_raw(),
-                &info,
-            ))?;
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
         }
         Ok(())
     }
@@ -87,6 +84,13 @@ impl ActionSet {
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.inner.session.instance.fp()
+    }
+
+    // Private because safety requires that only one copy of the `ActionSet` exist externally.
+    pub(crate) fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone()
+        }
     }
 }
 

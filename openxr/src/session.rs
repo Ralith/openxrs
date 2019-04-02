@@ -13,13 +13,17 @@ impl<G: Graphics> Session<G> {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid session handle associated with `instance`.
+    /// `handle` must be a valid session handle associated with `instance` which is not currently inside a frame.
     #[inline]
-    pub unsafe fn from_raw(instance: Instance, handle: sys::Session) -> Self {
-        Self {
-            inner: Arc::new(SessionInner { instance, handle }),
+    pub unsafe fn from_raw(instance: Instance, handle: sys::Session) -> (Self, FrameStream<G>) {
+        let session = Self {
+            inner: Arc::new(SessionInner {
+                instance: instance.clone(),
+                handle,
+            }),
             _marker: PhantomData,
-        }
+        };
+        (session.clone(), FrameStream::new(session))
     }
 
     /// Access the raw session handle
@@ -35,12 +39,8 @@ impl<G: Graphics> Session<G> {
     }
 
     /// Set the debug name of this `Session`, if `XR_EXT_debug_utils` is loaded
-    ///
-    /// # Safety
-    ///
-    /// Must be externally synchronized.
     #[inline]
-    pub unsafe fn set_name(&self, name: &str) -> Result<()> {
+    pub fn set_name(&mut self, name: &str) -> Result<()> {
         if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
             let name = CString::new(name).unwrap();
             let info = sys::DebugUtilsObjectNameInfoEXT {
@@ -50,10 +50,12 @@ impl<G: Graphics> Session<G> {
                 object_handle: self.as_raw().into_raw(),
                 object_name: name.as_ptr(),
             };
-            cvt((fp.set_debug_utils_object_name)(
-                self.instance().as_raw(),
-                &info,
-            ))?;
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
         }
         Ok(())
     }
@@ -156,7 +158,7 @@ impl<G: Graphics> Session<G> {
         };
         unsafe {
             cvt((self.fp().create_swapchain)(self.as_raw(), &info, &mut out))?;
-            Ok(Swapchain::from_raw(self.clone(), out))
+            Ok(Swapchain::from_raw(self.clone(), out, info.create_flags))
         }
     }
 
@@ -200,68 +202,6 @@ impl<G: Graphics> Session<G> {
                 })
                 .collect(),
         ))
-    }
-
-    /// Block until rendering should begin
-    ///
-    /// # Safety
-    ///
-    /// Must be externally synchronized, and must not be called on `Headless` sessions.
-    #[inline]
-    pub unsafe fn wait_frame(&self) -> Result<FrameState> {
-        let mut out = sys::FrameState {
-            ty: sys::FrameState::TYPE,
-            next: ptr::null_mut(),
-            ..mem::uninitialized()
-        };
-        cvt((self.fp().wait_frame)(
-            self.as_raw(),
-            builder::FrameWaitInfo::new().as_raw(),
-            &mut out,
-        ))?;
-        Ok(FrameState {
-            predicted_display_time: out.predicted_display_time,
-            predicted_display_period: out.predicted_display_period,
-        })
-    }
-
-    /// Indicate that graphics device work is beginning
-    ///
-    /// # Safety
-    ///
-    /// Must be externally synchronized with respect to both itself and `end_frame`.
-    #[inline]
-    pub unsafe fn begin_frame(&self) -> Result<sys::Result> {
-        cvt((self.fp().begin_frame)(
-            self.as_raw(),
-            builder::FrameBeginInfo::new().as_raw(),
-        ))
-    }
-
-    /// Indicate that all graphics work for the frame has been submitted
-    ///
-    /// # Safety
-    ///
-    /// Must only be called after a successful call to `begin_frame, and be externally synchronized
-    /// with respect to both itself and `begin_frame`.
-    #[inline]
-    pub unsafe fn end_frame(
-        &self,
-        display_time: Time,
-        environment_blend_mode: EnvironmentBlendMode,
-        layers: &[&CompositionLayerBase<'_, G>],
-    ) -> Result<()> {
-        assert!(layers.len() <= u32::max_value() as usize);
-        let info = sys::FrameEndInfo {
-            ty: sys::FrameEndInfo::TYPE,
-            next: ptr::null(),
-            display_time,
-            environment_blend_mode,
-            layer_count: layers.len() as u32,
-            layers: layers.as_ptr() as _,
-        };
-        cvt((self.fp().end_frame)(self.as_raw(), &info))?;
-        Ok(())
     }
 
     /// Allocate a new [`ActionSet`]
@@ -351,13 +291,29 @@ impl<G: Graphics> Session<G> {
         source: Path,
         flags: InputSourceLocalizedNameFlags,
     ) -> Result<String> {
-        get_str(|cap, count, buf| unsafe { (self.fp().get_input_source_localized_name)(self.as_raw(), source, flags, cap, count, buf) })
+        get_str(|cap, count, buf| unsafe {
+            (self.fp().get_input_source_localized_name)(
+                self.as_raw(),
+                source,
+                flags,
+                cap,
+                count,
+                buf,
+            )
+        })
     }
 
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.inner.instance.fp()
+    }
+
+    pub(crate) fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+            _marker: PhantomData,
+        }
     }
 }
 
@@ -372,7 +328,7 @@ impl<G: Graphics> Clone for Session<G> {
 
 pub(crate) struct SessionInner {
     pub(crate) instance: Instance,
-    handle: sys::Session,
+    pub(crate) handle: sys::Session,
 }
 
 impl Drop for SessionInner {
@@ -400,12 +356,6 @@ pub struct SwapchainCreateInfo<G: Graphics> {
 pub struct View {
     pub pose: Posef,
     pub fov: Fovf,
-}
-
-#[derive(Debug, Copy, Clone)]
-pub struct FrameState {
-    pub predicted_display_time: Time,
-    pub predicted_display_period: Duration,
 }
 
 #[repr(transparent)]

@@ -56,12 +56,8 @@ impl Space {
     }
 
     /// Set the debug name of this `Space`, if `XR_EXT_debug_utils` is loaded
-    ///
-    /// # Safety
-    ///
-    /// Must be externally synchronized.
     #[inline]
-    pub unsafe fn set_name(&self, name: &str) -> Result<()> {
+    pub fn set_name(&mut self, name: &str) -> Result<()> {
         if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
             let name = CString::new(name).unwrap();
             let info = sys::DebugUtilsObjectNameInfoEXT {
@@ -71,10 +67,12 @@ impl Space {
                 object_handle: self.as_raw().into_raw(),
                 object_name: name.as_ptr(),
             };
-            cvt((fp.set_debug_utils_object_name)(
-                self.instance().as_raw(),
-                &info,
-            ))?;
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(
+                    self.instance().as_raw(),
+                    &info,
+                ))?;
+            }
         }
         Ok(())
     }
