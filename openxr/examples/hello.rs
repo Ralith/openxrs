@@ -11,13 +11,16 @@ fn main() {
     if !extensions.khr_headless {
         panic!("headless unsupported");
     }
+    if !extensions.khr_convert_timespec_time {
+        panic!("timespec conversion unsupported");
+    }
     let instance = entry
         .create_instance(
             xr::ApplicationInfo::new()
-                .application_name("hello openxrs")
-                .engine_name("hello openxrs"),
+                .application_name("hello openxrs"),
             &xr::ExtensionSet {
                 khr_headless: true,
+                khr_convert_timespec_time: true,
                 ..Default::default()
             },
         )
@@ -101,14 +104,15 @@ fn main() {
     }
 
     if let Some(ref stage) = stage {
-        let (flags, views) = session.locate_views(xr::Time::from_raw(0), stage).unwrap();
-        println!("view flags: {:?}", flags);
-        for (i, view) in views.iter().enumerate() {
-            println!("view {}:", i);
-            let p = view.pose.position;
-            println!("\tposition: {} {} {}", p.x, p.y, p.z);
-            let f = view.fov;
-            println!("\tfov: {} {} {} {}", f.angle_left, f.angle_right, f.angle_up, f.angle_down);
+        loop {
+            let now = instance.now().unwrap();
+            let (flags, views) = session.locate_views(now, stage).unwrap();
+            println!("view flags: {:?}", flags);
+            for (i, view) in views.iter().enumerate() {
+                let p = view.pose.position;
+                println!("view {}: [{} {} {}]", i, p.x, p.y, p.z);
+            }
+            std::thread::sleep(std::time::Duration::from_secs(1));
         }
     }
 
