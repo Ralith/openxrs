@@ -71,7 +71,7 @@ impl<G: Graphics> Session<G> {
         unsafe { cvt((self.fp().begin_session)(self.as_raw(), &info)) }
     }
 
-    /// Signals that the application no longer wishes to display rendered output, read input state,
+    /// Signal that the application no longer wishes to display rendered output, read input state,
     /// or control haptic events
     #[inline]
     pub fn end(&self) -> Result<sys::Result> {
@@ -95,7 +95,7 @@ impl<G: Graphics> Session<G> {
         }
     }
 
-    /// Enumerates the set of reference space types supported for this session
+    /// Enumerate the set of reference space types supported for this session
     ///
     /// Constant for the lifetime of the session.
     #[inline]
@@ -130,7 +130,7 @@ impl<G: Graphics> Session<G> {
 
     /// Enumerate texture formats supported by the current session
     ///
-    /// The type of formats returned are dependent on the graphics API for which the session was
+    /// The type of formats returned is dependent on the graphics API for which the session was
     /// created.
     #[inline]
     pub fn enumerate_swapchain_formats(&self) -> Result<Vec<G::Format>> {
@@ -162,7 +162,7 @@ impl<G: Graphics> Session<G> {
         }
     }
 
-    /// Returns the view and projection info for a particular display time
+    /// Get the view and projection info for a particular display time
     #[inline]
     pub fn locate_views(
         &self,
@@ -284,7 +284,7 @@ impl<G: Graphics> Session<G> {
         Ok(())
     }
 
-    /// Returns a string for the input source in the current system locale
+    /// Get a name for the input source in the current system locale
     #[inline]
     pub fn input_source_localized_name(
         &self,
