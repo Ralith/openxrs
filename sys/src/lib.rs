@@ -119,4 +119,6 @@ impl fmt::Display for Version {
     }
 }
 
+pub const FREQUENCY_UNSPECIFIED: f32 = 0.0;
+
 pub use generated::*;
