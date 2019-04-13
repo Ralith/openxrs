@@ -4,7 +4,8 @@ fn main() {
     #[cfg(feature = "static")]
     let entry = xr::Entry::linked();
     #[cfg(not(feature = "static"))]
-    let entry = xr::Entry::load().expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
+    let entry = xr::Entry::load()
+        .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
 
     let extensions = entry.enumerate_extensions().unwrap();
     println!("supported extensions: {:?}", extensions);
@@ -16,8 +17,7 @@ fn main() {
     }
     let instance = entry
         .create_instance(
-            xr::ApplicationInfo::new()
-                .application_name("hello openxrs"),
+            xr::ApplicationInfo::new().application_name("hello openxrs"),
             &xr::ExtensionSet {
                 khr_headless: true,
                 khr_convert_timespec_time: true,
@@ -59,30 +59,64 @@ fn main() {
     println!("view configuration views: {:?}", view_config_views);
 
     let session = instance.create_session_headless(system).unwrap();
-    session.begin(xr::ViewConfigurationType::PRIMARY_STEREO).unwrap();
-    
+    session
+        .begin(xr::ViewConfigurationType::PRIMARY_STEREO)
+        .unwrap();
+
     let space_tys = session.enumerate_reference_spaces().unwrap();
     println!("reference spaces: {:?}", space_tys);
     let has_stage = space_tys.contains(&xr::ReferenceSpaceType::STAGE);
     let has_view = space_tys.contains(&xr::ReferenceSpaceType::VIEW);
 
     let stage = if has_stage {
-        Some(session.create_reference_space(
-            xr::ReferenceSpaceType::STAGE,
-            xr::Posef {
-                position: xr::Vector3f { x: 0.0, y: 0.0, z: 0.0 },
-                orientation: xr::Quaternionf { w: 1.0, x: 0.0, y: 0.0, z: 0.0 },
-            }).unwrap())
-    } else { None };
+        Some(
+            session
+                .create_reference_space(
+                    xr::ReferenceSpaceType::STAGE,
+                    xr::Posef {
+                        position: xr::Vector3f {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                        orientation: xr::Quaternionf {
+                            w: 1.0,
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                    },
+                )
+                .unwrap(),
+        )
+    } else {
+        None
+    };
 
     let view = if has_view {
-        Some(session.create_reference_space(
-            xr::ReferenceSpaceType::VIEW,
-            xr::Posef {
-                position: xr::Vector3f { x: 0.0, y: 0.0, z: 0.0 },
-                orientation: xr::Quaternionf { w: 1.0, x: 0.0, y: 0.0, z: 0.0 },
-            }).unwrap())
-    } else { None };
+        Some(
+            session
+                .create_reference_space(
+                    xr::ReferenceSpaceType::VIEW,
+                    xr::Posef {
+                        position: xr::Vector3f {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                        orientation: xr::Quaternionf {
+                            w: 1.0,
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                    },
+                )
+                .unwrap(),
+        )
+    } else {
+        None
+    };
 
     if let (&Some(ref stage), &Some(ref view)) = (&stage, &view) {
         let relation = view.locate(&stage, xr::Time::from_raw(0)).unwrap();
@@ -90,16 +124,37 @@ fn main() {
         println!("view space is at: {} {} {}", p.x, p.y, p.z);
     }
 
-    let action_set = session.create_action_set("actions", "Example Action Set", 0).unwrap();
-    let action = action_set.create_action::<bool>("ping", "Ping", &[]).unwrap();
-    let binding_l = unsafe { instance.string_to_path("/user/hand/left/input/select/click").unwrap() };
-    let binding_r = unsafe { instance.string_to_path("/user/hand/right/input/select/click").unwrap() };
+    let action_set = session
+        .create_action_set("actions", "Example Action Set", 0)
+        .unwrap();
+    let action = action_set
+        .create_action::<bool>("ping", "Ping", &[])
+        .unwrap();
+    let binding_l = unsafe {
+        instance
+            .string_to_path("/user/hand/left/input/select/click")
+            .unwrap()
+    };
+    let binding_r = unsafe {
+        instance
+            .string_to_path("/user/hand/right/input/select/click")
+            .unwrap()
+    };
 
-    let simple_profile = unsafe { instance.string_to_path("/interaction_profiles/khr/simple_controller").unwrap() };
-    session.set_interaction_profile_suggested_bindings(simple_profile, &[
-        xr::Binding::new(&action, binding_l),
-        xr::Binding::new(&action, binding_r),
-    ]).unwrap();
+    let simple_profile = unsafe {
+        instance
+            .string_to_path("/interaction_profiles/khr/simple_controller")
+            .unwrap()
+    };
+    session
+        .set_interaction_profile_suggested_bindings(
+            simple_profile,
+            &[
+                xr::Binding::new(&action, binding_l),
+                xr::Binding::new(&action, binding_r),
+            ],
+        )
+        .unwrap();
 
     'main: loop {
         let mut buffer = xr::EventDataBuffer::new();
@@ -107,9 +162,16 @@ fn main() {
             use xr::Event::*;
             match e {
                 SessionStateChanged(e) => {
-                    println!("session stage changed to {:?} at t={:?}", e.state(), e.time());
-                    if e.state() == xr::SessionState::STOPPING {
-                        break 'main;
+                    println!(
+                        "session stage changed to {:?} at t={:?}",
+                        e.state(),
+                        e.time()
+                    );
+                    match e.state() {
+                        xr::SessionState::EXITING | xr::SessionState::LOSS_PENDING => {
+                            break 'main;
+                        }
+                        _ => {}
                     }
                 }
                 _ => {
@@ -118,7 +180,9 @@ fn main() {
             }
         }
 
-        session.sync_action_data(&[xr::ActiveActionSet::new(&action_set, xr::Path::NULL)]).unwrap();
+        session
+            .sync_action_data(&[xr::ActiveActionSet::new(&action_set, xr::Path::NULL)])
+            .unwrap();
         if action.state(&[]).unwrap().current_state {
             println!("pong");
         }
