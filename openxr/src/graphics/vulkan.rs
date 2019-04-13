@@ -73,7 +73,9 @@ impl Graphics for Vulkan {
         Ok(out)
     }
 
-    fn enumerate_swapchain_images(swapchain: &Swapchain<Self>) -> Result<Vec<Self::SwapchainImage>> {
+    fn enumerate_swapchain_images(
+        swapchain: &Swapchain<Self>,
+    ) -> Result<Vec<Self::SwapchainImage>> {
         let images = get_arr_init(
             sys::SwapchainImageVulkanKHR {
                 ty: sys::SwapchainImageVulkanKHR::TYPE,

@@ -38,12 +38,12 @@ pub type D3D10_FEATURE_LEVEL1 = u32;
 #[cfg(windows)]
 pub use winapi::{
     shared::{
-        windef::{HDC, HGLRC},
         ntdef::LUID,
+        windef::{HDC, HGLRC},
     },
     um::{
-        d3dcommon::D3D_FEATURE_LEVEL,
         d3d11::{ID3D11Device, ID3D11Texture2D},
-        d3d12::{ID3D12Device, ID3D12CommandQueue, ID3D12Resource},
+        d3d12::{ID3D12CommandQueue, ID3D12Device, ID3D12Resource},
+        d3dcommon::D3D_FEATURE_LEVEL,
     },
 };

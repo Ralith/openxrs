@@ -10,7 +10,7 @@ pub struct Swapchain<G: Graphics> {
     _marker: PhantomData<G>,
     /// Whether `wait_image` was called more recently than `release_image`
     waited: bool,
-    /// Whether any image has ever been acquired from this swapchain
+    /// Whether this is a STATIC_IMAGE swapchain whose image has already been acquired
     acquired: bool,
 }
 
@@ -79,7 +79,11 @@ impl<G: Graphics> Swapchain<G> {
     #[inline]
     pub fn acquire_image(&mut self) -> Result<u32> {
         if self.flags.contains(SwapchainCreateFlags::STATIC_IMAGE) {
-            assert!(!self.acquired, "static image swapchains must have exactly one image acquired");
+            assert!(
+                !self.acquired,
+                "static image swapchains must have at most one image acquired"
+            );
+            self.acquired = true;
         }
         let info = sys::SwapchainImageAcquireInfo {
             ty: sys::SwapchainImageAcquireInfo::TYPE,
@@ -93,7 +97,6 @@ impl<G: Graphics> Swapchain<G> {
                 &mut out,
             ))?;
         }
-        self.acquired = true;
         Ok(out)
     }
 

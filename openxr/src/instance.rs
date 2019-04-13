@@ -198,9 +198,7 @@ impl Instance {
     /// Create a session without graphics support
     #[inline]
     pub fn create_session_headless(&self, system: SystemId) -> Result<Session<Headless>> {
-        unsafe {
-            Ok(self.create_session(system, &())?.0)
-        }
+        unsafe { Ok(self.create_session(system, &())?.0) }
     }
 
     /// Get the next event, if available
@@ -319,8 +317,16 @@ impl Instance {
             let mut now = mem::uninitialized();
             libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now);
             let mut out = mem::uninitialized();
-            cvt((self.exts().khr_convert_timespec_time.as_ref().expect("KHR_convert_timespec_time not loaded")
-                 .convert_timespec_time_to_time)(self.as_raw(), &now, &mut out))?;
+            cvt((self
+                .exts()
+                .khr_convert_timespec_time
+                .as_ref()
+                .expect("KHR_convert_timespec_time not loaded")
+                .convert_timespec_time_to_time)(
+                self.as_raw(),
+                &now,
+                &mut out,
+            ))?;
             Ok(out)
         }
     }
@@ -330,10 +336,16 @@ impl Instance {
     //
 
     pub(crate) fn vulkan(&self) -> &raw::VulkanEnableKHR {
-        self.exts().khr_vulkan_enable.as_ref().expect("KHR_vulkan_enable not loaded")
+        self.exts()
+            .khr_vulkan_enable
+            .as_ref()
+            .expect("KHR_vulkan_enable not loaded")
     }
     pub(crate) fn opengl(&self) -> &raw::OpenglEnableKHR {
-        self.exts().khr_opengl_enable.as_ref().expect("KHR_opengl_enable not loaded")
+        self.exts()
+            .khr_opengl_enable
+            .as_ref()
+            .expect("KHR_opengl_enable not loaded")
     }
 }
 
@@ -385,7 +397,7 @@ impl EventDataBuffer {
                 ty: sys::EventDataBuffer::TYPE,
                 next: ptr::null_mut(),
                 ..unsafe { mem::uninitialized() }
-            }
+            },
         }
     }
 }

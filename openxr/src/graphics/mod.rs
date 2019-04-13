@@ -30,7 +30,8 @@ pub trait Graphics: Sized {
     ) -> Result<sys::Session>;
 
     #[doc(hidden)]
-    fn enumerate_swapchain_images(swapchain: &Swapchain<Self>) -> Result<Vec<Self::SwapchainImage>>;
+    fn enumerate_swapchain_images(swapchain: &Swapchain<Self>)
+        -> Result<Vec<Self::SwapchainImage>>;
 }
 
 mod headless;

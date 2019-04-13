@@ -1,9 +1,9 @@
-use std::{ptr, sync::Arc, ffi::CString};
+use std::{ffi::CString, ptr, sync::Arc};
 
 use crate::*;
 
 pub struct ActionSet {
-    inner: Arc<ActionSetInner>
+    inner: Arc<ActionSetInner>,
 }
 
 impl ActionSet {
@@ -18,7 +18,7 @@ impl ActionSet {
             inner: Arc::new(ActionSetInner {
                 session: session.inner,
                 handle,
-            })
+            }),
         }
     }
 
@@ -71,7 +71,11 @@ impl ActionSet {
             .action_type(T::TYPE);
         unsafe {
             let mut out = sys::Action::NULL;
-            cvt((self.fp().create_action)(self.as_raw(), info.as_raw(), &mut out))?;
+            cvt((self.fp().create_action)(
+                self.as_raw(),
+                info.as_raw(),
+                &mut out,
+            ))?;
             Ok(Action::from_raw(self.clone(), out))
         }
     }
@@ -89,7 +93,7 @@ impl ActionSet {
     // Private because safety requires that only one copy of the `ActionSet` exist externally.
     pub(crate) fn clone(&self) -> Self {
         Self {
-            inner: self.inner.clone()
+            inner: self.inner.clone(),
         }
     }
 }

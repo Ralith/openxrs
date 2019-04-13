@@ -28,8 +28,7 @@ mod action;
 pub use action::*;
 
 pub use builder::{
-    ApplicationInfo,
-    CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
+    ApplicationInfo, CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
     CompositionLayerEquirectKHR, CompositionLayerProjection, CompositionLayerQuad, HapticBase,
     HapticVibration,
 };

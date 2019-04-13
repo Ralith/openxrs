@@ -16,10 +16,7 @@ impl<T: ActionTy> Action<T> {
     #[inline]
     pub unsafe fn from_raw(set: ActionSet, handle: sys::Action) -> Self {
         Self {
-            inner: Arc::new(ActionInner {
-                set,
-                handle
-            }),
+            inner: Arc::new(ActionInner { set, handle }),
             _marker: PhantomData,
         }
     }
@@ -95,11 +92,7 @@ impl<T: ActionInput> Action<T> {
 
 impl Action<Posef> {
     /// Creates a `Space` relative to this action
-    pub fn create_space(
-        &self,
-        subaction_path: Path,
-        pose_in_action_space: Posef,
-    ) -> Result<Space> {
+    pub fn create_space(&self, subaction_path: Path, pose_in_action_space: Posef) -> Result<Space> {
         let info = sys::ActionSpaceCreateInfo {
             ty: sys::ActionSpaceCreateInfo::TYPE,
             next: ptr::null(),
@@ -121,14 +114,23 @@ impl Action<Posef> {
 impl Action<Haptic> {
     pub fn apply_feedback(&self, subaction_paths: &[Path], event: &HapticBase) -> Result<()> {
         unsafe {
-            cvt((self.fp().apply_haptic_feedback)(self.as_raw(), subaction_paths.len() as u32, subaction_paths.as_ptr(), event as *const _ as _))?;
+            cvt((self.fp().apply_haptic_feedback)(
+                self.as_raw(),
+                subaction_paths.len() as u32,
+                subaction_paths.as_ptr(),
+                event as *const _ as _,
+            ))?;
         }
         Ok(())
     }
 
     pub fn stop_feedback(&self, subaction_paths: &[Path]) -> Result<()> {
         unsafe {
-            cvt((self.fp().stop_haptic_feedback)(self.as_raw(), subaction_paths.len() as u32, subaction_paths.as_ptr()))?;
+            cvt((self.fp().stop_haptic_feedback)(
+                self.as_raw(),
+                subaction_paths.len() as u32,
+                subaction_paths.as_ptr(),
+            ))?;
         }
         Ok(())
     }

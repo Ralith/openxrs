@@ -7,7 +7,10 @@ fn main() {
         .define("OpenGL_GL_PREFERENCE", "GLVND")
         .build();
 
-    println!("cargo:rustc-link-search=native={}/build/src/loader", dst.display());
+    println!(
+        "cargo:rustc-link-search=native={}/build/src/loader",
+        dst.display()
+    );
     println!("cargo:rustc-link-lib=static=openxr_loader");
     if cfg!(any(target_os = "macos", target_os = "freebsd")) {
         println!("cargo:rustc-link-lib=c++");

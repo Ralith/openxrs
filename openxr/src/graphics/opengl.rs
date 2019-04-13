@@ -83,7 +83,9 @@ impl Graphics for OpenGL {
         }
     }
 
-    fn enumerate_swapchain_images(swapchain: &Swapchain<Self>) -> Result<Vec<Self::SwapchainImage>> {
+    fn enumerate_swapchain_images(
+        swapchain: &Swapchain<Self>,
+    ) -> Result<Vec<Self::SwapchainImage>> {
         let images = get_arr_init(
             sys::SwapchainImageOpenGLKHR {
                 ty: sys::SwapchainImageOpenGLKHR::TYPE,

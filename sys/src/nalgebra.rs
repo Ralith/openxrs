@@ -111,4 +111,3 @@ impl From<Posef> for na::Isometry3<f32> {
         na::Isometry3::from_parts(na::Translation3::from(position), p.orientation.into())
     }
 }
-
