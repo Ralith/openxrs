@@ -181,7 +181,7 @@ fn main() {
         }
 
         session
-            .sync_action_data(&[xr::ActiveActionSet::new(&action_set, xr::Path::NULL)])
+            .sync_action_data(&[xr::ActiveActionSet::new(&action_set)])
             .unwrap();
         if action.state(&[]).unwrap().current_state {
             println!("pong");

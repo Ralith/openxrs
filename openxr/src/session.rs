@@ -366,6 +366,7 @@ pub struct Binding<'a> {
 }
 
 impl<'a> Binding<'a> {
+    #[inline]
     pub fn new<T: ActionTy>(action: &'a Action<T>, binding: Path) -> Self {
         Self {
             _inner: sys::ActionSuggestedBinding {
@@ -385,7 +386,13 @@ pub struct ActiveActionSet<'a> {
 }
 
 impl<'a> ActiveActionSet<'a> {
-    pub fn new(action_set: &'a ActionSet, subaction_path: Path) -> Self {
+    #[inline]
+    pub fn new(action_set: &'a ActionSet) -> Self {
+        Self::with_subaction(action_set, Path::NULL)
+    }
+
+    #[inline]
+    pub fn with_subaction(action_set: &'a ActionSet, subaction_path: Path) -> Self {
         Self {
             _inner: sys::ActiveActionSet {
                 ty: sys::ActiveActionSet::TYPE,
@@ -395,5 +402,11 @@ impl<'a> ActiveActionSet<'a> {
             },
             _marker: PhantomData,
         }
+    }
+}
+
+impl<'a> From<&'a ActionSet> for ActiveActionSet<'a> {
+    fn from(x: &'a ActionSet) -> Self {
+        Self::new(x)
     }
 }
