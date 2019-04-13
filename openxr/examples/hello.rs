@@ -84,27 +84,46 @@ fn main() {
             }).unwrap())
     } else { None };
 
-    let mut buffer = xr::EventDataBuffer::new();
-    while let Some(e) = instance.poll_event(&mut buffer).unwrap() {
-        use xr::Event::*;
-        match e {
-            SessionStateChanged(e) => {
-                println!("session stage changed to {:?} at t={:?}", e.state(), e.time());
-            }
-            _ => {
-                println!("unhand led event");
-            }
-        }
-    }
-
     if let (&Some(ref stage), &Some(ref view)) = (&stage, &view) {
         let relation = view.locate(&stage, xr::Time::from_raw(0)).unwrap();
         let p = relation.pose.position;
         println!("view space is at: {} {} {}", p.x, p.y, p.z);
     }
 
-    if let Some(ref stage) = stage {
-        loop {
+    let action_set = session.create_action_set("actions", "Example Action Set", 0).unwrap();
+    let action = action_set.create_action::<bool>("ping", "Ping", &[]).unwrap();
+    let binding_l = unsafe { instance.string_to_path("/user/hand/left/input/select/click").unwrap() };
+    let binding_r = unsafe { instance.string_to_path("/user/hand/right/input/select/click").unwrap() };
+
+    let simple_profile = unsafe { instance.string_to_path("/interaction_profiles/khr/simple_controller").unwrap() };
+    session.set_interaction_profile_suggested_bindings(simple_profile, &[
+        xr::Binding::new(&action, binding_l),
+        xr::Binding::new(&action, binding_r),
+    ]).unwrap();
+
+    'main: loop {
+        let mut buffer = xr::EventDataBuffer::new();
+        while let Some(e) = instance.poll_event(&mut buffer).unwrap() {
+            use xr::Event::*;
+            match e {
+                SessionStateChanged(e) => {
+                    println!("session stage changed to {:?} at t={:?}", e.state(), e.time());
+                    if e.state() == xr::SessionState::STOPPING {
+                        break 'main;
+                    }
+                }
+                _ => {
+                    println!("unhandled event");
+                }
+            }
+        }
+
+        session.sync_action_data(&[xr::ActiveActionSet::new(&action_set, xr::Path::NULL)]).unwrap();
+        if action.state(&[]).unwrap().current_state {
+            println!("pong");
+        }
+
+        if let Some(ref stage) = stage {
             let now = instance.now().unwrap();
             let (flags, views) = session.locate_views(now, stage).unwrap();
             println!("view flags: {:?}", flags);
