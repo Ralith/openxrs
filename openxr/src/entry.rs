@@ -40,12 +40,19 @@ impl Entry {
         }
     }
 
-    /// Load entry points at run time from the dynamic library `openxr_loader`
+    /// Load entry points at run time from the dynamic library `openxr_loader` according to the
+    /// target platform's naming conventions
     ///
     /// Available if the `loaded` feature is enabled.
     #[cfg(feature = "loaded")]
     pub fn load() -> std::result::Result<Self, LoadError> {
-        Self::load_from(Path::new("openxr_loader"))
+        #[cfg(target_os = "windows")]
+        const PATH: &str = "openxr_loader.dll";
+        #[cfg(target_os = "macos")]
+        const PATH: &str = "libopenxr_loader.dylib";
+        #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+        const PATH: &str = "libopenxr_loader.so";
+        Self::load_from(Path::new(PATH))
     }
 
     /// Load entry points at run time from the dynamic library identified by `path`
