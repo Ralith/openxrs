@@ -310,7 +310,8 @@ impl Instance {
 
     /// Obtain the current `Time`
     ///
-    /// Requires KHR_convert_timespec_time
+    /// Requires KHR_convert_timespec_time. Most applications should use times from
+    /// `FrameStream::wait` and `Action::state` instead.
     #[inline]
     pub fn now(&self) -> Result<Time> {
         unsafe {
