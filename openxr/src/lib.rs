@@ -30,7 +30,7 @@ pub use action::*;
 pub use builder::{
     ApplicationInfo, CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
     CompositionLayerEquirectKHR, CompositionLayerProjection, CompositionLayerProjectionView,
-    CompositionLayerQuad, HapticBase, HapticVibration,
+    CompositionLayerQuad, HapticBase, HapticVibration, SwapchainSubImage,
 };
 
 pub type Result<T> = std::result::Result<T, sys::Result>;
