@@ -19,7 +19,11 @@ use crate::*;
 ///         .locate_views(state.predicted_display_time, world_space)
 ///         .unwrap();
 ///     let status = frame_stream.begin().unwrap();
-///     if status != openxr::sys::Result::SESSION_VISIBILITY_UNAVAILABLE {
+///     if status != openxr::sys::Result::SESSION_VISIBILITY_UNAVAILABLE
+///         && view_flags.contains(
+///             openxr::ViewStateFlags::ORIENTATION_VALID | openxr::ViewStateFlags::POSITION_VALID,
+///         )
+///     {
 ///         // draw views...
 ///     }
 ///     frame_stream
