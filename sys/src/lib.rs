@@ -40,9 +40,17 @@ impl From<bool> for Bool32 {
     }
 }
 
-wrapper! {
-    #[derive(Copy, Clone, Eq, PartialEq)]
-    Time(i64)
+#[derive(Copy, Clone, Eq, PartialEq)]
+#[repr(transparent)]
+pub struct Time(i64);
+impl Time {
+    pub fn from_raw(x: i64) -> Self {
+        Self(x)
+    }
+
+    pub fn as_nanos(&self) -> i64 {
+        self.0
+    }
 }
 
 impl fmt::Debug for Time {
@@ -51,9 +59,25 @@ impl fmt::Debug for Time {
     }
 }
 
-wrapper! {
-    #[derive(Copy, Clone, Eq, PartialEq)]
-    Duration(i64)
+impl std::ops::Sub<Time> for Time {
+    type Output = Duration;
+
+    fn sub(self, other: Time) -> Duration {
+        Duration(self.0.wrapping_sub(other.0))
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq)]
+#[repr(transparent)]
+pub struct Duration(i64);
+impl Duration {
+    pub fn from_raw(x: i64) -> Self {
+        Self(x)
+    }
+
+    pub fn as_nanos(&self) -> i64 {
+        self.0
+    }
 }
 
 impl Duration {
@@ -64,7 +88,13 @@ impl Duration {
 
 impl fmt::Debug for Duration {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        self.0.fmt(fmt)
+        std::time::Duration::from_nanos(self.0 as u64).fmt(fmt)
+    }
+}
+
+impl From<Duration> for std::time::Duration {
+    fn from(x: Duration) -> Self {
+        Self::from_nanos(x.0.abs() as u64)
     }
 }
 
