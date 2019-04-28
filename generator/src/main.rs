@@ -1247,13 +1247,11 @@ impl Parser {
         let mut event_cases = Vec::new();
         let mut event_decodes = Vec::new();
         let mut event_readers = Vec::new();
-        for (raw_name, evt) in self.structs.iter()
-            .filter(|(name, _)| {
-                name.starts_with("XrEventData")
-                    && !name.ends_with("BaseHeader")
-                    && !name.ends_with("Buffer")
-            })
-        {
+        for (raw_name, evt) in self.structs.iter().filter(|(name, _)| {
+            name.starts_with("XrEventData")
+                && !name.ends_with("BaseHeader")
+                && !name.ends_with("Buffer")
+        }) {
             let raw_ident = xr_ty_name(&raw_name);
             let name = &raw_name["XrEventData".len()..];
             let ident = Ident::new(name, Span::call_site());
@@ -1570,7 +1568,7 @@ impl Parser {
                     pub fn into_raw(self) -> sys::#ident {
                         self.inner
                     }
-                    
+
                     #[inline]
                     pub fn as_raw(&self) -> &sys::#ident {
                         &self.inner
