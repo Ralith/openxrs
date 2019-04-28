@@ -1,6 +1,8 @@
 use nalgebra as na;
 
-use crate::{Extent2Df, Offset2Df, Posef, Quaternionf, Vector2f, Vector3f, Vector4f};
+use crate::{
+    Extent2Df, Extent2Di, Offset2Df, Offset2Di, Posef, Quaternionf, Vector2f, Vector3f, Vector4f,
+};
 
 // Hack around a rustc bug
 type Vector2<T> = na::Matrix<T, na::U2, na::U1, na::ArrayStorage<T, na::U2, na::U1>>;
@@ -31,6 +33,18 @@ impl From<Vector2<f32>> for Offset2Df {
     }
 }
 
+impl From<Offset2Di> for Vector2<i32> {
+    fn from(v: Offset2Di) -> Self {
+        na::Vector2::new(v.x, v.y)
+    }
+}
+
+impl From<Vector2<i32>> for Offset2Di {
+    fn from(v: Vector2<i32>) -> Self {
+        Self { x: v.x, y: v.y }
+    }
+}
+
 impl From<Extent2Df> for Vector2<f32> {
     fn from(v: Extent2Df) -> Self {
         na::Vector2::new(v.width, v.height)
@@ -39,6 +53,21 @@ impl From<Extent2Df> for Vector2<f32> {
 
 impl From<Vector2<f32>> for Extent2Df {
     fn from(v: Vector2<f32>) -> Self {
+        Self {
+            width: v.x,
+            height: v.y,
+        }
+    }
+}
+
+impl From<Extent2Di> for Vector2<i32> {
+    fn from(v: Extent2Di) -> Self {
+        na::Vector2::new(v.width, v.height)
+    }
+}
+
+impl From<Vector2<i32>> for Extent2Di {
+    fn from(v: Vector2<i32>) -> Self {
         Self {
             width: v.x,
             height: v.y,

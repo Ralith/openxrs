@@ -19,7 +19,7 @@ static = ["cmake", "prototypes"]
 
 [dependencies]
 libc = "0.2.50"
-nalgebra = { version = "0.17", optional = true }
+nalgebra = { version = "0.18", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["windef", "ntdef", "d3dcommon", "d3d11", "d3d12"] }
