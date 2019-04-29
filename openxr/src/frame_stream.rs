@@ -14,52 +14,52 @@ use crate::*;
 /// #     world_space: &openxr::Space,
 /// #     view_resolution: &[openxr::Extent2Di],
 /// # ) {
-///     let state = frame_stream.wait().unwrap();
-///     let (view_flags, views) = session
-///         .locate_views(state.predicted_display_time, world_space)
-///         .unwrap();
-///     let status = frame_stream.begin().unwrap();
-///     if status != openxr::sys::Result::SESSION_VISIBILITY_UNAVAILABLE
-///         && view_flags.contains(
-///             openxr::ViewStateFlags::ORIENTATION_VALID | openxr::ViewStateFlags::POSITION_VALID,
-///         )
-///     {
-///         // draw views...
-///     }
-///     frame_stream
-///         .end(
-///             state.predicted_display_time,
-///             openxr::EnvironmentBlendMode::OPAQUE,
-///             &[&openxr::CompositionLayerProjection::new()
-///                 .space(world_space)
-///                 .views(&[
-///                     openxr::CompositionLayerProjectionView::new()
-///                         .pose(views[0].pose)
-///                         .fov(views[0].fov)
-///                         .sub_image(
-///                             openxr::SwapchainSubImage::new()
-///                                 .swapchain(swapchain)
-///                                 .image_array_index(0)
-///                                 .image_rect(openxr::Rect2Di {
-///                                     offset: openxr::Offset2Di { x: 0, y: 0 },
-///                                     extent: view_resolution[0],
-///                                 }),
-///                         ),
-///                     openxr::CompositionLayerProjectionView::new()
-///                         .pose(views[1].pose)
-///                         .fov(views[1].fov)
-///                         .sub_image(
-///                             openxr::SwapchainSubImage::new()
-///                                 .swapchain(swapchain)
-///                                 .image_array_index(1)
-///                                 .image_rect(openxr::Rect2Di {
-///                                     offset: openxr::Offset2Di { x: 0, y: 0 },
-///                                     extent: view_resolution[1],
-///                                 }),
-///                         ),
-///                 ])],
-///         )
-///         .unwrap();
+/// let state = frame_stream.wait().unwrap();
+/// let (view_flags, views) = session
+///     .locate_views(state.predicted_display_time, world_space)
+///     .unwrap();
+/// let status = frame_stream.begin().unwrap();
+/// if status != openxr::sys::Result::SESSION_VISIBILITY_UNAVAILABLE
+///     && view_flags.contains(
+///         openxr::ViewStateFlags::ORIENTATION_VALID | openxr::ViewStateFlags::POSITION_VALID,
+///     )
+/// {
+///     // draw views...
+/// }
+/// frame_stream
+///     .end(
+///         state.predicted_display_time,
+///         openxr::EnvironmentBlendMode::OPAQUE,
+///         &[&openxr::CompositionLayerProjection::new()
+///             .space(world_space)
+///             .views(&[
+///                 openxr::CompositionLayerProjectionView::new()
+///                     .pose(views[0].pose)
+///                     .fov(views[0].fov)
+///                     .sub_image(
+///                         openxr::SwapchainSubImage::new()
+///                             .swapchain(swapchain)
+///                             .image_array_index(0)
+///                             .image_rect(openxr::Rect2Di {
+///                                 offset: openxr::Offset2Di { x: 0, y: 0 },
+///                                 extent: view_resolution[0],
+///                             }),
+///                     ),
+///                 openxr::CompositionLayerProjectionView::new()
+///                     .pose(views[1].pose)
+///                     .fov(views[1].fov)
+///                     .sub_image(
+///                         openxr::SwapchainSubImage::new()
+///                             .swapchain(swapchain)
+///                             .image_array_index(1)
+///                             .image_rect(openxr::Rect2Di {
+///                                 offset: openxr::Offset2Di { x: 0, y: 0 },
+///                                 extent: view_resolution[1],
+///                             }),
+///                     ),
+///             ])],
+///     )
+///     .unwrap();
 /// # }
 /// ```
 pub struct FrameStream<G: Graphics> {
