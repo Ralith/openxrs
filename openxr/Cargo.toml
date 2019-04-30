@@ -26,5 +26,13 @@ libc = "0.2.50"
 shared_library = { version = "0.1.9", optional = true }
 void = "1"
 
+[dev-dependencies]
+glium = "0.24.0"
+x11 = { version = "2.18.1", features = ["xlib", "glx"] }
+
+[[example]]
+name = "opengl_xlib"
+required-features = ["static"]
+
 [package.metadata.docs.rs]
 features = ["linked", "loaded", "nalgebra"]
