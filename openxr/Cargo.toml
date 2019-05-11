@@ -27,7 +27,7 @@ shared_library = { version = "0.1.9", optional = true }
 void = "1"
 
 [dev-dependencies]
-glium = "0.24.0"
+glium = { version = "0.24.0", default-features = false }
 x11 = { version = "2.18.1", features = ["xlib", "glx"] }
 
 [package.metadata.docs.rs]
