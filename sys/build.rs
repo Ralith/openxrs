@@ -8,7 +8,7 @@ fn main() {
         .build();
 
     println!(
-        "cargo:rustc-link-search=native={}/build/src/loader",
+        "cargo:rustc-link-search=native={}/lib",
         dst.display()
     );
     println!("cargo:rustc-link-lib=static=openxr_loader");
