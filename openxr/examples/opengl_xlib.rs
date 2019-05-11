@@ -1,11 +1,13 @@
-use glium::texture::{DepthFormat, DepthTexture2d, MipmapsOption};
-use openxr as xr;
 use std::ffi::{c_void, CString};
 use std::mem;
 use std::os::raw::c_int;
 use std::ptr;
 use std::ptr::null_mut;
+
+use glium::texture::{DepthFormat, DepthTexture2d, MipmapsOption, SrgbTexture2dArray};
+use openxr as xr;
 use x11::{glx, glx::arb, xlib};
+
 const GL_SRGB8_ALPHA8: u32 = 0x8C43;
 
 type GlXcreateContextAttribsArb = unsafe extern "C" fn(
@@ -22,7 +24,6 @@ pub struct Backend {
     visual: *mut xlib::XVisualInfo,
     fb_config: *mut glx::GLXFBConfig,
     drawable: x11::xlib::Drawable,
-    dimmensions: (u32, u32),
 }
 
 impl Backend {
@@ -41,9 +42,11 @@ impl Backend {
 
         let context_attribs = [
             arb::GLX_CONTEXT_MAJOR_VERSION_ARB,
-            3,
+            4,
             arb::GLX_CONTEXT_MINOR_VERSION_ARB,
-            0,
+            5,
+            arb::GLX_CONTEXT_PROFILE_MASK_ARB,
+            arb::GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
             0,
         ];
 
@@ -81,18 +84,24 @@ impl Backend {
                 visual,
                 fb_config,
                 drawable: root,
-                dimmensions: (800, 600),
             }
         }
     }
-    pub unsafe fn xr_session_create_info(&self) -> xr::opengl::SessionCreateInfo {
-        let visualid = { *self.visual }.visualid as u32;
-        xr::opengl::SessionCreateInfo::Xlib {
-            x_display: self.display as *mut _,
-            glx_fb_config: *self.fb_config as *mut _,
-            glx_drawable: self.drawable,
-            visualid: visualid,
-            glx_context: self.context as *mut _,
+    pub fn xr_create_session(
+        &self,
+        xr: &xr::Instance,
+        system: xr::SystemId,
+    ) -> xr::Result<(xr::Session<xr::OpenGL>, xr::FrameStream<xr::OpenGL>)> {
+        unsafe {
+            let visualid = { *self.visual }.visualid as u32;
+            let info = xr::opengl::SessionCreateInfo::Xlib {
+                x_display: self.display as *mut _,
+                glx_fb_config: *self.fb_config as *mut _,
+                glx_drawable: self.drawable,
+                visualid: visualid,
+                glx_context: self.context as *mut _,
+            };
+            xr.create_session(system, &info)
         }
     }
 }
@@ -126,7 +135,7 @@ unsafe impl glium::backend::Backend for Backend {
     }
 
     fn get_framebuffer_dimensions(&self) -> (u32, u32) {
-        self.dimmensions
+        (0, 0)
     }
 
     fn is_current(&self) -> bool {
@@ -139,18 +148,23 @@ unsafe impl glium::backend::Backend for Backend {
 }
 
 pub struct OpenXR {
-    pub entry: xr::Entry,
-    pub instance: xr::Instance,
-    pub session: xr::Session<xr::OpenGL>,
-    pub resolution: (u32, u32),
-    predicted_display_time: xr::Time,
+    instance: xr::Instance,
+    system: xr::SystemId,
+    session: xr::Session<xr::OpenGL>,
+    resolution: (u32, u32),
+    predicted_display_time: Option<xr::Time>,
     frame_stream: xr::FrameStream<xr::OpenGL>,
-    swap_chain: Option<xr::Swapchain<xr::OpenGL>>,
+    swapchain: Option<xr::Swapchain<xr::OpenGL>>,
 }
 
 impl OpenXR {
     fn new(backend: &mut Backend) -> Self {
+        #[cfg(feature = "static")]
         let entry = xr::Entry::linked();
+        #[cfg(not(feature = "static"))]
+        let entry = xr::Entry::load()
+            .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
+
         let extensions = entry
             .enumerate_extensions()
             .expect("Cannot enumerate extensions");
@@ -172,55 +186,91 @@ impl OpenXR {
         let system = instance
             .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
             .unwrap();
+        let (session, frame_stream) = backend.xr_create_session(&instance, system).unwrap();
 
-        let info = unsafe { backend.xr_session_create_info() };
-        let (session, frame_stream) = unsafe { instance.create_session(system, &info).unwrap() };
-        session
-            .begin(xr::ViewConfigurationType::PRIMARY_STEREO)
-            .unwrap();
-        let view_configuration_views = instance
-            .enumerate_view_configuration_views(system, xr::ViewConfigurationType::PRIMARY_STEREO)
-            .unwrap();
-        let resolution = (
-            view_configuration_views[0].recommended_image_rect_width,
-            view_configuration_views[0].recommended_image_rect_height,
-        );
-        backend.dimmensions = resolution;
         Self {
-            entry,
             instance,
+            system,
             session,
             frame_stream,
-            resolution,
-            predicted_display_time: xr::Time::from_raw(0),
-            swap_chain: None,
+            resolution: (0, 0),
+            predicted_display_time: None,
+            swapchain: None,
         }
     }
-    pub fn update(&mut self) {
+    pub fn handle_events(&mut self) -> bool {
+        // Check for change in resolution
+        if self.swapchain.is_some() {
+            let view_configuration_views = self
+                .instance
+                .enumerate_view_configuration_views(
+                    self.system,
+                    xr::ViewConfigurationType::PRIMARY_STEREO,
+                )
+                .unwrap();
+            let resolution = (
+                view_configuration_views[0].recommended_image_rect_width,
+                view_configuration_views[0].recommended_image_rect_height,
+            );
+            if resolution != self.resolution {
+                self.resolution = resolution;
+                self.update_swapchain();
+            }
+        }
+
+        // Handle events
         let mut buffer = xr::EventDataBuffer::new();
         while let Some(event) = self.instance.poll_event(&mut buffer).unwrap() {
             use xr::Event::*;
             match event {
                 SessionStateChanged(session_change) => match session_change.state() {
-                    xr::SessionState::RUNNING => {
-                        if self.swap_chain.is_none() {
-                            self.create_swapchain()
-                        }
+                    xr::SessionState::READY => {
+                        self.session
+                            .begin(xr::ViewConfigurationType::PRIMARY_STEREO)
+                            .unwrap();
+                        self.init_swapchain();
+                    }
+                    xr::SessionState::STOPPING => {
+                        self.session.end().unwrap();
+                        self.swapchain = None;
+                    }
+                    xr::SessionState::EXITING | xr::SessionState::LOSS_PENDING => {
+                        return false;
                     }
                     _ => {}
                 },
+                InstanceLossPending(_) => {
+                    return false;
+                }
+                EventsLost(e) => {
+                    println!("lost {} events", e.lost_event_count());
+                }
                 _ => {
                     println!("unhandled event");
                 }
             }
         }
+        true
     }
-    pub fn create_swapchain(&mut self) {
+    pub fn init_swapchain(&mut self) {
         let swapchain_formats = self.session.enumerate_swapchain_formats().unwrap();
         if !swapchain_formats.contains(&GL_SRGB8_ALPHA8) {
             panic!("XR: Cannot use OpenGL GL_SRGB8_ALPHA8 swapchain format");
         }
-
+        let view_configuration_views = self
+            .instance
+            .enumerate_view_configuration_views(
+                self.system,
+                xr::ViewConfigurationType::PRIMARY_STEREO,
+            )
+            .unwrap();
+        self.resolution = (
+            view_configuration_views[0].recommended_image_rect_width,
+            view_configuration_views[0].recommended_image_rect_height,
+        );
+        self.update_swapchain();
+    }
+    pub fn update_swapchain(&mut self) {
         let swapchain_create_info: xr::SwapchainCreateInfo<xr::OpenGL> = xr::SwapchainCreateInfo {
             create_flags: xr::SwapchainCreateFlags::EMPTY,
             usage_flags: xr::SwapchainUsageFlags::COLOR_ATTACHMENT
@@ -230,31 +280,32 @@ impl OpenXR {
             width: self.resolution.0,
             height: self.resolution.1,
             face_count: 1,
-            // Use array size 2 if you want stereo rendering(See: https://github.com/TheHellBox/SlashMania/wiki/Render-different-image-for-each-eye)
+            // One image per eye
             array_size: 2,
             mip_count: 1,
         };
-        self.swap_chain = Some(
-            self.session
-                .create_swapchain(&swapchain_create_info)
-                .unwrap(),
-        );
+        let swapchain = self
+            .session
+            .create_swapchain(&swapchain_create_info)
+            .unwrap();
+
+        self.swapchain = Some(swapchain);
     }
-    pub fn frame_stream_begin(&mut self) {
+    pub fn frame_begin(&mut self) {
         let state = self.frame_stream.wait().unwrap();
-        self.predicted_display_time = state.predicted_display_time;
+        self.predicted_display_time = Some(state.predicted_display_time);
         self.frame_stream.begin().unwrap();
     }
     pub fn get_swapchain_image(&mut self) -> Option<u32> {
-        let swapchain = self.swap_chain.as_mut()?;
+        let swapchain = self.swapchain.as_mut()?;
         let images = swapchain.enumerate_images().unwrap();
         let image_id = swapchain.acquire_image().unwrap();
         swapchain.wait_image(xr::Duration::INFINITE).unwrap();
         let image = images[image_id as usize];
         Some(image)
     }
-    pub fn frame_stream_end(&mut self) {
-        let swap_chain = self.swap_chain.as_ref().unwrap();
+    pub fn frame_end(&mut self) {
+        let swapchain = self.swapchain.as_ref().unwrap();
         let eye_rect = xr::Rect2Di {
             offset: xr::Offset2Di { x: 0, y: 0 },
             extent: xr::Extent2Di {
@@ -263,13 +314,13 @@ impl OpenXR {
             },
         };
 
-        let time = self.predicted_display_time;
+        let time = self.predicted_display_time.take().unwrap();
         let left_subimage: xr::SwapchainSubImage<xr::OpenGL> = openxr::SwapchainSubImage::new()
-            .swapchain(swap_chain)
+            .swapchain(swapchain)
             .image_array_index(0)
             .image_rect(eye_rect);
         let right_subimage: xr::SwapchainSubImage<xr::OpenGL> = openxr::SwapchainSubImage::new()
-            .swapchain(swap_chain)
+            .swapchain(swapchain)
             .image_array_index(1)
             .image_rect(eye_rect);
 
@@ -284,7 +335,7 @@ impl OpenXR {
             .unwrap();
     }
     pub fn release_swapchain_image(&mut self) {
-        let swapchain = self.swap_chain.as_mut().unwrap();
+        let swapchain = self.swapchain.as_mut().unwrap();
         swapchain.release_image().unwrap();
     }
 }
@@ -304,13 +355,12 @@ fn main() {
         open_xr.resolution.1,
     )
     .unwrap();
-    loop {
-        open_xr.update();
+    while open_xr.handle_events() {
         let swapchain_image = open_xr.get_swapchain_image();
         if let Some(swapchain_image) = swapchain_image {
-            open_xr.frame_stream_begin();
+            open_xr.frame_begin();
             let texture_array = unsafe {
-                glium::texture::srgb_texture2d_array::SrgbTexture2dArray::from_id(
+                SrgbTexture2dArray::from_id(
                     &context,
                     glium::texture::SrgbFormat::U8U8U8U8,
                     swapchain_image,
@@ -344,7 +394,7 @@ fn main() {
             target_left.clear_color_and_depth((0.6, 0.0, 0.0, 1.0), 1.0);
             target_right.clear_color_and_depth((0.0, 0.0, 0.6, 1.0), 1.0);
             open_xr.release_swapchain_image();
-            open_xr.frame_stream_end();
+            open_xr.frame_end();
         }
     }
 }

@@ -30,9 +30,5 @@ void = "1"
 glium = "0.24.0"
 x11 = { version = "2.18.1", features = ["xlib", "glx"] }
 
-[[example]]
-name = "opengl_xlib"
-required-features = ["static"]
-
 [package.metadata.docs.rs]
 features = ["linked", "loaded", "nalgebra"]
