@@ -4,7 +4,7 @@ use std::os::raw::c_int;
 use std::ptr;
 use std::ptr::null_mut;
 
-use glium::texture::{DepthFormat, DepthTexture2d, MipmapsOption, SrgbTexture2dArray};
+use glium::texture::{DepthFormat, DepthTexture2dArray, MipmapsOption, SrgbTexture2dArray};
 use openxr as xr;
 use x11::{glx, glx::arb, xlib};
 
@@ -347,16 +347,28 @@ fn main() {
     let mut open_xr = OpenXR::new(&mut backend);
     let context =
         unsafe { glium::backend::Context::new(backend, false, Default::default()) }.unwrap();
-    let depthtexture = DepthTexture2d::empty_with_format(
+    let mut depth_buffer = DepthTexture2dArray::empty_with_format(
         &context,
         DepthFormat::F32,
         MipmapsOption::EmptyMipmaps,
         open_xr.resolution.0,
         open_xr.resolution.1,
+        2,
     )
     .unwrap();
     while open_xr.handle_events() {
         let swapchain_image = open_xr.get_swapchain_image();
+        if depth_buffer.dimensions() != open_xr.resolution {
+            depth_buffer = DepthTexture2dArray::empty_with_format(
+                &context,
+                DepthFormat::F32,
+                MipmapsOption::EmptyMipmaps,
+                open_xr.resolution.0,
+                open_xr.resolution.1,
+                2,
+            )
+            .unwrap()
+        };
         if let Some(swapchain_image) = swapchain_image {
             open_xr.frame_begin();
             let texture_array = unsafe {
@@ -375,19 +387,21 @@ fn main() {
             };
 
             let texture_left = texture_array.layer(0).unwrap().mipmap(0).unwrap();
+            let depth_left = depth_buffer.layer(0).unwrap().mipmap(0).unwrap();
             let texture_right = texture_array.layer(1).unwrap().mipmap(0).unwrap();
+            let depth_right = depth_buffer.layer(1).unwrap().mipmap(0).unwrap();
 
             let mut target_left = glium::framebuffer::SimpleFrameBuffer::with_depth_buffer(
                 &context,
                 texture_left,
-                &depthtexture,
+                depth_left,
             )
             .unwrap();
 
             let mut target_right = glium::framebuffer::SimpleFrameBuffer::with_depth_buffer(
                 &context,
                 texture_right,
-                &depthtexture,
+                depth_right,
             )
             .unwrap();
 
