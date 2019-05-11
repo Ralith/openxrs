@@ -13,7 +13,7 @@ dlopen-libs = with xlibs; [ monado vulkan-loader vulkan-validation-layers libX11
 in stdenv.mkDerivation {
   name = "openxrs";
   nativeBuildInputs = with pkgs; [ rustChannels.stable.rust cmake python3 pkgconfig ];
-  buildInputs = [ monado vulkan-headers vulkan-loader libglvnd ] ++ (with xlibs; [ libX11 libXxf86vm libpthreadstubs libXrandr ]);
+  buildInputs = [ monado vulkan-headers vulkan-loader libGL ] ++ (with xlibs; [ libX11 libXxf86vm libpthreadstubs libXrandr ]);
   shellHook = ''
     export RUST_BACKTRACE=1
     export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${stdenv.lib.makeLibraryPath dlopen-libs}"
