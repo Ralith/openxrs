@@ -230,7 +230,9 @@ impl OpenXR {
                             .unwrap();
                     }
                     xr::SessionState::RUNNING => {
-                        self.init_swapchain();
+                        if self.swapchain.is_none() {
+                            self.init_swapchain();
+                        }
                     }
                     xr::SessionState::STOPPING => {
                         self.swapchain = None;
