@@ -228,11 +228,13 @@ impl OpenXR {
                         self.session
                             .begin(xr::ViewConfigurationType::PRIMARY_STEREO)
                             .unwrap();
+                    }
+                    xr::SessionState::RUNNING => {
                         self.init_swapchain();
                     }
                     xr::SessionState::STOPPING => {
-                        self.session.end().unwrap();
                         self.swapchain = None;
+                        self.session.end().unwrap();
                     }
                     xr::SessionState::EXITING | xr::SessionState::LOSS_PENDING => {
                         return false;
