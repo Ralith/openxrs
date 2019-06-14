@@ -4,7 +4,8 @@ use std::{
     collections::{HashMap, HashSet},
     env,
     fs::File,
-    io::{Seek, SeekFrom, Write},
+    io::Write,
+    path::{Path, PathBuf},
     rc::Rc,
 };
 
@@ -21,9 +22,11 @@ use xml::{
 fn main() {
     let mut args = env::args_os();
     args.next().unwrap();
-    let mut source = File::open(args.next().expect("missing registry XML path"))
-        .expect("failed to open registry XML file");
-    source.seek(SeekFrom::Start(3)).unwrap(); // Skip byte order marker
+    let source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../sys/OpenXR-SDK/specification/registry/xr.xml")
+    }))
+    .expect("failed to open registry XML file");
 
     let mut parser = Parser::new(source);
     parser.parse();
