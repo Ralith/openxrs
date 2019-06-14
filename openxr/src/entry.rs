@@ -138,7 +138,7 @@ impl Entry {
                 application_version: app_info.application_version,
                 engine_name: [0; sys::MAX_ENGINE_NAME_SIZE],
                 engine_version: app_info.engine_version,
-                api_version: app_info.api_version.into_raw(),
+                api_version: CURRENT_API_VERSION.into_raw(),
             },
             enabled_api_layer_count: 0,
             enabled_api_layer_names: ptr::null(),
@@ -225,7 +225,6 @@ pub struct ApplicationInfo<'a> {
     pub application_version: u32,
     pub engine_name: &'a str,
     pub engine_version: u32,
-    pub api_version: Version,
 }
 
 impl<'a> Default for ApplicationInfo<'a> {
@@ -235,7 +234,6 @@ impl<'a> Default for ApplicationInfo<'a> {
             application_version: 0,
             engine_name: "",
             engine_version: 0,
-            api_version: CURRENT_API_VERSION,
         }
     }
 }
