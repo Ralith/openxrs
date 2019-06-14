@@ -220,20 +220,10 @@ impl fmt::Display for LoadError {
 #[cfg(feature = "loaded")]
 impl std::error::Error for LoadError {}
 
+#[derive(Debug, Copy, Clone, Default)]
 pub struct ApplicationInfo<'a> {
     pub application_name: &'a str,
     pub application_version: u32,
     pub engine_name: &'a str,
     pub engine_version: u32,
-}
-
-impl<'a> Default for ApplicationInfo<'a> {
-    fn default() -> Self {
-        Self {
-            application_name: "",
-            application_version: 0,
-            engine_name: "",
-            engine_version: 0,
-        }
-    }
 }
