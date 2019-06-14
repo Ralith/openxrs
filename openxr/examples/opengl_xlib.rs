@@ -168,7 +168,10 @@ impl OpenXR {
         let extensions = entry
             .enumerate_extensions()
             .expect("Cannot enumerate extensions");
-        let app_info = xr::ApplicationInfo::new().application_name("OpenXR example");
+        let app_info = xr::ApplicationInfo {
+            application_name: "openxrs example",
+            ..Default::default()
+        };
         if !extensions.khr_opengl_enable {
             panic!("XR: OpenGL extension unsupported");
         }
@@ -176,7 +179,7 @@ impl OpenXR {
             khr_opengl_enable: true,
             ..Default::default()
         };
-        let instance = entry.create_instance(app_info, &extension_set).unwrap();
+        let instance = entry.create_instance(&app_info, &extension_set).unwrap();
         let instance_props = instance.properties().expect("Cannot load instance props");
         println!(
             "loaded instance: {} v{}",

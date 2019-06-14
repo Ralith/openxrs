@@ -115,20 +115,44 @@ impl Entry {
     /// (e.g. `khr_vulkan_enable`) so that a `Session` can be created for rendering.
     pub fn create_instance(
         &self,
-        app_info: ApplicationInfo,
+        app_info: &ApplicationInfo,
         required_extensions: &ExtensionSet,
     ) -> Result<Instance> {
+        assert!(
+            app_info.application_name.len() < sys::MAX_APPLICATION_NAME_SIZE,
+            "application names are limited to {} bytes",
+            sys::MAX_APPLICATION_NAME_SIZE
+        );
+        assert!(
+            app_info.engine_name.len() < sys::MAX_ENGINE_NAME_SIZE,
+            "engine names are limited to {} bytes",
+            sys::MAX_ENGINE_NAME_SIZE
+        );
         let ext_names = required_extensions.names();
-        let info = sys::InstanceCreateInfo {
+        let mut info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
             next: ptr::null(),
             create_flags: Default::default(),
-            application_info: app_info.into_raw(),
+            application_info: sys::ApplicationInfo {
+                application_name: [0; sys::MAX_APPLICATION_NAME_SIZE],
+                application_version: app_info.application_version,
+                engine_name: [0; sys::MAX_ENGINE_NAME_SIZE],
+                engine_version: app_info.engine_version,
+                api_version: app_info.api_version.into_raw(),
+            },
             enabled_api_layer_count: 0,
             enabled_api_layer_names: ptr::null(),
             enabled_extension_count: ext_names.len() as _,
             enabled_extension_names: ext_names.as_ptr(),
         };
+        place_cstr(
+            &mut info.application_info.application_name,
+            &app_info.application_name,
+        );
+        place_cstr(
+            &mut info.application_info.engine_name,
+            &app_info.engine_name,
+        );
         unsafe {
             let mut handle = sys::Instance::NULL;
             cvt((self.fp().create_instance)(&info, &mut handle))?;
@@ -195,3 +219,23 @@ impl fmt::Display for LoadError {
 
 #[cfg(feature = "loaded")]
 impl std::error::Error for LoadError {}
+
+pub struct ApplicationInfo<'a> {
+    pub application_name: &'a str,
+    pub application_version: u32,
+    pub engine_name: &'a str,
+    pub engine_version: u32,
+    pub api_version: Version,
+}
+
+impl<'a> Default for ApplicationInfo<'a> {
+    fn default() -> Self {
+        Self {
+            application_name: "",
+            application_version: 0,
+            engine_name: "",
+            engine_version: 0,
+            api_version: CURRENT_API_VERSION,
+        }
+    }
+}

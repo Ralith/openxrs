@@ -1356,64 +1356,6 @@ pub(crate) mod builder {
     use std::{marker::PhantomData, mem, ops::Deref};
     #[derive(Copy, Clone)]
     #[repr(transparent)]
-    pub struct ApplicationInfo {
-        inner: sys::ApplicationInfo,
-    }
-    impl ApplicationInfo {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::ApplicationInfo {
-                    ..unsafe { mem::zeroed() }
-                },
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::ApplicationInfo) -> Self {
-            Self { inner }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::ApplicationInfo {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::ApplicationInfo {
-            &self.inner
-        }
-        #[inline]
-        pub fn application_name(mut self, value: &str) -> Self {
-            place_cstr(&mut self.inner.application_name, value);
-            self
-        }
-        #[inline]
-        pub fn application_version(mut self, value: u32) -> Self {
-            self.inner.application_version = value;
-            self
-        }
-        #[inline]
-        pub fn engine_name(mut self, value: &str) -> Self {
-            place_cstr(&mut self.inner.engine_name, value);
-            self
-        }
-        #[inline]
-        pub fn engine_version(mut self, value: u32) -> Self {
-            self.inner.engine_version = value;
-            self
-        }
-        #[inline]
-        pub fn api_version(mut self, value: u32) -> Self {
-            self.inner.api_version = value;
-            self
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
     pub struct SwapchainSubImage<'a, G: Graphics> {
         inner: sys::SwapchainSubImage,
         _marker: PhantomData<&'a G>,

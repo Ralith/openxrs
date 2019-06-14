@@ -1298,7 +1298,6 @@ impl Parser {
         });
 
         let whitelist = [
-            "XrApplicationInfo",
             "XrCompositionLayerProjectionView",
             "XrSwapchainSubImage",
             "XrFrameWaitInfo",

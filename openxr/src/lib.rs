@@ -28,7 +28,7 @@ mod action;
 pub use action::*;
 
 pub use builder::{
-    ApplicationInfo, CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
+    CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
     CompositionLayerEquirectKHR, CompositionLayerProjection, CompositionLayerProjectionView,
     CompositionLayerQuad, HapticBase, HapticVibration, SwapchainSubImage,
 };
@@ -60,7 +60,7 @@ fn place_cstr(out: &mut [c_char], s: &str) {
         );
     }
     for (i, o) in s.bytes().zip(out.iter_mut()) {
-        *o = i as std::os::raw::c_char;
+        *o = i as c_char;
     }
     out[s.len()] = 0;
 }

@@ -17,7 +17,10 @@ fn main() {
     }
     let instance = entry
         .create_instance(
-            xr::ApplicationInfo::new().application_name("hello openxrs"),
+            &xr::ApplicationInfo {
+                application_name: "hello openxrs",
+                ..Default::default()
+            },
             &xr::ExtensionSet {
                 khr_headless: true,
                 khr_convert_timespec_time: true,
