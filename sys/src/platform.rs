@@ -45,5 +45,6 @@ pub use winapi::{
         d3d11::{ID3D11Device, ID3D11Texture2D},
         d3d12::{ID3D12CommandQueue, ID3D12Device, ID3D12Resource},
         d3dcommon::D3D_FEATURE_LEVEL,
+        winnt::LARGE_INTEGER,
     },
 };
