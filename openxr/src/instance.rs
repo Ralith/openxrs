@@ -313,6 +313,7 @@ impl Instance {
     /// Requires KHR_convert_timespec_time. Most applications should use times from
     /// `FrameStream::wait` and `Action::state` instead.
     #[inline]
+    #[cfg(not(windows))]
     pub fn now(&self) -> Result<Time> {
         unsafe {
             let mut now = mem::uninitialized();
@@ -324,6 +325,31 @@ impl Instance {
                 .as_ref()
                 .expect("KHR_convert_timespec_time not loaded")
                 .convert_timespec_time_to_time)(
+                self.as_raw(),
+                &now,
+                &mut out,
+            ))?;
+            Ok(out)
+        }
+    }
+
+    /// Obtain the current `Time`
+    ///
+    /// Requires KHR_win32_convert_performance_counter_time. Most applications should use
+    /// times from `FrameStream::wait` and `Action::state` instead.
+    #[inline]
+    #[cfg(windows)]
+    pub fn now(&self) -> Result<Time> {
+        unsafe {
+            let mut now = mem::uninitialized();
+            winapi::um::profileapi::QueryPerformanceCounter(&mut now);
+            let mut out = mem::uninitialized();
+            cvt((self
+                .exts()
+                .khr_win32_convert_performance_counter_time
+                .as_ref()
+                .expect("KHR_win32_convert_performance_counter_time not loaded")
+                .convert_win32_performance_counter_to_time)(
                 self.as_raw(),
                 &now,
                 &mut out,

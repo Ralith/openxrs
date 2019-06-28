@@ -50,6 +50,30 @@ impl Graphics for OpenGL {
         info: &Self::SessionCreateInfo,
     ) -> Result<sys::Session> {
         match *info {
+            SessionCreateInfo::Windows {
+                h_dc,
+                h_glrc,
+            } => {
+                let binding = sys::GraphicsBindingOpenGLWin32KHR {
+                    ty: sys::GraphicsBindingOpenGLWin32KHR::TYPE,
+                    next: ptr::null(),
+                    h_dc,
+                    h_glrc,
+                };
+                let info = sys::SessionCreateInfo {
+                    ty: sys::SessionCreateInfo::TYPE,
+                    next: &binding as *const _ as *const _,
+                    create_flags: Default::default(),
+                    system_id: system,
+                };
+                let mut out = sys::Session::NULL;
+                cvt((instance.fp().create_session)(
+                    instance.as_raw(),
+                    &info,
+                    &mut out,
+                ))?;
+                Ok(out)
+            }
             SessionCreateInfo::Xlib {
                 x_display,
                 visualid,
@@ -119,4 +143,9 @@ pub enum SessionCreateInfo {
         glx_drawable: GLXDrawable,
         glx_context: GLXContext,
     },
+    #[cfg(windows)]
+    Windows {
+        h_dc: HDC,
+        h_glrc: HGLRC,
+    }
 }
