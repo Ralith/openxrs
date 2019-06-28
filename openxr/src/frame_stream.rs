@@ -4,7 +4,6 @@ use crate::*;
 
 /// Handle for managing frame presentation
 ///
-///
 /// # Example
 /// ```no_run
 /// # fn dummy<G: openxr::Graphics>(

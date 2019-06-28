@@ -120,10 +120,6 @@ impl<G: Graphics> Swapchain<G> {
     }
 
     /// Release the oldest acquired image
-    ///
-    /// # Safety
-    ///
-    /// The swapchain image must have been successfully waited on before it is released.
     #[inline]
     pub fn release_image(&mut self) -> Result<()> {
         assert!(

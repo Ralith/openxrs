@@ -144,8 +144,5 @@ pub enum SessionCreateInfo {
         glx_context: GLXContext,
     },
     #[cfg(windows)]
-    Windows {
-        h_dc: HDC,
-        h_glrc: HGLRC,
-    }
+    Windows { h_dc: HDC, h_glrc: HGLRC },
 }
