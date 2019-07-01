@@ -51,6 +51,7 @@ impl<G: Graphics> Swapchain<G> {
     /// Set the debug name of this `Swapchain`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
+        // We don't forward to the locking version on Instance because this object can't be cloned
         if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
             let name = CString::new(name).unwrap();
             let info = sys::DebugUtilsObjectNameInfoEXT {

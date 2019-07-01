@@ -11,6 +11,7 @@ use crate::*;
 /// Root object mediating an application's interaction with OpenXR
 ///
 /// Constructed from an `Entry`.
+#[derive(Clone)]
 pub struct Instance {
     inner: Arc<InstanceInner>,
 }
@@ -32,6 +33,7 @@ impl Instance {
                 exts,
                 handle,
                 entry,
+                set_name_lock: Mutex::new(()),
             }),
         })
     }
@@ -403,6 +405,26 @@ impl Instance {
     // Internal helpers
     //
 
+    pub(crate) fn set_name_raw(&self, object: u64, name: &str) -> Result<()> {
+        if let Some(fp) = self.exts().ext_debug_utils.as_ref() {
+            let name = CString::new(name).unwrap();
+            let info = sys::DebugUtilsObjectNameInfoEXT {
+                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
+                next: ptr::null(),
+                object_type: ObjectType::INSTANCE,
+                object_handle: object,
+                object_name: name.as_ptr(),
+            };
+            // The following function call must be synchronized for each object and shouldn't be
+            // performance-relevant, so we use a conservative instance-global lock for simplicity.
+            let guard = self.inner.set_name_lock.lock().unwrap();
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(self.as_raw(), &info))?;
+            }
+            drop(guard);
+        }
+        Ok(())
+    }
     pub(crate) fn vulkan(&self) -> &raw::VulkanEnableKHR {
         self.exts()
             .khr_vulkan_enable
@@ -422,6 +444,7 @@ struct InstanceInner {
     handle: sys::Instance,
     raw: raw::Instance,
     exts: InstanceExtensions,
+    set_name_lock: Mutex<()>,
 }
 
 impl Drop for InstanceInner {

@@ -1,7 +1,8 @@
-use std::{ffi::CString, ptr, sync::Arc};
+use std::sync::Arc;
 
 use crate::*;
 
+#[derive(Clone)]
 pub struct ActionSet {
     inner: Arc<ActionSetInner>,
 }
@@ -37,23 +38,7 @@ impl ActionSet {
     /// Set the debug name of this `ActionSet`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
-        if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
-            let name = CString::new(name).unwrap();
-            let info = sys::DebugUtilsObjectNameInfoEXT {
-                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
-                next: ptr::null(),
-                object_type: ObjectType::ACTION_SET,
-                object_handle: self.as_raw().into_raw(),
-                object_name: name.as_ptr(),
-            };
-            unsafe {
-                cvt((fp.set_debug_utils_object_name)(
-                    self.instance().as_raw(),
-                    &info,
-                ))?;
-            }
-        }
-        Ok(())
+        self.instance().set_name_raw(self.as_raw().into_raw(), name)
     }
 
     /// Create a new logical input action
