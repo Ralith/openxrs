@@ -8,7 +8,7 @@ use crate::*;
 /// ```no_run
 /// # fn dummy<G: openxr::Graphics>(
 /// #     session: &openxr::Session<G>,
-/// #     swapchain: &openxr::Swapchain<G>,
+/// #     swapchain: &mut openxr::Swapchain<G>,
 /// #     frame_stream: &mut openxr::FrameStream<G>,
 /// #     world_space: &openxr::Space,
 /// #     view_resolution: &[openxr::Extent2Di],
@@ -23,7 +23,10 @@ use crate::*;
 ///         openxr::ViewStateFlags::ORIENTATION_VALID | openxr::ViewStateFlags::POSITION_VALID,
 ///     )
 /// {
+///     let image = swapchain.acquire_image().unwrap();
+///     swapchain.wait_image(openxr::Duration::INFINITE).unwrap();
 ///     // draw views...
+///     swapchain.release_image().unwrap();
 /// }
 /// frame_stream
 ///     .end(
