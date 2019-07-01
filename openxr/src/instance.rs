@@ -1,27 +1,68 @@
-use std::{ffi::CString, mem, ptr};
+use std::{
+    ffi::CString,
+    mem, ptr,
+    sync::{Arc, Mutex},
+};
 
 use sys::platform::*;
 
 use crate::*;
 
+/// Root object mediating an application's interaction with OpenXR
+///
+/// Constructed from an `Entry`.
+pub struct Instance {
+    inner: Arc<InstanceInner>,
+}
+
 impl Instance {
+    /// Take ownership of an existing instance handle
+    ///
+    /// # Safety
+    ///
+    /// `handle` must be the instance handle that was used to load `exts`.
+    pub unsafe fn from_raw(
+        entry: Entry,
+        handle: sys::Instance,
+        exts: InstanceExtensions,
+    ) -> Result<Self> {
+        Ok(Self {
+            inner: Arc::new(InstanceInner {
+                raw: raw::Instance::load(&entry, handle)?,
+                exts,
+                handle,
+                entry,
+            }),
+        })
+    }
+
+    #[inline]
+    pub fn as_raw(&self) -> sys::Instance {
+        self.inner.handle
+    }
+
+    /// Access the entry points used to create self
+    #[inline]
+    pub fn entry(&self) -> &Entry {
+        &self.inner.entry
+    }
+
+    /// Access the core function pointers
+    #[inline]
+    pub fn fp(&self) -> &raw::Instance {
+        &self.inner.raw
+    }
+
+    /// Access the internal extension function pointers
+    #[inline]
+    pub fn exts(&self) -> &InstanceExtensions {
+        &self.inner.exts
+    }
+
     /// Set the debug name of this `Instance`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
-        if let Some(fp) = self.exts().ext_debug_utils.as_ref() {
-            let name = CString::new(name).unwrap();
-            let info = sys::DebugUtilsObjectNameInfoEXT {
-                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
-                next: ptr::null(),
-                object_type: ObjectType::INSTANCE,
-                object_handle: self.as_raw().into_raw(),
-                object_name: name.as_ptr(),
-            };
-            unsafe {
-                cvt((fp.set_debug_utils_object_name)(self.as_raw(), &info))?;
-            }
-        }
-        Ok(())
+        self.set_name_raw(self.as_raw().into_raw(), name)
     }
 
     #[inline]
@@ -373,6 +414,21 @@ impl Instance {
             .khr_opengl_enable
             .as_ref()
             .expect("KHR_opengl_enable not loaded")
+    }
+}
+
+struct InstanceInner {
+    entry: Entry,
+    handle: sys::Instance,
+    raw: raw::Instance,
+    exts: InstanceExtensions,
+}
+
+impl Drop for InstanceInner {
+    fn drop(&mut self) {
+        unsafe {
+            (self.raw.destroy_instance)(self.handle);
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 # ! [ doc = r" Automatically generated code; do not edit!" ]use crate::*;
-use std::{os::raw::c_char, sync::Arc};
+use std::os::raw::c_char;
 pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
@@ -11,67 +11,6 @@ pub use sys::{
     SystemGraphicsProperties, Vector2f, Vector3f, Vector4f, ViewConfigurationType, ViewStateFlags,
     VisibilityMaskTypeKHR,
 };
-struct InstanceInner {
-    entry: Entry,
-    handle: sys::Instance,
-    raw: raw::Instance,
-    exts: InstanceExtensions,
-}
-impl Drop for InstanceInner {
-    fn drop(&mut self) {
-        unsafe {
-            (self.raw.destroy_instance)(self.handle);
-        }
-    }
-}
-pub struct Instance {
-    inner: Arc<InstanceInner>,
-}
-impl Instance {
-    #[doc = r" Take ownership of an existing instance handle"]
-    #[doc = r""]
-    #[doc = r" # Safety"]
-    #[doc = r""]
-    #[doc = r" `handle` must be the instance handle that was used to load `exts`."]
-    pub unsafe fn from_raw(
-        entry: Entry,
-        handle: sys::Instance,
-        exts: InstanceExtensions,
-    ) -> Result<Self> {
-        Ok(Self {
-            inner: Arc::new(InstanceInner {
-                raw: raw::Instance::load(&entry, handle)?,
-                exts,
-                handle,
-                entry,
-            }),
-        })
-    }
-    #[inline]
-    pub fn as_raw(&self) -> sys::Instance {
-        self.inner.handle
-    }
-    #[doc = r" Access the entry points used to create self"]
-    #[inline]
-    pub fn entry(&self) -> &Entry {
-        &self.inner.entry
-    }
-    #[doc = r" Access the core function pointers"]
-    #[inline]
-    pub fn fp(&self) -> &raw::Instance {
-        &self.inner.raw
-    }
-    #[doc = r" Access the internal extension function pointers"]
-    #[inline]
-    pub fn exts(&self) -> &InstanceExtensions {
-        &self.inner.exts
-    }
-    pub(crate) fn clone(&self) -> Self {
-        Self {
-            inner: self.inner.clone(),
-        }
-    }
-}
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
 pub struct ExtensionSet {
     pub ext_performance_settings: bool,

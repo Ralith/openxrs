@@ -1319,78 +1319,10 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
-            use std::{sync::Arc, os::raw::c_char};
-
+            use std::os::raw::c_char;
             pub use sys::{#(#reexports),*};
 
             use crate::*;
-
-            struct InstanceInner {
-                entry: Entry,
-                handle: sys::Instance,
-                raw: raw::Instance,
-                exts: InstanceExtensions,
-            }
-
-            impl Drop for InstanceInner {
-                fn drop(&mut self) {
-                    unsafe {
-                        (self.raw.destroy_instance)(self.handle);
-                    }
-                }
-            }
-
-            pub struct Instance {
-                inner: Arc<InstanceInner>,
-            }
-
-            impl Instance {
-                /// Take ownership of an existing instance handle
-                ///
-                /// # Safety
-                ///
-                /// `handle` must be the instance handle that was used to load `exts`.
-                pub unsafe fn from_raw(entry: Entry, handle: sys::Instance, exts: InstanceExtensions) -> Result<Self> {
-                    Ok(Self {
-                        inner: Arc::new(InstanceInner {
-                            raw: raw::Instance::load(&entry, handle)?,
-                            exts,
-                            handle,
-                            entry,
-                        }),
-                    })
-                }
-
-                #[inline]
-                pub fn as_raw(&self) -> sys::Instance {
-                    self.inner.handle
-                }
-
-                /// Access the entry points used to create self
-                #[inline]
-                pub fn entry(&self) -> &Entry {
-                    &self.inner.entry
-                }
-
-                /// Access the core function pointers
-                #[inline]
-                pub fn fp(&self) -> &raw::Instance {
-                    &self.inner.raw
-                }
-
-                /// Access the internal extension function pointers
-                #[inline]
-                pub fn exts(&self) -> &InstanceExtensions {
-                    &self.inner.exts
-                }
-
-                // Private to ensure at most one `Instance` exists externally for safety
-                pub(crate) fn clone(&self) -> Self {
-                    Self {
-                        inner: self.inner.clone()
-                    }
-                }
-            }
 
             #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
             pub struct ExtensionSet {
