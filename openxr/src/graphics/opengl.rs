@@ -50,10 +50,8 @@ impl Graphics for OpenGL {
         info: &Self::SessionCreateInfo,
     ) -> Result<sys::Session> {
         match *info {
-            SessionCreateInfo::Windows {
-                h_dc,
-                h_glrc,
-            } => {
+            #[cfg(windows)]
+            SessionCreateInfo::Windows { h_dc, h_glrc } => {
                 let binding = sys::GraphicsBindingOpenGLWin32KHR {
                     ty: sys::GraphicsBindingOpenGLWin32KHR::TYPE,
                     next: ptr::null(),
