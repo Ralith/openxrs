@@ -99,7 +99,7 @@ impl From<Duration> for std::time::Duration {
 }
 
 wrapper! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Path(u64)
 }
 
@@ -108,7 +108,7 @@ impl Path {
 }
 
 wrapper! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
     SystemId(u64)
 }
 
