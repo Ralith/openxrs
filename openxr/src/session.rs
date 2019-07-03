@@ -13,7 +13,8 @@ impl<G: Graphics> Session<G> {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid session handle associated with `instance` which is not currently inside a frame.
+    /// `handle` must be a valid session handle associated with `instance` which is not currently
+    /// inside a frame and was created for graphics API `G`.
     #[inline]
     pub unsafe fn from_raw(instance: Instance, handle: sys::Session) -> (Self, FrameStream<G>) {
         let session = Self {
