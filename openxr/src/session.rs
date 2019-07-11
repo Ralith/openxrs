@@ -148,6 +148,9 @@ impl<G: Graphics> Session<G> {
     }
 
     /// Get the view and projection info for a particular display time
+    ///
+    /// When rendering, this should be called as late as possible before the GPU accesses it to
+    /// provide the most accurate possible poses.
     #[inline]
     pub fn locate_views(
         &self,

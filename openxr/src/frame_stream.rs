@@ -34,11 +34,14 @@ use crate::*;
 /// } else {
 ///     let image = swapchain.acquire_image().unwrap();
 ///     swapchain.wait_image(openxr::Duration::INFINITE).unwrap();
+///
+///     // draw scene...
+///
 ///     let (view_flags, views) = session
 ///         .locate_views(state.predicted_display_time, world_space)
 ///         .unwrap();
 ///
-///     // draw views...
+///     // set view matrices and submit to GPU...
 ///
 ///     swapchain.release_image().unwrap();
 ///     frame_stream
