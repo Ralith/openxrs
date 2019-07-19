@@ -27,7 +27,7 @@ shared_library = { version = "0.1.9", optional = true }
 void = "1"
 
 [target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3", features = [] }
+winapi = { version = "0.3", features = ["profileapi"] }
 
 [dev-dependencies]
 glium = { version = "0.24.0", default-features = false }

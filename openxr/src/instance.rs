@@ -437,6 +437,13 @@ impl Instance {
             .as_ref()
             .expect("KHR_opengl_enable not loaded")
     }
+    #[cfg(windows)]
+    pub(crate) fn d3d11(&self) -> &raw::D3d11EnableKHR {
+        self.exts()
+            .khr_d3d11_enable
+            .as_ref()
+            .expect("KHR_d3d11_enable not loaded")
+    }
 }
 
 struct InstanceInner {
