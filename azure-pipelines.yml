@@ -2,6 +2,9 @@ stages:
  - template: azure/stages.yml@templates
    parameters:
      minrust: 1.36.0
+     setup:
+       - script: apt install libxxf86vm-dev libxrandr-dev
+         condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
 
 resources:
   repositories:
