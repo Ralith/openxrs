@@ -3,7 +3,7 @@ stages:
    parameters:
      minrust: 1.36.0
      setup:
-       - script: sudo apt-get -y install libxxf86vm-dev libxrandr-dev
+       - script: sudo apt-get -y install libxxf86vm-dev libxrandr-dev pkg-config
          condition: not(eq(variables['Agent.OS'], 'Windows_NT'))
 
 resources:
