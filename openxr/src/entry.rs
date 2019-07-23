@@ -22,7 +22,8 @@ impl Entry {
     /// Access entry points linked directly into the binary at compile time
     ///
     /// Available if the `linked` feature is enabled. You must ensure that the entry points are
-    /// actually linked into the binary, e.g. by enabling the `static` feature.
+    /// actually linked into the binary, e.g. by enabling the `static` feature or manually linking
+    /// to an external loader or implementation.
     #[cfg(feature = "linked")]
     pub fn linked() -> Self {
         Self {

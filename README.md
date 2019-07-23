@@ -25,9 +25,9 @@ The crate exposes a number of cargo features:
   implementation at run time. This allows for cases where a built-in
   Khronos loader, normally responsible for that task, cannot be used.
 - `linked` enables access to an OpenXR implementation linked in by the
-  application. This is useful when the target environment guarantees
-  the presence of an OpenXR implementation at a specific location,
-  making the loader redundant.
+  application. As opposed to `static`, this is useful when the target
+  environment guarantees the presence of an OpenXR implementation or
+  loader at a specific location, making a built-in loader redundant.
 - `nalgebra` exposes `Into` and `From` impls for converting to and
   from nalgebra types where appropriate.
 
