@@ -29,7 +29,7 @@ void = "1"
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["profileapi"] }
 
-[dev-dependencies]
+[target.'cfg(target_os = "linux")'.dev-dependencies]
 glium = { version = "0.24.0", default-features = false }
 x11 = { version = "2.18.1", features = ["xlib", "glx"] }
 
