@@ -149,18 +149,18 @@ impl Instance {
 
     /// Construct a `Path` from a string
     ///
-    /// # Safety
-    ///
-    /// A returned `Path` must not used with any other instance.
+    /// A `Path` should only be used with the instance that produced it.
     #[inline]
-    pub unsafe fn string_to_path(&self, string: &str) -> Result<Path> {
+    pub fn string_to_path(&self, string: &str) -> Result<Path> {
         let string = CString::new(string).map_err(|_| sys::Result::ERROR_PATH_FORMAT_INVALID)?;
         let mut out = Path::NULL;
-        cvt((self.fp().string_to_path)(
-            self.as_raw(),
-            string.as_ptr(),
-            &mut out,
-        ))?;
+        unsafe {
+            cvt((self.fp().string_to_path)(
+                self.as_raw(),
+                string.as_ptr(),
+                &mut out,
+            ))?;
+        }
         Ok(out)
     }
 
