@@ -39,8 +39,8 @@ impl Graphics for OpenGL {
             ))?;
         }
         Ok(Requirements {
-            min_api_version_supported: Version::from_raw(out.min_api_version_supported),
-            max_api_version_supported: Version::from_raw(out.max_api_version_supported),
+            min_api_version_supported: out.min_api_version_supported,
+            max_api_version_supported: out.max_api_version_supported,
         })
     }
 

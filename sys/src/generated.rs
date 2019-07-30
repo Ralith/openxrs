@@ -1,11 +1,12 @@
-# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( non_upper_case_globals ) ]use crate::platform::*;
+#![doc = r" Automatically generated code; do not edit!"]
+#![allow(non_upper_case_globals)]
+use crate::platform::*;
 use crate::support::*;
 use crate::*;
 use libc::timespec;
 use std::fmt;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(0u32, 90u32, 1u32);
-pub const HEADER_VERSION: u32 = 43u32;
+pub const CURRENT_API_VERSION: Version = Version::new(1u32, 0u32, 0u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -45,7 +46,7 @@ impl StructureType {
     pub const EVENT_DATA_INSTANCE_LOSS_PENDING: StructureType = StructureType(17i32);
     pub const EVENT_DATA_SESSION_STATE_CHANGED: StructureType = StructureType(18i32);
     pub const ACTION_STATE_BOOLEAN: StructureType = StructureType(23i32);
-    pub const ACTION_STATE_VECTOR1F: StructureType = StructureType(24i32);
+    pub const ACTION_STATE_FLOAT: StructureType = StructureType(24i32);
     pub const ACTION_STATE_VECTOR2F: StructureType = StructureType(25i32);
     pub const ACTION_STATE_POSE: StructureType = StructureType(27i32);
     pub const ACTION_SET_CREATE_INFO: StructureType = StructureType(28i32);
@@ -56,9 +57,10 @@ impl StructureType {
     pub const COMPOSITION_LAYER_QUAD: StructureType = StructureType(36i32);
     pub const REFERENCE_SPACE_CREATE_INFO: StructureType = StructureType(37i32);
     pub const ACTION_SPACE_CREATE_INFO: StructureType = StructureType(38i32);
-    pub const SPACE_RELATION: StructureType = StructureType(39i32);
     pub const EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: StructureType = StructureType(40i32);
     pub const VIEW_CONFIGURATION_VIEW: StructureType = StructureType(41i32);
+    pub const SPACE_LOCATION: StructureType = StructureType(42i32);
+    pub const SPACE_VELOCITY: StructureType = StructureType(43i32);
     pub const FRAME_STATE: StructureType = StructureType(44i32);
     pub const VIEW_CONFIGURATION_PROPERTIES: StructureType = StructureType(45i32);
     pub const FRAME_BEGIN_INFO: StructureType = StructureType(46i32);
@@ -66,11 +68,16 @@ impl StructureType {
     pub const EVENT_DATA_EVENTS_LOST: StructureType = StructureType(49i32);
     pub const INTERACTION_PROFILE_SUGGESTED_BINDING: StructureType = StructureType(51i32);
     pub const EVENT_DATA_INTERACTION_PROFILE_CHANGED: StructureType = StructureType(52i32);
-    pub const INTERACTION_PROFILE_INFO: StructureType = StructureType(53i32);
-    pub const ACTIVE_ACTION_SET: StructureType = StructureType(54i32);
+    pub const INTERACTION_PROFILE_STATE: StructureType = StructureType(53i32);
     pub const SWAPCHAIN_IMAGE_ACQUIRE_INFO: StructureType = StructureType(55i32);
     pub const SWAPCHAIN_IMAGE_WAIT_INFO: StructureType = StructureType(56i32);
     pub const SWAPCHAIN_IMAGE_RELEASE_INFO: StructureType = StructureType(57i32);
+    pub const ACTION_STATE_GET_INFO: StructureType = StructureType(58i32);
+    pub const HAPTIC_ACTION_INFO: StructureType = StructureType(59i32);
+    pub const SESSION_ACTION_SETS_ATTACH_INFO: StructureType = StructureType(60i32);
+    pub const ACTIONS_SYNC_INFO: StructureType = StructureType(61i32);
+    pub const BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO: StructureType = StructureType(62i32);
+    pub const INPUT_SOURCE_LOCALIZED_NAME_GET_INFO: StructureType = StructureType(63i32);
     pub const COMPOSITION_LAYER_CUBE_KHR: StructureType = StructureType(1000006000i32);
     pub const INSTANCE_CREATE_INFO_ANDROID_KHR: StructureType = StructureType(1000008000i32);
     pub const COMPOSITION_LAYER_DEPTH_INFO_KHR: StructureType = StructureType(1000010000i32);
@@ -95,9 +102,6 @@ impl StructureType {
     pub const GRAPHICS_BINDING_VULKAN_KHR: StructureType = StructureType(1000025000i32);
     pub const SWAPCHAIN_IMAGE_VULKAN_KHR: StructureType = StructureType(1000025001i32);
     pub const GRAPHICS_REQUIREMENTS_VULKAN_KHR: StructureType = StructureType(1000025002i32);
-    pub const GRAPHICS_BINDING_D3D10_KHR: StructureType = StructureType(1000026000i32);
-    pub const SWAPCHAIN_IMAGE_D3D10_KHR: StructureType = StructureType(1000026001i32);
-    pub const GRAPHICS_REQUIREMENTS_D3D10_KHR: StructureType = StructureType(1000026002i32);
     pub const GRAPHICS_BINDING_D3D11_KHR: StructureType = StructureType(1000027000i32);
     pub const SWAPCHAIN_IMAGE_D3D11_KHR: StructureType = StructureType(1000027001i32);
     pub const GRAPHICS_REQUIREMENTS_D3D11_KHR: StructureType = StructureType(1000027002i32);
@@ -106,8 +110,6 @@ impl StructureType {
     pub const GRAPHICS_REQUIREMENTS_D3D12_KHR: StructureType = StructureType(1000028002i32);
     pub const VISIBILITY_MASK_KHR: StructureType = StructureType(1000031000i32);
     pub const EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR: StructureType = StructureType(1000031001i32);
-    pub const COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR: StructureType =
-        StructureType(1000034000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -136,7 +138,7 @@ impl fmt::Debug for StructureType {
             Self::EVENT_DATA_INSTANCE_LOSS_PENDING => Some("EVENT_DATA_INSTANCE_LOSS_PENDING"),
             Self::EVENT_DATA_SESSION_STATE_CHANGED => Some("EVENT_DATA_SESSION_STATE_CHANGED"),
             Self::ACTION_STATE_BOOLEAN => Some("ACTION_STATE_BOOLEAN"),
-            Self::ACTION_STATE_VECTOR1F => Some("ACTION_STATE_VECTOR1F"),
+            Self::ACTION_STATE_FLOAT => Some("ACTION_STATE_FLOAT"),
             Self::ACTION_STATE_VECTOR2F => Some("ACTION_STATE_VECTOR2F"),
             Self::ACTION_STATE_POSE => Some("ACTION_STATE_POSE"),
             Self::ACTION_SET_CREATE_INFO => Some("ACTION_SET_CREATE_INFO"),
@@ -147,11 +149,12 @@ impl fmt::Debug for StructureType {
             Self::COMPOSITION_LAYER_QUAD => Some("COMPOSITION_LAYER_QUAD"),
             Self::REFERENCE_SPACE_CREATE_INFO => Some("REFERENCE_SPACE_CREATE_INFO"),
             Self::ACTION_SPACE_CREATE_INFO => Some("ACTION_SPACE_CREATE_INFO"),
-            Self::SPACE_RELATION => Some("SPACE_RELATION"),
             Self::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING => {
                 Some("EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING")
             }
             Self::VIEW_CONFIGURATION_VIEW => Some("VIEW_CONFIGURATION_VIEW"),
+            Self::SPACE_LOCATION => Some("SPACE_LOCATION"),
+            Self::SPACE_VELOCITY => Some("SPACE_VELOCITY"),
             Self::FRAME_STATE => Some("FRAME_STATE"),
             Self::VIEW_CONFIGURATION_PROPERTIES => Some("VIEW_CONFIGURATION_PROPERTIES"),
             Self::FRAME_BEGIN_INFO => Some("FRAME_BEGIN_INFO"),
@@ -163,11 +166,20 @@ impl fmt::Debug for StructureType {
             Self::EVENT_DATA_INTERACTION_PROFILE_CHANGED => {
                 Some("EVENT_DATA_INTERACTION_PROFILE_CHANGED")
             }
-            Self::INTERACTION_PROFILE_INFO => Some("INTERACTION_PROFILE_INFO"),
-            Self::ACTIVE_ACTION_SET => Some("ACTIVE_ACTION_SET"),
+            Self::INTERACTION_PROFILE_STATE => Some("INTERACTION_PROFILE_STATE"),
             Self::SWAPCHAIN_IMAGE_ACQUIRE_INFO => Some("SWAPCHAIN_IMAGE_ACQUIRE_INFO"),
             Self::SWAPCHAIN_IMAGE_WAIT_INFO => Some("SWAPCHAIN_IMAGE_WAIT_INFO"),
             Self::SWAPCHAIN_IMAGE_RELEASE_INFO => Some("SWAPCHAIN_IMAGE_RELEASE_INFO"),
+            Self::ACTION_STATE_GET_INFO => Some("ACTION_STATE_GET_INFO"),
+            Self::HAPTIC_ACTION_INFO => Some("HAPTIC_ACTION_INFO"),
+            Self::SESSION_ACTION_SETS_ATTACH_INFO => Some("SESSION_ACTION_SETS_ATTACH_INFO"),
+            Self::ACTIONS_SYNC_INFO => Some("ACTIONS_SYNC_INFO"),
+            Self::BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO => {
+                Some("BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO")
+            }
+            Self::INPUT_SOURCE_LOCALIZED_NAME_GET_INFO => {
+                Some("INPUT_SOURCE_LOCALIZED_NAME_GET_INFO")
+            }
             Self::COMPOSITION_LAYER_CUBE_KHR => Some("COMPOSITION_LAYER_CUBE_KHR"),
             Self::INSTANCE_CREATE_INFO_ANDROID_KHR => Some("INSTANCE_CREATE_INFO_ANDROID_KHR"),
             Self::COMPOSITION_LAYER_DEPTH_INFO_KHR => Some("COMPOSITION_LAYER_DEPTH_INFO_KHR"),
@@ -203,9 +215,6 @@ impl fmt::Debug for StructureType {
             Self::GRAPHICS_BINDING_VULKAN_KHR => Some("GRAPHICS_BINDING_VULKAN_KHR"),
             Self::SWAPCHAIN_IMAGE_VULKAN_KHR => Some("SWAPCHAIN_IMAGE_VULKAN_KHR"),
             Self::GRAPHICS_REQUIREMENTS_VULKAN_KHR => Some("GRAPHICS_REQUIREMENTS_VULKAN_KHR"),
-            Self::GRAPHICS_BINDING_D3D10_KHR => Some("GRAPHICS_BINDING_D3D10_KHR"),
-            Self::SWAPCHAIN_IMAGE_D3D10_KHR => Some("SWAPCHAIN_IMAGE_D3D10_KHR"),
-            Self::GRAPHICS_REQUIREMENTS_D3D10_KHR => Some("GRAPHICS_REQUIREMENTS_D3D10_KHR"),
             Self::GRAPHICS_BINDING_D3D11_KHR => Some("GRAPHICS_BINDING_D3D11_KHR"),
             Self::SWAPCHAIN_IMAGE_D3D11_KHR => Some("SWAPCHAIN_IMAGE_D3D11_KHR"),
             Self::GRAPHICS_REQUIREMENTS_D3D11_KHR => Some("GRAPHICS_REQUIREMENTS_D3D11_KHR"),
@@ -215,9 +224,6 @@ impl fmt::Debug for StructureType {
             Self::VISIBILITY_MASK_KHR => Some("VISIBILITY_MASK_KHR"),
             Self::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
                 Some("EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR")
-            }
-            Self::COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR => {
-                Some("COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR")
             }
             _ => None,
         };
@@ -229,20 +235,14 @@ impl fmt::Debug for StructureType {
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Result(i32);
 impl Result {
-    #[doc = "Command completed successfully."]
+    #[doc = "Function successfully completed."]
     pub const SUCCESS: Result = Result(0i32);
     #[doc = "The specified timeout time occurred before the operation could complete."]
     pub const TIMEOUT_EXPIRED: Result = Result(1i32);
-    #[doc = "The session has started but cannot be made visible at the moment."]
-    pub const SESSION_VISIBILITY_UNAVAILABLE: Result = Result(2i32);
     #[doc = "The session will be lost soon."]
     pub const SESSION_LOSS_PENDING: Result = Result(3i32);
     #[doc = "No event was available."]
     pub const EVENT_UNAVAILABLE: Result = Result(4i32);
-    #[doc = "No state (of any type) is available for the provided handle."]
-    pub const STATE_UNAVAILABLE: Result = Result(5i32);
-    #[doc = "The state of the given type is not available for the provided handle."]
-    pub const STATE_TYPE_UNAVAILABLE: Result = Result(6i32);
     #[doc = "The space\'s bounds are not known at the moment."]
     pub const SPACE_BOUNDS_UNAVAILABLE: Result = Result(7i32);
     #[doc = "The session is not in the focused state."]
@@ -255,55 +255,63 @@ impl Result {
     pub const ERROR_RUNTIME_FAILURE: Result = Result(-2i32);
     #[doc = "A memory allocation has failed."]
     pub const ERROR_OUT_OF_MEMORY: Result = Result(-3i32);
-    #[doc = "The runtime version is incompatible with the requested or required version."]
-    pub const ERROR_RUNTIME_VERSION_INCOMPATIBLE: Result = Result(-4i32);
-    #[doc = "The driver is incompatible with the runtime."]
-    pub const ERROR_DRIVER_INCOMPATIBLE: Result = Result(-5i32);
+    #[doc = "The runtime does not support the requested API version."]
+    pub const ERROR_API_VERSION_UNSUPPORTED: Result = Result(-4i32);
     #[doc = "Initialization of object could not be completed."]
     pub const ERROR_INITIALIZATION_FAILED: Result = Result(-6i32);
     #[doc = "The requested function was not found or is otherwise unsupported."]
     pub const ERROR_FUNCTION_UNSUPPORTED: Result = Result(-7i32);
+    #[doc = "The requested feature is not supported."]
+    pub const ERROR_FEATURE_UNSUPPORTED: Result = Result(-8i32);
     #[doc = "A requested extension is not supported."]
     pub const ERROR_EXTENSION_NOT_PRESENT: Result = Result(-9i32);
     #[doc = "The runtime supports no more of the requested resource."]
     pub const ERROR_LIMIT_REACHED: Result = Result(-10i32);
     #[doc = "The supplied size was smaller than required."]
     pub const ERROR_SIZE_INSUFFICIENT: Result = Result(-11i32);
-    #[doc = "A supplied object was invalid."]
+    #[doc = "A supplied object handle was invalid."]
     pub const ERROR_HANDLE_INVALID: Result = Result(-12i32);
-    #[doc = "The XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated."]
+    #[doc = "The slink:XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated."]
     pub const ERROR_INSTANCE_LOST: Result = Result(-13i32);
-    #[doc = "This session is already running."]
+    #[doc = "The session <<session_running, is already running>>."]
     pub const ERROR_SESSION_RUNNING: Result = Result(-14i32);
-    #[doc = "The operation requires this session to be in the running state."]
+    #[doc = "The session <<session_not_running, is not yet running>>."]
     pub const ERROR_SESSION_NOT_RUNNING: Result = Result(-16i32);
-    #[doc = "The XrSession was lost. It will need to be destroyed and optionally recreated."]
+    #[doc = "The slink:XrSession was lost. It will need to be destroyed and optionally recreated."]
     pub const ERROR_SESSION_LOST: Result = Result(-17i32);
-    #[doc = "The provided XrSystemId was invalid."]
+    #[doc = "The provided basetype:XrSystemId was invalid."]
     pub const ERROR_SYSTEM_INVALID: Result = Result(-18i32);
-    #[doc = "The provided XrPath was not valid."]
+    #[doc = "The provided basetype:XrPath was not valid."]
     pub const ERROR_PATH_INVALID: Result = Result(-19i32);
     #[doc = "The maximum number of supported semantic paths has been reached."]
     pub const ERROR_PATH_COUNT_EXCEEDED: Result = Result(-20i32);
     #[doc = "The semantic path character format is invalid."]
     pub const ERROR_PATH_FORMAT_INVALID: Result = Result(-21i32);
+    #[doc = "The semantic path is unsupported."]
+    pub const ERROR_PATH_UNSUPPORTED: Result = Result(-22i32);
     #[doc = "The layer was NULL or otherwise invalid."]
-    pub const ERROR_LAYER_INVALID: Result = Result(-22i32);
+    pub const ERROR_LAYER_INVALID: Result = Result(-23i32);
     #[doc = "The number of specified layers is greater than the supported number."]
-    pub const ERROR_LAYER_LIMIT_EXCEEDED: Result = Result(-23i32);
+    pub const ERROR_LAYER_LIMIT_EXCEEDED: Result = Result(-24i32);
     #[doc = "The image rect was negatively sized or otherwise invalid."]
     pub const ERROR_SWAPCHAIN_RECT_INVALID: Result = Result(-25i32);
-    #[doc = "The image format isn\'t supported by the runtime or platform."]
+    #[doc = "The image format is not supported by the runtime or platform."]
     pub const ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED: Result = Result(-26i32);
     #[doc = "The API used to retrieve an action\'s state does not match the action\'s type."]
     pub const ERROR_ACTION_TYPE_MISMATCH: Result = Result(-27i32);
+    #[doc = "The session is not in the ready state."]
+    pub const ERROR_SESSION_NOT_READY: Result = Result(-28i32);
+    #[doc = "The session is not in the stopping state."]
+    pub const ERROR_SESSION_NOT_STOPPING: Result = Result(-29i32);
+    #[doc = "The provided XrTime was zero, negative, or out of range."]
+    pub const ERROR_TIME_INVALID: Result = Result(-30i32);
     #[doc = "The specified reference space is not supported by the runtime or system."]
     pub const ERROR_REFERENCE_SPACE_UNSUPPORTED: Result = Result(-31i32);
     #[doc = "The file could not be accessed."]
     pub const ERROR_FILE_ACCESS_ERROR: Result = Result(-32i32);
     #[doc = "The file\'s contents were invalid."]
     pub const ERROR_FILE_CONTENTS_INVALID: Result = Result(-33i32);
-    #[doc = "The specified form factor isn\'t supported by the current runtime or platform."]
+    #[doc = "The specified form factor is not supported by the current runtime or platform."]
     pub const ERROR_FORM_FACTOR_UNSUPPORTED: Result = Result(-34i32);
     #[doc = "The specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off."]
     pub const ERROR_FORM_FACTOR_UNAVAILABLE: Result = Result(-35i32);
@@ -321,17 +329,22 @@ impl Result {
     pub const ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED: Result = Result(-41i32);
     #[doc = "The specified environment blend mode is not supported by the runtime or platform."]
     pub const ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED: Result = Result(-42i32);
-    #[doc = "The application specified bindings for an input form factor it had already suggested bindings for."]
-    pub const ERROR_BINDINGS_DUPLICATED: Result = Result(-43i32);
     #[doc = "The name provided was a duplicate of an already-existing resource."]
     pub const ERROR_NAME_DUPLICATED: Result = Result(-44i32);
     #[doc = "The name provided was invalid."]
     pub const ERROR_NAME_INVALID: Result = Result(-45i32);
+    #[doc = "A referenced action set is not attached to the session."]
+    pub const ERROR_ACTIONSET_NOT_ATTACHED: Result = Result(-46i32);
+    #[doc = "The session already has attached action sets."]
+    pub const ERROR_ACTIONSETS_ALREADY_ATTACHED: Result = Result(-47i32);
+    #[doc = "The localized name provided was a duplicate of an already-existing resource."]
+    pub const ERROR_LOCALIZED_NAME_DUPLICATED: Result = Result(-48i32);
+    #[doc = "The localized name provided was invalid."]
+    pub const ERROR_LOCALIZED_NAME_INVALID: Result = Result(-49i32);
     #[doc = "xrSetAndroidApplicationThreadKHR failed as thread id is invalid."]
     pub const ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR: Result = Result(-1000003000i32);
     #[doc = "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority."]
     pub const ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR: Result = Result(-1000003001i32);
-    pub const ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT: Result = Result(-1000019000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -344,21 +357,18 @@ impl fmt::Debug for Result {
         let name = match *self {
             Self::SUCCESS => Some("SUCCESS"),
             Self::TIMEOUT_EXPIRED => Some("TIMEOUT_EXPIRED"),
-            Self::SESSION_VISIBILITY_UNAVAILABLE => Some("SESSION_VISIBILITY_UNAVAILABLE"),
             Self::SESSION_LOSS_PENDING => Some("SESSION_LOSS_PENDING"),
             Self::EVENT_UNAVAILABLE => Some("EVENT_UNAVAILABLE"),
-            Self::STATE_UNAVAILABLE => Some("STATE_UNAVAILABLE"),
-            Self::STATE_TYPE_UNAVAILABLE => Some("STATE_TYPE_UNAVAILABLE"),
             Self::SPACE_BOUNDS_UNAVAILABLE => Some("SPACE_BOUNDS_UNAVAILABLE"),
             Self::SESSION_NOT_FOCUSED => Some("SESSION_NOT_FOCUSED"),
             Self::FRAME_DISCARDED => Some("FRAME_DISCARDED"),
             Self::ERROR_VALIDATION_FAILURE => Some("ERROR_VALIDATION_FAILURE"),
             Self::ERROR_RUNTIME_FAILURE => Some("ERROR_RUNTIME_FAILURE"),
             Self::ERROR_OUT_OF_MEMORY => Some("ERROR_OUT_OF_MEMORY"),
-            Self::ERROR_RUNTIME_VERSION_INCOMPATIBLE => Some("ERROR_RUNTIME_VERSION_INCOMPATIBLE"),
-            Self::ERROR_DRIVER_INCOMPATIBLE => Some("ERROR_DRIVER_INCOMPATIBLE"),
+            Self::ERROR_API_VERSION_UNSUPPORTED => Some("ERROR_API_VERSION_UNSUPPORTED"),
             Self::ERROR_INITIALIZATION_FAILED => Some("ERROR_INITIALIZATION_FAILED"),
             Self::ERROR_FUNCTION_UNSUPPORTED => Some("ERROR_FUNCTION_UNSUPPORTED"),
+            Self::ERROR_FEATURE_UNSUPPORTED => Some("ERROR_FEATURE_UNSUPPORTED"),
             Self::ERROR_EXTENSION_NOT_PRESENT => Some("ERROR_EXTENSION_NOT_PRESENT"),
             Self::ERROR_LIMIT_REACHED => Some("ERROR_LIMIT_REACHED"),
             Self::ERROR_SIZE_INSUFFICIENT => Some("ERROR_SIZE_INSUFFICIENT"),
@@ -371,11 +381,15 @@ impl fmt::Debug for Result {
             Self::ERROR_PATH_INVALID => Some("ERROR_PATH_INVALID"),
             Self::ERROR_PATH_COUNT_EXCEEDED => Some("ERROR_PATH_COUNT_EXCEEDED"),
             Self::ERROR_PATH_FORMAT_INVALID => Some("ERROR_PATH_FORMAT_INVALID"),
+            Self::ERROR_PATH_UNSUPPORTED => Some("ERROR_PATH_UNSUPPORTED"),
             Self::ERROR_LAYER_INVALID => Some("ERROR_LAYER_INVALID"),
             Self::ERROR_LAYER_LIMIT_EXCEEDED => Some("ERROR_LAYER_LIMIT_EXCEEDED"),
             Self::ERROR_SWAPCHAIN_RECT_INVALID => Some("ERROR_SWAPCHAIN_RECT_INVALID"),
             Self::ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some("ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED"),
             Self::ERROR_ACTION_TYPE_MISMATCH => Some("ERROR_ACTION_TYPE_MISMATCH"),
+            Self::ERROR_SESSION_NOT_READY => Some("ERROR_SESSION_NOT_READY"),
+            Self::ERROR_SESSION_NOT_STOPPING => Some("ERROR_SESSION_NOT_STOPPING"),
+            Self::ERROR_TIME_INVALID => Some("ERROR_TIME_INVALID"),
             Self::ERROR_REFERENCE_SPACE_UNSUPPORTED => Some("ERROR_REFERENCE_SPACE_UNSUPPORTED"),
             Self::ERROR_FILE_ACCESS_ERROR => Some("ERROR_FILE_ACCESS_ERROR"),
             Self::ERROR_FILE_CONTENTS_INVALID => Some("ERROR_FILE_CONTENTS_INVALID"),
@@ -392,17 +406,17 @@ impl fmt::Debug for Result {
             Self::ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => {
                 Some("ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED")
             }
-            Self::ERROR_BINDINGS_DUPLICATED => Some("ERROR_BINDINGS_DUPLICATED"),
             Self::ERROR_NAME_DUPLICATED => Some("ERROR_NAME_DUPLICATED"),
             Self::ERROR_NAME_INVALID => Some("ERROR_NAME_INVALID"),
+            Self::ERROR_ACTIONSET_NOT_ATTACHED => Some("ERROR_ACTIONSET_NOT_ATTACHED"),
+            Self::ERROR_ACTIONSETS_ALREADY_ATTACHED => Some("ERROR_ACTIONSETS_ALREADY_ATTACHED"),
+            Self::ERROR_LOCALIZED_NAME_DUPLICATED => Some("ERROR_LOCALIZED_NAME_DUPLICATED"),
+            Self::ERROR_LOCALIZED_NAME_INVALID => Some("ERROR_LOCALIZED_NAME_INVALID"),
             Self::ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => {
                 Some("ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR")
             }
             Self::ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => {
                 Some("ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR")
-            }
-            Self::ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT => {
-                Some("ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT")
             }
             _ => None,
         };
@@ -411,7 +425,7 @@ impl fmt::Debug for Result {
 }
 impl fmt::Display for Result {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let reason = match * self { Self :: SUCCESS => Some ( "command completed successfully" ) , Self :: TIMEOUT_EXPIRED => Some ( "the specified timeout time occurred before the operation could complete" ) , Self :: SESSION_VISIBILITY_UNAVAILABLE => Some ( "the session has started but cannot be made visible at the moment" ) , Self :: SESSION_LOSS_PENDING => Some ( "the session will be lost soon" ) , Self :: EVENT_UNAVAILABLE => Some ( "no event was available" ) , Self :: STATE_UNAVAILABLE => Some ( "no state (of any type) is available for the provided handle" ) , Self :: STATE_TYPE_UNAVAILABLE => Some ( "the state of the given type is not available for the provided handle" ) , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ( "the space\'s bounds are not known at the moment" ) , Self :: SESSION_NOT_FOCUSED => Some ( "the session is not in the focused state" ) , Self :: FRAME_DISCARDED => Some ( "a frame has been discarded from composition" ) , Self :: ERROR_VALIDATION_FAILURE => Some ( "the function usage was invalid in some way" ) , Self :: ERROR_RUNTIME_FAILURE => Some ( "the runtime failed to handle the function in an unexpected way that is not covered by another error result" ) , Self :: ERROR_OUT_OF_MEMORY => Some ( "a memory allocation has failed" ) , Self :: ERROR_RUNTIME_VERSION_INCOMPATIBLE => Some ( "the runtime version is incompatible with the requested or required version" ) , Self :: ERROR_DRIVER_INCOMPATIBLE => Some ( "the driver is incompatible with the runtime" ) , Self :: ERROR_INITIALIZATION_FAILED => Some ( "initialization of object could not be completed" ) , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ( "the requested function was not found or is otherwise unsupported" ) , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ( "a requested extension is not supported" ) , Self :: ERROR_LIMIT_REACHED => Some ( "the runtime supports no more of the requested resource" ) , Self :: ERROR_SIZE_INSUFFICIENT => Some ( "the supplied size was smaller than required" ) , Self :: ERROR_HANDLE_INVALID => Some ( "a supplied object was invalid" ) , Self :: ERROR_INSTANCE_LOST => Some ( "the xrinstance was lost or could not be found. it will need to be destroyed and optionally recreated" ) , Self :: ERROR_SESSION_RUNNING => Some ( "this session is already running" ) , Self :: ERROR_SESSION_NOT_RUNNING => Some ( "the operation requires this session to be in the running state" ) , Self :: ERROR_SESSION_LOST => Some ( "the xrsession was lost. it will need to be destroyed and optionally recreated" ) , Self :: ERROR_SYSTEM_INVALID => Some ( "the provided xrsystemid was invalid" ) , Self :: ERROR_PATH_INVALID => Some ( "the provided xrpath was not valid" ) , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ( "the maximum number of supported semantic paths has been reached" ) , Self :: ERROR_PATH_FORMAT_INVALID => Some ( "the semantic path character format is invalid" ) , Self :: ERROR_LAYER_INVALID => Some ( "the layer was null or otherwise invalid" ) , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ( "the number of specified layers is greater than the supported number" ) , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ( "the image rect was negatively sized or otherwise invalid" ) , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ( "the image format isn\'t supported by the runtime or platform" ) , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ( "the api used to retrieve an action\'s state does not match the action\'s type" ) , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ( "the specified reference space is not supported by the runtime or system" ) , Self :: ERROR_FILE_ACCESS_ERROR => Some ( "the file could not be accessed" ) , Self :: ERROR_FILE_CONTENTS_INVALID => Some ( "the file\'s contents were invalid" ) , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ( "the specified form factor isn\'t supported by the current runtime or platform" ) , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ( "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off" ) , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ( "a requested api layer is not present or could not be loaded" ) , Self :: ERROR_CALL_ORDER_INVALID => Some ( "the call was made without having made a previously required call" ) , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ( "the given graphics device is not in a valid state. the graphics device could be lost or initialized without meeting graphics requirements" ) , Self :: ERROR_POSE_INVALID => Some ( "the supplied pose was invalid with respect to the requirements" ) , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ( "the supplied index was outside the range of valid indices" ) , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ( "the specified view configuration type is not supported by the runtime or platform" ) , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ( "the specified environment blend mode is not supported by the runtime or platform" ) , Self :: ERROR_BINDINGS_DUPLICATED => Some ( "the application specified bindings for an input form factor it had already suggested bindings for" ) , Self :: ERROR_NAME_DUPLICATED => Some ( "the name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_NAME_INVALID => Some ( "the name provided was invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ( "xrsetandroidapplicationthreadkhr failed as thread id is invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ( "xrsetandroidapplicationthreadkhr failed setting the thread attributes/priority" ) , Self :: ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT => Some ( "ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT" ) , _ => None , } ;
+        let reason = match * self { Self :: SUCCESS => Some ( "function successfully completed" ) , Self :: TIMEOUT_EXPIRED => Some ( "the specified timeout time occurred before the operation could complete" ) , Self :: SESSION_LOSS_PENDING => Some ( "the session will be lost soon" ) , Self :: EVENT_UNAVAILABLE => Some ( "no event was available" ) , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ( "the space\'s bounds are not known at the moment" ) , Self :: SESSION_NOT_FOCUSED => Some ( "the session is not in the focused state" ) , Self :: FRAME_DISCARDED => Some ( "a frame has been discarded from composition" ) , Self :: ERROR_VALIDATION_FAILURE => Some ( "the function usage was invalid in some way" ) , Self :: ERROR_RUNTIME_FAILURE => Some ( "the runtime failed to handle the function in an unexpected way that is not covered by another error result" ) , Self :: ERROR_OUT_OF_MEMORY => Some ( "a memory allocation has failed" ) , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ( "the runtime does not support the requested api version" ) , Self :: ERROR_INITIALIZATION_FAILED => Some ( "initialization of object could not be completed" ) , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ( "the requested function was not found or is otherwise unsupported" ) , Self :: ERROR_FEATURE_UNSUPPORTED => Some ( "the requested feature is not supported" ) , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ( "a requested extension is not supported" ) , Self :: ERROR_LIMIT_REACHED => Some ( "the runtime supports no more of the requested resource" ) , Self :: ERROR_SIZE_INSUFFICIENT => Some ( "the supplied size was smaller than required" ) , Self :: ERROR_HANDLE_INVALID => Some ( "a supplied object handle was invalid" ) , Self :: ERROR_INSTANCE_LOST => Some ( "the slink:xrinstance was lost or could not be found. it will need to be destroyed and optionally recreated" ) , Self :: ERROR_SESSION_RUNNING => Some ( "the session <<session_running, is already running>>" ) , Self :: ERROR_SESSION_NOT_RUNNING => Some ( "the session <<session_not_running, is not yet running>>" ) , Self :: ERROR_SESSION_LOST => Some ( "the slink:xrsession was lost. it will need to be destroyed and optionally recreated" ) , Self :: ERROR_SYSTEM_INVALID => Some ( "the provided basetype:xrsystemid was invalid" ) , Self :: ERROR_PATH_INVALID => Some ( "the provided basetype:xrpath was not valid" ) , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ( "the maximum number of supported semantic paths has been reached" ) , Self :: ERROR_PATH_FORMAT_INVALID => Some ( "the semantic path character format is invalid" ) , Self :: ERROR_PATH_UNSUPPORTED => Some ( "the semantic path is unsupported" ) , Self :: ERROR_LAYER_INVALID => Some ( "the layer was null or otherwise invalid" ) , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ( "the number of specified layers is greater than the supported number" ) , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ( "the image rect was negatively sized or otherwise invalid" ) , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ( "the image format is not supported by the runtime or platform" ) , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ( "the api used to retrieve an action\'s state does not match the action\'s type" ) , Self :: ERROR_SESSION_NOT_READY => Some ( "the session is not in the ready state" ) , Self :: ERROR_SESSION_NOT_STOPPING => Some ( "the session is not in the stopping state" ) , Self :: ERROR_TIME_INVALID => Some ( "the provided xrtime was zero, negative, or out of range" ) , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ( "the specified reference space is not supported by the runtime or system" ) , Self :: ERROR_FILE_ACCESS_ERROR => Some ( "the file could not be accessed" ) , Self :: ERROR_FILE_CONTENTS_INVALID => Some ( "the file\'s contents were invalid" ) , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ( "the specified form factor is not supported by the current runtime or platform" ) , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ( "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off" ) , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ( "a requested api layer is not present or could not be loaded" ) , Self :: ERROR_CALL_ORDER_INVALID => Some ( "the call was made without having made a previously required call" ) , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ( "the given graphics device is not in a valid state. the graphics device could be lost or initialized without meeting graphics requirements" ) , Self :: ERROR_POSE_INVALID => Some ( "the supplied pose was invalid with respect to the requirements" ) , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ( "the supplied index was outside the range of valid indices" ) , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ( "the specified view configuration type is not supported by the runtime or platform" ) , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ( "the specified environment blend mode is not supported by the runtime or platform" ) , Self :: ERROR_NAME_DUPLICATED => Some ( "the name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_NAME_INVALID => Some ( "the name provided was invalid" ) , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ( "a referenced action set is not attached to the session" ) , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ( "the session already has attached action sets" ) , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ( "the localized name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ( "the localized name provided was invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ( "xrsetandroidapplicationthreadkhr failed as thread id is invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ( "xrsetandroidapplicationthreadkhr failed setting the thread attributes/priority" ) , _ => None , } ;
         if let Some(reason) = reason {
             fmt.pad(reason)
         } else {
@@ -524,11 +538,11 @@ impl fmt::Debug for EyeVisibility {
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct ActionType(i32);
 impl ActionType {
-    pub const INPUT_BOOLEAN: ActionType = ActionType(1i32);
-    pub const INPUT_VECTOR1F: ActionType = ActionType(2i32);
-    pub const INPUT_VECTOR2F: ActionType = ActionType(3i32);
-    pub const INPUT_POSE: ActionType = ActionType(4i32);
-    pub const OUTPUT_VIBRATION: ActionType = ActionType(100i32);
+    pub const BOOLEAN_INPUT: ActionType = ActionType(1i32);
+    pub const FLOAT_INPUT: ActionType = ActionType(2i32);
+    pub const VECTOR2F_INPUT: ActionType = ActionType(3i32);
+    pub const POSE_INPUT: ActionType = ActionType(4i32);
+    pub const VIBRATION_OUTPUT: ActionType = ActionType(100i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -539,11 +553,11 @@ impl ActionType {
 impl fmt::Debug for ActionType {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let name = match *self {
-            Self::INPUT_BOOLEAN => Some("INPUT_BOOLEAN"),
-            Self::INPUT_VECTOR1F => Some("INPUT_VECTOR1F"),
-            Self::INPUT_VECTOR2F => Some("INPUT_VECTOR2F"),
-            Self::INPUT_POSE => Some("INPUT_POSE"),
-            Self::OUTPUT_VIBRATION => Some("OUTPUT_VIBRATION"),
+            Self::BOOLEAN_INPUT => Some("BOOLEAN_INPUT"),
+            Self::FLOAT_INPUT => Some("FLOAT_INPUT"),
+            Self::VECTOR2F_INPUT => Some("VECTOR2F_INPUT"),
+            Self::POSE_INPUT => Some("POSE_INPUT"),
+            Self::VIBRATION_OUTPUT => Some("VIBRATION_OUTPUT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -603,6 +617,7 @@ pub struct ViewConfigurationType(i32);
 impl ViewConfigurationType {
     pub const PRIMARY_MONO: ViewConfigurationType = ViewConfigurationType(1i32);
     pub const PRIMARY_STEREO: ViewConfigurationType = ViewConfigurationType(2i32);
+    pub const PRIMARY_QUAD_VARJO: ViewConfigurationType = ViewConfigurationType(1000037000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -615,6 +630,7 @@ impl fmt::Debug for ViewConfigurationType {
         let name = match *self {
             Self::PRIMARY_MONO => Some("PRIMARY_MONO"),
             Self::PRIMARY_STEREO => Some("PRIMARY_STEREO"),
+            Self::PRIMARY_QUAD_VARJO => Some("PRIMARY_QUAD_VARJO"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -652,7 +668,7 @@ impl SessionState {
     pub const UNKNOWN: SessionState = SessionState(0i32);
     pub const IDLE: SessionState = SessionState(1i32);
     pub const READY: SessionState = SessionState(2i32);
-    pub const RUNNING: SessionState = SessionState(3i32);
+    pub const SYNCHRONIZED: SessionState = SessionState(3i32);
     pub const VISIBLE: SessionState = SessionState(4i32);
     pub const FOCUSED: SessionState = SessionState(5i32);
     pub const STOPPING: SessionState = SessionState(6i32);
@@ -671,7 +687,7 @@ impl fmt::Debug for SessionState {
             Self::UNKNOWN => Some("UNKNOWN"),
             Self::IDLE => Some("IDLE"),
             Self::READY => Some("READY"),
-            Self::RUNNING => Some("RUNNING"),
+            Self::SYNCHRONIZED => Some("SYNCHRONIZED"),
             Self::VISIBLE => Some("VISIBLE"),
             Self::FOCUSED => Some("FOCUSED"),
             Self::STOPPING => Some("STOPPING"),
@@ -886,30 +902,34 @@ impl CompositionLayerFlags {
         CompositionLayerFlags(1 << 0u64);
     #[doc = "Enables the layer texture alpha channel."]
     pub const BLEND_TEXTURE_SOURCE_ALPHA: CompositionLayerFlags = CompositionLayerFlags(1 << 1u64);
+    #[doc = "Indicates the texture color channels have not been premultiplied by the texture alpha channel."]
+    pub const UNPREMULTIPLIED_ALPHA: CompositionLayerFlags = CompositionLayerFlags(1 << 2u64);
 }
 bitmask!(CompositionLayerFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct SpaceRelationFlags(u64);
-impl SpaceRelationFlags {
+pub struct SpaceLocationFlags(u64);
+impl SpaceLocationFlags {
     #[doc = "Indicates validity of orientation member"]
-    pub const ORIENTATION_VALID: SpaceRelationFlags = SpaceRelationFlags(1 << 0u64);
+    pub const ORIENTATION_VALID: SpaceLocationFlags = SpaceLocationFlags(1 << 0u64);
     #[doc = "Indicates validity of position member"]
-    pub const POSITION_VALID: SpaceRelationFlags = SpaceRelationFlags(1 << 1u64);
-    #[doc = "Indicates validity of linearVelocity member"]
-    pub const LINEAR_VELOCITY_VALID: SpaceRelationFlags = SpaceRelationFlags(1 << 2u64);
-    #[doc = "Indicates validity of angularVelocity member"]
-    pub const ANGULAR_VELOCITY_VALID: SpaceRelationFlags = SpaceRelationFlags(1 << 3u64);
-    #[doc = "Indicates validity of linearAcceleration member"]
-    pub const LINEAR_ACCELERATION_VALID: SpaceRelationFlags = SpaceRelationFlags(1 << 4u64);
-    #[doc = "Indicates validity of angularAcceleration member"]
-    pub const ANGULAR_ACCELERATION_VALID: SpaceRelationFlags = SpaceRelationFlags(1 << 5u64);
+    pub const POSITION_VALID: SpaceLocationFlags = SpaceLocationFlags(1 << 1u64);
     #[doc = "Indicates whether pose member contains an actively tracked orientation"]
-    pub const ORIENTATION_TRACKED: SpaceRelationFlags = SpaceRelationFlags(1 << 6u64);
+    pub const ORIENTATION_TRACKED: SpaceLocationFlags = SpaceLocationFlags(1 << 2u64);
     #[doc = "Indicates whether pose member contains an actively tracked position"]
-    pub const POSITION_TRACKED: SpaceRelationFlags = SpaceRelationFlags(1 << 7u64);
+    pub const POSITION_TRACKED: SpaceLocationFlags = SpaceLocationFlags(1 << 3u64);
 }
-bitmask!(SpaceRelationFlags);
+bitmask!(SpaceLocationFlags);
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SpaceVelocityFlags(u64);
+impl SpaceVelocityFlags {
+    #[doc = "Indicates validity of linearVelocity member"]
+    pub const LINEAR_VALID: SpaceVelocityFlags = SpaceVelocityFlags(1 << 0u64);
+    #[doc = "Indicates validity of angularVelocity member"]
+    pub const ANGULAR_VALID: SpaceVelocityFlags = SpaceVelocityFlags(1 << 1u64);
+}
+bitmask!(SpaceVelocityFlags);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct InputSourceLocalizedNameFlags(u64);
@@ -951,6 +971,8 @@ impl DebugUtilsMessageTypeFlagsEXT {
     pub const VALIDATION: DebugUtilsMessageTypeFlagsEXT = DebugUtilsMessageTypeFlagsEXT(1 << 1u64);
     #[doc = "Indicates the message is related to a potential performance situation"]
     pub const PERFORMANCE: DebugUtilsMessageTypeFlagsEXT = DebugUtilsMessageTypeFlagsEXT(1 << 2u64);
+    #[doc = "Indicates the message is related to a non-conformant runtime result"]
+    pub const CONFORMANCE: DebugUtilsMessageTypeFlagsEXT = DebugUtilsMessageTypeFlagsEXT(1 << 3u64);
 }
 bitmask!(DebugUtilsMessageTypeFlagsEXT);
 #[repr(transparent)]
@@ -963,20 +985,20 @@ pub struct Session(u64);
 handle!(Session);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Swapchain(u64);
-handle!(Swapchain);
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Space(u64);
-handle!(Space);
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ActionSet(u64);
 handle!(ActionSet);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Action(u64);
 handle!(Action);
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Swapchain(u64);
+handle!(Swapchain);
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Space(u64);
+handle!(Space);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessengerEXT(u64);
@@ -1078,8 +1100,8 @@ pub struct ApiLayerProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub layer_name: [c_char; MAX_API_LAYER_NAME_SIZE],
-    pub spec_version: u32,
-    pub implementation_version: u32,
+    pub spec_version: Version,
+    pub layer_version: u32,
     pub description: [c_char; MAX_API_LAYER_DESCRIPTION_SIZE],
 }
 impl ApiLayerProperties {
@@ -1091,7 +1113,7 @@ pub struct ExtensionProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub extension_name: [c_char; MAX_EXTENSION_NAME_SIZE],
-    pub spec_version: u32,
+    pub extension_version: u32,
 }
 impl ExtensionProperties {
     pub const TYPE: StructureType = StructureType::EXTENSION_PROPERTIES;
@@ -1103,7 +1125,7 @@ pub struct ApplicationInfo {
     pub application_version: u32,
     pub engine_name: [c_char; MAX_ENGINE_NAME_SIZE],
     pub engine_version: u32,
-    pub api_version: u32,
+    pub api_version: Version,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1125,7 +1147,7 @@ impl InstanceCreateInfo {
 pub struct InstanceProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub runtime_version: u32,
+    pub runtime_version: Version,
     pub runtime_name: [c_char; MAX_RUNTIME_NAME_SIZE],
 }
 impl InstanceProperties {
@@ -1135,7 +1157,7 @@ impl InstanceProperties {
 #[derive(Copy, Clone)]
 pub struct SystemGetInfo {
     pub ty: StructureType,
-    pub next: *mut c_void,
+    pub next: *const c_void,
     pub form_factor: FormFactor,
 }
 impl SystemGetInfo {
@@ -1160,7 +1182,6 @@ impl SystemProperties {
 pub struct SystemGraphicsProperties {
     pub max_swapchain_image_height: u32,
     pub max_swapchain_image_width: u32,
-    pub max_view_count: u32,
     pub max_layer_count: u32,
 }
 #[repr(C)]
@@ -1224,19 +1245,6 @@ pub struct GraphicsBindingOpenGLWaylandKHR {
 }
 impl GraphicsBindingOpenGLWaylandKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WAYLAND_KHR;
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(windows)]
-pub struct GraphicsBindingD3D10KHR {
-    pub ty: StructureType,
-    pub next: *const c_void,
-    pub device: *mut ID3D10Device,
-}
-#[cfg(windows)]
-impl GraphicsBindingD3D10KHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D10_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1375,19 +1383,6 @@ impl SwapchainImageVulkanKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(windows)]
-pub struct SwapchainImageD3D10KHR {
-    pub ty: StructureType,
-    pub next: *mut c_void,
-    pub texture: *mut ID3D10Texture2D,
-}
-#[cfg(windows)]
-impl SwapchainImageD3D10KHR {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D10_KHR;
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
 #[doc = "From XR_KHR_D3D11_enable"]
 #[cfg(windows)]
 pub struct SwapchainImageD3D11KHR {
@@ -1456,6 +1451,7 @@ impl ReferenceSpaceCreateInfo {
 pub struct ActionSpaceCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
+    pub action: Action,
     pub subaction_path: Path,
     pub pose_in_action_space: Posef,
 }
@@ -1464,19 +1460,26 @@ impl ActionSpaceCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct SpaceRelation {
+pub struct SpaceLocation {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub relation_flags: SpaceRelationFlags,
-    pub time: Time,
+    pub location_flags: SpaceLocationFlags,
     pub pose: Posef,
+}
+impl SpaceLocation {
+    pub const TYPE: StructureType = StructureType::SPACE_LOCATION;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct SpaceVelocity {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub velocity_flags: SpaceVelocityFlags,
     pub linear_velocity: Vector3f,
     pub angular_velocity: Vector3f,
-    pub linear_acceleration: Vector3f,
-    pub angular_acceleration: Vector3f,
 }
-impl SpaceRelation {
-    pub const TYPE: StructureType = StructureType::SPACE_RELATION;
+impl SpaceVelocity {
+    pub const TYPE: StructureType = StructureType::SPACE_VELOCITY;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1502,6 +1505,7 @@ impl View {
 pub struct ViewLocateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
+    pub view_configuration_type: ViewConfigurationType,
     pub display_time: Time,
     pub space: Space,
 }
@@ -1583,7 +1587,7 @@ pub struct CompositionLayerQuad {
     pub eye_visibility: EyeVisibility,
     pub sub_image: SwapchainSubImage,
     pub pose: Posef,
-    pub size: Vector2f,
+    pub size: Extent2Df,
 }
 impl CompositionLayerQuad {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_QUAD;
@@ -1618,7 +1622,6 @@ pub struct CompositionLayerCubeKHR {
     pub swapchain: Swapchain,
     pub image_array_index: u32,
     pub orientation: Quaternionf,
-    pub offset: Vector3f,
 }
 impl CompositionLayerCubeKHR {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_CUBE_KHR;
@@ -1634,7 +1637,7 @@ pub struct CompositionLayerEquirectKHR {
     pub eye_visibility: EyeVisibility,
     pub sub_image: SwapchainSubImage,
     pub pose: Posef,
-    pub offset: Vector3f,
+    pub radius: f32,
     pub scale: Vector2f,
     pub bias: Vector2f,
 }
@@ -1694,6 +1697,7 @@ pub struct FrameState {
     pub next: *mut c_void,
     pub predicted_display_time: Time,
     pub predicted_display_period: Duration,
+    pub should_render: Bool32,
 }
 impl FrameState {
     pub const TYPE: StructureType = StructureType::FRAME_STATE;
@@ -1769,6 +1773,7 @@ impl EventDataSessionStateChanged {
 pub struct EventDataReferenceSpaceChangePending {
     pub ty: StructureType,
     pub next: *const c_void,
+    pub session: Session,
     pub reference_space_type: ReferenceSpaceType,
     pub change_time: Time,
     pub pose_valid: Bool32,
@@ -1797,6 +1802,7 @@ impl EventDataPerfSettingsEXT {
 pub struct EventDataVisibilityMaskChangedKHR {
     pub ty: StructureType,
     pub next: *const c_void,
+    pub session: Session,
     pub view_configuration_type: ViewConfigurationType,
     pub view_index: u32,
 }
@@ -1829,7 +1835,7 @@ impl ActionStateBoolean {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct ActionStateVector1f {
+pub struct ActionStateFloat {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub current_state: f32,
@@ -1837,8 +1843,8 @@ pub struct ActionStateVector1f {
     pub last_change_time: Time,
     pub is_active: Bool32,
 }
-impl ActionStateVector1f {
-    pub const TYPE: StructureType = StructureType::ACTION_STATE_VECTOR1F;
+impl ActionStateFloat {
+    pub const TYPE: StructureType = StructureType::ACTION_STATE_FLOAT;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1862,6 +1868,28 @@ pub struct ActionStatePose {
 }
 impl ActionStatePose {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_POSE;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct ActionStateGetInfo {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub action: Action,
+    pub subaction_path: Path,
+}
+impl ActionStateGetInfo {
+    pub const TYPE: StructureType = StructureType::ACTION_STATE_GET_INFO;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct HapticActionInfo {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub action: Action,
+    pub subaction_path: Path,
+}
+impl HapticActionInfo {
+    pub const TYPE: StructureType = StructureType::HAPTIC_ACTION_INFO;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1896,32 +1924,71 @@ impl InteractionProfileSuggestedBinding {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ActiveActionSet {
-    pub ty: StructureType,
-    pub next: *const c_void,
     pub action_set: ActionSet,
     pub subaction_path: Path,
 }
-impl ActiveActionSet {
-    pub const TYPE: StructureType = StructureType::ACTIVE_ACTION_SET;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct SessionActionSetsAttachInfo {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub count_action_sets: u32,
+    pub action_sets: *const ActionSet,
+}
+impl SessionActionSetsAttachInfo {
+    pub const TYPE: StructureType = StructureType::SESSION_ACTION_SETS_ATTACH_INFO;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct ActionsSyncInfo {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub count_active_action_sets: u32,
+    pub active_action_sets: *const ActiveActionSet,
+}
+impl ActionsSyncInfo {
+    pub const TYPE: StructureType = StructureType::ACTIONS_SYNC_INFO;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct BoundSourcesForActionEnumerateInfo {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub action: Action,
+}
+impl BoundSourcesForActionEnumerateInfo {
+    pub const TYPE: StructureType = StructureType::BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct InputSourceLocalizedNameGetInfo {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub source_path: Path,
+    pub which_components: InputSourceLocalizedNameFlags,
+}
+impl InputSourceLocalizedNameGetInfo {
+    pub const TYPE: StructureType = StructureType::INPUT_SOURCE_LOCALIZED_NAME_GET_INFO;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct EventDataInteractionProfileChanged {
     pub ty: StructureType,
     pub next: *const c_void,
+    pub session: Session,
 }
 impl EventDataInteractionProfileChanged {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct InteractionProfileInfo {
+pub struct InteractionProfileState {
     pub ty: StructureType,
-    pub next: *const c_void,
+    pub next: *mut c_void,
     pub interaction_profile: Path,
 }
-impl InteractionProfileInfo {
-    pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_INFO;
+impl InteractionProfileState {
+    pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_STATE;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2024,9 +2091,11 @@ impl DebugUtilsMessengerCreateInfoEXT {
 pub struct VisibilityMaskKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub vertex_count: u32,
+    pub vertex_capacity_input: u32,
+    pub vertex_count_output: u32,
     pub vertices: *mut Vector2f,
-    pub index_count: u32,
+    pub index_capacity_input: u32,
+    pub index_count_output: u32,
     pub indices: *mut u32,
 }
 impl VisibilityMaskKHR {
@@ -2038,8 +2107,8 @@ impl VisibilityMaskKHR {
 pub struct GraphicsRequirementsOpenGLKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub min_api_version_supported: u32,
-    pub max_api_version_supported: u32,
+    pub min_api_version_supported: Version,
+    pub max_api_version_supported: Version,
 }
 impl GraphicsRequirementsOpenGLKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_KHR;
@@ -2050,8 +2119,8 @@ impl GraphicsRequirementsOpenGLKHR {
 pub struct GraphicsRequirementsOpenGLESKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub min_api_version_supported: u32,
-    pub max_api_version_supported: u32,
+    pub min_api_version_supported: Version,
+    pub max_api_version_supported: Version,
 }
 impl GraphicsRequirementsOpenGLESKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR;
@@ -2062,25 +2131,11 @@ impl GraphicsRequirementsOpenGLESKHR {
 pub struct GraphicsRequirementsVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub min_api_version_supported: u32,
-    pub max_api_version_supported: u32,
+    pub min_api_version_supported: Version,
+    pub max_api_version_supported: Version,
 }
 impl GraphicsRequirementsVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D10_enable"]
-#[cfg(windows)]
-pub struct GraphicsRequirementsD3D10KHR {
-    pub ty: StructureType,
-    pub next: *mut c_void,
-    pub adapter_luid: LUID,
-    pub min_feature_level: D3D10_FEATURE_LEVEL1,
-}
-#[cfg(windows)]
-impl GraphicsRequirementsD3D10KHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D10_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2203,6 +2258,7 @@ pub mod pfn {
     pub type BeginSession =
         unsafe extern "system" fn(session: Session, begin_info: *const SessionBeginInfo) -> Result;
     pub type EndSession = unsafe extern "system" fn(session: Session) -> Result;
+    pub type RequestExitSession = unsafe extern "system" fn(session: Session) -> Result;
     pub type EnumerateReferenceSpaces = unsafe extern "system" fn(
         session: Session,
         space_capacity_input: u32,
@@ -2215,7 +2271,7 @@ pub mod pfn {
         space: *mut Space,
     ) -> Result;
     pub type CreateActionSpace = unsafe extern "system" fn(
-        action: Action,
+        session: Session,
         create_info: *const ActionSpaceCreateInfo,
         space: *mut Space,
     ) -> Result;
@@ -2223,7 +2279,7 @@ pub mod pfn {
         space: Space,
         base_space: Space,
         time: Time,
-        relation: *mut SpaceRelation,
+        location: *mut SpaceLocation,
     ) -> Result;
     pub type EnumerateViewConfigurations = unsafe extern "system" fn(
         instance: Instance,
@@ -2235,6 +2291,7 @@ pub mod pfn {
     pub type EnumerateEnvironmentBlendModes = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
+        view_configuration_type: ViewConfigurationType,
         environment_blend_mode_capacity_input: u32,
         environment_blend_mode_count_output: *mut u32,
         environment_blend_modes: *mut EnvironmentBlendMode,
@@ -2273,15 +2330,13 @@ pub mod pfn {
         frame_state: *mut FrameState,
     ) -> Result;
     pub type ApplyHapticFeedback = unsafe extern "system" fn(
-        haptic_action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        haptic_event: *const HapticBaseHeader,
+        session: Session,
+        haptic_action_info: *const HapticActionInfo,
+        haptic_feedback: *const HapticBaseHeader,
     ) -> Result;
     pub type StopHapticFeedback = unsafe extern "system" fn(
-        haptic_action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
+        session: Session,
+        haptic_action_info: *const HapticActionInfo,
     ) -> Result;
     pub type PollEvent =
         unsafe extern "system" fn(instance: Instance, event_data: *mut EventDataBuffer) -> Result;
@@ -2318,30 +2373,27 @@ pub mod pfn {
         surface: *mut jobject,
     ) -> Result;
     pub type GetActionStateBoolean = unsafe extern "system" fn(
-        action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        data: *mut ActionStateBoolean,
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStateBoolean,
     ) -> Result;
-    pub type GetActionStateVector1f = unsafe extern "system" fn(
-        action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        data: *mut ActionStateVector1f,
+    pub type GetActionStateFloat = unsafe extern "system" fn(
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStateFloat,
     ) -> Result;
     pub type GetActionStateVector2f = unsafe extern "system" fn(
-        action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        data: *mut ActionStateVector2f,
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStateVector2f,
     ) -> Result;
     pub type GetActionStatePose = unsafe extern "system" fn(
-        action: Action,
-        subaction_path: Path,
-        data: *mut ActionStatePose,
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStatePose,
     ) -> Result;
     pub type CreateActionSet = unsafe extern "system" fn(
-        session: Session,
+        instance: Instance,
         create_info: *const ActionSetCreateInfo,
         action_set: *mut ActionSet,
     ) -> Result;
@@ -2352,30 +2404,31 @@ pub mod pfn {
         action: *mut Action,
     ) -> Result;
     pub type DestroyAction = unsafe extern "system" fn(action: Action) -> Result;
-    pub type SetInteractionProfileSuggestedBindings = unsafe extern "system" fn(
-        session: Session,
+    pub type SuggestInteractionProfileBindings = unsafe extern "system" fn(
+        instance: Instance,
         suggested_bindings: *const InteractionProfileSuggestedBinding,
+    ) -> Result;
+    pub type AttachSessionActionSets = unsafe extern "system" fn(
+        session: Session,
+        attach_info: *const SessionActionSetsAttachInfo,
     ) -> Result;
     pub type GetCurrentInteractionProfile = unsafe extern "system" fn(
         session: Session,
         top_level_user_path: Path,
-        interaction_profile: *mut InteractionProfileInfo,
+        interaction_profile: *mut InteractionProfileState,
     ) -> Result;
-    pub type SyncActionData = unsafe extern "system" fn(
+    pub type SyncActions =
+        unsafe extern "system" fn(session: Session, sync_info: *const ActionsSyncInfo) -> Result;
+    pub type EnumerateBoundSourcesForAction = unsafe extern "system" fn(
         session: Session,
-        count_action_sets: u32,
-        action_sets: *const ActiveActionSet,
-    ) -> Result;
-    pub type GetBoundSourcesForAction = unsafe extern "system" fn(
-        action: Action,
+        enumerate_info: *const BoundSourcesForActionEnumerateInfo,
         source_capacity_input: u32,
         source_count_output: *mut u32,
         sources: *mut Path,
     ) -> Result;
     pub type GetInputSourceLocalizedName = unsafe extern "system" fn(
         session: Session,
-        source: Path,
-        which_components: InputSourceLocalizedNameFlags,
+        get_info: *const InputSourceLocalizedNameGetInfo,
         buffer_capacity_input: u32,
         buffer_count_output: *mut u32,
         buffer: *mut c_char,
@@ -2384,17 +2437,17 @@ pub mod pfn {
     pub type GetVulkanInstanceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
-        names_capacity_input: u32,
-        names_count_output: *mut u32,
-        names_string: *mut c_char,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut c_char,
     ) -> Result;
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanDeviceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
-        names_capacity_input: u32,
-        names_count_output: *mut u32,
-        names_string: *mut c_char,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut c_char,
     ) -> Result;
     #[doc = "From XR_KHR_vulkan_enable"]
     pub type GetVulkanGraphicsDeviceKHR = unsafe extern "system" fn(
@@ -2420,13 +2473,6 @@ pub mod pfn {
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsVulkanKHR,
-    ) -> Result;
-    #[cfg(windows)]
-    #[doc = "From XR_KHR_D3D10_enable"]
-    pub type GetD3D10GraphicsRequirementsKHR = unsafe extern "system" fn(
-        instance: Instance,
-        system_id: SystemId,
-        graphics_requirements: *mut GraphicsRequirementsD3D10KHR,
     ) -> Result;
     #[cfg(windows)]
     #[doc = "From XR_KHR_D3D11_enable"]
@@ -2529,10 +2575,10 @@ pub const EXT_performance_settings_SPEC_VERSION: u32 = 1u32;
 pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &'static [u8] = b"XR_EXT_performance_settings\0";
 pub const EXT_thermal_query_SPEC_VERSION: u32 = 1u32;
 pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &'static [u8] = b"XR_EXT_thermal_query\0";
-pub const EXT_debug_utils_SPEC_VERSION: u32 = 2u32;
+pub const EXT_debug_utils_SPEC_VERSION: u32 = 3u32;
 pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &'static [u8] = b"XR_EXT_debug_utils\0";
 #[cfg(target_os = "android")]
-pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 4u32;
+pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;
 #[cfg(target_os = "android")]
 pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_android_thread_settings\0";
@@ -2545,16 +2591,14 @@ pub const KHR_composition_layer_cube_SPEC_VERSION: u32 = 8u32;
 pub const KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_composition_layer_cube\0";
 #[cfg(target_os = "android")]
-pub const KHR_android_create_instance_SPEC_VERSION: u32 = 2u32;
+pub const KHR_android_create_instance_SPEC_VERSION: u32 = 3u32;
 #[cfg(target_os = "android")]
 pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_android_create_instance\0";
 pub const KHR_composition_layer_depth_SPEC_VERSION: u32 = 5u32;
 pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_composition_layer_depth\0";
-pub const KHR_headless_SPEC_VERSION: u32 = 2u32;
-pub const KHR_HEADLESS_EXTENSION_NAME: &'static [u8] = b"XR_KHR_headless\0";
-pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 1u32;
+pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 2u32;
 pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_vulkan_swapchain_format_list\0";
 pub const KHR_composition_layer_cylinder_SPEC_VERSION: u32 = 4u32;
@@ -2563,25 +2607,21 @@ pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &'static [u8] =
 pub const KHR_composition_layer_equirect_SPEC_VERSION: u32 = 3u32;
 pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_composition_layer_equirect\0";
-pub const KHR_opengl_enable_SPEC_VERSION: u32 = 1u32;
+pub const KHR_opengl_enable_SPEC_VERSION: u32 = 7u32;
 pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_enable\0";
-pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 1u32;
+pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 6u32;
 pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_es_enable\0";
 pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 6u32;
 pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_vulkan_enable\0";
 #[cfg(windows)]
-pub const KHR_D3D10_enable_SPEC_VERSION: u32 = 1u32;
-#[cfg(windows)]
-pub const KHR_D3D10_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D10_enable\0";
-#[cfg(windows)]
-pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 1u32;
+pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 4u32;
 #[cfg(windows)]
 pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D11_enable\0";
 #[cfg(windows)]
-pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 1u32;
+pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 5u32;
 #[cfg(windows)]
 pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D12_enable\0";
-pub const KHR_visibility_mask_SPEC_VERSION: u32 = 1u32;
+pub const KHR_visibility_mask_SPEC_VERSION: u32 = 2u32;
 pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &'static [u8] = b"XR_KHR_visibility_mask\0";
 #[cfg(windows)]
 pub const KHR_win32_convert_performance_counter_time_SPEC_VERSION: u32 = 1u32;
@@ -2591,6 +2631,8 @@ pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &'static [u
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
 pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_convert_timespec_time\0";
+pub const VARJO_quad_views_SPEC_VERSION: u32 = 1u32;
+pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &'static [u8] = b"XR_VARJO_quad_views\0";
 #[cfg(feature = "prototypes")]
 extern "system" {
     #[link_name = "xrGetInstanceProcAddr"]
@@ -2696,6 +2738,8 @@ extern "system" {
     pub fn begin_session(session: Session, begin_info: *const SessionBeginInfo) -> Result;
     #[link_name = "xrEndSession"]
     pub fn end_session(session: Session) -> Result;
+    #[link_name = "xrRequestExitSession"]
+    pub fn request_exit_session(session: Session) -> Result;
     #[link_name = "xrEnumerateReferenceSpaces"]
     pub fn enumerate_reference_spaces(
         session: Session,
@@ -2711,7 +2755,7 @@ extern "system" {
     ) -> Result;
     #[link_name = "xrCreateActionSpace"]
     pub fn create_action_space(
-        action: Action,
+        session: Session,
         create_info: *const ActionSpaceCreateInfo,
         space: *mut Space,
     ) -> Result;
@@ -2720,7 +2764,7 @@ extern "system" {
         space: Space,
         base_space: Space,
         time: Time,
-        relation: *mut SpaceRelation,
+        location: *mut SpaceLocation,
     ) -> Result;
     #[link_name = "xrEnumerateViewConfigurations"]
     pub fn enumerate_view_configurations(
@@ -2734,6 +2778,7 @@ extern "system" {
     pub fn enumerate_environment_blend_modes(
         instance: Instance,
         system_id: SystemId,
+        view_configuration_type: ViewConfigurationType,
         environment_blend_mode_capacity_input: u32,
         environment_blend_mode_count_output: *mut u32,
         environment_blend_modes: *mut EnvironmentBlendMode,
@@ -2775,16 +2820,14 @@ extern "system" {
     ) -> Result;
     #[link_name = "xrApplyHapticFeedback"]
     pub fn apply_haptic_feedback(
-        haptic_action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        haptic_event: *const HapticBaseHeader,
+        session: Session,
+        haptic_action_info: *const HapticActionInfo,
+        haptic_feedback: *const HapticBaseHeader,
     ) -> Result;
     #[link_name = "xrStopHapticFeedback"]
     pub fn stop_haptic_feedback(
-        haptic_action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
+        session: Session,
+        haptic_action_info: *const HapticActionInfo,
     ) -> Result;
     #[link_name = "xrPollEvent"]
     pub fn poll_event(instance: Instance, event_data: *mut EventDataBuffer) -> Result;
@@ -2810,34 +2853,31 @@ extern "system" {
     ) -> Result;
     #[link_name = "xrGetActionStateBoolean"]
     pub fn get_action_state_boolean(
-        action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        data: *mut ActionStateBoolean,
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStateBoolean,
     ) -> Result;
-    #[link_name = "xrGetActionStateVector1f"]
-    pub fn get_action_state_vector1f(
-        action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        data: *mut ActionStateVector1f,
+    #[link_name = "xrGetActionStateFloat"]
+    pub fn get_action_state_float(
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStateFloat,
     ) -> Result;
     #[link_name = "xrGetActionStateVector2f"]
     pub fn get_action_state_vector2f(
-        action: Action,
-        count_subaction_paths: u32,
-        subaction_paths: *const Path,
-        data: *mut ActionStateVector2f,
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStateVector2f,
     ) -> Result;
     #[link_name = "xrGetActionStatePose"]
     pub fn get_action_state_pose(
-        action: Action,
-        subaction_path: Path,
-        data: *mut ActionStatePose,
+        session: Session,
+        get_info: *const ActionStateGetInfo,
+        state: *mut ActionStatePose,
     ) -> Result;
     #[link_name = "xrCreateActionSet"]
     pub fn create_action_set(
-        session: Session,
+        instance: Instance,
         create_info: *const ActionSetCreateInfo,
         action_set: *mut ActionSet,
     ) -> Result;
@@ -2851,26 +2891,28 @@ extern "system" {
     ) -> Result;
     #[link_name = "xrDestroyAction"]
     pub fn destroy_action(action: Action) -> Result;
-    #[link_name = "xrSetInteractionProfileSuggestedBindings"]
-    pub fn set_interaction_profile_suggested_bindings(
-        session: Session,
+    #[link_name = "xrSuggestInteractionProfileBindings"]
+    pub fn suggest_interaction_profile_bindings(
+        instance: Instance,
         suggested_bindings: *const InteractionProfileSuggestedBinding,
+    ) -> Result;
+    #[link_name = "xrAttachSessionActionSets"]
+    pub fn attach_session_action_sets(
+        session: Session,
+        attach_info: *const SessionActionSetsAttachInfo,
     ) -> Result;
     #[link_name = "xrGetCurrentInteractionProfile"]
     pub fn get_current_interaction_profile(
         session: Session,
         top_level_user_path: Path,
-        interaction_profile: *mut InteractionProfileInfo,
+        interaction_profile: *mut InteractionProfileState,
     ) -> Result;
-    #[link_name = "xrSyncActionData"]
-    pub fn sync_action_data(
+    #[link_name = "xrSyncActions"]
+    pub fn sync_actions(session: Session, sync_info: *const ActionsSyncInfo) -> Result;
+    #[link_name = "xrEnumerateBoundSourcesForAction"]
+    pub fn enumerate_bound_sources_for_action(
         session: Session,
-        count_action_sets: u32,
-        action_sets: *const ActiveActionSet,
-    ) -> Result;
-    #[link_name = "xrGetBoundSourcesForAction"]
-    pub fn get_bound_sources_for_action(
-        action: Action,
+        enumerate_info: *const BoundSourcesForActionEnumerateInfo,
         source_capacity_input: u32,
         source_count_output: *mut u32,
         sources: *mut Path,
@@ -2878,8 +2920,7 @@ extern "system" {
     #[link_name = "xrGetInputSourceLocalizedName"]
     pub fn get_input_source_localized_name(
         session: Session,
-        source: Path,
-        which_components: InputSourceLocalizedNameFlags,
+        get_info: *const InputSourceLocalizedNameGetInfo,
         buffer_capacity_input: u32,
         buffer_count_output: *mut u32,
         buffer: *mut c_char,

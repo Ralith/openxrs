@@ -56,8 +56,18 @@ impl<G: Graphics> Session<G> {
         unsafe { cvt((self.fp().begin_session)(self.as_raw(), &info)) }
     }
 
-    /// Signal that the application no longer wishes to display rendered output, read input state,
-    /// or control haptic events
+    /// Request a transition to `SessionState::STOPPING` so that `end` may be called.
+    #[inline]
+    pub fn request_exit(&self) -> Result<()> {
+        unsafe {
+            cvt((self.fp().request_exit_session)(self.as_raw()))?;
+        }
+        Ok(())
+    }
+
+    /// Terminate a session in the `SessionState::STOPPING` state
+    ///
+    /// See `request_exit` for active sessions.
     #[inline]
     pub fn end(&self) -> Result<sys::Result> {
         unsafe { cvt((self.fp().end_session)(self.as_raw())) }
@@ -154,12 +164,14 @@ impl<G: Graphics> Session<G> {
     #[inline]
     pub fn locate_views(
         &self,
+        view_configuration_type: ViewConfigurationType,
         display_time: Time,
         space: &Space,
     ) -> Result<(ViewStateFlags, Vec<View>)> {
         let info = sys::ViewLocateInfo {
             ty: sys::ViewLocateInfo::TYPE,
             next: ptr::null(),
+            view_configuration_type,
             display_time,
             space: space.as_raw(),
         };
@@ -192,62 +204,15 @@ impl<G: Graphics> Session<G> {
         ))
     }
 
-    /// Allocate a new [`ActionSet`]
-    ///
-    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html#input-action-creation
-    #[inline]
-    pub fn create_action_set(
-        &self,
-        name: &str,
-        localized_name: &str,
-        priority: u32,
-    ) -> Result<ActionSet> {
-        let info = builder::ActionSetCreateInfo::new()
-            .action_set_name(name)
-            .localized_action_set_name(localized_name)
-            .priority(priority);
-        unsafe {
-            let mut out = sys::ActionSet::NULL;
-            cvt((self.fp().create_action_set)(
-                self.as_raw(),
-                info.as_raw(),
-                &mut out,
-            ))?;
-            Ok(ActionSet::from_raw(self.clone(), out))
-        }
-    }
-
-    #[inline]
-    pub fn set_interaction_profile_suggested_bindings(
-        &self,
-        interaction_profile: Path,
-        bindings: &[Binding],
-    ) -> Result<()> {
-        let info = sys::InteractionProfileSuggestedBinding {
-            ty: sys::InteractionProfileSuggestedBinding::TYPE,
-            next: ptr::null(),
-            interaction_profile,
-            count_suggested_bindings: bindings.len() as u32,
-            suggested_bindings: bindings.as_ptr() as *const _ as _,
-        };
-        unsafe {
-            cvt((self.fp().set_interaction_profile_suggested_bindings)(
-                self.as_raw(),
-                &info,
-            ))?;
-        }
-        Ok(())
-    }
-
     /// Get the suggested interaction profile in use for a top level user path
     ///
     /// May be NULL.
     #[inline]
     pub fn current_interaction_profile(&self, top_level_user_path: Path) -> Result<Path> {
         unsafe {
-            let mut out = sys::InteractionProfileInfo {
-                ty: sys::InteractionProfileInfo::TYPE,
-                next: ptr::null(),
+            let mut out = sys::InteractionProfileState {
+                ty: sys::InteractionProfileState::TYPE,
+                next: ptr::null_mut(),
                 ..mem::uninitialized()
             };
             cvt((self.fp().get_current_interaction_profile)(
@@ -259,15 +224,35 @@ impl<G: Graphics> Session<G> {
         }
     }
 
+    /// Enable use of action sets with a session
+    ///
+    /// Once attached, action sets become immutable.
+    #[inline]
+    pub fn attach_action_sets(&self, sets: &[&ActionSet]) -> Result<()> {
+        let sets = sets.iter().map(|x| x.as_raw()).collect::<Vec<_>>();
+        let info = sys::SessionActionSetsAttachInfo {
+            ty: sys::SessionActionSetsAttachInfo::TYPE,
+            next: ptr::null(),
+            count_action_sets: sets.len() as u32,
+            action_sets: sets.as_ptr(),
+        };
+        unsafe {
+            cvt((self.fp().attach_session_action_sets)(self.as_raw(), &info))?;
+        }
+        Ok(())
+    }
+
     /// Designate active input actions and update their states
     #[inline]
-    pub fn sync_action_data(&self, action_sets: &[ActiveActionSet<'_>]) -> Result<()> {
+    pub fn sync_actions(&self, action_sets: &[ActiveActionSet<'_>]) -> Result<()> {
+        let info = sys::ActionsSyncInfo {
+            ty: sys::ActionsSyncInfo::TYPE,
+            next: ptr::null(),
+            count_active_action_sets: action_sets.len() as u32,
+            active_action_sets: action_sets.as_ptr() as _,
+        };
         unsafe {
-            cvt((self.fp().sync_action_data)(
-                self.as_raw(),
-                action_sets.len() as u32,
-                action_sets.as_ptr() as _,
-            ))?;
+            cvt((self.fp().sync_actions)(self.as_raw(), &info))?;
         }
         Ok(())
     }
@@ -277,17 +262,16 @@ impl<G: Graphics> Session<G> {
     pub fn input_source_localized_name(
         &self,
         source: Path,
-        flags: InputSourceLocalizedNameFlags,
+        which_components: InputSourceLocalizedNameFlags,
     ) -> Result<String> {
+        let info = sys::InputSourceLocalizedNameGetInfo {
+            ty: sys::InputSourceLocalizedNameGetInfo::TYPE,
+            next: ptr::null(),
+            source_path: source,
+            which_components,
+        };
         get_str(|cap, count, buf| unsafe {
-            (self.fp().get_input_source_localized_name)(
-                self.as_raw(),
-                source,
-                flags,
-                cap,
-                count,
-                buf,
-            )
+            (self.fp().get_input_source_localized_name)(self.as_raw(), &info, cap, count, buf)
         })
     }
 
@@ -383,8 +367,6 @@ impl<'a> ActiveActionSet<'a> {
     pub fn with_subaction(action_set: &'a ActionSet, subaction_path: Path) -> Self {
         Self {
             _inner: sys::ActiveActionSet {
-                ty: sys::ActiveActionSet::TYPE,
-                next: ptr::null(),
                 action_set: action_set.as_raw(),
                 subaction_path,
             },

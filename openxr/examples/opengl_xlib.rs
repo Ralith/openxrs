@@ -233,11 +233,7 @@ mod inner {
                             self.session
                                 .begin(xr::ViewConfigurationType::PRIMARY_STEREO)
                                 .unwrap();
-                        }
-                        xr::SessionState::RUNNING => {
-                            if self.swapchain.is_none() {
-                                self.init_swapchain();
-                            }
+                            self.init_swapchain();
                         }
                         xr::SessionState::STOPPING => {
                             self.swapchain = None;

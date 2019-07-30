@@ -41,14 +41,15 @@ impl<T: ActionTy> Action<T> {
 
     /// Input sources currently bound to this action
     #[inline]
-    pub fn bound_sources(&self) -> Result<Vec<Path>> {
+    pub fn bound_sources<G: Graphics>(&self, session: &Session<G>) -> Result<Vec<Path>> {
+        let info = sys::BoundSourcesForActionEnumerateInfo {
+            ty: sys::BoundSourcesForActionEnumerateInfo::TYPE,
+            next: ptr::null(),
+            action: self.as_raw(),
+        };
         get_arr(|cap, count, buf| unsafe {
-            (self.fp().get_bound_sources_for_action)(self.as_raw(), cap, count, buf)
+            (self.fp().enumerate_bound_sources_for_action)(session.as_raw(), &info, cap, count, buf)
         })
-    }
-
-    pub(crate) fn set(&self) -> &ActionSet {
-        &self.inner.set
     }
 
     // Private helper
@@ -69,52 +70,78 @@ impl<T: ActionTy> Clone for Action<T> {
 
 impl<T: ActionInput> Action<T> {
     /// Retrieve the current state
-    pub fn state(&self, subaction_paths: &[Path]) -> Result<ActionState<T>> {
-        T::get(self, subaction_paths)
+    pub fn state<G: Graphics>(
+        &self,
+        session: &Session<G>,
+        subaction_path: Path,
+    ) -> Result<ActionState<T>> {
+        T::get(self, session, subaction_path)
     }
 }
 
 impl Action<Posef> {
     /// Creates a `Space` relative to this action
-    pub fn create_space(&self, subaction_path: Path, pose_in_action_space: Posef) -> Result<Space> {
+    pub fn create_space<G: Graphics>(
+        &self,
+        session: Session<G>,
+        subaction_path: Path,
+        pose_in_action_space: Posef,
+    ) -> Result<Space> {
         let info = sys::ActionSpaceCreateInfo {
             ty: sys::ActionSpaceCreateInfo::TYPE,
             next: ptr::null(),
+            action: self.as_raw(),
             subaction_path,
             pose_in_action_space,
         };
         let mut out = sys::Space::NULL;
         unsafe {
             cvt((self.fp().create_action_space)(
-                self.as_raw(),
+                session.as_raw(),
                 &info,
                 &mut out,
             ))?;
-            Ok(Space::action_from_raw(self.clone(), out))
+            Ok(Space::action_from_raw(self.clone(), session, out))
         }
     }
 }
 
 impl Action<Haptic> {
-    pub fn apply_feedback(&self, subaction_paths: &[Path], event: &HapticBase) -> Result<()> {
+    pub fn apply_feedback<G: Graphics>(
+        &self,
+        session: &Session<G>,
+        subaction_path: Path,
+        event: &HapticBase,
+    ) -> Result<()> {
+        let info = sys::HapticActionInfo {
+            ty: sys::HapticActionInfo::TYPE,
+            next: ptr::null(),
+            action: self.as_raw(),
+            subaction_path,
+        };
         unsafe {
             cvt((self.fp().apply_haptic_feedback)(
-                self.as_raw(),
-                subaction_paths.len() as u32,
-                subaction_paths.as_ptr(),
+                session.as_raw(),
+                &info,
                 event as *const _ as _,
             ))?;
         }
         Ok(())
     }
 
-    pub fn stop_feedback(&self, subaction_paths: &[Path]) -> Result<()> {
+    pub fn stop_feedback<G: Graphics>(
+        &self,
+        session: &Session<G>,
+        subaction_path: Path,
+    ) -> Result<()> {
+        let info = sys::HapticActionInfo {
+            ty: sys::HapticActionInfo::TYPE,
+            next: ptr::null(),
+            action: self.as_raw(),
+            subaction_path,
+        };
         unsafe {
-            cvt((self.fp().stop_haptic_feedback)(
-                self.as_raw(),
-                subaction_paths.len() as u32,
-                subaction_paths.as_ptr(),
-            ))?;
+            cvt((self.fp().stop_haptic_feedback)(session.as_raw(), &info))?;
         }
         Ok(())
     }
@@ -135,15 +162,29 @@ pub struct ActionState<T: ActionInput> {
 
 pub trait ActionInput: ActionTy {
     #[doc(hidden)]
-    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>>;
+    fn get<G: Graphics>(
+        action: &Action<Self>,
+        session: &Session<G>,
+        subaction_path: Path,
+    ) -> Result<ActionState<Self>>;
 }
 
 impl ActionTy for bool {
-    const TYPE: ActionType = ActionType::INPUT_BOOLEAN;
+    const TYPE: ActionType = ActionType::BOOLEAN_INPUT;
 }
 
 impl ActionInput for bool {
-    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>> {
+    fn get<G: Graphics>(
+        action: &Action<Self>,
+        session: &Session<G>,
+        subaction_path: Path,
+    ) -> Result<ActionState<Self>> {
+        let info = sys::ActionStateGetInfo {
+            ty: sys::ActionStateGetInfo::TYPE,
+            next: ptr::null_mut(),
+            action: action.as_raw(),
+            subaction_path,
+        };
         unsafe {
             let mut out = sys::ActionStateBoolean {
                 ty: sys::ActionStateBoolean::TYPE,
@@ -151,9 +192,8 @@ impl ActionInput for bool {
                 ..mem::uninitialized()
             };
             cvt((action.fp().get_action_state_boolean)(
-                action.as_raw(),
-                subaction_paths.len() as u32,
-                subaction_paths.as_ptr(),
+                session.as_raw(),
+                &info,
                 &mut out,
             ))?;
             Ok(ActionState {
@@ -167,21 +207,30 @@ impl ActionInput for bool {
 }
 
 impl ActionTy for f32 {
-    const TYPE: ActionType = ActionType::INPUT_VECTOR1F;
+    const TYPE: ActionType = ActionType::FLOAT_INPUT;
 }
 
 impl ActionInput for f32 {
-    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>> {
+    fn get<G: Graphics>(
+        action: &Action<Self>,
+        session: &Session<G>,
+        subaction_path: Path,
+    ) -> Result<ActionState<Self>> {
+        let info = sys::ActionStateGetInfo {
+            ty: sys::ActionStateGetInfo::TYPE,
+            next: ptr::null_mut(),
+            action: action.as_raw(),
+            subaction_path,
+        };
         unsafe {
-            let mut out = sys::ActionStateVector1f {
-                ty: sys::ActionStateBoolean::TYPE,
+            let mut out = sys::ActionStateFloat {
+                ty: sys::ActionStateFloat::TYPE,
                 next: ptr::null_mut(),
                 ..mem::uninitialized()
             };
-            cvt((action.fp().get_action_state_vector1f)(
-                action.as_raw(),
-                subaction_paths.len() as u32,
-                subaction_paths.as_ptr(),
+            cvt((action.fp().get_action_state_float)(
+                session.as_raw(),
+                &info,
                 &mut out,
             ))?;
             Ok(ActionState {
@@ -195,21 +244,30 @@ impl ActionInput for f32 {
 }
 
 impl ActionTy for Vector2f {
-    const TYPE: ActionType = ActionType::INPUT_VECTOR2F;
+    const TYPE: ActionType = ActionType::VECTOR2F_INPUT;
 }
 
 impl ActionInput for Vector2f {
-    fn get(action: &Action<Self>, subaction_paths: &[Path]) -> Result<ActionState<Self>> {
+    fn get<G: Graphics>(
+        action: &Action<Self>,
+        session: &Session<G>,
+        subaction_path: Path,
+    ) -> Result<ActionState<Self>> {
+        let info = sys::ActionStateGetInfo {
+            ty: sys::ActionStateGetInfo::TYPE,
+            next: ptr::null_mut(),
+            action: action.as_raw(),
+            subaction_path,
+        };
         unsafe {
             let mut out = sys::ActionStateVector2f {
-                ty: sys::ActionStateBoolean::TYPE,
+                ty: sys::ActionStateVector2f::TYPE,
                 next: ptr::null_mut(),
                 ..mem::uninitialized()
             };
             cvt((action.fp().get_action_state_vector2f)(
-                action.as_raw(),
-                subaction_paths.len() as u32,
-                subaction_paths.as_ptr(),
+                session.as_raw(),
+                &info,
                 &mut out,
             ))?;
             Ok(ActionState {
@@ -223,14 +281,14 @@ impl ActionInput for Vector2f {
 }
 
 impl ActionTy for Posef {
-    const TYPE: ActionType = ActionType::INPUT_POSE;
+    const TYPE: ActionType = ActionType::POSE_INPUT;
 }
 
 /// Tag for haptic output actions
 pub struct Haptic;
 
 impl ActionTy for Haptic {
-    const TYPE: ActionType = ActionType::OUTPUT_VIBRATION;
+    const TYPE: ActionType = ActionType::VIBRATION_OUTPUT;
 }
 
 pub(crate) struct ActionInner {

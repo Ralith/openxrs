@@ -4,7 +4,7 @@ use std::{
     collections::{HashMap, HashSet},
     env,
     fs::File,
-    io::Write,
+    io::{Seek, SeekFrom, Write},
     path::{Path, PathBuf},
     rc::Rc,
 };
@@ -22,11 +22,13 @@ use xml::{
 fn main() {
     let mut args = env::args_os();
     args.next().unwrap();
-    let source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
+    let mut source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
         Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../sys/OpenXR-SDK/specification/registry/xr.xml")
     }))
     .expect("failed to open registry XML file");
+    // Hack around leading garbage in 1.0 revision of XML
+    source.seek(SeekFrom::Start(3)).unwrap();
 
     let mut parser = Parser::new(source);
     parser.parse();
@@ -49,7 +51,6 @@ struct Parser {
     extensions: IndexMap<String, Tag>,
     disabled_exts: HashSet<Rc<str>>,
     api_version: Option<(u32, u32, u32)>,
-    header_version: Option<u32>,
     base_headers: IndexMap<String, Vec<String>>,
 }
 
@@ -70,7 +71,6 @@ impl Parser {
             extensions: IndexMap::new(),
             disabled_exts: HashSet::new(),
             api_version: None,
-            header_version: None,
             base_headers: IndexMap::new(),
         }
     }
@@ -339,8 +339,12 @@ impl Parser {
                     "param" => {
                         params.push(self.parse_var("param", &attributes));
                     }
+                    "implicitexternsyncparams" => {
+                        self.finish_element();
+                    }
                     _ => {
                         eprintln!("unimplemented command element: {}", name.local_name);
+                        self.finish_element();
                     }
                 },
                 EndElement { name } => {
@@ -373,6 +377,9 @@ impl Parser {
                 } => match &name.local_name[..] {
                     "type" => {
                         self.parse_type(&attributes);
+                    }
+                    "comment" => {
+                        self.finish_element();
                     }
                     _ => {
                         eprintln!("unimplemented type element: {}", name.local_name);
@@ -447,11 +454,7 @@ impl Parser {
                     self.finish_element();
                 }
                 Characters(ch) => {
-                    if define_ty.is_some()
-                        || define_name
-                            .as_ref()
-                            .map_or(false, |x| x == "XR_HEADER_VERSION")
-                    {
+                    if define_ty.is_some() {
                         define_val = Some(ch);
                     }
                 }
@@ -477,9 +480,6 @@ impl Parser {
                     iter.next().unwrap(),
                 ));
             }
-            Some("XR_HEADER_VERSION") => {
-                self.header_version = Some(define_val.unwrap().parse().unwrap());
-            }
             _ => {}
         }
     }
@@ -495,25 +495,9 @@ impl Parser {
                     name, attributes, ..
                 } => match &name.local_name[..] {
                     "member" => {
-                        let mut m = self.parse_var("member", &attributes);
+                        let m = self.parse_var("member", &attributes);
                         if m.name == "type" && m.ty == "XrStructureType" {
                             ty = attr(&attributes, "values").map(|x| x.into());
-                        }
-                        if struct_name == "XrVisibilityMaskKHR"
-                            && m.ptr_depth != 0
-                            && m.name != "next"
-                        {
-                            // Work around XML bug
-                            assert!(
-                                m.len.is_none(),
-                                "bug has been fixed; remove this special case"
-                            );
-                            let len = match &m.name[..] {
-                                "vertices" => "vertexCount",
-                                "indices" => "indexCount",
-                                _ => unreachable!(),
-                            };
-                            m.len = Some(vec![len.into()]);
                         }
                         members.push(m);
                     }
@@ -1054,7 +1038,6 @@ impl Parser {
         });
 
         let (major, minor, patch) = self.api_version.unwrap();
-        let header_version = self.header_version.unwrap();
 
         quote! {
             //! Automatically generated code; do not edit!
@@ -1069,7 +1052,6 @@ impl Parser {
             use crate::*;
 
             pub const CURRENT_API_VERSION: Version = Version::new(#major, #minor, #patch);
-            pub const HEADER_VERSION: u32 = #header_version;
 
             #(#consts)*
             #(#enums)*
@@ -1891,31 +1873,18 @@ fn split_ty_ext(name: &str) -> (&str, &str) {
 
 fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
     let (ty, ext) = split_ty_ext(ty);
-    let (prefix_len, extra_prefix) = match ty {
-        "XrStructureType" => ("XR_TYPE_".len(), None),
-        "XrPerfSettingsNotificationLevel" => ("XR_PERF_SETTINGS_NOTIF_LEVEL_".len(), None),
-        "XrResult" => ("XR_".len(), None),
-        "XrActionType" => {
-            if name.starts_with("XR_OUTPUT") {
-                ("XR_OUTPUT_ACTION_TYPE_".len(), Some("OUTPUT"))
-            } else {
-                ("XR_INPUT_ACTION_TYPE_".len(), Some("INPUT"))
-            }
-        }
-        _ => (ty.to_shouty_snake_case().len() + 1, None),
+    let prefix_len = match ty {
+        "XrStructureType" => "XR_TYPE_".len(),
+        "XrPerfSettingsNotificationLevel" => "XR_PERF_SETTINGS_NOTIF_LEVEL_".len(),
+        "XrResult" => "XR_".len(),
+        _ => ty.to_shouty_snake_case().len() + 1,
     };
     let end = if ext.len() != 0 {
         name.len() - ext.len() - 1
     } else {
         name.len()
     };
-    let name = &name[prefix_len..end];
-    let name = if let Some(x) = extra_prefix {
-        format!("{}_{}", x, name)
-    } else {
-        name.into()
-    };
-    Ident::new(&name, Span::call_site())
+    Ident::new(&name[prefix_len..end], Span::call_site())
 }
 
 fn xr_bitmask_value_name(ty: &str, name: &str) -> Ident {

@@ -238,12 +238,6 @@ impl Instance {
         Ok(Session::from_raw(self.clone(), handle))
     }
 
-    /// Create a session without graphics support
-    #[inline]
-    pub fn create_session_headless(&self, system: SystemId) -> Result<Session<Headless>> {
-        unsafe { Ok(self.create_session(system, &())?.0) }
-    }
-
     /// Get the next event, if available
     ///
     /// Returns immediately regardless of whether an event was available.
@@ -345,9 +339,17 @@ impl Instance {
     pub fn enumerate_environment_blend_modes(
         &self,
         system: SystemId,
+        view_configuration_type: ViewConfigurationType,
     ) -> Result<Vec<EnvironmentBlendMode>> {
         get_arr(|cap, count, buf| unsafe {
-            (self.fp().enumerate_environment_blend_modes)(self.as_raw(), system, cap, count, buf)
+            (self.fp().enumerate_environment_blend_modes)(
+                self.as_raw(),
+                system,
+                view_configuration_type,
+                cap,
+                count,
+                buf,
+            )
         })
     }
 
@@ -398,6 +400,54 @@ impl Instance {
                 &mut out,
             ))?;
             Ok(out)
+        }
+    }
+
+    /// Specify default bindings for a well-known input archetype
+    #[inline]
+    pub fn suggest_interaction_profile_bindings(
+        &self,
+        interaction_profile: Path,
+        bindings: &[Binding],
+    ) -> Result<()> {
+        let info = sys::InteractionProfileSuggestedBinding {
+            ty: sys::InteractionProfileSuggestedBinding::TYPE,
+            next: ptr::null(),
+            interaction_profile,
+            count_suggested_bindings: bindings.len() as u32,
+            suggested_bindings: bindings.as_ptr() as *const _ as _,
+        };
+        unsafe {
+            cvt((self.fp().suggest_interaction_profile_bindings)(
+                self.as_raw(),
+                &info,
+            ))?;
+        }
+        Ok(())
+    }
+
+    /// Allocate a new [`ActionSet`]
+    ///
+    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html#input-action-creation
+    #[inline]
+    pub fn create_action_set(
+        &self,
+        name: &str,
+        localized_name: &str,
+        priority: u32,
+    ) -> Result<ActionSet> {
+        let info = builder::ActionSetCreateInfo::new()
+            .action_set_name(name)
+            .localized_action_set_name(localized_name)
+            .priority(priority);
+        unsafe {
+            let mut out = sys::ActionSet::NULL;
+            cvt((self.fp().create_action_set)(
+                self.as_raw(),
+                info.as_raw(),
+                &mut out,
+            ))?;
+            Ok(ActionSet::from_raw(self.clone(), out))
         }
     }
 
@@ -464,7 +514,7 @@ impl Drop for InstanceInner {
 
 #[derive(Debug, Clone)]
 pub struct InstanceProperties {
-    pub runtime_version: u32,
+    pub runtime_version: Version,
     pub runtime_name: String,
 }
 

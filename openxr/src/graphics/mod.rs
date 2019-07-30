@@ -39,9 +39,6 @@ pub mod d3d;
 #[cfg(windows)]
 pub use d3d::D3D11;
 
-mod headless;
-pub use headless::Headless;
-
 pub mod vulkan;
 pub use vulkan::Vulkan;
 
