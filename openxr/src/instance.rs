@@ -223,6 +223,17 @@ impl Instance {
 
     /// Create a session for a particular graphics API
     ///
+    /// Returns three separate objects:
+    /// - `Session` exposes most session-related operations and is cheap to clone
+    /// - `FrameWaiter` allows blocking until it is time to begin graphics device work, and cannot
+    ///   be cloned
+    /// - `FrameStream` allows callers to mark the beginning of graphics device work and submit
+    ///   completed frames for presentation
+    ///
+    /// These objects are separate to ensure multithreaded pipelined renderers can safely wait for
+    /// the cue to begin a new frame while a prior frame is still being rendered without additional
+    /// synchronization.
+    ///
     /// # Safety
     ///
     /// The requirements documented by the graphics API extension must be respected. Among other
@@ -233,7 +244,7 @@ impl Instance {
         &self,
         system: SystemId,
         info: &G::SessionCreateInfo,
-    ) -> Result<(Session<G>, FrameStream<G>)> {
+    ) -> Result<(Session<G>, FrameWaiter, FrameStream<G>)> {
         let handle = G::create_session(self, system, info)?;
         Ok(Session::from_raw(self.clone(), handle))
     }

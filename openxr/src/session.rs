@@ -16,7 +16,10 @@ impl<G: Graphics> Session<G> {
     /// `handle` must be a valid session handle associated with `instance` which is not currently
     /// inside a frame and was created for graphics API `G`.
     #[inline]
-    pub unsafe fn from_raw(instance: Instance, handle: sys::Session) -> (Self, FrameStream<G>) {
+    pub unsafe fn from_raw(
+        instance: Instance,
+        handle: sys::Session,
+    ) -> (Self, FrameWaiter, FrameStream<G>) {
         let session = Self {
             inner: Arc::new(SessionInner {
                 instance: instance.clone(),
@@ -24,7 +27,11 @@ impl<G: Graphics> Session<G> {
             }),
             _marker: PhantomData,
         };
-        (session.clone(), FrameStream::new(session))
+        (
+            session.clone(),
+            FrameWaiter::new(session.clone()),
+            FrameStream::new(session),
+        )
     }
 
     /// Access the raw session handle
@@ -378,5 +385,40 @@ impl<'a> ActiveActionSet<'a> {
 impl<'a> From<&'a ActionSet> for ActiveActionSet<'a> {
     fn from(x: &'a ActionSet) -> Self {
         Self::new(x)
+    }
+}
+
+/// Handle for waiting to render a frame
+pub struct FrameWaiter {
+    session: Arc<SessionInner>,
+}
+
+impl FrameWaiter {
+    fn new<G: Graphics>(session: Session<G>) -> Self {
+        Self {
+            session: session.inner,
+        }
+    }
+
+    /// Block until rendering should begin, and return details to guide rendering
+    #[inline]
+    pub fn wait(&mut self) -> Result<FrameState> {
+        let mut out = sys::FrameState {
+            ty: sys::FrameState::TYPE,
+            next: ptr::null_mut(),
+            ..unsafe { mem::uninitialized() }
+        };
+        unsafe {
+            cvt((self.session.instance.fp().wait_frame)(
+                self.session.handle,
+                builder::FrameWaitInfo::new().as_raw(),
+                &mut out,
+            ))?;
+        }
+        Ok(FrameState {
+            predicted_display_time: out.predicted_display_time,
+            predicted_display_period: out.predicted_display_period,
+            should_render: out.should_render.into(),
+        })
     }
 }

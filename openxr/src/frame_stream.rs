@@ -1,4 +1,4 @@
-use std::{mem, ptr};
+use std::ptr;
 
 use crate::*;
 
@@ -16,11 +16,12 @@ use crate::*;
 /// # fn dummy<G: openxr::Graphics>(
 /// #     session: &openxr::Session<G>,
 /// #     swapchain: &mut openxr::Swapchain<G>,
+/// #     frame_waiter: &mut openxr::FrameWaiter,
 /// #     frame_stream: &mut openxr::FrameStream<G>,
 /// #     world_space: &openxr::Space,
 /// #     view_resolution: &[openxr::Extent2Di],
 /// # ) {
-/// let state = frame_stream.wait().unwrap();
+/// let state = frame_waiter.wait().unwrap();
 /// if !state.should_render { return; }
 /// frame_stream.begin().unwrap();
 /// let mut drew = false;
@@ -83,28 +84,6 @@ pub struct FrameStream<G: Graphics> {
 impl<G: Graphics> FrameStream<G> {
     pub(crate) fn new(session: Session<G>) -> Self {
         Self { session }
-    }
-
-    /// Block until rendering should begin, and return details to guide rendering
-    #[inline]
-    pub fn wait(&mut self) -> Result<FrameState> {
-        let mut out = sys::FrameState {
-            ty: sys::FrameState::TYPE,
-            next: ptr::null_mut(),
-            ..unsafe { mem::uninitialized() }
-        };
-        unsafe {
-            cvt((self.fp().wait_frame)(
-                self.session.as_raw(),
-                builder::FrameWaitInfo::new().as_raw(),
-                &mut out,
-            ))?;
-        }
-        Ok(FrameState {
-            predicted_display_time: out.predicted_display_time,
-            predicted_display_period: out.predicted_display_period,
-            should_render: out.should_render.into(),
-        })
     }
 
     /// Indicate that graphics device work is beginning

@@ -93,7 +93,11 @@ mod inner {
             &self,
             xr: &xr::Instance,
             system: xr::SystemId,
-        ) -> xr::Result<(xr::Session<xr::OpenGL>, xr::FrameStream<xr::OpenGL>)> {
+        ) -> xr::Result<(
+            xr::Session<xr::OpenGL>,
+            xr::FrameWaiter,
+            xr::FrameStream<xr::OpenGL>,
+        )> {
             unsafe {
                 let visualid = { *self.visual }.visualid as u32;
                 let info = xr::opengl::SessionCreateInfo::Xlib {
@@ -155,6 +159,7 @@ mod inner {
         session: xr::Session<xr::OpenGL>,
         resolution: (u32, u32),
         predicted_display_time: Option<xr::Time>,
+        frame_waiter: xr::FrameWaiter,
         frame_stream: xr::FrameStream<xr::OpenGL>,
         swapchain: Option<xr::Swapchain<xr::OpenGL>>,
     }
@@ -191,12 +196,13 @@ mod inner {
             let system = instance
                 .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
                 .unwrap();
-            let (session, frame_stream) = backend.xr_create_session(&instance, system).unwrap();
+            let (session, frame_waiter, frame_stream) = backend.xr_create_session(&instance, system).unwrap();
 
             Self {
                 instance,
                 system,
                 session,
+                frame_waiter,
                 frame_stream,
                 resolution: (0, 0),
                 predicted_display_time: None,
@@ -298,7 +304,7 @@ mod inner {
             self.swapchain = Some(swapchain);
         }
         pub fn frame_begin(&mut self) {
-            let state = self.frame_stream.wait().unwrap();
+            let state = self.frame_waiter.wait().unwrap();
             self.predicted_display_time = Some(state.predicted_display_time);
             self.frame_stream.begin().unwrap();
         }
