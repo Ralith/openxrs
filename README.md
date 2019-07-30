@@ -6,8 +6,8 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE-APACHE)
 
 Rust bindings for the OpenXR virtual/augmented reality runtime
-API. Refer to [the provisional
-specification](https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html)
+API. Refer to [the
+specification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html)
 for detailed documentation on individual API calls.
 
 ## `openxr` 
