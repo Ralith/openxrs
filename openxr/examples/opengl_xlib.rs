@@ -196,7 +196,8 @@ mod inner {
             let system = instance
                 .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
                 .unwrap();
-            let (session, frame_waiter, frame_stream) = backend.xr_create_session(&instance, system).unwrap();
+            let (session, frame_waiter, frame_stream) =
+                backend.xr_create_session(&instance, system).unwrap();
 
             Self {
                 instance,
