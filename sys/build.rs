@@ -1,6 +1,6 @@
 #[cfg(feature = "static")]
 fn main() {
-    let dst = cmake::Config::new("OpenXR-SDK")
+    let dst = cmake::Config::new("OpenXR-SDK-Source")
         .define("BUILD_API_LAYERS", "OFF")
         .define("BUILD_TESTS", "OFF")
         .define("OpenGL_GL_PREFERENCE", "GLVND")
