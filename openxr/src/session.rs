@@ -1,4 +1,5 @@
-use std::{marker::PhantomData, mem, ptr, sync::Arc};
+use std::mem::MaybeUninit;
+use std::{marker::PhantomData, ptr, sync::Arc};
 
 use crate::*;
 
@@ -83,16 +84,16 @@ impl<G: Graphics> Session<G> {
     #[inline]
     pub fn reference_space_bounds_rect(&self, ty: ReferenceSpaceType) -> Result<Option<Extent2Df>> {
         unsafe {
-            let mut out = mem::uninitialized();
+            let mut out = MaybeUninit::uninit();
             let status = cvt((self.fp().get_reference_space_bounds_rect)(
                 self.as_raw(),
                 ty,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
             Ok(if status == sys::Result::SPACE_BOUNDS_UNAVAILABLE {
                 None
             } else {
-                Some(out)
+                Some(out.assume_init())
             })
         }
     }
@@ -183,29 +184,28 @@ impl<G: Graphics> Session<G> {
             space: space.as_raw(),
         };
         let (flags, raw) = unsafe {
-            let mut out = sys::ViewState {
-                ty: sys::ViewState::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
-            let raw = get_arr_init(
-                sys::View {
-                    ty: sys::View::TYPE,
-                    next: ptr::null_mut(),
-                    ..mem::uninitialized()
-                },
-                |cap, count, buf| {
-                    (self.fp().locate_views)(self.as_raw(), &info, &mut out, cap, count, buf)
-                },
-            )?;
-            (out.view_state_flags, raw)
+            let mut out = sys::ViewState::out(ptr::null_mut());
+            let raw = get_arr_init(sys::View::out(ptr::null_mut()), |cap, count, buf| {
+                (self.fp().locate_views)(
+                    self.as_raw(),
+                    &info,
+                    out.as_mut_ptr(),
+                    cap,
+                    count,
+                    buf as _,
+                )
+            })?;
+            (out.assume_init().view_state_flags, raw)
         };
         Ok((
             flags,
             raw.into_iter()
-                .map(|x| View {
-                    pose: x.pose,
-                    fov: x.fov,
+                .map(|x| {
+                    let x = unsafe { x.assume_init() };
+                    View {
+                        pose: x.pose,
+                        fov: x.fov,
+                    }
                 })
                 .collect(),
         ))
@@ -217,17 +217,13 @@ impl<G: Graphics> Session<G> {
     #[inline]
     pub fn current_interaction_profile(&self, top_level_user_path: Path) -> Result<Path> {
         unsafe {
-            let mut out = sys::InteractionProfileState {
-                ty: sys::InteractionProfileState::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+            let mut out = sys::InteractionProfileState::out(ptr::null_mut());
             cvt((self.fp().get_current_interaction_profile)(
                 self.as_raw(),
                 top_level_user_path,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
-            Ok(out.interaction_profile)
+            Ok(out.assume_init().interaction_profile)
         }
     }
 
@@ -403,18 +399,15 @@ impl FrameWaiter {
     /// Block until rendering should begin, and return details to guide rendering
     #[inline]
     pub fn wait(&mut self) -> Result<FrameState> {
-        let mut out = sys::FrameState {
-            ty: sys::FrameState::TYPE,
-            next: ptr::null_mut(),
-            ..unsafe { mem::uninitialized() }
-        };
-        unsafe {
+        let out = unsafe {
+            let mut x = sys::FrameState::out(ptr::null_mut());
             cvt((self.session.instance.fp().wait_frame)(
                 self.session.handle,
                 builder::FrameWaitInfo::new().as_raw(),
-                &mut out,
+                x.as_mut_ptr(),
             ))?;
-        }
+            x.assume_init()
+        };
         Ok(FrameState {
             predicted_display_time: out.predicted_display_time,
             predicted_display_period: out.predicted_display_period,

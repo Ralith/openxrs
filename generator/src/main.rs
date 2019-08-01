@@ -488,6 +488,7 @@ impl Parser {
         let struct_name = attr(attrs, "name").unwrap();
         let mut members = Vec::new();
         let mut ty = None;
+        let mut mut_next = false;
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
@@ -498,6 +499,8 @@ impl Parser {
                         let m = self.parse_var("member", &attributes);
                         if m.name == "type" && m.ty == "XrStructureType" {
                             ty = attr(&attributes, "values").map(|x| x.into());
+                        } else if m.name == "next" && !m.is_const {
+                            mut_next = true;
                         }
                         members.push(m);
                     }
@@ -529,6 +532,7 @@ impl Parser {
                 ty,
                 extension: None,
                 parent,
+                mut_next,
             },
         );
     }
@@ -949,10 +953,29 @@ impl Parser {
             let ty = if let Some(ref ty) = s.ty {
                 let conditions2 = conditions.clone();
                 let ty = xr_enum_value_name("XrStructureType", ty);
+                let out = if s.mut_next {
+                    quote! {
+                        /// Construct a partially-initialized value suitable for passing to OpenXR
+                        #[inline]
+                        pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+                            let mut x = MaybeUninit::<Self>::uninit();
+                            unsafe {
+                                (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                                    ty: Self::TYPE,
+                                    next,
+                                });
+                            }
+                            x
+                        }
+                    }
+                } else {
+                    quote! {}
+                };
                 quote! {
                     #conditions2
                     impl #ident {
                         pub const TYPE: StructureType = StructureType::#ty;
+                        #out
                     }
                 }
             } else {
@@ -1044,6 +1067,7 @@ impl Parser {
 
             #![allow(non_upper_case_globals)]
             use std::fmt;
+            use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};
             use libc::timespec;
 
@@ -1256,7 +1280,7 @@ impl Parser {
             } else {
                 quote! {
                     sys::StructureType::#tag => {
-                        let typed = &*(raw as *const _ as *const sys::#raw_ident);
+                        let typed = &*(raw as *const sys::#raw_ident);
                         Event::#ident(#ident::new(typed))
                     }
                 }
@@ -1363,8 +1387,8 @@ impl Parser {
                 ///
                 /// `raw` must refer to an `EventDataBuffer` populated by a successful call to
                 /// `xrPollEvent`, which has not been moved since.
-                pub unsafe fn from_raw(raw: &'a sys::EventDataBuffer) -> Option<Self> {
-                    Some(match raw.ty {
+                pub unsafe fn from_raw(raw: *const sys::EventDataBuffer) -> Option<Self> {
+                    Some(match (raw as *const sys::BaseInStructure).read().ty {
                         #(#event_decodes)*
                         _ => { return None; }
                     })
@@ -1832,6 +1856,7 @@ struct Struct {
     extension: Option<Rc<str>>,
     ty: Option<String>,
     parent: Option<String>,
+    mut_next: bool,
 }
 
 #[derive(Debug, Clone)]

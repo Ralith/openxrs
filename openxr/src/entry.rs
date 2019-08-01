@@ -165,24 +165,20 @@ impl Entry {
 
     /// Determine the set of extensions supported by this OpenXR implementation
     pub fn enumerate_extensions(&self) -> Result<ExtensionSet> {
-        let exts = unsafe {
-            get_arr_init(
-                sys::ExtensionProperties {
-                    ty: sys::ExtensionProperties::TYPE,
-                    next: ptr::null_mut(),
-                    ..mem::uninitialized()
-                },
+        unsafe {
+            let exts = get_arr_init(
+                sys::ExtensionProperties::out(ptr::null_mut()),
                 |cap, count, buf| {
                     (self.fp().enumerate_instance_extension_properties)(
                         ptr::null(),
                         cap,
                         count,
-                        buf,
+                        buf as _,
                     )
                 },
-            )?
-        };
-        Ok(ExtensionSet::from_properties(&exts))
+            )?;
+            Ok(ExtensionSet::from_properties(mem::transmute(&exts[..])))
+        }
     }
 }
 

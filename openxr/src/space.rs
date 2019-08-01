@@ -1,4 +1,4 @@
-use std::{ffi::CString, mem, ptr, sync::Arc};
+use std::{ffi::CString, ptr, sync::Arc};
 
 use crate::*;
 
@@ -83,27 +83,19 @@ impl Space {
         // This assert allows this function to be safe.
         assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
                    "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
-        let mut out;
-        unsafe {
-            out = sys::SpaceLocation {
-                ty: sys::SpaceLocation::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+        let out = unsafe {
+            let mut x = sys::SpaceLocation::out(ptr::null_mut());
             cvt((self.fp().locate_space)(
                 self.as_raw(),
                 base.as_raw(),
                 time,
-                &mut out,
+                x.as_mut_ptr(),
             ))?;
-        }
+            x.assume_init()
+        };
         Ok(SpaceLocation {
             location_flags: out.location_flags,
             pose: out.pose,
-            // linear_velocity: out.linear_velocity,
-            // angular_velocity: out.angular_velocity,
-            // linear_acceleration: out.linear_acceleration,
-            // angular_acceleration: out.angular_acceleration,
         })
     }
 
@@ -114,26 +106,17 @@ impl Space {
         // This assert allows this function to be safe.
         assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
                    "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
-        let mut velocity;
-        let mut location;
-        unsafe {
-            velocity = sys::SpaceVelocity {
-                ty: sys::SpaceVelocity::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
-            location = sys::SpaceLocation {
-                ty: sys::SpaceLocation::TYPE,
-                next: &mut velocity as *mut _ as _,
-                ..mem::uninitialized()
-            };
+        let (location, velocity) = unsafe {
+            let mut velocity = sys::SpaceVelocity::out(ptr::null_mut());
+            let mut location = sys::SpaceLocation::out(&mut velocity as *mut _ as _);
             cvt((self.fp().locate_space)(
                 self.as_raw(),
                 base.as_raw(),
                 time,
-                &mut location,
+                location.as_mut_ptr(),
             ))?;
-        }
+            (location.assume_init(), velocity.assume_init())
+        };
         Ok((
             SpaceLocation {
                 location_flags: location.location_flags,

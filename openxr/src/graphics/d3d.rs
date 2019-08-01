@@ -1,4 +1,4 @@
-use std::{mem, ptr};
+use std::ptr;
 
 use sys::platform::*;
 
@@ -25,19 +25,15 @@ impl Graphics for D3D11 {
     }
 
     fn requirements(inst: &Instance, system: SystemId) -> Result<Requirements> {
-        let mut out;
-        unsafe {
-            out = sys::GraphicsRequirementsD3D11KHR {
-                ty: sys::GraphicsRequirementsD3D11KHR::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+        let out = unsafe {
+            let mut x = sys::GraphicsRequirementsD3D11KHR::out(ptr::null_mut());
             cvt((inst.d3d11().get_d3d11_graphics_requirements)(
                 inst.as_raw(),
                 system,
-                &mut out,
+                x.as_mut_ptr(),
             ))?;
-        }
+            x.assume_init()
+        };
         Ok(Requirements {
             adapter_luid: out.adapter_luid,
             min_feature_level: out.min_feature_level,

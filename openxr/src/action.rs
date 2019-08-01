@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, mem, ptr, sync::Arc};
+use std::{marker::PhantomData, ptr, sync::Arc};
 
 use crate::*;
 
@@ -186,16 +186,13 @@ impl ActionInput for bool {
             subaction_path,
         };
         unsafe {
-            let mut out = sys::ActionStateBoolean {
-                ty: sys::ActionStateBoolean::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+            let mut out = sys::ActionStateBoolean::out(ptr::null_mut());
             cvt((action.fp().get_action_state_boolean)(
                 session.as_raw(),
                 &info,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
+            let out = out.assume_init();
             Ok(ActionState {
                 current_state: out.current_state.into(),
                 changed_since_last_sync: out.changed_since_last_sync.into(),
@@ -223,16 +220,13 @@ impl ActionInput for f32 {
             subaction_path,
         };
         unsafe {
-            let mut out = sys::ActionStateFloat {
-                ty: sys::ActionStateFloat::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+            let mut out = sys::ActionStateFloat::out(ptr::null_mut());
             cvt((action.fp().get_action_state_float)(
                 session.as_raw(),
                 &info,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
+            let out = out.assume_init();
             Ok(ActionState {
                 current_state: out.current_state,
                 changed_since_last_sync: out.changed_since_last_sync.into(),
@@ -260,16 +254,13 @@ impl ActionInput for Vector2f {
             subaction_path,
         };
         unsafe {
-            let mut out = sys::ActionStateVector2f {
-                ty: sys::ActionStateVector2f::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+            let mut out = sys::ActionStateVector2f::out(ptr::null_mut());
             cvt((action.fp().get_action_state_vector2f)(
                 session.as_raw(),
                 &info,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
+            let out = out.assume_init();
             Ok(ActionState {
                 current_state: out.current_state,
                 changed_since_last_sync: out.changed_since_last_sync.into(),

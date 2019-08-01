@@ -1,6 +1,7 @@
 use std::{
     ffi::CString,
-    mem, ptr,
+    mem::{self, MaybeUninit},
+    ptr,
     sync::{Arc, Mutex},
 };
 
@@ -258,12 +259,15 @@ impl Instance {
             // Work around a shortcoming in NLL as of 2019-03-22
             let storage: *mut EventDataBuffer = storage;
             loop {
-                let status = cvt((self.fp().poll_event)(self.as_raw(), &mut (*storage).inner))?;
+                let status = cvt((self.fp().poll_event)(
+                    self.as_raw(),
+                    (*storage).inner.as_mut_ptr(),
+                ))?;
                 if status == sys::Result::EVENT_UNAVAILABLE {
                     return Ok(None);
                 }
                 debug_assert_eq!(status, sys::Result::SUCCESS);
-                if let x @ Some(_) = Event::from_raw(&(*storage).inner) {
+                if let x @ Some(_) = Event::from_raw((*storage).inner.as_ptr()) {
                     return Ok(x);
                 }
             }
@@ -288,20 +292,16 @@ impl Instance {
         system: SystemId,
         ty: ViewConfigurationType,
     ) -> Result<ViewConfigurationProperties> {
-        let mut out;
-        unsafe {
-            out = sys::ViewConfigurationProperties {
-                ty: sys::ViewConfigurationProperties::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+        let out = unsafe {
+            let mut x = sys::ViewConfigurationProperties::out(ptr::null_mut());
             cvt((self.fp().get_view_configuration_properties)(
                 self.as_raw(),
                 system,
                 ty,
-                &mut out,
+                x.as_mut_ptr(),
             ))?;
-        }
+            x.assume_init()
+        };
         Ok(ViewConfigurationProperties {
             view_configuration_type: out.view_configuration_type,
             fov_mutable: out.fov_mutable != sys::FALSE,
@@ -315,13 +315,7 @@ impl Instance {
         ty: ViewConfigurationType,
     ) -> Result<Vec<ViewConfigurationView>> {
         let views = get_arr_init(
-            unsafe {
-                sys::ViewConfigurationView {
-                    ty: sys::ViewConfigurationView::TYPE,
-                    next: ptr::null_mut(),
-                    ..mem::uninitialized()
-                }
-            },
+            sys::ViewConfigurationView::out(ptr::null_mut()),
             |capacity, count, buf| unsafe {
                 (self.fp().enumerate_view_configuration_views)(
                     self.as_raw(),
@@ -335,13 +329,16 @@ impl Instance {
         )?;
         Ok(views
             .into_iter()
-            .map(|x| ViewConfigurationView {
-                recommended_image_rect_width: x.recommended_image_rect_width,
-                max_image_rect_width: x.max_image_rect_width,
-                recommended_image_rect_height: x.recommended_image_rect_height,
-                max_image_rect_height: x.max_image_rect_height,
-                recommended_swapchain_sample_count: x.recommended_swapchain_sample_count,
-                max_swapchain_sample_count: x.max_swapchain_sample_count,
+            .map(|x| {
+                let x = unsafe { x.assume_init() };
+                ViewConfigurationView {
+                    recommended_image_rect_width: x.recommended_image_rect_width,
+                    max_image_rect_width: x.max_image_rect_width,
+                    recommended_image_rect_height: x.recommended_image_rect_height,
+                    max_image_rect_height: x.max_image_rect_height,
+                    recommended_swapchain_sample_count: x.recommended_swapchain_sample_count,
+                    max_swapchain_sample_count: x.max_swapchain_sample_count,
+                }
             })
             .collect())
     }
@@ -372,9 +369,10 @@ impl Instance {
     #[cfg(not(windows))]
     pub fn now(&self) -> Result<Time> {
         unsafe {
-            let mut now = mem::uninitialized();
-            libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now);
-            let mut out = mem::uninitialized();
+            let mut now = MaybeUninit::uninit();
+            libc::clock_gettime(libc::CLOCK_MONOTONIC, now.as_mut_ptr());
+            let now = now.assume_init();
+            let mut out = MaybeUninit::uninit();
             cvt((self
                 .exts()
                 .khr_convert_timespec_time
@@ -383,9 +381,9 @@ impl Instance {
                 .convert_timespec_time_to_time)(
                 self.as_raw(),
                 &now,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
-            Ok(out)
+            Ok(out.assume_init())
         }
     }
 
@@ -397,9 +395,10 @@ impl Instance {
     #[cfg(windows)]
     pub fn now(&self) -> Result<Time> {
         unsafe {
-            let mut now = mem::uninitialized();
-            winapi::um::profileapi::QueryPerformanceCounter(&mut now);
-            let mut out = mem::uninitialized();
+            let mut now = MaybeUninit::uninit();
+            winapi::um::profileapi::QueryPerformanceCounter(now.as_mut_ptr());
+            let now = now.assume_init();
+            let mut out = MaybeUninit::uninit();
             cvt((self
                 .exts()
                 .khr_win32_convert_performance_counter_time
@@ -408,9 +407,9 @@ impl Instance {
                 .convert_win32_performance_counter_to_time)(
                 self.as_raw(),
                 &now,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
-            Ok(out)
+            Ok(out.assume_init())
         }
     }
 
@@ -561,17 +560,18 @@ pub struct ViewConfigurationView {
 }
 
 pub struct EventDataBuffer {
-    inner: sys::EventDataBuffer,
+    inner: MaybeUninit<sys::EventDataBuffer>,
 }
 
 impl EventDataBuffer {
     pub fn new() -> Self {
-        Self {
-            inner: sys::EventDataBuffer {
+        let mut inner = MaybeUninit::uninit();
+        unsafe {
+            (inner.as_mut_ptr() as *mut sys::BaseInStructure).write(sys::BaseInStructure {
                 ty: sys::EventDataBuffer::TYPE,
-                next: ptr::null_mut(),
-                ..unsafe { mem::uninitialized() }
-            },
+                next: ptr::null(),
+            });
         }
+        Self { inner }
     }
 }
