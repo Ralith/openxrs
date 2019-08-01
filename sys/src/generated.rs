@@ -5,6 +5,7 @@ use crate::support::*;
 use crate::*;
 use libc::timespec;
 use std::fmt;
+use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
 pub const CURRENT_API_VERSION: Version = Version::new(1u32, 0u32, 0u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
@@ -1106,6 +1107,18 @@ pub struct ApiLayerProperties {
 }
 impl ApiLayerProperties {
     pub const TYPE: StructureType = StructureType::API_LAYER_PROPERTIES;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1117,6 +1130,18 @@ pub struct ExtensionProperties {
 }
 impl ExtensionProperties {
     pub const TYPE: StructureType = StructureType::EXTENSION_PROPERTIES;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1152,6 +1177,18 @@ pub struct InstanceProperties {
 }
 impl InstanceProperties {
     pub const TYPE: StructureType = StructureType::INSTANCE_PROPERTIES;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1176,6 +1213,18 @@ pub struct SystemProperties {
 }
 impl SystemProperties {
     pub const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1358,6 +1407,18 @@ pub struct SwapchainImageOpenGLKHR {
 }
 impl SwapchainImageOpenGLKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1369,6 +1430,18 @@ pub struct SwapchainImageOpenGLESKHR {
 }
 impl SwapchainImageOpenGLESKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1380,6 +1453,18 @@ pub struct SwapchainImageVulkanKHR {
 }
 impl SwapchainImageVulkanKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_VULKAN_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1393,6 +1478,18 @@ pub struct SwapchainImageD3D11KHR {
 #[cfg(windows)]
 impl SwapchainImageD3D11KHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D11_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1406,6 +1503,18 @@ pub struct SwapchainImageD3D12KHR {
 #[cfg(windows)]
 impl SwapchainImageD3D12KHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D12_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1468,6 +1577,18 @@ pub struct SpaceLocation {
 }
 impl SpaceLocation {
     pub const TYPE: StructureType = StructureType::SPACE_LOCATION;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1480,6 +1601,18 @@ pub struct SpaceVelocity {
 }
 impl SpaceVelocity {
     pub const TYPE: StructureType = StructureType::SPACE_VELOCITY;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1499,6 +1632,18 @@ pub struct View {
 }
 impl View {
     pub const TYPE: StructureType = StructureType::VIEW;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1521,6 +1666,18 @@ pub struct ViewState {
 }
 impl ViewState {
     pub const TYPE: StructureType = StructureType::VIEW_STATE;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1536,6 +1693,18 @@ pub struct ViewConfigurationView {
 }
 impl ViewConfigurationView {
     pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1701,6 +1870,18 @@ pub struct FrameState {
 }
 impl FrameState {
     pub const TYPE: StructureType = StructureType::FRAME_STATE;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1819,6 +2000,18 @@ pub struct ViewConfigurationProperties {
 }
 impl ViewConfigurationProperties {
     pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_PROPERTIES;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1832,6 +2025,18 @@ pub struct ActionStateBoolean {
 }
 impl ActionStateBoolean {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_BOOLEAN;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1845,6 +2050,18 @@ pub struct ActionStateFloat {
 }
 impl ActionStateFloat {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_FLOAT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1858,6 +2075,18 @@ pub struct ActionStateVector2f {
 }
 impl ActionStateVector2f {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_VECTOR2F;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1868,6 +2097,18 @@ pub struct ActionStatePose {
 }
 impl ActionStatePose {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_POSE;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1989,6 +2230,18 @@ pub struct InteractionProfileState {
 }
 impl InteractionProfileState {
     pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_STATE;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2100,6 +2353,18 @@ pub struct VisibilityMaskKHR {
 }
 impl VisibilityMaskKHR {
     pub const TYPE: StructureType = StructureType::VISIBILITY_MASK_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2112,6 +2377,18 @@ pub struct GraphicsRequirementsOpenGLKHR {
 }
 impl GraphicsRequirementsOpenGLKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2124,6 +2401,18 @@ pub struct GraphicsRequirementsOpenGLESKHR {
 }
 impl GraphicsRequirementsOpenGLESKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2136,6 +2425,18 @@ pub struct GraphicsRequirementsVulkanKHR {
 }
 impl GraphicsRequirementsVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2150,6 +2451,18 @@ pub struct GraphicsRequirementsD3D11KHR {
 #[cfg(windows)]
 impl GraphicsRequirementsD3D11KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D11_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2164,6 +2477,18 @@ pub struct GraphicsRequirementsD3D12KHR {
 #[cfg(windows)]
 impl GraphicsRequirementsD3D12KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D12_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {

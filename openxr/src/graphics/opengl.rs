@@ -1,4 +1,4 @@
-use std::{mem, ptr};
+use std::ptr;
 
 use sys::platform::*;
 
@@ -25,19 +25,15 @@ impl Graphics for OpenGL {
     }
 
     fn requirements(inst: &Instance, system: SystemId) -> Result<Requirements> {
-        let mut out;
-        unsafe {
-            out = sys::GraphicsRequirementsOpenGLKHR {
-                ty: sys::GraphicsRequirementsOpenGLKHR::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+        let out = unsafe {
+            let mut x = sys::GraphicsRequirementsOpenGLKHR::out(ptr::null_mut());
             cvt((inst.opengl().get_open_gl_graphics_requirements)(
                 inst.as_raw(),
                 system,
-                &mut out,
+                x.as_mut_ptr(),
             ))?;
-        }
+            x.assume_init()
+        };
         Ok(Requirements {
             min_api_version_supported: out.min_api_version_supported,
             max_api_version_supported: out.max_api_version_supported,

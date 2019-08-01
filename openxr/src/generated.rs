@@ -405,34 +405,34 @@ impl<'a> Event<'a> {
     #[doc = r""]
     #[doc = r" `raw` must refer to an `EventDataBuffer` populated by a successful call to"]
     #[doc = r" `xrPollEvent`, which has not been moved since."]
-    pub unsafe fn from_raw(raw: &'a sys::EventDataBuffer) -> Option<Self> {
-        Some(match raw.ty {
+    pub unsafe fn from_raw(raw: *const sys::EventDataBuffer) -> Option<Self> {
+        Some(match (raw as *const sys::BaseInStructure).read().ty {
             sys::StructureType::EVENT_DATA_EVENTS_LOST => {
-                let typed = &*(raw as *const _ as *const sys::EventDataEventsLost);
+                let typed = &*(raw as *const sys::EventDataEventsLost);
                 Event::EventsLost(EventsLost::new(typed))
             }
             sys::StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING => {
-                let typed = &*(raw as *const _ as *const sys::EventDataInstanceLossPending);
+                let typed = &*(raw as *const sys::EventDataInstanceLossPending);
                 Event::InstanceLossPending(InstanceLossPending::new(typed))
             }
             sys::StructureType::EVENT_DATA_SESSION_STATE_CHANGED => {
-                let typed = &*(raw as *const _ as *const sys::EventDataSessionStateChanged);
+                let typed = &*(raw as *const sys::EventDataSessionStateChanged);
                 Event::SessionStateChanged(SessionStateChanged::new(typed))
             }
             sys::StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING => {
-                let typed = &*(raw as *const _ as *const sys::EventDataReferenceSpaceChangePending);
+                let typed = &*(raw as *const sys::EventDataReferenceSpaceChangePending);
                 Event::ReferenceSpaceChangePending(ReferenceSpaceChangePending::new(typed))
             }
             sys::StructureType::EVENT_DATA_PERF_SETTINGS_EXT => {
-                let typed = &*(raw as *const _ as *const sys::EventDataPerfSettingsEXT);
+                let typed = &*(raw as *const sys::EventDataPerfSettingsEXT);
                 Event::PerfSettingsEXT(PerfSettingsEXT::new(typed))
             }
             sys::StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
-                let typed = &*(raw as *const _ as *const sys::EventDataVisibilityMaskChangedKHR);
+                let typed = &*(raw as *const sys::EventDataVisibilityMaskChangedKHR);
                 Event::VisibilityMaskChangedKHR(VisibilityMaskChangedKHR::new(typed))
             }
             sys::StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED => {
-                let typed = &*(raw as *const _ as *const sys::EventDataInteractionProfileChanged);
+                let typed = &*(raw as *const sys::EventDataInteractionProfileChanged);
                 Event::InteractionProfileChanged(InteractionProfileChanged::new(typed))
             }
             _ => {
