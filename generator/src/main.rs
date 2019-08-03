@@ -50,7 +50,7 @@ struct Parser {
     commands: IndexMap<String, Command>,
     extensions: IndexMap<String, Tag>,
     disabled_exts: HashSet<Rc<str>>,
-    api_version: Option<(u32, u32, u32)>,
+    api_version: Option<(u16, u16, u32)>,
     base_headers: IndexMap<String, Vec<String>>,
 }
 
@@ -473,11 +473,11 @@ impl Parser {
                 assert!(version.starts_with("("));
                 assert!(version.ends_with(")"));
                 let version = &version[1..version.len() - 1];
-                let mut iter = version.split(", ").map(|x| x.parse::<u32>().unwrap());
+                let mut iter = version.split(", ").map(|x| x.parse::<u64>().unwrap());
                 self.api_version = Some((
-                    iter.next().unwrap(),
-                    iter.next().unwrap(),
-                    iter.next().unwrap(),
+                    iter.next().unwrap() as u16,
+                    iter.next().unwrap() as u16,
+                    iter.next().unwrap() as u32,
                 ));
             }
             _ => {}
