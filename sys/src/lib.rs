@@ -118,28 +118,28 @@ impl SystemId {
 
 wrapper! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-    Version(u32)
+    Version(u64)
 }
 
 impl Version {
     #[inline]
-    pub const fn new(major: u32, minor: u32, patch: u32) -> Self {
-        Self(major << 22 | minor << 12 | patch)
+    pub const fn new(major: u16, minor: u16, patch: u32) -> Self {
+        Self((major as u64) << 48 | (minor as u64) << 32 | patch as u64)
     }
 
     #[inline]
-    pub const fn major(self) -> u32 {
-        self.0 >> 22
+    pub const fn major(self) -> u16 {
+        (self.0 >> 48) as u16
     }
 
     #[inline]
-    pub const fn minor(self) -> u32 {
-        (self.0 >> 12) & 0x3fff
+    pub const fn minor(self) -> u16 {
+        (self.0 >> 32) as u16
     }
 
     #[inline]
     pub const fn patch(self) -> u32 {
-        self.0 & 0xfff
+        self.0 as u32
     }
 }
 
