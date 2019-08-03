@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use std::fmt;
 
 #[macro_use]
@@ -44,11 +45,11 @@ impl From<bool> for Bool32 {
 #[repr(transparent)]
 pub struct Time(i64);
 impl Time {
-    pub fn from_raw(x: i64) -> Self {
+    pub fn from_nanos(x: i64) -> Self {
         Self(x)
     }
 
-    pub fn as_nanos(&self) -> i64 {
+    pub fn as_nanos(self) -> i64 {
         self.0
     }
 }
@@ -71,11 +72,11 @@ impl std::ops::Sub<Time> for Time {
 #[repr(transparent)]
 pub struct Duration(i64);
 impl Duration {
-    pub fn from_raw(x: i64) -> Self {
+    pub fn from_nanos(x: i64) -> Self {
         Self(x)
     }
 
-    pub fn as_nanos(&self) -> i64 {
+    pub fn as_nanos(self) -> i64 {
         self.0
     }
 }
@@ -95,6 +96,13 @@ impl fmt::Debug for Duration {
 impl From<Duration> for std::time::Duration {
     fn from(x: Duration) -> Self {
         Self::from_nanos(x.0.abs() as u64)
+    }
+}
+
+impl TryFrom<std::time::Duration> for Duration {
+    type Error = std::num::TryFromIntError;
+    fn try_from(x: std::time::Duration) -> std::result::Result<Self, Self::Error> {
+        Ok(Self::from_nanos(i64::try_from(x.as_nanos())?))
     }
 }
 
