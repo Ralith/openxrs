@@ -278,6 +278,73 @@ impl<G: Graphics> Session<G> {
         })
     }
 
+    /// Get a mesh describing the visible area of a view
+    ///
+    /// Requires KHR_visibility_mask. Useful to skip shading fragments the user can't see.
+    ///
+    /// See also the `VisibilityMaskChangedKHR` event.
+    #[inline]
+    pub fn get_visibility_mask_khr(
+        &self,
+        view_configuration_type: ViewConfigurationType,
+        view_index: u32,
+        visibility_mask_type: VisibilityMaskTypeKHR,
+    ) -> Result<VisibilityMask> {
+        let mut info = sys::VisibilityMaskKHR {
+            ty: sys::VisibilityMaskKHR::TYPE,
+            next: ptr::null_mut(),
+            vertex_capacity_input: 0,
+            vertex_count_output: 0,
+            vertices: ptr::null_mut(),
+            index_capacity_input: 0,
+            index_count_output: 0,
+            indices: ptr::null_mut(),
+        };
+        unsafe {
+            cvt((self.instance().visibility_mask().get_visibility_mask)(
+                self.as_raw(),
+                view_configuration_type,
+                view_index,
+                visibility_mask_type,
+                &mut info,
+            ))?;
+            let mut out = VisibilityMask {
+                vertices: Vec::with_capacity(info.vertex_count_output as usize),
+                indices: Vec::with_capacity(info.index_count_output as usize),
+            };
+            loop {
+                info.vertex_capacity_input = out.vertices.capacity() as u32;
+                info.index_capacity_input = out.indices.capacity() as u32;
+                match cvt((self.instance().visibility_mask().get_visibility_mask)(
+                    self.as_raw(),
+                    view_configuration_type,
+                    view_index,
+                    visibility_mask_type,
+                    &mut info,
+                )) {
+                    Ok(_) => {
+                        out.vertices.set_len(info.vertex_count_output as usize);
+                        out.indices.set_len(info.index_count_output as usize);
+                        return Ok(out);
+                    }
+                    Err(sys::Result::ERROR_SIZE_INSUFFICIENT) => {
+                        out.vertices.reserve(
+                            (info.vertex_count_output as usize)
+                                .saturating_sub(out.vertices.capacity()),
+                        );
+                        out.indices.reserve(
+                            (info.index_count_output as usize)
+                                .saturating_sub(out.indices.capacity()),
+                        );
+                    }
+                    Err(e) => {
+                        return Err(e);
+                    }
+                }
+            }
+        }
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
@@ -290,6 +357,13 @@ impl<G: Graphics> Session<G> {
             _marker: PhantomData,
         }
     }
+}
+
+/// Mesh obtained from `Session::get_visibility_mask`
+#[derive(Clone)]
+pub struct VisibilityMask {
+    vertices: Vec<Vector2f>,
+    indices: Vec<u32>,
 }
 
 impl<G: Graphics> Clone for Session<G> {

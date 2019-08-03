@@ -504,6 +504,12 @@ impl Instance {
             .as_ref()
             .expect("KHR_d3d11_enable not loaded")
     }
+    pub(crate) fn visibility_mask(&self) -> &raw::VisibilityMaskKHR {
+        self.exts()
+            .khr_visibility_mask
+            .as_ref()
+            .expect("KHR_visibility_mask not loaded")
+    }
 }
 
 struct InstanceInner {
