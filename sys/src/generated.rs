@@ -24,7 +24,7 @@ pub const MAX_ACTION_NAME_SIZE: usize = 64usize;
 pub const MAX_LOCALIZED_ACTION_SET_NAME_SIZE: usize = 128usize;
 pub const MAX_LOCALIZED_ACTION_NAME_SIZE: usize = 128usize;
 pub const MIN_COMPOSITION_LAYERS_SUPPORTED: usize = 16usize;
-#[doc = "Structure type enumerant"]
+#[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct StructureType(i32);
@@ -231,7 +231,7 @@ impl fmt::Debug for StructureType {
         fmt_enum(fmt, self.0, name)
     }
 }
-#[doc = "Error and return codes"]
+#[doc = "Error and return codes - see [XrResult](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrResult)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Result(i32);
@@ -435,7 +435,7 @@ impl fmt::Display for Result {
     }
 }
 impl std::error::Error for Result {}
-#[doc = "Enums to track objects of various types"]
+#[doc = "Enums to track objects of various types - see [XrObjectType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrObjectType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct ObjectType(i32);
@@ -478,7 +478,7 @@ impl fmt::Debug for ObjectType {
         fmt_enum(fmt, self.0, name)
     }
 }
-#[doc = "Android Thread Types"]
+#[doc = "Android Thread Types - see [XrAndroidThreadTypeKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrAndroidThreadTypeKHR)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct AndroidThreadTypeKHR(i32);
@@ -506,7 +506,7 @@ impl fmt::Debug for AndroidThreadTypeKHR {
         fmt_enum(fmt, self.0, name)
     }
 }
-#[doc = "eye visibility selector"]
+#[doc = "eye visibility selector - see [XrEyeVisibility](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEyeVisibility)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct EyeVisibility(i32);
@@ -535,6 +535,7 @@ impl fmt::Debug for EyeVisibility {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrActionType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct ActionType(i32);
@@ -564,6 +565,7 @@ impl fmt::Debug for ActionType {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrReferenceSpaceType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrReferenceSpaceType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct ReferenceSpaceType(i32);
@@ -589,6 +591,7 @@ impl fmt::Debug for ReferenceSpaceType {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrFormFactor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFormFactor)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct FormFactor(i32);
@@ -612,6 +615,7 @@ impl fmt::Debug for FormFactor {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrViewConfigurationType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct ViewConfigurationType(i32);
@@ -637,6 +641,7 @@ impl fmt::Debug for ViewConfigurationType {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrEnvironmentBlendMode](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEnvironmentBlendMode)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct EnvironmentBlendMode(i32);
@@ -662,6 +667,7 @@ impl fmt::Debug for EnvironmentBlendMode {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrSessionState](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionState)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct SessionState(i32);
@@ -699,6 +705,7 @@ impl fmt::Debug for SessionState {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrPerfSettingsDomainEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPerfSettingsDomainEXT)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PerfSettingsDomainEXT(i32);
@@ -724,6 +731,7 @@ impl fmt::Debug for PerfSettingsDomainEXT {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrPerfSettingsSubDomainEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPerfSettingsSubDomainEXT)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PerfSettingsSubDomainEXT(i32);
@@ -752,6 +760,7 @@ impl fmt::Debug for PerfSettingsSubDomainEXT {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrPerfSettingsLevelEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPerfSettingsLevelEXT)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PerfSettingsLevelEXT(i32);
@@ -783,6 +792,7 @@ impl fmt::Debug for PerfSettingsLevelEXT {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrPerfSettingsNotificationLevelEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPerfSettingsNotificationLevelEXT)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PerfSettingsNotificationLevelEXT(i32);
@@ -811,7 +821,7 @@ impl fmt::Debug for PerfSettingsNotificationLevelEXT {
         fmt_enum(fmt, self.0, name)
     }
 }
-#[doc = ""]
+#[doc = "See [XrVisibilityMaskTypeKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVisibilityMaskTypeKHR)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct VisibilityMaskTypeKHR(i32);
@@ -840,16 +850,19 @@ impl fmt::Debug for VisibilityMaskTypeKHR {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrInstanceCreateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceCreateFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct InstanceCreateFlags(u64);
 impl InstanceCreateFlags {}
 bitmask!(InstanceCreateFlags);
+#[doc = "See [XrSessionCreateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionCreateFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SessionCreateFlags(u64);
 impl SessionCreateFlags {}
 bitmask!(SessionCreateFlags);
+#[doc = "See [XrSwapchainCreateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainCreateFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SwapchainCreateFlags(u64);
@@ -860,6 +873,7 @@ impl SwapchainCreateFlags {
     pub const STATIC_IMAGE: SwapchainCreateFlags = SwapchainCreateFlags(1 << 1u64);
 }
 bitmask!(SwapchainCreateFlags);
+#[doc = "See [XrSwapchainUsageFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainUsageFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SwapchainUsageFlags(u64);
@@ -880,6 +894,7 @@ impl SwapchainUsageFlags {
     pub const MUTABLE_FORMAT: SwapchainUsageFlags = SwapchainUsageFlags(1 << 6u64);
 }
 bitmask!(SwapchainUsageFlags);
+#[doc = "See [XrViewStateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewStateFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ViewStateFlags(u64);
@@ -894,6 +909,7 @@ impl ViewStateFlags {
     pub const POSITION_TRACKED: ViewStateFlags = ViewStateFlags(1 << 3u64);
 }
 bitmask!(ViewStateFlags);
+#[doc = "See [XrCompositionLayerFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct CompositionLayerFlags(u64);
@@ -907,6 +923,7 @@ impl CompositionLayerFlags {
     pub const UNPREMULTIPLIED_ALPHA: CompositionLayerFlags = CompositionLayerFlags(1 << 2u64);
 }
 bitmask!(CompositionLayerFlags);
+#[doc = "See [XrSpaceLocationFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceLocationFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SpaceLocationFlags(u64);
@@ -921,6 +938,7 @@ impl SpaceLocationFlags {
     pub const POSITION_TRACKED: SpaceLocationFlags = SpaceLocationFlags(1 << 3u64);
 }
 bitmask!(SpaceLocationFlags);
+#[doc = "See [XrSpaceVelocityFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceVelocityFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SpaceVelocityFlags(u64);
@@ -931,6 +949,7 @@ impl SpaceVelocityFlags {
     pub const ANGULAR_VALID: SpaceVelocityFlags = SpaceVelocityFlags(1 << 1u64);
 }
 bitmask!(SpaceVelocityFlags);
+#[doc = "See [XrInputSourceLocalizedNameFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInputSourceLocalizedNameFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct InputSourceLocalizedNameFlags(u64);
@@ -944,6 +963,7 @@ impl InputSourceLocalizedNameFlags {
     pub const COMPONENT: InputSourceLocalizedNameFlags = InputSourceLocalizedNameFlags(1 << 2u64);
 }
 bitmask!(InputSourceLocalizedNameFlags);
+#[doc = "See [XrDebugUtilsMessageSeverityFlagsEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessageSeverityFlagsEXT)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessageSeverityFlagsEXT(u64);
@@ -962,6 +982,7 @@ impl DebugUtilsMessageSeverityFlagsEXT {
         DebugUtilsMessageSeverityFlagsEXT(1 << 12u64);
 }
 bitmask!(DebugUtilsMessageSeverityFlagsEXT);
+#[doc = "See [XrDebugUtilsMessageTypeFlagsEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessageTypeFlagsEXT)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessageTypeFlagsEXT(u64);
@@ -976,42 +997,51 @@ impl DebugUtilsMessageTypeFlagsEXT {
     pub const CONFORMANCE: DebugUtilsMessageTypeFlagsEXT = DebugUtilsMessageTypeFlagsEXT(1 << 3u64);
 }
 bitmask!(DebugUtilsMessageTypeFlagsEXT);
+#[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Instance(u64);
 handle!(Instance);
+#[doc = "See [XrSession](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSession)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Session(u64);
 handle!(Session);
+#[doc = "See [XrActionSet](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSet)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ActionSet(u64);
 handle!(ActionSet);
+#[doc = "See [XrAction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrAction)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Action(u64);
 handle!(Action);
+#[doc = "See [XrSwapchain](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchain)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Swapchain(u64);
 handle!(Swapchain);
+#[doc = "See [XrSpace](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpace)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Space(u64);
 handle!(Space);
+#[doc = "See [XrDebugUtilsMessengerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessengerEXT)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessengerEXT(u64);
 handle!(DebugUtilsMessengerEXT);
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector2f)"]
 pub struct Vector2f {
     pub x: f32,
     pub y: f32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrVector3f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector3f)"]
 pub struct Vector3f {
     pub x: f32,
     pub y: f32,
@@ -1019,6 +1049,7 @@ pub struct Vector3f {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrVector4f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector4f)"]
 pub struct Vector4f {
     pub x: f32,
     pub y: f32,
@@ -1027,6 +1058,7 @@ pub struct Vector4f {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrColor4f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrColor4f)"]
 pub struct Color4f {
     pub r: f32,
     pub g: f32,
@@ -1035,6 +1067,7 @@ pub struct Color4f {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrQuaternionf](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrQuaternionf)"]
 pub struct Quaternionf {
     pub x: f32,
     pub y: f32,
@@ -1043,60 +1076,70 @@ pub struct Quaternionf {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrPosef](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPosef)"]
 pub struct Posef {
     pub orientation: Quaternionf,
     pub position: Vector3f,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrOffset2Df](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrOffset2Df)"]
 pub struct Offset2Df {
     pub x: f32,
     pub y: f32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrExtent2Df](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExtent2Df)"]
 pub struct Extent2Df {
     pub width: f32,
     pub height: f32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrRect2Df](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRect2Df)"]
 pub struct Rect2Df {
     pub offset: Offset2Df,
     pub extent: Extent2Df,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrOffset2Di](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrOffset2Di)"]
 pub struct Offset2Di {
     pub x: i32,
     pub y: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrExtent2Di](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExtent2Di)"]
 pub struct Extent2Di {
     pub width: i32,
     pub height: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrRect2Di](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRect2Di)"]
 pub struct Rect2Di {
     pub offset: Offset2Di,
     pub extent: Extent2Di,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrBaseInStructure](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBaseInStructure)"]
 pub struct BaseInStructure {
     pub ty: StructureType,
     pub next: *const BaseInStructure,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrBaseOutStructure](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBaseOutStructure)"]
 pub struct BaseOutStructure {
     pub ty: StructureType,
     pub next: *mut BaseOutStructure,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrApiLayerProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApiLayerProperties)"]
 pub struct ApiLayerProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1122,6 +1165,7 @@ impl ApiLayerProperties {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrExtensionProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExtensionProperties)"]
 pub struct ExtensionProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1145,6 +1189,7 @@ impl ExtensionProperties {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrApplicationInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApplicationInfo)"]
 pub struct ApplicationInfo {
     pub application_name: [c_char; MAX_APPLICATION_NAME_SIZE],
     pub application_version: u32,
@@ -1154,6 +1199,7 @@ pub struct ApplicationInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrInstanceCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceCreateInfo)"]
 pub struct InstanceCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1169,6 +1215,7 @@ impl InstanceCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrInstanceProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceProperties)"]
 pub struct InstanceProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1192,6 +1239,7 @@ impl InstanceProperties {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSystemGetInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemGetInfo)"]
 pub struct SystemGetInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1202,6 +1250,7 @@ impl SystemGetInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSystemProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemProperties)"]
 pub struct SystemProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1228,6 +1277,7 @@ impl SystemProperties {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSystemGraphicsProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemGraphicsProperties)"]
 pub struct SystemGraphicsProperties {
     pub max_swapchain_image_height: u32,
     pub max_swapchain_image_width: u32,
@@ -1235,13 +1285,14 @@ pub struct SystemGraphicsProperties {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSystemTrackingProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemTrackingProperties)"]
 pub struct SystemTrackingProperties {
     pub orientation_tracking: Bool32,
     pub position_tracking: Bool32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_enable"]
+#[doc = "See [XrGraphicsBindingOpenGLWin32KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLWin32KHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
 #[cfg(windows)]
 pub struct GraphicsBindingOpenGLWin32KHR {
     pub ty: StructureType,
@@ -1255,7 +1306,7 @@ impl GraphicsBindingOpenGLWin32KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_enable"]
+#[doc = "See [XrGraphicsBindingOpenGLXlibKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLXlibKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
 pub struct GraphicsBindingOpenGLXlibKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1270,7 +1321,7 @@ impl GraphicsBindingOpenGLXlibKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_enable"]
+#[doc = "See [XrGraphicsBindingOpenGLXcbKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLXcbKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
 pub struct GraphicsBindingOpenGLXcbKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1286,7 +1337,7 @@ impl GraphicsBindingOpenGLXcbKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_enable"]
+#[doc = "See [XrGraphicsBindingOpenGLWaylandKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLWaylandKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
 pub struct GraphicsBindingOpenGLWaylandKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1297,7 +1348,7 @@ impl GraphicsBindingOpenGLWaylandKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D11_enable"]
+#[doc = "See [XrGraphicsBindingD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
 #[cfg(windows)]
 pub struct GraphicsBindingD3D11KHR {
     pub ty: StructureType,
@@ -1310,7 +1361,7 @@ impl GraphicsBindingD3D11KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D12_enable"]
+#[doc = "See [XrGraphicsBindingD3D12KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingD3D12KHR) - defined by [XR_KHR_D3D12_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable)"]
 #[cfg(windows)]
 pub struct GraphicsBindingD3D12KHR {
     pub ty: StructureType,
@@ -1324,7 +1375,7 @@ impl GraphicsBindingD3D12KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_es_enable"]
+#[doc = "See [XrGraphicsBindingOpenGLESAndroidKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLESAndroidKHR) - defined by [XR_KHR_opengl_es_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_es_enable)"]
 #[cfg(target_os = "android")]
 pub struct GraphicsBindingOpenGLESAndroidKHR {
     pub ty: StructureType,
@@ -1339,7 +1390,7 @@ impl GraphicsBindingOpenGLESAndroidKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_vulkan_enable"]
+#[doc = "See [XrGraphicsBindingVulkanKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingVulkanKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
 pub struct GraphicsBindingVulkanKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1354,6 +1405,7 @@ impl GraphicsBindingVulkanKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSessionCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionCreateInfo)"]
 pub struct SessionCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1365,6 +1417,7 @@ impl SessionCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSessionBeginInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionBeginInfo)"]
 pub struct SessionBeginInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1375,6 +1428,7 @@ impl SessionBeginInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainCreateInfo)"]
 pub struct SwapchainCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1393,13 +1447,14 @@ impl SwapchainCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainImageBaseHeader](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageBaseHeader)"]
 pub struct SwapchainImageBaseHeader {
     pub ty: StructureType,
     pub next: *mut c_void,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_enable"]
+#[doc = "See [XrSwapchainImageOpenGLKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageOpenGLKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
 pub struct SwapchainImageOpenGLKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1422,7 +1477,7 @@ impl SwapchainImageOpenGLKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_es_enable"]
+#[doc = "See [XrSwapchainImageOpenGLESKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageOpenGLESKHR) - defined by [XR_KHR_opengl_es_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_es_enable)"]
 pub struct SwapchainImageOpenGLESKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1445,7 +1500,7 @@ impl SwapchainImageOpenGLESKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_vulkan_enable"]
+#[doc = "See [XrSwapchainImageVulkanKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageVulkanKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
 pub struct SwapchainImageVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1468,7 +1523,7 @@ impl SwapchainImageVulkanKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D11_enable"]
+#[doc = "See [XrSwapchainImageD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
 #[cfg(windows)]
 pub struct SwapchainImageD3D11KHR {
     pub ty: StructureType,
@@ -1493,7 +1548,7 @@ impl SwapchainImageD3D11KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D12_enable"]
+#[doc = "See [XrSwapchainImageD3D12KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageD3D12KHR) - defined by [XR_KHR_D3D12_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable)"]
 #[cfg(windows)]
 pub struct SwapchainImageD3D12KHR {
     pub ty: StructureType,
@@ -1518,6 +1573,7 @@ impl SwapchainImageD3D12KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainImageAcquireInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageAcquireInfo)"]
 pub struct SwapchainImageAcquireInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1527,6 +1583,7 @@ impl SwapchainImageAcquireInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainImageWaitInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageWaitInfo)"]
 pub struct SwapchainImageWaitInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1537,6 +1594,7 @@ impl SwapchainImageWaitInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainImageReleaseInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageReleaseInfo)"]
 pub struct SwapchainImageReleaseInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1546,6 +1604,7 @@ impl SwapchainImageReleaseInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrReferenceSpaceCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrReferenceSpaceCreateInfo)"]
 pub struct ReferenceSpaceCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1557,6 +1616,7 @@ impl ReferenceSpaceCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionSpaceCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSpaceCreateInfo)"]
 pub struct ActionSpaceCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1569,6 +1629,7 @@ impl ActionSpaceCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSpaceLocation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceLocation)"]
 pub struct SpaceLocation {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1592,6 +1653,7 @@ impl SpaceLocation {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSpaceVelocity](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceVelocity)"]
 pub struct SpaceVelocity {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1616,6 +1678,7 @@ impl SpaceVelocity {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrFovf](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFovf)"]
 pub struct Fovf {
     pub angle_left: f32,
     pub angle_right: f32,
@@ -1624,6 +1687,7 @@ pub struct Fovf {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrView](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrView)"]
 pub struct View {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1647,6 +1711,7 @@ impl View {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrViewLocateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewLocateInfo)"]
 pub struct ViewLocateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1659,6 +1724,7 @@ impl ViewLocateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrViewState](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewState)"]
 pub struct ViewState {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1681,6 +1747,7 @@ impl ViewState {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrViewConfigurationView](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationView)"]
 pub struct ViewConfigurationView {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1708,6 +1775,7 @@ impl ViewConfigurationView {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainSubImage](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainSubImage)"]
 pub struct SwapchainSubImage {
     pub swapchain: Swapchain,
     pub image_rect: Rect2Di,
@@ -1715,6 +1783,7 @@ pub struct SwapchainSubImage {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrCompositionLayerBaseHeader](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerBaseHeader)"]
 pub struct CompositionLayerBaseHeader {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1723,6 +1792,7 @@ pub struct CompositionLayerBaseHeader {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrCompositionLayerProjectionView](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerProjectionView)"]
 pub struct CompositionLayerProjectionView {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1735,6 +1805,7 @@ impl CompositionLayerProjectionView {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrCompositionLayerProjection](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerProjection)"]
 pub struct CompositionLayerProjection {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1748,6 +1819,7 @@ impl CompositionLayerProjection {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrCompositionLayerQuad](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerQuad)"]
 pub struct CompositionLayerQuad {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1763,7 +1835,7 @@ impl CompositionLayerQuad {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_composition_layer_cylinder"]
+#[doc = "See [XrCompositionLayerCylinderKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerCylinderKHR) - defined by [XR_KHR_composition_layer_cylinder](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_cylinder)"]
 pub struct CompositionLayerCylinderKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1781,7 +1853,7 @@ impl CompositionLayerCylinderKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_composition_layer_cube"]
+#[doc = "See [XrCompositionLayerCubeKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerCubeKHR) - defined by [XR_KHR_composition_layer_cube](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_cube)"]
 pub struct CompositionLayerCubeKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1797,7 +1869,7 @@ impl CompositionLayerCubeKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_composition_layer_equirect"]
+#[doc = "See [XrCompositionLayerEquirectKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerEquirectKHR) - defined by [XR_KHR_composition_layer_equirect](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_equirect)"]
 pub struct CompositionLayerEquirectKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1815,7 +1887,7 @@ impl CompositionLayerEquirectKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_composition_layer_depth"]
+#[doc = "See [XrCompositionLayerDepthInfoKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerDepthInfoKHR) - defined by [XR_KHR_composition_layer_depth](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_depth)"]
 pub struct CompositionLayerDepthInfoKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1830,6 +1902,7 @@ impl CompositionLayerDepthInfoKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrFrameBeginInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameBeginInfo)"]
 pub struct FrameBeginInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1839,6 +1912,7 @@ impl FrameBeginInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrFrameEndInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameEndInfo)"]
 pub struct FrameEndInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1852,6 +1926,7 @@ impl FrameEndInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrFrameWaitInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameWaitInfo)"]
 pub struct FrameWaitInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1861,6 +1936,7 @@ impl FrameWaitInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrFrameState](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameState)"]
 pub struct FrameState {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -1885,12 +1961,14 @@ impl FrameState {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrHapticBaseHeader](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHapticBaseHeader)"]
 pub struct HapticBaseHeader {
     pub ty: StructureType,
     pub next: *const c_void,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrHapticVibration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHapticVibration)"]
 pub struct HapticVibration {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1903,12 +1981,14 @@ impl HapticVibration {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataBaseHeader](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataBaseHeader)"]
 pub struct EventDataBaseHeader {
     pub ty: StructureType,
     pub next: *const c_void,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataBuffer](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataBuffer)"]
 pub struct EventDataBuffer {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1919,6 +1999,7 @@ impl EventDataBuffer {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataEventsLost](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataEventsLost)"]
 pub struct EventDataEventsLost {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1929,6 +2010,7 @@ impl EventDataEventsLost {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataInstanceLossPending](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataInstanceLossPending)"]
 pub struct EventDataInstanceLossPending {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1939,6 +2021,7 @@ impl EventDataInstanceLossPending {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataSessionStateChanged](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataSessionStateChanged)"]
 pub struct EventDataSessionStateChanged {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1951,6 +2034,7 @@ impl EventDataSessionStateChanged {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataReferenceSpaceChangePending](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataReferenceSpaceChangePending)"]
 pub struct EventDataReferenceSpaceChangePending {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1965,7 +2049,7 @@ impl EventDataReferenceSpaceChangePending {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_EXT_performance_settings"]
+#[doc = "See [XrEventDataPerfSettingsEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataPerfSettingsEXT) - defined by [XR_EXT_performance_settings](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_performance_settings)"]
 pub struct EventDataPerfSettingsEXT {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1979,7 +2063,7 @@ impl EventDataPerfSettingsEXT {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_visibility_mask"]
+#[doc = "See [XrEventDataVisibilityMaskChangedKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataVisibilityMaskChangedKHR) - defined by [XR_KHR_visibility_mask](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_visibility_mask)"]
 pub struct EventDataVisibilityMaskChangedKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -1992,6 +2076,7 @@ impl EventDataVisibilityMaskChangedKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrViewConfigurationProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationProperties)"]
 pub struct ViewConfigurationProperties {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2015,6 +2100,7 @@ impl ViewConfigurationProperties {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionStateBoolean](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateBoolean)"]
 pub struct ActionStateBoolean {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2040,6 +2126,7 @@ impl ActionStateBoolean {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionStateFloat](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateFloat)"]
 pub struct ActionStateFloat {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2065,6 +2152,7 @@ impl ActionStateFloat {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionStateVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateVector2f)"]
 pub struct ActionStateVector2f {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2090,6 +2178,7 @@ impl ActionStateVector2f {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionStatePose](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStatePose)"]
 pub struct ActionStatePose {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2112,6 +2201,7 @@ impl ActionStatePose {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionStateGetInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateGetInfo)"]
 pub struct ActionStateGetInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2123,6 +2213,7 @@ impl ActionStateGetInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrHapticActionInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHapticActionInfo)"]
 pub struct HapticActionInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2134,6 +2225,7 @@ impl HapticActionInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionSetCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSetCreateInfo)"]
 pub struct ActionSetCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2146,12 +2238,14 @@ impl ActionSetCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionSuggestedBinding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSuggestedBinding)"]
 pub struct ActionSuggestedBinding {
     pub action: Action,
     pub binding: Path,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrInteractionProfileSuggestedBinding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInteractionProfileSuggestedBinding)"]
 pub struct InteractionProfileSuggestedBinding {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2164,12 +2258,14 @@ impl InteractionProfileSuggestedBinding {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActiveActionSet](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActiveActionSet)"]
 pub struct ActiveActionSet {
     pub action_set: ActionSet,
     pub subaction_path: Path,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSessionActionSetsAttachInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionActionSetsAttachInfo)"]
 pub struct SessionActionSetsAttachInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2181,6 +2277,7 @@ impl SessionActionSetsAttachInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionsSyncInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionsSyncInfo)"]
 pub struct ActionsSyncInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2192,6 +2289,7 @@ impl ActionsSyncInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrBoundSourcesForActionEnumerateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBoundSourcesForActionEnumerateInfo)"]
 pub struct BoundSourcesForActionEnumerateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2202,6 +2300,7 @@ impl BoundSourcesForActionEnumerateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrInputSourceLocalizedNameGetInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInputSourceLocalizedNameGetInfo)"]
 pub struct InputSourceLocalizedNameGetInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2213,6 +2312,7 @@ impl InputSourceLocalizedNameGetInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataInteractionProfileChanged](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataInteractionProfileChanged)"]
 pub struct EventDataInteractionProfileChanged {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2223,6 +2323,7 @@ impl EventDataInteractionProfileChanged {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrInteractionProfileState](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInteractionProfileState)"]
 pub struct InteractionProfileState {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2245,6 +2346,7 @@ impl InteractionProfileState {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrActionCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionCreateInfo)"]
 pub struct ActionCreateInfo {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2259,7 +2361,7 @@ impl ActionCreateInfo {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_android_create_instance"]
+#[doc = "See [XrInstanceCreateInfoAndroidKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceCreateInfoAndroidKHR) - defined by [XR_KHR_android_create_instance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_android_create_instance)"]
 #[cfg(target_os = "android")]
 pub struct InstanceCreateInfoAndroidKHR {
     pub ty: StructureType,
@@ -2273,7 +2375,7 @@ impl InstanceCreateInfoAndroidKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_vulkan_swapchain_format_list"]
+#[doc = "See [XrVulkanSwapchainFormatListCreateInfoKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVulkanSwapchainFormatListCreateInfoKHR) - defined by [XR_KHR_vulkan_swapchain_format_list](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_swapchain_format_list)"]
 pub struct VulkanSwapchainFormatListCreateInfoKHR {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2285,7 +2387,7 @@ impl VulkanSwapchainFormatListCreateInfoKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_EXT_debug_utils"]
+#[doc = "See [XrDebugUtilsObjectNameInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsObjectNameInfoEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
 pub struct DebugUtilsObjectNameInfoEXT {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2298,7 +2400,7 @@ impl DebugUtilsObjectNameInfoEXT {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_EXT_debug_utils"]
+#[doc = "See [XrDebugUtilsLabelEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsLabelEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
 pub struct DebugUtilsLabelEXT {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2309,7 +2411,7 @@ impl DebugUtilsLabelEXT {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_EXT_debug_utils"]
+#[doc = "See [XrDebugUtilsMessengerCallbackDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessengerCallbackDataEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
 pub struct DebugUtilsMessengerCallbackDataEXT {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2326,7 +2428,7 @@ impl DebugUtilsMessengerCallbackDataEXT {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_EXT_debug_utils"]
+#[doc = "See [XrDebugUtilsMessengerCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessengerCreateInfoEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
 pub struct DebugUtilsMessengerCreateInfoEXT {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -2340,7 +2442,7 @@ impl DebugUtilsMessengerCreateInfoEXT {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_visibility_mask"]
+#[doc = "See [XrVisibilityMaskKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVisibilityMaskKHR) - defined by [XR_KHR_visibility_mask](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_visibility_mask)"]
 pub struct VisibilityMaskKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2368,7 +2470,7 @@ impl VisibilityMaskKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_enable"]
+#[doc = "See [XrGraphicsRequirementsOpenGLKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsOpenGLKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
 pub struct GraphicsRequirementsOpenGLKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2392,7 +2494,7 @@ impl GraphicsRequirementsOpenGLKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_opengl_es_enable"]
+#[doc = "See [XrGraphicsRequirementsOpenGLESKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsOpenGLESKHR) - defined by [XR_KHR_opengl_es_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_es_enable)"]
 pub struct GraphicsRequirementsOpenGLESKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2416,7 +2518,7 @@ impl GraphicsRequirementsOpenGLESKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_vulkan_enable"]
+#[doc = "See [XrGraphicsRequirementsVulkanKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsVulkanKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
 pub struct GraphicsRequirementsVulkanKHR {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -2440,7 +2542,7 @@ impl GraphicsRequirementsVulkanKHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D11_enable"]
+#[doc = "See [XrGraphicsRequirementsD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
 #[cfg(windows)]
 pub struct GraphicsRequirementsD3D11KHR {
     pub ty: StructureType,
@@ -2466,7 +2568,7 @@ impl GraphicsRequirementsD3D11KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-#[doc = "From XR_KHR_D3D12_enable"]
+#[doc = "See [XrGraphicsRequirementsD3D12KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsD3D12KHR) - defined by [XR_KHR_D3D12_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable)"]
 #[cfg(windows)]
 pub struct GraphicsRequirementsD3D12KHR {
     pub ty: StructureType,
@@ -2500,112 +2602,140 @@ pub mod pfn {
         *const DebugUtilsMessengerCallbackDataEXT,
         *mut c_void,
     ) -> Bool32;
+    #[doc = "See [xrGetInstanceProcAddr](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetInstanceProcAddr)"]
     pub type GetInstanceProcAddr = unsafe extern "system" fn(
         instance: Instance,
         name: *const c_char,
         function: *mut Option<pfn::VoidFunction>,
     ) -> Result;
+    #[doc = "See [xrEnumerateApiLayerProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateApiLayerProperties)"]
     pub type EnumerateApiLayerProperties = unsafe extern "system" fn(
         property_capacity_input: u32,
         property_count_output: *mut u32,
         properties: *mut ApiLayerProperties,
     ) -> Result;
+    #[doc = "See [xrEnumerateInstanceExtensionProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateInstanceExtensionProperties)"]
     pub type EnumerateInstanceExtensionProperties = unsafe extern "system" fn(
         layer_name: *const c_char,
         property_capacity_input: u32,
         property_count_output: *mut u32,
         properties: *mut ExtensionProperties,
     ) -> Result;
+    #[doc = "See [xrCreateInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateInstance)"]
     pub type CreateInstance = unsafe extern "system" fn(
         create_info: *const InstanceCreateInfo,
         instance: *mut Instance,
     ) -> Result;
+    #[doc = "See [xrDestroyInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyInstance)"]
     pub type DestroyInstance = unsafe extern "system" fn(instance: Instance) -> Result;
+    #[doc = "See [xrResultToString](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrResultToString)"]
     pub type ResultToString =
         unsafe extern "system" fn(instance: Instance, value: Result, buffer: *mut c_char) -> Result;
+    #[doc = "See [xrStructureTypeToString](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrStructureTypeToString)"]
     pub type StructureTypeToString = unsafe extern "system" fn(
         instance: Instance,
         value: StructureType,
         buffer: *mut c_char,
     ) -> Result;
+    #[doc = "See [xrGetInstanceProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetInstanceProperties)"]
     pub type GetInstanceProperties = unsafe extern "system" fn(
         instance: Instance,
         instance_properties: *mut InstanceProperties,
     ) -> Result;
+    #[doc = "See [xrGetSystem](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetSystem)"]
     pub type GetSystem = unsafe extern "system" fn(
         instance: Instance,
         get_info: *const SystemGetInfo,
         system_id: *mut SystemId,
     ) -> Result;
+    #[doc = "See [xrGetSystemProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetSystemProperties)"]
     pub type GetSystemProperties = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         properties: *mut SystemProperties,
     ) -> Result;
+    #[doc = "See [xrCreateSession](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSession)"]
     pub type CreateSession = unsafe extern "system" fn(
         instance: Instance,
         create_info: *const SessionCreateInfo,
         session: *mut Session,
     ) -> Result;
+    #[doc = "See [xrDestroySession](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroySession)"]
     pub type DestroySession = unsafe extern "system" fn(session: Session) -> Result;
+    #[doc = "See [xrDestroySpace](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroySpace)"]
     pub type DestroySpace = unsafe extern "system" fn(space: Space) -> Result;
+    #[doc = "See [xrEnumerateSwapchainFormats](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateSwapchainFormats)"]
     pub type EnumerateSwapchainFormats = unsafe extern "system" fn(
         session: Session,
         format_capacity_input: u32,
         format_count_output: *mut u32,
         formats: *mut i64,
     ) -> Result;
+    #[doc = "See [xrCreateSwapchain](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSwapchain)"]
     pub type CreateSwapchain = unsafe extern "system" fn(
         session: Session,
         create_info: *const SwapchainCreateInfo,
         swapchain: *mut Swapchain,
     ) -> Result;
+    #[doc = "See [xrDestroySwapchain](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroySwapchain)"]
     pub type DestroySwapchain = unsafe extern "system" fn(swapchain: Swapchain) -> Result;
+    #[doc = "See [xrEnumerateSwapchainImages](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateSwapchainImages)"]
     pub type EnumerateSwapchainImages = unsafe extern "system" fn(
         swapchain: Swapchain,
         image_capacity_input: u32,
         image_count_output: *mut u32,
         images: *mut SwapchainImageBaseHeader,
     ) -> Result;
+    #[doc = "See [xrAcquireSwapchainImage](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrAcquireSwapchainImage)"]
     pub type AcquireSwapchainImage = unsafe extern "system" fn(
         swapchain: Swapchain,
         acquire_info: *const SwapchainImageAcquireInfo,
         index: *mut u32,
     ) -> Result;
+    #[doc = "See [xrWaitSwapchainImage](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrWaitSwapchainImage)"]
     pub type WaitSwapchainImage = unsafe extern "system" fn(
         swapchain: Swapchain,
         wait_info: *const SwapchainImageWaitInfo,
     ) -> Result;
+    #[doc = "See [xrReleaseSwapchainImage](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrReleaseSwapchainImage)"]
     pub type ReleaseSwapchainImage = unsafe extern "system" fn(
         swapchain: Swapchain,
         release_info: *const SwapchainImageReleaseInfo,
     ) -> Result;
+    #[doc = "See [xrBeginSession](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrBeginSession)"]
     pub type BeginSession =
         unsafe extern "system" fn(session: Session, begin_info: *const SessionBeginInfo) -> Result;
+    #[doc = "See [xrEndSession](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEndSession)"]
     pub type EndSession = unsafe extern "system" fn(session: Session) -> Result;
+    #[doc = "See [xrRequestExitSession](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrRequestExitSession)"]
     pub type RequestExitSession = unsafe extern "system" fn(session: Session) -> Result;
+    #[doc = "See [xrEnumerateReferenceSpaces](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateReferenceSpaces)"]
     pub type EnumerateReferenceSpaces = unsafe extern "system" fn(
         session: Session,
         space_capacity_input: u32,
         space_count_output: *mut u32,
         spaces: *mut ReferenceSpaceType,
     ) -> Result;
+    #[doc = "See [xrCreateReferenceSpace](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateReferenceSpace)"]
     pub type CreateReferenceSpace = unsafe extern "system" fn(
         session: Session,
         create_info: *const ReferenceSpaceCreateInfo,
         space: *mut Space,
     ) -> Result;
+    #[doc = "See [xrCreateActionSpace](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateActionSpace)"]
     pub type CreateActionSpace = unsafe extern "system" fn(
         session: Session,
         create_info: *const ActionSpaceCreateInfo,
         space: *mut Space,
     ) -> Result;
+    #[doc = "See [xrLocateSpace](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrLocateSpace)"]
     pub type LocateSpace = unsafe extern "system" fn(
         space: Space,
         base_space: Space,
         time: Time,
         location: *mut SpaceLocation,
     ) -> Result;
+    #[doc = "See [xrEnumerateViewConfigurations](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateViewConfigurations)"]
     pub type EnumerateViewConfigurations = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
@@ -2613,6 +2743,7 @@ pub mod pfn {
         view_configuration_type_count_output: *mut u32,
         view_configuration_types: *mut ViewConfigurationType,
     ) -> Result;
+    #[doc = "See [xrEnumerateEnvironmentBlendModes](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateEnvironmentBlendModes)"]
     pub type EnumerateEnvironmentBlendModes = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
@@ -2621,12 +2752,14 @@ pub mod pfn {
         environment_blend_mode_count_output: *mut u32,
         environment_blend_modes: *mut EnvironmentBlendMode,
     ) -> Result;
+    #[doc = "See [xrGetViewConfigurationProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetViewConfigurationProperties)"]
     pub type GetViewConfigurationProperties = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         view_configuration_type: ViewConfigurationType,
         configuration_properties: *mut ViewConfigurationProperties,
     ) -> Result;
+    #[doc = "See [xrEnumerateViewConfigurationViews](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateViewConfigurationViews)"]
     pub type EnumerateViewConfigurationViews = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
@@ -2635,10 +2768,12 @@ pub mod pfn {
         view_count_output: *mut u32,
         views: *mut ViewConfigurationView,
     ) -> Result;
+    #[doc = "See [xrBeginFrame](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrBeginFrame)"]
     pub type BeginFrame = unsafe extern "system" fn(
         session: Session,
         frame_begin_info: *const FrameBeginInfo,
     ) -> Result;
+    #[doc = "See [xrLocateViews](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrLocateViews)"]
     pub type LocateViews = unsafe extern "system" fn(
         session: Session,
         view_locate_info: *const ViewLocateInfo,
@@ -2647,29 +2782,36 @@ pub mod pfn {
         view_count_output: *mut u32,
         views: *mut View,
     ) -> Result;
+    #[doc = "See [xrEndFrame](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEndFrame)"]
     pub type EndFrame =
         unsafe extern "system" fn(session: Session, frame_end_info: *const FrameEndInfo) -> Result;
+    #[doc = "See [xrWaitFrame](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrWaitFrame)"]
     pub type WaitFrame = unsafe extern "system" fn(
         session: Session,
         frame_wait_info: *const FrameWaitInfo,
         frame_state: *mut FrameState,
     ) -> Result;
+    #[doc = "See [xrApplyHapticFeedback](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrApplyHapticFeedback)"]
     pub type ApplyHapticFeedback = unsafe extern "system" fn(
         session: Session,
         haptic_action_info: *const HapticActionInfo,
         haptic_feedback: *const HapticBaseHeader,
     ) -> Result;
+    #[doc = "See [xrStopHapticFeedback](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrStopHapticFeedback)"]
     pub type StopHapticFeedback = unsafe extern "system" fn(
         session: Session,
         haptic_action_info: *const HapticActionInfo,
     ) -> Result;
+    #[doc = "See [xrPollEvent](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrPollEvent)"]
     pub type PollEvent =
         unsafe extern "system" fn(instance: Instance, event_data: *mut EventDataBuffer) -> Result;
+    #[doc = "See [xrStringToPath](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrStringToPath)"]
     pub type StringToPath = unsafe extern "system" fn(
         instance: Instance,
         path_string: *const c_char,
         path: *mut Path,
     ) -> Result;
+    #[doc = "See [xrPathToString](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrPathToString)"]
     pub type PathToString = unsafe extern "system" fn(
         instance: Instance,
         path: Path,
@@ -2677,73 +2819,87 @@ pub mod pfn {
         buffer_count_output: *mut u32,
         buffer: *mut c_char,
     ) -> Result;
+    #[doc = "See [xrGetReferenceSpaceBoundsRect](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetReferenceSpaceBoundsRect)"]
     pub type GetReferenceSpaceBoundsRect = unsafe extern "system" fn(
         session: Session,
         reference_space_type: ReferenceSpaceType,
         bounds: *mut Extent2Df,
     ) -> Result;
     #[cfg(target_os = "android")]
-    #[doc = "From XR_KHR_android_thread_settings"]
+    #[doc = "See [xrSetAndroidApplicationThreadKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetAndroidApplicationThreadKHR) - defined by [XR_KHR_android_thread_settings](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_android_thread_settings)"]
     pub type SetAndroidApplicationThreadKHR = unsafe extern "system" fn(
         session: Session,
         thread_type: AndroidThreadTypeKHR,
         thread_id: u32,
     ) -> Result;
     #[cfg(target_os = "android")]
-    #[doc = "From XR_KHR_android_surface_swapchain"]
+    #[doc = "See [xrCreateSwapchainAndroidSurfaceKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSwapchainAndroidSurfaceKHR) - defined by [XR_KHR_android_surface_swapchain](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_android_surface_swapchain)"]
     pub type CreateSwapchainAndroidSurfaceKHR = unsafe extern "system" fn(
         session: Session,
         info: *const SwapchainCreateInfo,
         swapchain: *mut Swapchain,
         surface: *mut jobject,
     ) -> Result;
+    #[doc = "See [xrGetActionStateBoolean](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetActionStateBoolean)"]
     pub type GetActionStateBoolean = unsafe extern "system" fn(
         session: Session,
         get_info: *const ActionStateGetInfo,
         state: *mut ActionStateBoolean,
     ) -> Result;
+    #[doc = "See [xrGetActionStateFloat](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetActionStateFloat)"]
     pub type GetActionStateFloat = unsafe extern "system" fn(
         session: Session,
         get_info: *const ActionStateGetInfo,
         state: *mut ActionStateFloat,
     ) -> Result;
+    #[doc = "See [xrGetActionStateVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetActionStateVector2f)"]
     pub type GetActionStateVector2f = unsafe extern "system" fn(
         session: Session,
         get_info: *const ActionStateGetInfo,
         state: *mut ActionStateVector2f,
     ) -> Result;
+    #[doc = "See [xrGetActionStatePose](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetActionStatePose)"]
     pub type GetActionStatePose = unsafe extern "system" fn(
         session: Session,
         get_info: *const ActionStateGetInfo,
         state: *mut ActionStatePose,
     ) -> Result;
+    #[doc = "See [xrCreateActionSet](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateActionSet)"]
     pub type CreateActionSet = unsafe extern "system" fn(
         instance: Instance,
         create_info: *const ActionSetCreateInfo,
         action_set: *mut ActionSet,
     ) -> Result;
+    #[doc = "See [xrDestroyActionSet](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyActionSet)"]
     pub type DestroyActionSet = unsafe extern "system" fn(action_set: ActionSet) -> Result;
+    #[doc = "See [xrCreateAction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateAction)"]
     pub type CreateAction = unsafe extern "system" fn(
         action_set: ActionSet,
         create_info: *const ActionCreateInfo,
         action: *mut Action,
     ) -> Result;
+    #[doc = "See [xrDestroyAction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyAction)"]
     pub type DestroyAction = unsafe extern "system" fn(action: Action) -> Result;
+    #[doc = "See [xrSuggestInteractionProfileBindings](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSuggestInteractionProfileBindings)"]
     pub type SuggestInteractionProfileBindings = unsafe extern "system" fn(
         instance: Instance,
         suggested_bindings: *const InteractionProfileSuggestedBinding,
     ) -> Result;
+    #[doc = "See [xrAttachSessionActionSets](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrAttachSessionActionSets)"]
     pub type AttachSessionActionSets = unsafe extern "system" fn(
         session: Session,
         attach_info: *const SessionActionSetsAttachInfo,
     ) -> Result;
+    #[doc = "See [xrGetCurrentInteractionProfile](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetCurrentInteractionProfile)"]
     pub type GetCurrentInteractionProfile = unsafe extern "system" fn(
         session: Session,
         top_level_user_path: Path,
         interaction_profile: *mut InteractionProfileState,
     ) -> Result;
+    #[doc = "See [xrSyncActions](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSyncActions)"]
     pub type SyncActions =
         unsafe extern "system" fn(session: Session, sync_info: *const ActionsSyncInfo) -> Result;
+    #[doc = "See [xrEnumerateBoundSourcesForAction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateBoundSourcesForAction)"]
     pub type EnumerateBoundSourcesForAction = unsafe extern "system" fn(
         session: Session,
         enumerate_info: *const BoundSourcesForActionEnumerateInfo,
@@ -2751,6 +2907,7 @@ pub mod pfn {
         source_count_output: *mut u32,
         sources: *mut Path,
     ) -> Result;
+    #[doc = "See [xrGetInputSourceLocalizedName](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetInputSourceLocalizedName)"]
     pub type GetInputSourceLocalizedName = unsafe extern "system" fn(
         session: Session,
         get_info: *const InputSourceLocalizedNameGetInfo,
@@ -2758,7 +2915,7 @@ pub mod pfn {
         buffer_count_output: *mut u32,
         buffer: *mut c_char,
     ) -> Result;
-    #[doc = "From XR_KHR_vulkan_enable"]
+    #[doc = "See [xrGetVulkanInstanceExtensionsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVulkanInstanceExtensionsKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanInstanceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
@@ -2766,7 +2923,7 @@ pub mod pfn {
         buffer_count_output: *mut u32,
         buffer: *mut c_char,
     ) -> Result;
-    #[doc = "From XR_KHR_vulkan_enable"]
+    #[doc = "See [xrGetVulkanDeviceExtensionsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVulkanDeviceExtensionsKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanDeviceExtensionsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
@@ -2774,52 +2931,52 @@ pub mod pfn {
         buffer_count_output: *mut u32,
         buffer: *mut c_char,
     ) -> Result;
-    #[doc = "From XR_KHR_vulkan_enable"]
+    #[doc = "See [xrGetVulkanGraphicsDeviceKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVulkanGraphicsDeviceKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanGraphicsDeviceKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         vk_instance: VkInstance,
         vk_physical_device: *mut VkPhysicalDevice,
     ) -> Result;
-    #[doc = "From XR_KHR_opengl_enable"]
+    #[doc = "See [xrGetOpenGLGraphicsRequirementsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetOpenGLGraphicsRequirementsKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
     pub type GetOpenGLGraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsOpenGLKHR,
     ) -> Result;
-    #[doc = "From XR_KHR_opengl_es_enable"]
+    #[doc = "See [xrGetOpenGLESGraphicsRequirementsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetOpenGLESGraphicsRequirementsKHR) - defined by [XR_KHR_opengl_es_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_es_enable)"]
     pub type GetOpenGLESGraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsOpenGLESKHR,
     ) -> Result;
-    #[doc = "From XR_KHR_vulkan_enable"]
+    #[doc = "See [xrGetVulkanGraphicsRequirementsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVulkanGraphicsRequirementsKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanGraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsVulkanKHR,
     ) -> Result;
     #[cfg(windows)]
-    #[doc = "From XR_KHR_D3D11_enable"]
+    #[doc = "See [xrGetD3D11GraphicsRequirementsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetD3D11GraphicsRequirementsKHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
     pub type GetD3D11GraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsD3D11KHR,
     ) -> Result;
     #[cfg(windows)]
-    #[doc = "From XR_KHR_D3D12_enable"]
+    #[doc = "See [xrGetD3D12GraphicsRequirementsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetD3D12GraphicsRequirementsKHR) - defined by [XR_KHR_D3D12_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable)"]
     pub type GetD3D12GraphicsRequirementsKHR = unsafe extern "system" fn(
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsD3D12KHR,
     ) -> Result;
-    #[doc = "From XR_EXT_performance_settings"]
+    #[doc = "See [xrPerfSettingsSetPerformanceLevelEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrPerfSettingsSetPerformanceLevelEXT) - defined by [XR_EXT_performance_settings](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_performance_settings)"]
     pub type PerfSettingsSetPerformanceLevelEXT = unsafe extern "system" fn(
         session: Session,
         domain: PerfSettingsDomainEXT,
         level: PerfSettingsLevelEXT,
     ) -> Result;
-    #[doc = "From XR_EXT_thermal_query"]
+    #[doc = "See [xrThermalGetTemperatureTrendEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrThermalGetTemperatureTrendEXT) - defined by [XR_EXT_thermal_query](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_thermal_query)"]
     pub type ThermalGetTemperatureTrendEXT = unsafe extern "system" fn(
         session: Session,
         domain: PerfSettingsDomainEXT,
@@ -2827,67 +2984,67 @@ pub mod pfn {
         temp_headroom: *mut f32,
         temp_slope: *mut f32,
     ) -> Result;
-    #[doc = "From XR_EXT_debug_utils"]
+    #[doc = "See [xrSetDebugUtilsObjectNameEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetDebugUtilsObjectNameEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
     pub type SetDebugUtilsObjectNameEXT = unsafe extern "system" fn(
         instance: Instance,
         name_info: *const DebugUtilsObjectNameInfoEXT,
     ) -> Result;
-    #[doc = "From XR_EXT_debug_utils"]
+    #[doc = "See [xrCreateDebugUtilsMessengerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateDebugUtilsMessengerEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
     pub type CreateDebugUtilsMessengerEXT = unsafe extern "system" fn(
         instance: Instance,
         create_info: *const DebugUtilsMessengerCreateInfoEXT,
         messenger: *mut DebugUtilsMessengerEXT,
     ) -> Result;
-    #[doc = "From XR_EXT_debug_utils"]
+    #[doc = "See [xrDestroyDebugUtilsMessengerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyDebugUtilsMessengerEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
     pub type DestroyDebugUtilsMessengerEXT =
         unsafe extern "system" fn(messenger: DebugUtilsMessengerEXT) -> Result;
-    #[doc = "From XR_EXT_debug_utils"]
+    #[doc = "See [xrSubmitDebugUtilsMessageEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSubmitDebugUtilsMessageEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
     pub type SubmitDebugUtilsMessageEXT = unsafe extern "system" fn(
         instance: Instance,
         message_severity: DebugUtilsMessageSeverityFlagsEXT,
         message_types: DebugUtilsMessageTypeFlagsEXT,
         callback_data: *const DebugUtilsMessengerCallbackDataEXT,
     ) -> Result;
-    #[doc = "From XR_EXT_debug_utils"]
+    #[doc = "See [xrSessionBeginDebugUtilsLabelRegionEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSessionBeginDebugUtilsLabelRegionEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
     pub type SessionBeginDebugUtilsLabelRegionEXT = unsafe extern "system" fn(
         session: Session,
         label_info: *const DebugUtilsLabelEXT,
     ) -> Result;
-    #[doc = "From XR_EXT_debug_utils"]
+    #[doc = "See [xrSessionEndDebugUtilsLabelRegionEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSessionEndDebugUtilsLabelRegionEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
     pub type SessionEndDebugUtilsLabelRegionEXT =
         unsafe extern "system" fn(session: Session) -> Result;
-    #[doc = "From XR_EXT_debug_utils"]
+    #[doc = "See [xrSessionInsertDebugUtilsLabelEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSessionInsertDebugUtilsLabelEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
     pub type SessionInsertDebugUtilsLabelEXT = unsafe extern "system" fn(
         session: Session,
         label_info: *const DebugUtilsLabelEXT,
     ) -> Result;
     #[cfg(windows)]
-    #[doc = "From XR_KHR_win32_convert_performance_counter_time"]
+    #[doc = "See [xrConvertTimeToWin32PerformanceCounterKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrConvertTimeToWin32PerformanceCounterKHR) - defined by [XR_KHR_win32_convert_performance_counter_time](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_win32_convert_performance_counter_time)"]
     pub type ConvertTimeToWin32PerformanceCounterKHR = unsafe extern "system" fn(
         instance: Instance,
         time: Time,
         performance_counter: *mut LARGE_INTEGER,
     ) -> Result;
     #[cfg(windows)]
-    #[doc = "From XR_KHR_win32_convert_performance_counter_time"]
+    #[doc = "See [xrConvertWin32PerformanceCounterToTimeKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrConvertWin32PerformanceCounterToTimeKHR) - defined by [XR_KHR_win32_convert_performance_counter_time](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_win32_convert_performance_counter_time)"]
     pub type ConvertWin32PerformanceCounterToTimeKHR = unsafe extern "system" fn(
         instance: Instance,
         performance_counter: *const LARGE_INTEGER,
         time: *mut Time,
     ) -> Result;
-    #[doc = "From XR_KHR_convert_timespec_time"]
+    #[doc = "See [xrConvertTimeToTimespecTimeKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrConvertTimeToTimespecTimeKHR) - defined by [XR_KHR_convert_timespec_time](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_convert_timespec_time)"]
     pub type ConvertTimeToTimespecTimeKHR = unsafe extern "system" fn(
         instance: Instance,
         time: Time,
         timespec_time: *mut timespec,
     ) -> Result;
-    #[doc = "From XR_KHR_convert_timespec_time"]
+    #[doc = "See [xrConvertTimespecTimeToTimeKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrConvertTimespecTimeToTimeKHR) - defined by [XR_KHR_convert_timespec_time](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_convert_timespec_time)"]
     pub type ConvertTimespecTimeToTimeKHR = unsafe extern "system" fn(
         instance: Instance,
         timespec_time: *const timespec,
         time: *mut Time,
     ) -> Result;
-    #[doc = "From XR_KHR_visibility_mask"]
+    #[doc = "See [xrGetVisibilityMaskKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVisibilityMaskKHR) - defined by [XR_KHR_visibility_mask](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_visibility_mask)"]
     pub type GetVisibilityMaskKHR = unsafe extern "system" fn(
         session: Session,
         view_configuration_type: ViewConfigurationType,

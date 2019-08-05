@@ -221,7 +221,7 @@ impl Parser {
                                 self.enums.get_mut(extends).unwrap().values.push(Constant {
                                     name: name.into(),
                                     value,
-                                    comment: attr(&attributes, "comment").map(|x| tidy_comment(x.trim())),
+                                    comment: attr(&attributes, "comment").and_then(tidy_comment),
                                 });
                             } else if name.ends_with("SPEC_VERSION") {
                                 let value = attr(&attributes, "value").unwrap();
@@ -658,7 +658,7 @@ impl Parser {
     fn parse_enum_values(&mut self, attrs: &[OwnedAttribute]) {
         let name = attr(attrs, "name").unwrap();
         let ty = attr(attrs, "type");
-        if let Some(comment) = attr(attrs, "comment") {
+        if let Some(comment) = attr(attrs, "comment").and_then(tidy_comment) {
             if let Some(item) = self.enums.get_mut(name) {
                 item.comment = Some(comment.into());
             }
@@ -679,7 +679,7 @@ impl Parser {
                             item.values.push(Constant {
                                 name: name.into(),
                                 value: value.parse().unwrap(),
-                                comment: comment.map(|x| tidy_comment(x)),
+                                comment: comment.and_then(tidy_comment),
                             });
                         }
                         self.finish_element();
@@ -712,7 +712,7 @@ impl Parser {
                             bitmask.values.push(Constant {
                                 name: name.into(),
                                 value: bitpos.parse().unwrap(),
-                                comment: comment.map(|x| tidy_comment(x)),
+                                comment: comment.and_then(tidy_comment),
                             });
                         }
                         self.finish_element();
@@ -795,6 +795,23 @@ impl Parser {
         }
     }
 
+    fn spec_link(&self, anchor: &str) -> String {
+        let (major, minor, _) = self.api_version.unwrap();
+        format!(
+            "https://www.khronos.org/registry/OpenXR/specs/{}.{}/html/xrspec.html#{}",
+            major, minor, anchor
+        )
+    }
+
+    fn doc_link(&self, name: &str) -> String {
+        let name = if name.ends_with("Flags") {
+            format!("{}FlagBits", &name[..name.len() - "Flags".len()])
+        } else {
+            name.into()
+        };
+        format!("[{}]({})", name, self.spec_link(&name))
+    }
+
     fn generate_sys(&self) -> TokenStream {
         let consts = self.api_constants.iter().map(|(name, value)| {
             let ident = Ident::new(&name[3..], Span::call_site());
@@ -805,11 +822,6 @@ impl Parser {
 
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
-            let doc = if let Some(comment) = e.comment.as_ref() {
-                quote! {#[doc = #comment]}
-            } else {
-                quote! {}
-            };
             let values = e.values.iter().map(|v| {
                 let value_name = xr_enum_value_name(&name, &v.name);
                 let value = v.value;
@@ -823,6 +835,11 @@ impl Parser {
                     pub const #value_name: #ident = #ident(#value);
                 }
             });
+            let doc = if let Some(comment) = e.comment.as_ref() {
+                format!("{} - see {}", comment, self.doc_link(name))
+            } else {
+                format!("See {}", self.doc_link(name))
+            };
             let debug_cases = e.values.iter().map(|v| {
                 let ident = xr_enum_value_name(&name, &v.name);
                 let name = ident.to_string();
@@ -867,7 +884,7 @@ impl Parser {
                 quote! {}
             };
             quote! {
-                #doc
+                #[doc = #doc]
                 #[repr(transparent)]
                 #[derive(Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(i32);
@@ -893,9 +910,9 @@ impl Parser {
         let bitmasks = self.bitmasks.iter().map(|(name, bitmask)| {
             let ident = xr_ty_name(name);
             let doc = if let Some(comment) = bitmask.comment.as_ref() {
-                quote! {#[doc = #comment]}
+                format!("{} - see {}", comment, self.doc_link(name))
             } else {
-                quote! {}
+                format!("See {}", self.doc_link(name))
             };
             let values = bitmask.values.iter().map(|v| {
                 let value_name = xr_bitmask_value_name(&name, &v.name);
@@ -911,7 +928,7 @@ impl Parser {
                 }
             });
             quote! {
-                #doc
+                #[doc = #doc]
                 #[repr(transparent)]
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
@@ -924,8 +941,10 @@ impl Parser {
         });
 
         let handles = self.handles.iter().map(|name| {
-            let ident = xr_ty_name(&name);
+            let ident = xr_ty_name(name);
+            let doc = format!("See {}", self.doc_link(name));
             quote! {
+                #[doc = #doc]
                 #[repr(transparent)]
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
@@ -942,14 +961,18 @@ impl Parser {
                     pub #ident: #ty,
                 }
             });
-            let ext_note = if let Some(ref ext) = s.extension {
+            let doc = if let Some(ref ext) = s.extension {
                 if self.disabled_exts.contains(ext) {
                     return quote! {};
                 }
-                let doc = format!("From {}", ext);
-                quote! { #[doc = #doc] }
+                format!(
+                    "See {} - defined by [{}]({})",
+                    self.doc_link(name),
+                    ext,
+                    self.spec_link(ext)
+                )
             } else {
-                quote! {}
+                format!("See {}", self.doc_link(name))
             };
             let conditions = conditions(&name);
             let ty = if let Some(ref ty) = s.ty {
@@ -986,7 +1009,7 @@ impl Parser {
             quote! {
                 #[repr(C)]
                 #[derive(Copy, Clone)]
-                #ext_note
+                #[doc = #doc]
                 #conditions
                 pub struct #ident {
                     #(#members)*
@@ -1007,21 +1030,25 @@ impl Parser {
                         #ident: #ty
                     }
                 });
-                let ext_note = if let Some(ref ext) = command.extension {
+                let foo = if let Some(ref ext) = command.extension {
                     if self.disabled_exts.contains(ext) {
                         return (quote! {}, quote! {});
                     }
-                    let doc = format!("From {}", ext);
-                    quote! { #[doc = #doc] }
+                    format!(
+                        "See {} - defined by [{}]({})",
+                        self.doc_link(name),
+                        ext,
+                        self.spec_link(ext)
+                    )
                 } else {
-                    quote! {}
+                    format!("See {}", self.doc_link(name))
                 };
                 let conditions = conditions(&name);
                 let conditions2 = conditions.clone();
                 let params2 = params.clone();
                 let pfn_def = quote! {
                     #conditions
-                    #ext_note
+                    #[doc = #foo]
                     pub type #ident = unsafe extern "system" fn(#(#params),*) -> Result;
                 };
                 let proto = if command.extension.is_some() {
@@ -2030,11 +2057,15 @@ fn c_name(name: &str) -> LitByteStr {
     LitByteStr::new(&name, Span::call_site())
 }
 
-fn tidy_comment(s: &str) -> String {
+fn tidy_comment(s: &str) -> Option<String> {
+    let s = s.trim();
+    if s.is_empty() {
+        return None;
+    }
+
     let strip_macros = Regex::new(r"\S+:(\S+)").unwrap();
     let strip_links = Regex::new(r"<<\S+, ?([^>]+)>>").unwrap();
 
-    let s = s.trim();
     let s = strip_macros.replace_all(s, "$1");
-    strip_links.replace_all(&s, "$1").into()
+    Some(strip_links.replace_all(&s, "$1").into())
 }
