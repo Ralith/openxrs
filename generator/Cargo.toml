@@ -13,3 +13,4 @@ syn = { version = "0.15", default-features = false, features = ["derive", "print
 proc-macro2 = "0.4"
 heck = "0.3"
 indexmap = "1"
+regex = "1.2.1"

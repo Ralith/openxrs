@@ -13,6 +13,7 @@ use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
 use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
+use regex::Regex;
 use syn::{Ident, LitByteStr};
 use xml::{
     attribute::OwnedAttribute,
@@ -220,7 +221,7 @@ impl Parser {
                                 self.enums.get_mut(extends).unwrap().values.push(Constant {
                                     name: name.into(),
                                     value,
-                                    comment: attr(&attributes, "comment").map(|x| x.into()),
+                                    comment: attr(&attributes, "comment").map(|x| tidy_comment(x.trim())),
                                 });
                             } else if name.ends_with("SPEC_VERSION") {
                                 let value = attr(&attributes, "value").unwrap();
@@ -678,7 +679,7 @@ impl Parser {
                             item.values.push(Constant {
                                 name: name.into(),
                                 value: value.parse().unwrap(),
-                                comment: comment.map(|x| x.into()),
+                                comment: comment.map(|x| tidy_comment(x)),
                             });
                         }
                         self.finish_element();
@@ -711,7 +712,7 @@ impl Parser {
                             bitmask.values.push(Constant {
                                 name: name.into(),
                                 value: bitpos.parse().unwrap(),
-                                comment: comment.map(|x| x.into()),
+                                comment: comment.map(|x| tidy_comment(x)),
                             });
                         }
                         self.finish_element();
@@ -835,7 +836,8 @@ impl Parser {
                     let reason = v.comment.as_ref().map_or_else(
                         || ident.to_string(),
                         |x| {
-                            let mut reason = x.trim().to_lowercase();
+                            let mut reason = x.to_string();
+                            reason.get_mut(0..1).unwrap().make_ascii_lowercase();
                             assert!(reason.ends_with("."));
                             reason.truncate(reason.len() - 1);
                             reason
@@ -2026,4 +2028,13 @@ fn c_name(name: &str) -> LitByteStr {
     let mut name = name.as_bytes().to_vec();
     name.push(0);
     LitByteStr::new(&name, Span::call_site())
+}
+
+fn tidy_comment(s: &str) -> String {
+    let strip_macros = Regex::new(r"\S+:(\S+)").unwrap();
+    let strip_links = Regex::new(r"<<\S+, ?([^>]+)>>").unwrap();
+
+    let s = s.trim();
+    let s = strip_macros.replace_all(s, "$1");
+    strip_links.replace_all(&s, "$1").into()
 }
