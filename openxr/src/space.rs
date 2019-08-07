@@ -27,7 +27,7 @@ impl Space {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid action space handle associated with `session`.
+    /// `handle` must be a valid action space handle for `action` and associated with `session`.
     #[inline]
     pub unsafe fn action_from_raw<G: Graphics>(
         action: Action<Posef>,
