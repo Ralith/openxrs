@@ -39,6 +39,9 @@ pub struct ExtensionSet {
     #[cfg(windows)]
     pub khr_win32_convert_performance_counter_time: bool,
     pub khr_convert_timespec_time: bool,
+    pub mnd_headless: bool,
+    pub msft_unbounded_reference_space: bool,
+    pub msft_spatial_anchor: bool,
     pub varjo_quad_views: bool,
 }
 impl ExtensionSet {
@@ -108,6 +111,15 @@ impl ExtensionSet {
                 }
                 raw::ConvertTimespecTimeKHR::NAME => {
                     out.khr_convert_timespec_time = true;
+                }
+                raw::HeadlessMND::NAME => {
+                    out.mnd_headless = true;
+                }
+                raw::UnboundedReferenceSpaceMSFT::NAME => {
+                    out.msft_unbounded_reference_space = true;
+                }
+                raw::SpatialAnchorMSFT::NAME => {
+                    out.msft_spatial_anchor = true;
                 }
                 raw::QuadViewsVARJO::NAME => {
                     out.varjo_quad_views = true;
@@ -223,6 +235,21 @@ impl ExtensionSet {
             }
         }
         {
+            if self.mnd_headless {
+                out.push(raw::HeadlessMND::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.msft_unbounded_reference_space {
+                out.push(raw::UnboundedReferenceSpaceMSFT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.msft_spatial_anchor {
+                out.push(raw::SpatialAnchorMSFT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
             if self.varjo_quad_views {
                 out.push(raw::QuadViewsVARJO::NAME.as_ptr() as *const _ as _);
             }
@@ -259,6 +286,9 @@ pub struct InstanceExtensions {
     pub khr_win32_convert_performance_counter_time:
         Option<raw::Win32ConvertPerformanceCounterTimeKHR>,
     pub khr_convert_timespec_time: Option<raw::ConvertTimespecTimeKHR>,
+    pub mnd_headless: Option<raw::HeadlessMND>,
+    pub msft_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceMSFT>,
+    pub msft_spatial_anchor: Option<raw::SpatialAnchorMSFT>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
 }
 impl InstanceExtensions {
@@ -375,6 +405,21 @@ impl InstanceExtensions {
             },
             khr_convert_timespec_time: if required.khr_convert_timespec_time {
                 Some(raw::ConvertTimespecTimeKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            mnd_headless: if required.mnd_headless {
+                Some(raw::HeadlessMND {})
+            } else {
+                None
+            },
+            msft_unbounded_reference_space: if required.msft_unbounded_reference_space {
+                Some(raw::UnboundedReferenceSpaceMSFT {})
+            } else {
+                None
+            },
+            msft_spatial_anchor: if required.msft_spatial_anchor {
+                Some(raw::SpatialAnchorMSFT::load(entry, instance)?)
             } else {
                 None
             },
@@ -1259,6 +1304,49 @@ pub mod raw {
                 convert_time_to_timespec_time: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrConvertTimeToTimespecTimeKHR\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct HeadlessMND {}
+    impl HeadlessMND {
+        pub const VERSION: u32 = sys::MND_headless_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MND_HEADLESS_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct UnboundedReferenceSpaceMSFT {}
+    impl UnboundedReferenceSpaceMSFT {
+        pub const VERSION: u32 = sys::MSFT_unbounded_reference_space_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct SpatialAnchorMSFT {
+        pub create_spatial_anchor: pfn::CreateSpatialAnchorMSFT,
+        pub create_spatial_anchor_space: pfn::CreateSpatialAnchorSpaceMSFT,
+        pub destroy_spatial_anchor: pfn::DestroySpatialAnchorMSFT,
+    }
+    impl SpatialAnchorMSFT {
+        pub const VERSION: u32 = sys::MSFT_spatial_anchor_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_SPATIAL_ANCHOR_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorMSFT\0"),
+                )?),
+                create_spatial_anchor_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorSpaceMSFT\0"),
+                )?),
+                destroy_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpatialAnchorMSFT\0"),
                 )?),
             })
         }

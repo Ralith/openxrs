@@ -7,7 +7,7 @@ use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 0u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 1u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -111,6 +111,8 @@ impl StructureType {
     pub const GRAPHICS_REQUIREMENTS_D3D12_KHR: StructureType = StructureType(1000028002i32);
     pub const VISIBILITY_MASK_KHR: StructureType = StructureType(1000031000i32);
     pub const EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR: StructureType = StructureType(1000031001i32);
+    pub const SPATIAL_ANCHOR_CREATE_INFO_MSFT: StructureType = StructureType(1000039000i32);
+    pub const SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT: StructureType = StructureType(1000039001i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -225,6 +227,10 @@ impl fmt::Debug for StructureType {
             Self::VISIBILITY_MASK_KHR => Some("VISIBILITY_MASK_KHR"),
             Self::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
                 Some("EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR")
+            }
+            Self::SPATIAL_ANCHOR_CREATE_INFO_MSFT => Some("SPATIAL_ANCHOR_CREATE_INFO_MSFT"),
+            Self::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT => {
+                Some("SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT")
             }
             _ => None,
         };
@@ -346,6 +352,8 @@ impl Result {
     pub const ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR: Result = Result(-1000003000i32);
     #[doc = "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority."]
     pub const ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR: Result = Result(-1000003001i32);
+    #[doc = "Spatial anchor could not be created at that location."]
+    pub const ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT: Result = Result(-1000039001i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -419,6 +427,9 @@ impl fmt::Debug for Result {
             Self::ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => {
                 Some("ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR")
             }
+            Self::ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => {
+                Some("ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT")
+            }
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -426,7 +437,7 @@ impl fmt::Debug for Result {
 }
 impl fmt::Display for Result {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let reason = match * self { Self :: SUCCESS => Some ( "function successfully completed" ) , Self :: TIMEOUT_EXPIRED => Some ( "the specified timeout time occurred before the operation could complete" ) , Self :: SESSION_LOSS_PENDING => Some ( "the session will be lost soon" ) , Self :: EVENT_UNAVAILABLE => Some ( "no event was available" ) , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ( "the space\'s bounds are not known at the moment" ) , Self :: SESSION_NOT_FOCUSED => Some ( "the session is not in the focused state" ) , Self :: FRAME_DISCARDED => Some ( "a frame has been discarded from composition" ) , Self :: ERROR_VALIDATION_FAILURE => Some ( "the function usage was invalid in some way" ) , Self :: ERROR_RUNTIME_FAILURE => Some ( "the runtime failed to handle the function in an unexpected way that is not covered by another error result" ) , Self :: ERROR_OUT_OF_MEMORY => Some ( "a memory allocation has failed" ) , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ( "the runtime does not support the requested API version" ) , Self :: ERROR_INITIALIZATION_FAILED => Some ( "initialization of object could not be completed" ) , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ( "the requested function was not found or is otherwise unsupported" ) , Self :: ERROR_FEATURE_UNSUPPORTED => Some ( "the requested feature is not supported" ) , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ( "a requested extension is not supported" ) , Self :: ERROR_LIMIT_REACHED => Some ( "the runtime supports no more of the requested resource" ) , Self :: ERROR_SIZE_INSUFFICIENT => Some ( "the supplied size was smaller than required" ) , Self :: ERROR_HANDLE_INVALID => Some ( "a supplied object handle was invalid" ) , Self :: ERROR_INSTANCE_LOST => Some ( "the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SESSION_RUNNING => Some ( "the session is already running" ) , Self :: ERROR_SESSION_NOT_RUNNING => Some ( "the session is not yet running" ) , Self :: ERROR_SESSION_LOST => Some ( "the XrSession was lost. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SYSTEM_INVALID => Some ( "the provided XrSystemId was invalid" ) , Self :: ERROR_PATH_INVALID => Some ( "the provided XrPath was not valid" ) , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ( "the maximum number of supported semantic paths has been reached" ) , Self :: ERROR_PATH_FORMAT_INVALID => Some ( "the semantic path character format is invalid" ) , Self :: ERROR_PATH_UNSUPPORTED => Some ( "the semantic path is unsupported" ) , Self :: ERROR_LAYER_INVALID => Some ( "the layer was NULL or otherwise invalid" ) , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ( "the number of specified layers is greater than the supported number" ) , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ( "the image rect was negatively sized or otherwise invalid" ) , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ( "the image format is not supported by the runtime or platform" ) , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ( "the API used to retrieve an action\'s state does not match the action\'s type" ) , Self :: ERROR_SESSION_NOT_READY => Some ( "the session is not in the ready state" ) , Self :: ERROR_SESSION_NOT_STOPPING => Some ( "the session is not in the stopping state" ) , Self :: ERROR_TIME_INVALID => Some ( "the provided XrTime was zero, negative, or out of range" ) , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ( "the specified reference space is not supported by the runtime or system" ) , Self :: ERROR_FILE_ACCESS_ERROR => Some ( "the file could not be accessed" ) , Self :: ERROR_FILE_CONTENTS_INVALID => Some ( "the file\'s contents were invalid" ) , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ( "the specified form factor is not supported by the current runtime or platform" ) , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ( "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off" ) , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ( "a requested API layer is not present or could not be loaded" ) , Self :: ERROR_CALL_ORDER_INVALID => Some ( "the call was made without having made a previously required call" ) , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ( "the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements" ) , Self :: ERROR_POSE_INVALID => Some ( "the supplied pose was invalid with respect to the requirements" ) , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ( "the supplied index was outside the range of valid indices" ) , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ( "the specified view configuration type is not supported by the runtime or platform" ) , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ( "the specified environment blend mode is not supported by the runtime or platform" ) , Self :: ERROR_NAME_DUPLICATED => Some ( "the name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_NAME_INVALID => Some ( "the name provided was invalid" ) , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ( "a referenced action set is not attached to the session" ) , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ( "the session already has attached action sets" ) , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ( "the localized name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ( "the localized name provided was invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed as thread id is invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority" ) , _ => None , } ;
+        let reason = match * self { Self :: SUCCESS => Some ( "function successfully completed" ) , Self :: TIMEOUT_EXPIRED => Some ( "the specified timeout time occurred before the operation could complete" ) , Self :: SESSION_LOSS_PENDING => Some ( "the session will be lost soon" ) , Self :: EVENT_UNAVAILABLE => Some ( "no event was available" ) , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ( "the space\'s bounds are not known at the moment" ) , Self :: SESSION_NOT_FOCUSED => Some ( "the session is not in the focused state" ) , Self :: FRAME_DISCARDED => Some ( "a frame has been discarded from composition" ) , Self :: ERROR_VALIDATION_FAILURE => Some ( "the function usage was invalid in some way" ) , Self :: ERROR_RUNTIME_FAILURE => Some ( "the runtime failed to handle the function in an unexpected way that is not covered by another error result" ) , Self :: ERROR_OUT_OF_MEMORY => Some ( "a memory allocation has failed" ) , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ( "the runtime does not support the requested API version" ) , Self :: ERROR_INITIALIZATION_FAILED => Some ( "initialization of object could not be completed" ) , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ( "the requested function was not found or is otherwise unsupported" ) , Self :: ERROR_FEATURE_UNSUPPORTED => Some ( "the requested feature is not supported" ) , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ( "a requested extension is not supported" ) , Self :: ERROR_LIMIT_REACHED => Some ( "the runtime supports no more of the requested resource" ) , Self :: ERROR_SIZE_INSUFFICIENT => Some ( "the supplied size was smaller than required" ) , Self :: ERROR_HANDLE_INVALID => Some ( "a supplied object handle was invalid" ) , Self :: ERROR_INSTANCE_LOST => Some ( "the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SESSION_RUNNING => Some ( "the session is already running" ) , Self :: ERROR_SESSION_NOT_RUNNING => Some ( "the session is not yet running" ) , Self :: ERROR_SESSION_LOST => Some ( "the XrSession was lost. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SYSTEM_INVALID => Some ( "the provided XrSystemId was invalid" ) , Self :: ERROR_PATH_INVALID => Some ( "the provided XrPath was not valid" ) , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ( "the maximum number of supported semantic paths has been reached" ) , Self :: ERROR_PATH_FORMAT_INVALID => Some ( "the semantic path character format is invalid" ) , Self :: ERROR_PATH_UNSUPPORTED => Some ( "the semantic path is unsupported" ) , Self :: ERROR_LAYER_INVALID => Some ( "the layer was NULL or otherwise invalid" ) , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ( "the number of specified layers is greater than the supported number" ) , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ( "the image rect was negatively sized or otherwise invalid" ) , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ( "the image format is not supported by the runtime or platform" ) , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ( "the API used to retrieve an action\'s state does not match the action\'s type" ) , Self :: ERROR_SESSION_NOT_READY => Some ( "the session is not in the ready state" ) , Self :: ERROR_SESSION_NOT_STOPPING => Some ( "the session is not in the stopping state" ) , Self :: ERROR_TIME_INVALID => Some ( "the provided XrTime was zero, negative, or out of range" ) , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ( "the specified reference space is not supported by the runtime or system" ) , Self :: ERROR_FILE_ACCESS_ERROR => Some ( "the file could not be accessed" ) , Self :: ERROR_FILE_CONTENTS_INVALID => Some ( "the file\'s contents were invalid" ) , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ( "the specified form factor is not supported by the current runtime or platform" ) , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ( "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off" ) , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ( "a requested API layer is not present or could not be loaded" ) , Self :: ERROR_CALL_ORDER_INVALID => Some ( "the call was made without having made a previously required call" ) , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ( "the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements" ) , Self :: ERROR_POSE_INVALID => Some ( "the supplied pose was invalid with respect to the requirements" ) , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ( "the supplied index was outside the range of valid indices" ) , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ( "the specified view configuration type is not supported by the runtime or platform" ) , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ( "the specified environment blend mode is not supported by the runtime or platform" ) , Self :: ERROR_NAME_DUPLICATED => Some ( "the name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_NAME_INVALID => Some ( "the name provided was invalid" ) , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ( "a referenced action set is not attached to the session" ) , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ( "the session already has attached action sets" ) , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ( "the localized name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ( "the localized name provided was invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed as thread id is invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority" ) , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ( "spatial anchor could not be created at that location" ) , _ => None , } ;
         if let Some(reason) = reason {
             fmt.pad(reason)
         } else {
@@ -455,6 +466,8 @@ impl ObjectType {
     pub const ACTION: ObjectType = ObjectType(6i32);
     #[doc = "XrDebugUtilsMessengerEXT"]
     pub const DEBUG_UTILS_MESSENGER_EXT: ObjectType = ObjectType(1000019000i32);
+    #[doc = "XrSpatialAnchorMSFT"]
+    pub const SPATIAL_ANCHOR_MSFT: ObjectType = ObjectType(1000039000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -473,6 +486,7 @@ impl fmt::Debug for ObjectType {
             Self::ACTION_SET => Some("ACTION_SET"),
             Self::ACTION => Some("ACTION"),
             Self::DEBUG_UTILS_MESSENGER_EXT => Some("DEBUG_UTILS_MESSENGER_EXT"),
+            Self::SPATIAL_ANCHOR_MSFT => Some("SPATIAL_ANCHOR_MSFT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -573,6 +587,7 @@ impl ReferenceSpaceType {
     pub const VIEW: ReferenceSpaceType = ReferenceSpaceType(1i32);
     pub const LOCAL: ReferenceSpaceType = ReferenceSpaceType(2i32);
     pub const STAGE: ReferenceSpaceType = ReferenceSpaceType(3i32);
+    pub const UNBOUNDED_MSFT: ReferenceSpaceType = ReferenceSpaceType(1000038000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -586,6 +601,7 @@ impl fmt::Debug for ReferenceSpaceType {
             Self::VIEW => Some("VIEW"),
             Self::LOCAL => Some("LOCAL"),
             Self::STAGE => Some("STAGE"),
+            Self::UNBOUNDED_MSFT => Some("UNBOUNDED_MSFT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1032,6 +1048,11 @@ handle!(Space);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DebugUtilsMessengerEXT(u64);
 handle!(DebugUtilsMessengerEXT);
+#[doc = "See [XrSpatialAnchorMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorMSFT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SpatialAnchorMSFT(u64);
+handle!(SpatialAnchorMSFT);
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector2f)"]
@@ -2592,6 +2613,31 @@ impl GraphicsRequirementsD3D12KHR {
         x
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSpatialAnchorCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorCreateInfoMSFT)"]
+pub struct SpatialAnchorCreateInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space: Space,
+    pub pose: Posef,
+    pub time: Time,
+}
+impl SpatialAnchorCreateInfoMSFT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSpatialAnchorSpaceCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorSpaceCreateInfoMSFT)"]
+pub struct SpatialAnchorSpaceCreateInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor: SpatialAnchorMSFT,
+    pub pose_in_anchor_space: Posef,
+}
+impl SpatialAnchorSpaceCreateInfoMSFT {
+    pub const TYPE: StructureType = StructureType::ACTION_SPACE_CREATE_INFO;
+}
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
     use super::*;
@@ -3052,6 +3098,21 @@ pub mod pfn {
         visibility_mask_type: VisibilityMaskTypeKHR,
         visibility_mask: *mut VisibilityMaskKHR,
     ) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSpatialAnchorMSFT) - defined by [XR_MSFT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor)"]
+    pub type CreateSpatialAnchorMSFT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialAnchorCreateInfoMSFT,
+        anchor: *mut SpatialAnchorMSFT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorSpaceMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSpatialAnchorSpaceMSFT) - defined by [XR_MSFT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor)"]
+    pub type CreateSpatialAnchorSpaceMSFT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialAnchorSpaceCreateInfoMSFT,
+        space: *mut Space,
+    ) -> Result;
+    #[doc = "See [xrDestroySpatialAnchorMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroySpatialAnchorMSFT) - defined by [XR_MSFT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor)"]
+    pub type DestroySpatialAnchorMSFT =
+        unsafe extern "system" fn(anchor: SpatialAnchorMSFT) -> Result;
 }
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 1u32;
 pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &'static [u8] = b"XR_EXT_performance_settings\0";
@@ -3113,6 +3174,13 @@ pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &'static [u
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
 pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &'static [u8] =
     b"XR_KHR_convert_timespec_time\0";
+pub const MND_headless_SPEC_VERSION: u32 = 1u32;
+pub const MND_HEADLESS_EXTENSION_NAME: &'static [u8] = b"XR_MND_headless\0";
+pub const MSFT_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &'static [u8] =
+    b"XR_MSFT_unbounded_reference_space\0";
+pub const MSFT_spatial_anchor_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &'static [u8] = b"XR_MSFT_spatial_anchor\0";
 pub const VARJO_quad_views_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &'static [u8] = b"XR_VARJO_quad_views\0";
 #[cfg(feature = "prototypes")]
