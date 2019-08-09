@@ -25,7 +25,7 @@ fn main() {
     args.next().unwrap();
     let mut source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../sys/OpenXR-SDK-Source/specification/registry/xr.xml")
+            .join("../sys/OpenXR-SDK/specification/registry/xr.xml")
     }))
     .expect("failed to open registry XML file");
     // Hack around leading garbage in 1.0 revision of XML

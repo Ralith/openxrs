@@ -1,10 +1,11 @@
 #[cfg(feature = "static")]
 fn main() {
-    let dst = cmake::Config::new("OpenXR-SDK-Source")
+    let dst = cmake::Config::new("OpenXR-SDK")
         .define("BUILD_API_LAYERS", "OFF")
         .define("BUILD_TESTS", "OFF")
         .define("OpenGL_GL_PREFERENCE", "GLVND")
         .define("DYNAMIC_LOADER", "OFF")
+        .define("CMAKE_INSTALL_LIBDIR", "lib")
         .build();
 
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
