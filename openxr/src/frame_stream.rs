@@ -22,13 +22,15 @@ use crate::*;
 /// #     view_resolution: &[openxr::Extent2Di],
 /// # ) {
 /// let state = frame_waiter.wait().unwrap();
-/// if !state.should_render { return; }
-/// frame_stream.begin().unwrap();
 /// let mut drew = false;
 /// let image = swapchain.acquire_image().unwrap();
 /// swapchain.wait_image(openxr::Duration::INFINITE).unwrap();
 ///
-/// // draw scene...
+/// frame_stream.begin().unwrap();
+///
+/// if state.should_render {
+///     // draw scene...
+/// }
 ///
 /// let (view_flags, views) = session
 ///     .locate_views(
