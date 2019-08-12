@@ -362,8 +362,8 @@ impl<G: Graphics> Session<G> {
 /// Mesh obtained from `Session::get_visibility_mask`
 #[derive(Clone)]
 pub struct VisibilityMask {
-    vertices: Vec<Vector2f>,
-    indices: Vec<u32>,
+    pub vertices: Vec<Vector2f>,
+    pub indices: Vec<u32>,
 }
 
 impl<G: Graphics> Clone for Session<G> {
