@@ -7,7 +7,7 @@ use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 1u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 2u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -2636,7 +2636,7 @@ pub struct SpatialAnchorSpaceCreateInfoMSFT {
     pub pose_in_anchor_space: Posef,
 }
 impl SpatialAnchorSpaceCreateInfoMSFT {
-    pub const TYPE: StructureType = StructureType::ACTION_SPACE_CREATE_INFO;
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT;
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
@@ -3181,6 +3181,11 @@ pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &'static [u8] =
     b"XR_MSFT_unbounded_reference_space\0";
 pub const MSFT_spatial_anchor_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &'static [u8] = b"XR_MSFT_spatial_anchor\0";
+#[cfg(target_os = "android")]
+pub const OCULUS_android_session_state_enable_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME: &'static [u8] =
+    b"XR_OCULUS_android_session_state_enable\0";
 pub const VARJO_quad_views_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &'static [u8] = b"XR_VARJO_quad_views\0";
 #[cfg(feature = "prototypes")]

@@ -12,6 +12,10 @@ pub use sys::{
     SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f, Vector4f,
     ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
 };
+#[doc = r" A subset of known extensions"]
+#[doc = r""]
+#[doc = r" Do not match on this exhaustively, as new fields are not considered breaking"]
+#[doc = r" changes."]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
 pub struct ExtensionSet {
     pub ext_performance_settings: bool,
@@ -42,7 +46,11 @@ pub struct ExtensionSet {
     pub mnd_headless: bool,
     pub msft_unbounded_reference_space: bool,
     pub msft_spatial_anchor: bool,
+    #[cfg(target_os = "android")]
+    pub oculus_android_session_state_enable: bool,
     pub varjo_quad_views: bool,
+    #[doc(hidden)]
+    pub _non_exhaustive: (),
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
@@ -120,6 +128,10 @@ impl ExtensionSet {
                 }
                 raw::SpatialAnchorMSFT::NAME => {
                     out.msft_spatial_anchor = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::AndroidSessionStateEnableOCULUS::NAME => {
+                    out.oculus_android_session_state_enable = true;
                 }
                 raw::QuadViewsVARJO::NAME => {
                     out.varjo_quad_views = true;
@@ -249,6 +261,12 @@ impl ExtensionSet {
                 out.push(raw::SpatialAnchorMSFT::NAME.as_ptr() as *const _ as _);
             }
         }
+        #[cfg(target_os = "android")]
+        {
+            if self.oculus_android_session_state_enable {
+                out.push(raw::AndroidSessionStateEnableOCULUS::NAME.as_ptr() as *const _ as _);
+            }
+        }
         {
             if self.varjo_quad_views {
                 out.push(raw::QuadViewsVARJO::NAME.as_ptr() as *const _ as _);
@@ -289,6 +307,8 @@ pub struct InstanceExtensions {
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub msft_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceMSFT>,
     pub msft_spatial_anchor: Option<raw::SpatialAnchorMSFT>,
+    #[cfg(target_os = "android")]
+    pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
 }
 impl InstanceExtensions {
@@ -420,6 +440,12 @@ impl InstanceExtensions {
             },
             msft_spatial_anchor: if required.msft_spatial_anchor {
                 Some(raw::SpatialAnchorMSFT::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            oculus_android_session_state_enable: if required.oculus_android_session_state_enable {
+                Some(raw::AndroidSessionStateEnableOCULUS {})
             } else {
                 None
             },
@@ -1350,6 +1376,14 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct AndroidSessionStateEnableOCULUS {}
+    #[cfg(target_os = "android")]
+    impl AndroidSessionStateEnableOCULUS {
+        pub const VERSION: u32 = sys::OCULUS_android_session_state_enable_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct QuadViewsVARJO {}
