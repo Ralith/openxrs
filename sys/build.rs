@@ -9,9 +9,17 @@ fn main() {
         .build();
 
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
-    println!("cargo:rustc-link-lib=static=openxr_loader");
+
+    let mut library_name = "openxr_loader".to_string();
+    if cfg!(target_os = "windows") {
+        library_name = library_name + "-1_0";
+    }
+    println!("cargo:rustc-link-lib=static={}", library_name);
+
     if cfg!(any(target_os = "macos", target_os = "freebsd")) {
         println!("cargo:rustc-link-lib=c++");
+    } else if cfg!(target_os = "windows") {
+        println!("cargo:rustc-link-lib=dylib=ShLwApi");
     } else {
         println!("cargo:rustc-link-lib=stdc++");
         println!("cargo:rustc-link-lib=stdc++fs");
