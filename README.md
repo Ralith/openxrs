@@ -13,9 +13,9 @@ for detailed documentation on individual API calls.
 ## `openxr` 
 
 The high-level bindings provide abstractions focusing on ergonomics
-and safety in exchange for minimal overhead. Escape hatches to the raw
-API are exposed to support unforeseen requirements, and patterns that
-cannot be efficiently exposed in safe terms are preserved as unsafe.
+and safety. Escape hatches to the raw API are exposed to support
+unforeseen requirements, and patterns that cannot be efficiently
+exposed in safe terms are preserved as unsafe.
 
 The crate exposes a number of cargo features:
 - `static` builds in the Khronos OpenXR loader, which can then be

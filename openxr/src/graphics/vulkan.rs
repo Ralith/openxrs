@@ -8,7 +8,7 @@ use crate::*;
 ///
 /// See [`XR_KHR_vulkan_enable`] for safety details.
 ///
-/// [`XR_KHR_vulkan_enable`]: https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html#XR_KHR_vulkan_enable
+/// [`XR_KHR_vulkan_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable
 pub enum Vulkan {}
 
 impl Graphics for Vulkan {

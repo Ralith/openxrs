@@ -438,7 +438,7 @@ impl Instance {
 
     /// Allocate a new [`ActionSet`]
     ///
-    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html#input-action-creation
+    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#input-action-creation
     #[inline]
     pub fn create_action_set(
         &self,
