@@ -3,6 +3,7 @@ use std::{
     mem::{self, MaybeUninit},
     ptr,
     sync::{Arc, Mutex},
+    marker::PhantomData,
 };
 
 use sys::platform::*;
@@ -579,5 +580,25 @@ impl EventDataBuffer {
             });
         }
         Self { inner }
+    }
+}
+
+#[repr(transparent)]
+#[derive(Copy, Clone)]
+pub struct Binding<'a> {
+    _inner: sys::ActionSuggestedBinding,
+    _marker: PhantomData<&'a ()>,
+}
+
+impl<'a> Binding<'a> {
+    #[inline]
+    pub fn new<T: ActionTy>(action: &'a Action<T>, binding: Path) -> Self {
+        Self {
+            _inner: sys::ActionSuggestedBinding {
+                action: action.as_raw(),
+                binding: binding,
+            },
+            _marker: PhantomData,
+        }
     }
 }
