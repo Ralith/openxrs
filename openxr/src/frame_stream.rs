@@ -22,7 +22,6 @@ use crate::*;
 /// #     view_resolution: &[openxr::Extent2Di],
 /// # ) {
 /// let state = frame_waiter.wait().unwrap();
-/// let mut drew = false;
 /// let image = swapchain.acquire_image().unwrap();
 /// swapchain.wait_image(openxr::Duration::INFINITE).unwrap();
 ///
