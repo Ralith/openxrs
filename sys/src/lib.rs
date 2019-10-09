@@ -8,6 +8,8 @@ pub mod platform;
 
 #[cfg(feature = "nalgebra")]
 mod nalgebra;
+#[cfg(feature = "mint")]
+mod mint_impls;
 
 // Hand-written bindings for cases which are too few or weird to bother automating
 
