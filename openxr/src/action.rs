@@ -104,6 +104,29 @@ impl Action<Posef> {
             Ok(Space::action_from_raw(self.clone(), session, out))
         }
     }
+
+    pub fn is_active<G: Graphics>(
+        &self,
+        session: &Session<G>,
+        subaction_path: Path,
+    ) -> Result<bool> {
+        let info = sys::ActionStateGetInfo {
+            ty: sys::ActionStateGetInfo::TYPE,
+            next: ptr::null(),
+            action: self.as_raw(),
+            subaction_path,
+        };
+        let out = unsafe {
+            let mut out = sys::ActionStatePose::out(ptr::null_mut());
+            cvt((self.fp().get_action_state_pose)(
+                session.as_raw(),
+                &info,
+                out.as_mut_ptr(),
+            ))?;
+            out.assume_init()
+        };
+        Ok(out.is_active.into())
+    }
 }
 
 impl Action<Haptic> {
