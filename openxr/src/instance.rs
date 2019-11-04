@@ -1,9 +1,9 @@
 use std::{
     ffi::CString,
+    marker::PhantomData,
     mem::{self, MaybeUninit},
     ptr,
     sync::{Arc, Mutex},
-    marker::PhantomData,
 };
 
 use sys::platform::*;

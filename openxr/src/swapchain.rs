@@ -18,10 +18,7 @@ impl<G: Graphics> Swapchain<G> {
     ///
     /// `handle` must be a valid swapchain handle associated with `session` and created with `flags`.
     #[inline]
-    pub unsafe fn from_raw(
-        session: Session<G>,
-        handle: sys::Swapchain,
-    ) -> Self {
+    pub unsafe fn from_raw(session: Session<G>, handle: sys::Swapchain) -> Self {
         Self {
             session,
             handle,

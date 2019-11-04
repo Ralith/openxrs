@@ -1,7 +1,7 @@
 use crate::{
     Extent2Df, Extent2Di, Offset2Df, Offset2Di, Quaternionf, Vector2f, Vector3f, Vector4f,
 };
-use mint::{Vector2, Vector3, Vector4, Quaternion};
+use mint::{Quaternion, Vector2, Vector3, Vector4};
 
 impl From<Vector2f> for Vector2<f32> {
     fn from(v: Vector2f) -> Self {
@@ -41,7 +41,10 @@ impl From<Vector2<i32>> for Offset2Di {
 
 impl From<Extent2Df> for Vector2<f32> {
     fn from(v: Extent2Df) -> Self {
-        Vector2 { x: v.width, y: v.height }
+        Vector2 {
+            x: v.width,
+            y: v.height,
+        }
     }
 }
 
@@ -56,7 +59,10 @@ impl From<Vector2<f32>> for Extent2Df {
 
 impl From<Extent2Di> for Vector2<i32> {
     fn from(v: Extent2Di) -> Self {
-        Vector2 { x: v.width, y: v.height }
+        Vector2 {
+            x: v.width,
+            y: v.height,
+        }
     }
 }
 
@@ -71,7 +77,11 @@ impl From<Vector2<i32>> for Extent2Di {
 
 impl From<Vector3f> for Vector3<f32> {
     fn from(v: Vector3f) -> Self {
-        Vector3 { x: v.x, y: v.y, z: v.z }
+        Vector3 {
+            x: v.x,
+            y: v.y,
+            z: v.z,
+        }
     }
 }
 
@@ -87,7 +97,12 @@ impl From<Vector3<f32>> for Vector3f {
 
 impl From<Vector4f> for Vector4<f32> {
     fn from(v: Vector4f) -> Self {
-        Vector4 { x: v.x, y: v.y, z: v.z, w: v.w }
+        Vector4 {
+            x: v.x,
+            y: v.y,
+            z: v.z,
+            w: v.w,
+        }
     }
 }
 
@@ -115,6 +130,13 @@ impl From<Quaternion<f32>> for Quaternionf {
 
 impl From<Quaternionf> for Quaternion<f32> {
     fn from(q: Quaternionf) -> Quaternion<f32> {
-        Quaternion { s: q.w, v: Vector3 { x: q.x, y: q.y, z: q.z } }
+        Quaternion {
+            s: q.w,
+            v: Vector3 {
+                x: q.x,
+                y: q.y,
+                z: q.z,
+            },
+        }
     }
 }
