@@ -161,4 +161,24 @@ impl fmt::Display for Version {
 
 pub const FREQUENCY_UNSPECIFIED: f32 = 0.0;
 
+impl Quaternionf {
+    pub const IDENTITY: Quaternionf = Quaternionf {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        w: 1.0,
+    };
+}
+
+impl Posef {
+    pub const IDENTITY: Posef = Posef {
+        orientation: Quaternionf::IDENTITY,
+        position: Vector3f {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+    };
+}
+
 pub use generated::*;
