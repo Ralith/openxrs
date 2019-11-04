@@ -1547,7 +1547,7 @@ impl Parser {
                         &self.inner
                     }
 
-                    #(#setters)*
+                    #setters
                 }
                 impl #type_params Deref for #ident #type_args {
                     type Target = #base_ident #type_args;
@@ -1735,7 +1735,7 @@ impl Parser {
                     &self.inner
                 }
 
-                #(#setters)*
+                #setters
             }
         }
     }

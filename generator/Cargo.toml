@@ -8,9 +8,9 @@ publish = false
 
 [dependencies]
 xml = { package = "xml-rs", version = "0.8" }
-quote = "0.6"
-syn = { version = "0.15", default-features = false, features = ["derive", "printing"] }
-proc-macro2 = "0.4"
+quote = "1.0"
+syn = { version = "1.0", default-features = false, features = ["derive", "printing"] }
+proc-macro2 = "1.0"
 heck = "0.3"
 indexmap = "1"
 regex = "1.2.1"
