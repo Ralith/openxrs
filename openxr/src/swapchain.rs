@@ -6,7 +6,6 @@ use crate::*;
 pub struct Swapchain<G: Graphics> {
     session: Session<G>,
     handle: sys::Swapchain,
-    flags: SwapchainCreateFlags,
     _marker: PhantomData<G>,
     /// Whether `wait_image` was called more recently than `release_image`
     waited: bool,
@@ -22,12 +21,10 @@ impl<G: Graphics> Swapchain<G> {
     pub unsafe fn from_raw(
         session: Session<G>,
         handle: sys::Swapchain,
-        flags: SwapchainCreateFlags,
     ) -> Self {
         Self {
             session,
             handle,
-            flags,
             _marker: PhantomData,
             waited: false,
         }

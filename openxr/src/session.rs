@@ -161,7 +161,7 @@ impl<G: Graphics> Session<G> {
         };
         unsafe {
             cvt((self.fp().create_swapchain)(self.as_raw(), &info, &mut out))?;
-            Ok(Swapchain::from_raw(self.clone(), out, info.create_flags))
+            Ok(Swapchain::from_raw(self.clone(), out))
         }
     }
 
