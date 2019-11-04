@@ -10,8 +10,6 @@ pub struct Swapchain<G: Graphics> {
     _marker: PhantomData<G>,
     /// Whether `wait_image` was called more recently than `release_image`
     waited: bool,
-    /// Whether this is a STATIC_IMAGE swapchain whose image has already been acquired
-    acquired: bool,
 }
 
 impl<G: Graphics> Swapchain<G> {
@@ -32,7 +30,6 @@ impl<G: Graphics> Swapchain<G> {
             flags,
             _marker: PhantomData,
             waited: false,
-            acquired: false,
         }
     }
 
@@ -79,22 +76,11 @@ impl<G: Graphics> Swapchain<G> {
     /// Determine the index of the next image to render to in the swapchain image array
     #[inline]
     pub fn acquire_image(&mut self) -> Result<u32> {
-        if self.flags.contains(SwapchainCreateFlags::STATIC_IMAGE) {
-            assert!(
-                !self.acquired,
-                "static image swapchains must have at most one image acquired"
-            );
-            self.acquired = true;
-        }
-        let info = sys::SwapchainImageAcquireInfo {
-            ty: sys::SwapchainImageAcquireInfo::TYPE,
-            next: ptr::null_mut(),
-        };
         let mut out = 0;
         unsafe {
             cvt((self.fp().acquire_swapchain_image)(
                 self.as_raw(),
-                &info,
+                ptr::null(),
                 &mut out,
             ))?;
         }
