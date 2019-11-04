@@ -457,7 +457,7 @@ impl FrameWaiter {
             let mut x = sys::FrameState::out(ptr::null_mut());
             cvt((self.session.instance.fp().wait_frame)(
                 self.session.handle,
-                builder::FrameWaitInfo::new().as_raw(),
+                ptr::null(),
                 x.as_mut_ptr(),
             ))?;
             x.assume_init()

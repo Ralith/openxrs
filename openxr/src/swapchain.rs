@@ -107,12 +107,11 @@ impl<G: Graphics> Swapchain<G> {
             self.waited,
             "wait_image must be called before release_image"
         );
-        let info = sys::SwapchainImageReleaseInfo {
-            ty: sys::SwapchainImageReleaseInfo::TYPE,
-            next: ptr::null_mut(),
-        };
         unsafe {
-            cvt((self.fp().release_swapchain_image)(self.as_raw(), &info))?;
+            cvt((self.fp().release_swapchain_image)(
+                self.as_raw(),
+                ptr::null(),
+            ))?;
         }
         self.waited = false;
         Ok(())

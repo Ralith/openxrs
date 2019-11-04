@@ -1,5 +1,4 @@
-#![doc = r" Automatically generated code; do not edit!"]
-use crate::*;
+# ! [ doc = r" Automatically generated code; do not edit!" ]use crate::*;
 use std::os::raw::c_char;
 pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
@@ -1501,84 +1500,6 @@ pub(crate) mod builder {
         pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
             self.inner.sub_image = value.inner;
             self
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct FrameBeginInfo<'a> {
-        inner: sys::FrameBeginInfo,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> FrameBeginInfo<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::FrameBeginInfo {
-                    ty: sys::StructureType::FRAME_BEGIN_INFO,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::FrameBeginInfo) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::FrameBeginInfo {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::FrameBeginInfo {
-            &self.inner
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct FrameWaitInfo<'a> {
-        inner: sys::FrameWaitInfo,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> FrameWaitInfo<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::FrameWaitInfo {
-                    ty: sys::StructureType::FRAME_WAIT_INFO,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::FrameWaitInfo) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::FrameWaitInfo {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::FrameWaitInfo {
-            &self.inner
         }
     }
     #[derive(Copy, Clone)]

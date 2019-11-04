@@ -91,10 +91,7 @@ impl<G: Graphics> FrameStream<G> {
     #[inline]
     pub fn begin(&mut self) -> Result<()> {
         unsafe {
-            cvt((self.fp().begin_frame)(
-                self.session.as_raw(),
-                builder::FrameBeginInfo::new().as_raw(),
-            ))?;
+            cvt((self.fp().begin_frame)(self.session.as_raw(), ptr::null()))?;
         }
         Ok(())
     }
