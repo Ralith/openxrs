@@ -3,7 +3,7 @@ name = "openxr"
 description = "High-level, mostly-safe OpenXR bindings"
 repository = "https://github.com/Ralith/openxrs"
 readme = "../README.md"
-version = "0.9.4"
+version = "0.10.0"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
 categories = ["api-bindings", "rendering"]
 keywords = ["vr"]
@@ -17,12 +17,11 @@ maintenance = { status = "experimental" }
 static = ["sys/static", "linked"]
 loaded = ["shared_library"]
 linked = ["sys/prototypes"]
-nalgebra = ["sys/nalgebra"]
 mint = ["sys/mint"]
 default = ["loaded"]
 
 [dependencies]
-sys = { package = "openxr-sys", path = "../sys", version = "0.6.6" }
+sys = { package = "openxr-sys", path = "../sys", version = "0.7.0" }
 libc = "0.2.50"
 shared_library = { version = "0.1.9", optional = true }
 
@@ -34,4 +33,4 @@ glium = { version = "0.24.0", default-features = false }
 x11 = { version = "2.18.1", features = ["xlib", "glx"] }
 
 [package.metadata.docs.rs]
-features = ["linked", "loaded", "nalgebra", "mint"]
+features = ["linked", "loaded", "mint"]

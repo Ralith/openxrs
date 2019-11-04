@@ -6,8 +6,6 @@ mod support;
 mod generated;
 pub mod platform;
 
-#[cfg(feature = "nalgebra")]
-mod nalgebra;
 #[cfg(feature = "mint")]
 mod mint_impls;
 
