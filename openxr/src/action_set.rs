@@ -1,7 +1,8 @@
-use std::{ffi::CString, ptr, sync::Arc};
+use std::sync::Arc;
 
 use crate::*;
 
+#[derive(Clone)]
 pub struct ActionSet {
     inner: Arc<ActionSetInner>,
 }
@@ -13,12 +14,9 @@ impl ActionSet {
     ///
     /// `handle` must be a valid action set handle associated with `session`.
     #[inline]
-    pub unsafe fn from_raw<G: Graphics>(session: Session<G>, handle: sys::ActionSet) -> Self {
+    pub unsafe fn from_raw(instance: Instance, handle: sys::ActionSet) -> Self {
         Self {
-            inner: Arc::new(ActionSetInner {
-                session: session.inner,
-                handle,
-            }),
+            inner: Arc::new(ActionSetInner { instance, handle }),
         }
     }
 
@@ -31,29 +29,13 @@ impl ActionSet {
     /// Access the `Instance` self is descended from
     #[inline]
     pub fn instance(&self) -> &Instance {
-        &self.inner.session.instance
+        &self.inner.instance
     }
 
     /// Set the debug name of this `ActionSet`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
-        if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
-            let name = CString::new(name).unwrap();
-            let info = sys::DebugUtilsObjectNameInfoEXT {
-                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
-                next: ptr::null(),
-                object_type: ObjectType::ACTION_SET,
-                object_handle: self.as_raw().into_raw(),
-                object_name: name.as_ptr(),
-            };
-            unsafe {
-                cvt((fp.set_debug_utils_object_name)(
-                    self.instance().as_raw(),
-                    &info,
-                ))?;
-            }
-        }
-        Ok(())
+        self.instance().set_name_raw(self.as_raw().into_raw(), name)
     }
 
     /// Create a new logical input action
@@ -80,14 +62,10 @@ impl ActionSet {
         }
     }
 
-    pub(crate) fn session(&self) -> &Arc<session::SessionInner> {
-        &self.inner.session
-    }
-
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
-        self.inner.session.instance.fp()
+        self.inner.instance.fp()
     }
 
     // Private because safety requires that only one copy of the `ActionSet` exist externally.
@@ -99,14 +77,14 @@ impl ActionSet {
 }
 
 struct ActionSetInner {
-    session: Arc<session::SessionInner>,
+    instance: Instance,
     handle: sys::ActionSet,
 }
 
 impl Drop for ActionSetInner {
     fn drop(&mut self) {
         unsafe {
-            (self.session.instance.fp().destroy_action_set)(self.handle);
+            (self.instance.fp().destroy_action_set)(self.handle);
         }
     }
 }

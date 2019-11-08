@@ -1,17 +1,11 @@
-use nalgebra as na;
-
 use crate::{
-    Extent2Df, Extent2Di, Offset2Df, Offset2Di, Posef, Quaternionf, Vector2f, Vector3f, Vector4f,
+    Extent2Df, Extent2Di, Offset2Df, Offset2Di, Quaternionf, Vector2f, Vector3f, Vector4f,
 };
-
-// Hack around a rustc bug
-type Vector2<T> = na::Matrix<T, na::U2, na::U1, na::ArrayStorage<T, na::U2, na::U1>>;
-type Vector3<T> = na::Matrix<T, na::U3, na::U1, na::ArrayStorage<T, na::U3, na::U1>>;
-type Vector4<T> = na::Matrix<T, na::U4, na::U1, na::ArrayStorage<T, na::U4, na::U1>>;
+use mint::{Quaternion, Vector2, Vector3, Vector4};
 
 impl From<Vector2f> for Vector2<f32> {
     fn from(v: Vector2f) -> Self {
-        na::Vector2::new(v.x, v.y)
+        Vector2 { x: v.x, y: v.y }
     }
 }
 
@@ -23,7 +17,7 @@ impl From<Vector2<f32>> for Vector2f {
 
 impl From<Offset2Df> for Vector2<f32> {
     fn from(v: Offset2Df) -> Self {
-        na::Vector2::new(v.x, v.y)
+        Vector2 { x: v.x, y: v.y }
     }
 }
 
@@ -35,7 +29,7 @@ impl From<Vector2<f32>> for Offset2Df {
 
 impl From<Offset2Di> for Vector2<i32> {
     fn from(v: Offset2Di) -> Self {
-        na::Vector2::new(v.x, v.y)
+        Vector2 { x: v.x, y: v.y }
     }
 }
 
@@ -47,7 +41,10 @@ impl From<Vector2<i32>> for Offset2Di {
 
 impl From<Extent2Df> for Vector2<f32> {
     fn from(v: Extent2Df) -> Self {
-        na::Vector2::new(v.width, v.height)
+        Vector2 {
+            x: v.width,
+            y: v.height,
+        }
     }
 }
 
@@ -62,7 +59,10 @@ impl From<Vector2<f32>> for Extent2Df {
 
 impl From<Extent2Di> for Vector2<i32> {
     fn from(v: Extent2Di) -> Self {
-        na::Vector2::new(v.width, v.height)
+        Vector2 {
+            x: v.width,
+            y: v.height,
+        }
     }
 }
 
@@ -77,7 +77,11 @@ impl From<Vector2<i32>> for Extent2Di {
 
 impl From<Vector3f> for Vector3<f32> {
     fn from(v: Vector3f) -> Self {
-        na::Vector3::new(v.x, v.y, v.z)
+        Vector3 {
+            x: v.x,
+            y: v.y,
+            z: v.z,
+        }
     }
 }
 
@@ -93,7 +97,12 @@ impl From<Vector3<f32>> for Vector3f {
 
 impl From<Vector4f> for Vector4<f32> {
     fn from(v: Vector4f) -> Self {
-        na::Vector4::new(v.x, v.y, v.z, v.w)
+        Vector4 {
+            x: v.x,
+            y: v.y,
+            z: v.z,
+            w: v.w,
+        }
     }
 }
 
@@ -108,35 +117,26 @@ impl From<Vector4<f32>> for Vector4f {
     }
 }
 
-impl From<na::UnitQuaternion<f32>> for Quaternionf {
-    fn from(q: na::UnitQuaternion<f32>) -> Self {
+impl From<Quaternion<f32>> for Quaternionf {
+    fn from(q: Quaternion<f32>) -> Self {
         Self {
-            x: q.i,
-            y: q.j,
-            z: q.k,
-            w: q.w,
+            x: q.v.x,
+            y: q.v.y,
+            z: q.v.z,
+            w: q.s,
         }
     }
 }
 
-impl From<Quaternionf> for na::UnitQuaternion<f32> {
-    fn from(q: Quaternionf) -> na::UnitQuaternion<f32> {
-        na::Unit::new_unchecked(na::Quaternion::new(q.w, q.x, q.y, q.z))
-    }
-}
-
-impl From<na::Isometry3<f32>> for Posef {
-    fn from(x: na::Isometry3<f32>) -> Self {
-        Self {
-            orientation: x.rotation.into(),
-            position: x.translation.vector.into(),
+impl From<Quaternionf> for Quaternion<f32> {
+    fn from(q: Quaternionf) -> Quaternion<f32> {
+        Quaternion {
+            s: q.w,
+            v: Vector3 {
+                x: q.x,
+                y: q.y,
+                z: q.z,
+            },
         }
-    }
-}
-
-impl From<Posef> for na::Isometry3<f32> {
-    fn from(p: Posef) -> na::Isometry3<f32> {
-        let position: na::Vector3<f32> = p.position.into();
-        na::Isometry3::from_parts(na::Translation3::from(position), p.orientation.into())
     }
 }

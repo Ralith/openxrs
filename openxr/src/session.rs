@@ -1,4 +1,5 @@
-use std::{ffi::CString, marker::PhantomData, mem, ptr, sync::Arc};
+use std::mem::MaybeUninit;
+use std::{marker::PhantomData, ptr, sync::Arc};
 
 use crate::*;
 
@@ -13,9 +14,13 @@ impl<G: Graphics> Session<G> {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid session handle associated with `instance` which is not currently inside a frame.
+    /// `handle` must be a valid session handle associated with `instance` which is not currently
+    /// inside a frame and was created for graphics API `G`.
     #[inline]
-    pub unsafe fn from_raw(instance: Instance, handle: sys::Session) -> (Self, FrameStream<G>) {
+    pub unsafe fn from_raw(
+        instance: Instance,
+        handle: sys::Session,
+    ) -> (Self, FrameWaiter, FrameStream<G>) {
         let session = Self {
             inner: Arc::new(SessionInner {
                 instance: instance.clone(),
@@ -23,7 +28,11 @@ impl<G: Graphics> Session<G> {
             }),
             _marker: PhantomData,
         };
-        (session.clone(), FrameStream::new(session))
+        (
+            session.clone(),
+            FrameWaiter::new(session.clone()),
+            FrameStream::new(session),
+        )
     }
 
     /// Access the raw session handle
@@ -41,23 +50,7 @@ impl<G: Graphics> Session<G> {
     /// Set the debug name of this `Session`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
-        if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
-            let name = CString::new(name).unwrap();
-            let info = sys::DebugUtilsObjectNameInfoEXT {
-                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
-                next: ptr::null(),
-                object_type: ObjectType::SESSION,
-                object_handle: self.as_raw().into_raw(),
-                object_name: name.as_ptr(),
-            };
-            unsafe {
-                cvt((fp.set_debug_utils_object_name)(
-                    self.instance().as_raw(),
-                    &info,
-                ))?;
-            }
-        }
-        Ok(())
+        self.instance().set_name_raw(self.as_raw().into_raw(), name)
     }
 
     /// Request that the runtime show the application's rendered output to the user
@@ -71,8 +64,18 @@ impl<G: Graphics> Session<G> {
         unsafe { cvt((self.fp().begin_session)(self.as_raw(), &info)) }
     }
 
-    /// Signal that the application no longer wishes to display rendered output, read input state,
-    /// or control haptic events
+    /// Request a transition to `SessionState::STOPPING` so that `end` may be called.
+    #[inline]
+    pub fn request_exit(&self) -> Result<()> {
+        unsafe {
+            cvt((self.fp().request_exit_session)(self.as_raw()))?;
+        }
+        Ok(())
+    }
+
+    /// Terminate a session in the `SessionState::STOPPING` state
+    ///
+    /// See `request_exit` for active sessions.
     #[inline]
     pub fn end(&self) -> Result<sys::Result> {
         unsafe { cvt((self.fp().end_session)(self.as_raw())) }
@@ -81,16 +84,16 @@ impl<G: Graphics> Session<G> {
     #[inline]
     pub fn reference_space_bounds_rect(&self, ty: ReferenceSpaceType) -> Result<Option<Extent2Df>> {
         unsafe {
-            let mut out = mem::uninitialized();
+            let mut out = MaybeUninit::uninit();
             let status = cvt((self.fp().get_reference_space_bounds_rect)(
                 self.as_raw(),
                 ty,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
             Ok(if status == sys::Result::SPACE_BOUNDS_UNAVAILABLE {
                 None
             } else {
-                Some(out)
+                Some(out.assume_init())
             })
         }
     }
@@ -158,97 +161,54 @@ impl<G: Graphics> Session<G> {
         };
         unsafe {
             cvt((self.fp().create_swapchain)(self.as_raw(), &info, &mut out))?;
-            Ok(Swapchain::from_raw(self.clone(), out, info.create_flags))
+            Ok(Swapchain::from_raw(self.clone(), out))
         }
     }
 
     /// Get the view and projection info for a particular display time
+    ///
+    /// When rendering, this should be called as late as possible before the GPU accesses it to
+    /// provide the most accurate possible poses.
     #[inline]
     pub fn locate_views(
         &self,
+        view_configuration_type: ViewConfigurationType,
         display_time: Time,
         space: &Space,
     ) -> Result<(ViewStateFlags, Vec<View>)> {
         let info = sys::ViewLocateInfo {
             ty: sys::ViewLocateInfo::TYPE,
             next: ptr::null(),
+            view_configuration_type,
             display_time,
             space: space.as_raw(),
         };
         let (flags, raw) = unsafe {
-            let mut out = sys::ViewState {
-                ty: sys::ViewState::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
-            let raw = get_arr_init(
-                sys::View {
-                    ty: sys::View::TYPE,
-                    next: ptr::null_mut(),
-                    ..mem::uninitialized()
-                },
-                |cap, count, buf| {
-                    (self.fp().locate_views)(self.as_raw(), &info, &mut out, cap, count, buf)
-                },
-            )?;
-            (out.view_state_flags, raw)
+            let mut out = sys::ViewState::out(ptr::null_mut());
+            let raw = get_arr_init(sys::View::out(ptr::null_mut()), |cap, count, buf| {
+                (self.fp().locate_views)(
+                    self.as_raw(),
+                    &info,
+                    out.as_mut_ptr(),
+                    cap,
+                    count,
+                    buf as _,
+                )
+            })?;
+            (out.assume_init().view_state_flags, raw)
         };
         Ok((
             flags,
             raw.into_iter()
-                .map(|x| View {
-                    pose: x.pose,
-                    fov: x.fov,
+                .map(|x| {
+                    let x = unsafe { x.assume_init() };
+                    View {
+                        pose: x.pose,
+                        fov: x.fov,
+                    }
                 })
                 .collect(),
         ))
-    }
-
-    /// Allocate a new [`ActionSet`]
-    ///
-    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html#input-action-creation
-    #[inline]
-    pub fn create_action_set(
-        &self,
-        name: &str,
-        localized_name: &str,
-        priority: u32,
-    ) -> Result<ActionSet> {
-        let info = builder::ActionSetCreateInfo::new()
-            .action_set_name(name)
-            .localized_action_set_name(localized_name)
-            .priority(priority);
-        unsafe {
-            let mut out = sys::ActionSet::NULL;
-            cvt((self.fp().create_action_set)(
-                self.as_raw(),
-                info.as_raw(),
-                &mut out,
-            ))?;
-            Ok(ActionSet::from_raw(self.clone(), out))
-        }
-    }
-
-    #[inline]
-    pub fn set_interaction_profile_suggested_bindings(
-        &self,
-        interaction_profile: Path,
-        bindings: &[Binding],
-    ) -> Result<()> {
-        let info = sys::InteractionProfileSuggestedBinding {
-            ty: sys::InteractionProfileSuggestedBinding::TYPE,
-            next: ptr::null(),
-            interaction_profile,
-            count_suggested_bindings: bindings.len() as u32,
-            suggested_bindings: bindings.as_ptr() as *const _ as _,
-        };
-        unsafe {
-            cvt((self.fp().set_interaction_profile_suggested_bindings)(
-                self.as_raw(),
-                &info,
-            ))?;
-        }
-        Ok(())
     }
 
     /// Get the suggested interaction profile in use for a top level user path
@@ -257,29 +217,45 @@ impl<G: Graphics> Session<G> {
     #[inline]
     pub fn current_interaction_profile(&self, top_level_user_path: Path) -> Result<Path> {
         unsafe {
-            let mut out = sys::InteractionProfileInfo {
-                ty: sys::InteractionProfileInfo::TYPE,
-                next: ptr::null(),
-                ..mem::uninitialized()
-            };
+            let mut out = sys::InteractionProfileState::out(ptr::null_mut());
             cvt((self.fp().get_current_interaction_profile)(
                 self.as_raw(),
                 top_level_user_path,
-                &mut out,
+                out.as_mut_ptr(),
             ))?;
-            Ok(out.interaction_profile)
+            Ok(out.assume_init().interaction_profile)
         }
+    }
+
+    /// Enable use of action sets with a session
+    ///
+    /// Once attached, action sets become immutable.
+    #[inline]
+    pub fn attach_action_sets(&self, sets: &[&ActionSet]) -> Result<()> {
+        let sets = sets.iter().map(|x| x.as_raw()).collect::<Vec<_>>();
+        let info = sys::SessionActionSetsAttachInfo {
+            ty: sys::SessionActionSetsAttachInfo::TYPE,
+            next: ptr::null(),
+            count_action_sets: sets.len() as u32,
+            action_sets: sets.as_ptr(),
+        };
+        unsafe {
+            cvt((self.fp().attach_session_action_sets)(self.as_raw(), &info))?;
+        }
+        Ok(())
     }
 
     /// Designate active input actions and update their states
     #[inline]
-    pub fn sync_action_data(&self, action_sets: &[ActiveActionSet<'_>]) -> Result<()> {
+    pub fn sync_actions(&self, action_sets: &[ActiveActionSet<'_>]) -> Result<()> {
+        let info = sys::ActionsSyncInfo {
+            ty: sys::ActionsSyncInfo::TYPE,
+            next: ptr::null(),
+            count_active_action_sets: action_sets.len() as u32,
+            active_action_sets: action_sets.as_ptr() as _,
+        };
         unsafe {
-            cvt((self.fp().sync_action_data)(
-                self.as_raw(),
-                action_sets.len() as u32,
-                action_sets.as_ptr() as _,
-            ))?;
+            cvt((self.fp().sync_actions)(self.as_raw(), &info))?;
         }
         Ok(())
     }
@@ -289,18 +265,84 @@ impl<G: Graphics> Session<G> {
     pub fn input_source_localized_name(
         &self,
         source: Path,
-        flags: InputSourceLocalizedNameFlags,
+        which_components: InputSourceLocalizedNameFlags,
     ) -> Result<String> {
+        let info = sys::InputSourceLocalizedNameGetInfo {
+            ty: sys::InputSourceLocalizedNameGetInfo::TYPE,
+            next: ptr::null(),
+            source_path: source,
+            which_components,
+        };
         get_str(|cap, count, buf| unsafe {
-            (self.fp().get_input_source_localized_name)(
-                self.as_raw(),
-                source,
-                flags,
-                cap,
-                count,
-                buf,
-            )
+            (self.fp().get_input_source_localized_name)(self.as_raw(), &info, cap, count, buf)
         })
+    }
+
+    /// Get a mesh describing the visible area of a view
+    ///
+    /// Requires KHR_visibility_mask. Useful to skip shading fragments the user can't see.
+    ///
+    /// See also the `VisibilityMaskChangedKHR` event.
+    #[inline]
+    pub fn get_visibility_mask_khr(
+        &self,
+        view_configuration_type: ViewConfigurationType,
+        view_index: u32,
+        visibility_mask_type: VisibilityMaskTypeKHR,
+    ) -> Result<VisibilityMask> {
+        let mut info = sys::VisibilityMaskKHR {
+            ty: sys::VisibilityMaskKHR::TYPE,
+            next: ptr::null_mut(),
+            vertex_capacity_input: 0,
+            vertex_count_output: 0,
+            vertices: ptr::null_mut(),
+            index_capacity_input: 0,
+            index_count_output: 0,
+            indices: ptr::null_mut(),
+        };
+        unsafe {
+            cvt((self.instance().visibility_mask().get_visibility_mask)(
+                self.as_raw(),
+                view_configuration_type,
+                view_index,
+                visibility_mask_type,
+                &mut info,
+            ))?;
+            let mut out = VisibilityMask {
+                vertices: Vec::with_capacity(info.vertex_count_output as usize),
+                indices: Vec::with_capacity(info.index_count_output as usize),
+            };
+            loop {
+                info.vertex_capacity_input = out.vertices.capacity() as u32;
+                info.index_capacity_input = out.indices.capacity() as u32;
+                match cvt((self.instance().visibility_mask().get_visibility_mask)(
+                    self.as_raw(),
+                    view_configuration_type,
+                    view_index,
+                    visibility_mask_type,
+                    &mut info,
+                )) {
+                    Ok(_) => {
+                        out.vertices.set_len(info.vertex_count_output as usize);
+                        out.indices.set_len(info.index_count_output as usize);
+                        return Ok(out);
+                    }
+                    Err(sys::Result::ERROR_SIZE_INSUFFICIENT) => {
+                        out.vertices.reserve(
+                            (info.vertex_count_output as usize)
+                                .saturating_sub(out.vertices.capacity()),
+                        );
+                        out.indices.reserve(
+                            (info.index_count_output as usize)
+                                .saturating_sub(out.indices.capacity()),
+                        );
+                    }
+                    Err(e) => {
+                        return Err(e);
+                    }
+                }
+            }
+        }
     }
 
     // Private helper
@@ -315,6 +357,13 @@ impl<G: Graphics> Session<G> {
             _marker: PhantomData,
         }
     }
+}
+
+/// Mesh obtained from `Session::get_visibility_mask`
+#[derive(Clone)]
+pub struct VisibilityMask {
+    pub vertices: Vec<Vector2f>,
+    pub indices: Vec<u32>,
 }
 
 impl<G: Graphics> Clone for Session<G> {
@@ -360,26 +409,6 @@ pub struct View {
 
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct Binding<'a> {
-    _inner: sys::ActionSuggestedBinding,
-    _marker: PhantomData<&'a ()>,
-}
-
-impl<'a> Binding<'a> {
-    #[inline]
-    pub fn new<T: ActionTy>(action: &'a Action<T>, binding: Path) -> Self {
-        Self {
-            _inner: sys::ActionSuggestedBinding {
-                action: action.as_raw(),
-                binding: binding,
-            },
-            _marker: PhantomData,
-        }
-    }
-}
-
-#[repr(transparent)]
-#[derive(Copy, Clone)]
 pub struct ActiveActionSet<'a> {
     _inner: sys::ActiveActionSet,
     _marker: PhantomData<&'a ActionSet>,
@@ -395,8 +424,6 @@ impl<'a> ActiveActionSet<'a> {
     pub fn with_subaction(action_set: &'a ActionSet, subaction_path: Path) -> Self {
         Self {
             _inner: sys::ActiveActionSet {
-                ty: sys::ActiveActionSet::TYPE,
-                next: ptr::null(),
                 action_set: action_set.as_raw(),
                 subaction_path,
             },
@@ -408,5 +435,37 @@ impl<'a> ActiveActionSet<'a> {
 impl<'a> From<&'a ActionSet> for ActiveActionSet<'a> {
     fn from(x: &'a ActionSet) -> Self {
         Self::new(x)
+    }
+}
+
+/// Handle for waiting to render a frame
+pub struct FrameWaiter {
+    session: Arc<SessionInner>,
+}
+
+impl FrameWaiter {
+    fn new<G: Graphics>(session: Session<G>) -> Self {
+        Self {
+            session: session.inner,
+        }
+    }
+
+    /// Block until rendering should begin, and return details to guide rendering
+    #[inline]
+    pub fn wait(&mut self) -> Result<FrameState> {
+        let out = unsafe {
+            let mut x = sys::FrameState::out(ptr::null_mut());
+            cvt((self.session.instance.fp().wait_frame)(
+                self.session.handle,
+                ptr::null(),
+                x.as_mut_ptr(),
+            ))?;
+            x.assume_init()
+        };
+        Ok(FrameState {
+            predicted_display_time: out.predicted_display_time,
+            predicted_display_period: out.predicted_display_period,
+            should_render: out.should_render.into(),
+        })
     }
 }

@@ -4,7 +4,7 @@ use std::{
     collections::{HashMap, HashSet},
     env,
     fs::File,
-    io::Write,
+    io::{Seek, SeekFrom, Write},
     path::{Path, PathBuf},
     rc::Rc,
 };
@@ -13,6 +13,7 @@ use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
 use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
+use regex::Regex;
 use syn::{Ident, LitByteStr};
 use xml::{
     attribute::OwnedAttribute,
@@ -22,11 +23,13 @@ use xml::{
 fn main() {
     let mut args = env::args_os();
     args.next().unwrap();
-    let source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
+    let mut source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
         Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../sys/OpenXR-SDK/specification/registry/xr.xml")
     }))
     .expect("failed to open registry XML file");
+    // Hack around leading garbage in 1.0 revision of XML
+    source.seek(SeekFrom::Start(3)).unwrap();
 
     let mut parser = Parser::new(source);
     parser.parse();
@@ -48,8 +51,7 @@ struct Parser {
     commands: IndexMap<String, Command>,
     extensions: IndexMap<String, Tag>,
     disabled_exts: HashSet<Rc<str>>,
-    api_version: Option<(u32, u32, u32)>,
-    header_version: Option<u32>,
+    api_version: Option<(u16, u16, u32)>,
     base_headers: IndexMap<String, Vec<String>>,
 }
 
@@ -70,7 +72,6 @@ impl Parser {
             extensions: IndexMap::new(),
             disabled_exts: HashSet::new(),
             api_version: None,
-            header_version: None,
             base_headers: IndexMap::new(),
         }
     }
@@ -220,7 +221,7 @@ impl Parser {
                                 self.enums.get_mut(extends).unwrap().values.push(Constant {
                                     name: name.into(),
                                     value,
-                                    comment: attr(&attributes, "comment").map(|x| x.into()),
+                                    comment: attr(&attributes, "comment").and_then(tidy_comment),
                                 });
                             } else if name.ends_with("SPEC_VERSION") {
                                 let value = attr(&attributes, "value").unwrap();
@@ -339,8 +340,12 @@ impl Parser {
                     "param" => {
                         params.push(self.parse_var("param", &attributes));
                     }
+                    "implicitexternsyncparams" => {
+                        self.finish_element();
+                    }
                     _ => {
                         eprintln!("unimplemented command element: {}", name.local_name);
+                        self.finish_element();
                     }
                 },
                 EndElement { name } => {
@@ -373,6 +378,9 @@ impl Parser {
                 } => match &name.local_name[..] {
                     "type" => {
                         self.parse_type(&attributes);
+                    }
+                    "comment" => {
+                        self.finish_element();
                     }
                     _ => {
                         eprintln!("unimplemented type element: {}", name.local_name);
@@ -447,11 +455,7 @@ impl Parser {
                     self.finish_element();
                 }
                 Characters(ch) => {
-                    if define_ty.is_some()
-                        || define_name
-                            .as_ref()
-                            .map_or(false, |x| x == "XR_HEADER_VERSION")
-                    {
+                    if define_ty.is_some() {
                         define_val = Some(ch);
                     }
                 }
@@ -470,15 +474,12 @@ impl Parser {
                 assert!(version.starts_with("("));
                 assert!(version.ends_with(")"));
                 let version = &version[1..version.len() - 1];
-                let mut iter = version.split(", ").map(|x| x.parse::<u32>().unwrap());
+                let mut iter = version.split(", ").map(|x| x.parse::<u64>().unwrap());
                 self.api_version = Some((
-                    iter.next().unwrap(),
-                    iter.next().unwrap(),
-                    iter.next().unwrap(),
+                    iter.next().unwrap() as u16,
+                    iter.next().unwrap() as u16,
+                    iter.next().unwrap() as u32,
                 ));
-            }
-            Some("XR_HEADER_VERSION") => {
-                self.header_version = Some(define_val.unwrap().parse().unwrap());
             }
             _ => {}
         }
@@ -488,6 +489,7 @@ impl Parser {
         let struct_name = attr(attrs, "name").unwrap();
         let mut members = Vec::new();
         let mut ty = None;
+        let mut mut_next = false;
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
@@ -495,25 +497,11 @@ impl Parser {
                     name, attributes, ..
                 } => match &name.local_name[..] {
                     "member" => {
-                        let mut m = self.parse_var("member", &attributes);
+                        let m = self.parse_var("member", &attributes);
                         if m.name == "type" && m.ty == "XrStructureType" {
                             ty = attr(&attributes, "values").map(|x| x.into());
-                        }
-                        if struct_name == "XrVisibilityMaskKHR"
-                            && m.ptr_depth != 0
-                            && m.name != "next"
-                        {
-                            // Work around XML bug
-                            assert!(
-                                m.len.is_none(),
-                                "bug has been fixed; remove this special case"
-                            );
-                            let len = match &m.name[..] {
-                                "vertices" => "vertexCount",
-                                "indices" => "indexCount",
-                                _ => unreachable!(),
-                            };
-                            m.len = Some(vec![len.into()]);
+                        } else if m.name == "next" && !m.is_const {
+                            mut_next = true;
                         }
                         members.push(m);
                     }
@@ -545,6 +533,7 @@ impl Parser {
                 ty,
                 extension: None,
                 parent,
+                mut_next,
             },
         );
     }
@@ -669,7 +658,7 @@ impl Parser {
     fn parse_enum_values(&mut self, attrs: &[OwnedAttribute]) {
         let name = attr(attrs, "name").unwrap();
         let ty = attr(attrs, "type");
-        if let Some(comment) = attr(attrs, "comment") {
+        if let Some(comment) = attr(attrs, "comment").and_then(tidy_comment) {
             if let Some(item) = self.enums.get_mut(name) {
                 item.comment = Some(comment.into());
             }
@@ -690,7 +679,7 @@ impl Parser {
                             item.values.push(Constant {
                                 name: name.into(),
                                 value: value.parse().unwrap(),
-                                comment: comment.map(|x| x.into()),
+                                comment: comment.and_then(tidy_comment),
                             });
                         }
                         self.finish_element();
@@ -723,7 +712,7 @@ impl Parser {
                             bitmask.values.push(Constant {
                                 name: name.into(),
                                 value: bitpos.parse().unwrap(),
-                                comment: comment.map(|x| x.into()),
+                                comment: comment.and_then(tidy_comment),
                             });
                         }
                         self.finish_element();
@@ -806,6 +795,23 @@ impl Parser {
         }
     }
 
+    fn spec_link(&self, anchor: &str) -> String {
+        let (major, minor, _) = self.api_version.unwrap();
+        format!(
+            "https://www.khronos.org/registry/OpenXR/specs/{}.{}/html/xrspec.html#{}",
+            major, minor, anchor
+        )
+    }
+
+    fn doc_link(&self, name: &str) -> String {
+        let name = if name.ends_with("Flags") {
+            format!("{}FlagBits", &name[..name.len() - "Flags".len()])
+        } else {
+            name.into()
+        };
+        format!("[{}]({})", name, self.spec_link(&name))
+    }
+
     fn generate_sys(&self) -> TokenStream {
         let consts = self.api_constants.iter().map(|(name, value)| {
             let ident = Ident::new(&name[3..], Span::call_site());
@@ -816,11 +822,6 @@ impl Parser {
 
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
-            let doc = if let Some(comment) = e.comment.as_ref() {
-                quote! {#[doc = #comment]}
-            } else {
-                quote! {}
-            };
             let values = e.values.iter().map(|v| {
                 let value_name = xr_enum_value_name(&name, &v.name);
                 let value = v.value;
@@ -834,6 +835,11 @@ impl Parser {
                     pub const #value_name: #ident = #ident(#value);
                 }
             });
+            let doc = if let Some(comment) = e.comment.as_ref() {
+                format!("{} - see {}", comment, self.doc_link(name))
+            } else {
+                format!("See {}", self.doc_link(name))
+            };
             let debug_cases = e.values.iter().map(|v| {
                 let ident = xr_enum_value_name(&name, &v.name);
                 let name = ident.to_string();
@@ -847,7 +853,8 @@ impl Parser {
                     let reason = v.comment.as_ref().map_or_else(
                         || ident.to_string(),
                         |x| {
-                            let mut reason = x.trim().to_lowercase();
+                            let mut reason = x.to_string();
+                            reason.get_mut(0..1).unwrap().make_ascii_lowercase();
                             assert!(reason.ends_with("."));
                             reason.truncate(reason.len() - 1);
                             reason
@@ -877,7 +884,7 @@ impl Parser {
                 quote! {}
             };
             quote! {
-                #doc
+                #[doc = #doc]
                 #[repr(transparent)]
                 #[derive(Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(i32);
@@ -903,9 +910,9 @@ impl Parser {
         let bitmasks = self.bitmasks.iter().map(|(name, bitmask)| {
             let ident = xr_ty_name(name);
             let doc = if let Some(comment) = bitmask.comment.as_ref() {
-                quote! {#[doc = #comment]}
+                format!("{} - see {}", comment, self.doc_link(name))
             } else {
-                quote! {}
+                format!("See {}", self.doc_link(name))
             };
             let values = bitmask.values.iter().map(|v| {
                 let value_name = xr_bitmask_value_name(&name, &v.name);
@@ -921,7 +928,7 @@ impl Parser {
                 }
             });
             quote! {
-                #doc
+                #[doc = #doc]
                 #[repr(transparent)]
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
@@ -934,8 +941,10 @@ impl Parser {
         });
 
         let handles = self.handles.iter().map(|name| {
-            let ident = xr_ty_name(&name);
+            let ident = xr_ty_name(name);
+            let doc = format!("See {}", self.doc_link(name));
             quote! {
+                #[doc = #doc]
                 #[repr(transparent)]
                 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
                 pub struct #ident(u64);
@@ -952,23 +961,46 @@ impl Parser {
                     pub #ident: #ty,
                 }
             });
-            let ext_note = if let Some(ref ext) = s.extension {
+            let doc = if let Some(ref ext) = s.extension {
                 if self.disabled_exts.contains(ext) {
                     return quote! {};
                 }
-                let doc = format!("From {}", ext);
-                quote! { #[doc = #doc] }
+                format!(
+                    "See {} - defined by [{}]({})",
+                    self.doc_link(name),
+                    ext,
+                    self.spec_link(ext)
+                )
             } else {
-                quote! {}
+                format!("See {}", self.doc_link(name))
             };
             let conditions = conditions(&name);
             let ty = if let Some(ref ty) = s.ty {
                 let conditions2 = conditions.clone();
                 let ty = xr_enum_value_name("XrStructureType", ty);
+                let out = if s.mut_next {
+                    quote! {
+                        /// Construct a partially-initialized value suitable for passing to OpenXR
+                        #[inline]
+                        pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+                            let mut x = MaybeUninit::<Self>::uninit();
+                            unsafe {
+                                (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                                    ty: Self::TYPE,
+                                    next,
+                                });
+                            }
+                            x
+                        }
+                    }
+                } else {
+                    quote! {}
+                };
                 quote! {
                     #conditions2
                     impl #ident {
                         pub const TYPE: StructureType = StructureType::#ty;
+                        #out
                     }
                 }
             } else {
@@ -977,7 +1009,7 @@ impl Parser {
             quote! {
                 #[repr(C)]
                 #[derive(Copy, Clone)]
-                #ext_note
+                #[doc = #doc]
                 #conditions
                 pub struct #ident {
                     #(#members)*
@@ -998,21 +1030,25 @@ impl Parser {
                         #ident: #ty
                     }
                 });
-                let ext_note = if let Some(ref ext) = command.extension {
+                let foo = if let Some(ref ext) = command.extension {
                     if self.disabled_exts.contains(ext) {
                         return (quote! {}, quote! {});
                     }
-                    let doc = format!("From {}", ext);
-                    quote! { #[doc = #doc] }
+                    format!(
+                        "See {} - defined by [{}]({})",
+                        self.doc_link(name),
+                        ext,
+                        self.spec_link(ext)
+                    )
                 } else {
-                    quote! {}
+                    format!("See {}", self.doc_link(name))
                 };
                 let conditions = conditions(&name);
                 let conditions2 = conditions.clone();
                 let params2 = params.clone();
                 let pfn_def = quote! {
                     #conditions
-                    #ext_note
+                    #[doc = #foo]
                     pub type #ident = unsafe extern "system" fn(#(#params),*) -> Result;
                 };
                 let proto = if command.extension.is_some() {
@@ -1054,13 +1090,13 @@ impl Parser {
         });
 
         let (major, minor, patch) = self.api_version.unwrap();
-        let header_version = self.header_version.unwrap();
 
         quote! {
             //! Automatically generated code; do not edit!
 
             #![allow(non_upper_case_globals)]
             use std::fmt;
+            use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};
             use libc::timespec;
 
@@ -1069,7 +1105,6 @@ impl Parser {
             use crate::*;
 
             pub const CURRENT_API_VERSION: Version = Version::new(#major, #minor, #patch);
-            pub const HEADER_VERSION: u32 = #header_version;
 
             #(#consts)*
             #(#enums)*
@@ -1274,7 +1309,7 @@ impl Parser {
             } else {
                 quote! {
                     sys::StructureType::#tag => {
-                        let typed = &*(raw as *const _ as *const sys::#raw_ident);
+                        let typed = &*(raw as *const sys::#raw_ident);
                         Event::#ident(#ident::new(typed))
                     }
                 }
@@ -1300,8 +1335,6 @@ impl Parser {
         let whitelist = [
             "XrCompositionLayerProjectionView",
             "XrSwapchainSubImage",
-            "XrFrameWaitInfo",
-            "XrFrameBeginInfo",
             "XrActionSetCreateInfo",
             "XrActionCreateInfo",
         ]
@@ -1319,82 +1352,20 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
-            use std::{sync::Arc, os::raw::c_char};
-
+            use std::os::raw::c_char;
             pub use sys::{#(#reexports),*};
 
             use crate::*;
 
-            struct InstanceInner {
-                entry: Entry,
-                handle: sys::Instance,
-                raw: raw::Instance,
-                exts: InstanceExtensions,
-            }
-
-            impl Drop for InstanceInner {
-                fn drop(&mut self) {
-                    unsafe {
-                        (self.raw.destroy_instance)(self.handle);
-                    }
-                }
-            }
-
-            pub struct Instance {
-                inner: Arc<InstanceInner>,
-            }
-
-            impl Instance {
-                /// Take ownership of an existing instance handle
-                ///
-                /// # Safety
-                ///
-                /// `handle` must be the instance handle that was used to load `exts`.
-                pub unsafe fn from_raw(entry: Entry, handle: sys::Instance, exts: InstanceExtensions) -> Result<Self> {
-                    Ok(Self {
-                        inner: Arc::new(InstanceInner {
-                            raw: raw::Instance::load(&entry, handle)?,
-                            exts,
-                            handle,
-                            entry,
-                        }),
-                    })
-                }
-
-                #[inline]
-                pub fn as_raw(&self) -> sys::Instance {
-                    self.inner.handle
-                }
-
-                /// Access the entry points used to create self
-                #[inline]
-                pub fn entry(&self) -> &Entry {
-                    &self.inner.entry
-                }
-
-                /// Access the core function pointers
-                #[inline]
-                pub fn fp(&self) -> &raw::Instance {
-                    &self.inner.raw
-                }
-
-                /// Access the internal extension function pointers
-                #[inline]
-                pub fn exts(&self) -> &InstanceExtensions {
-                    &self.inner.exts
-                }
-
-                // Private to ensure at most one `Instance` exists externally for safety
-                pub(crate) fn clone(&self) -> Self {
-                    Self {
-                        inner: self.inner.clone()
-                    }
-                }
-            }
-
+            /// A subset of known extensions
+            ///
+            /// Do not match on this exhaustively, as new fields are not considered breaking
+            /// changes.
             #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
             pub struct ExtensionSet {
                 #(#ext_set_fields)*
+                #[doc(hidden)]
+                pub _non_exhaustive: (),
             }
 
             impl ExtensionSet {
@@ -1449,8 +1420,8 @@ impl Parser {
                 ///
                 /// `raw` must refer to an `EventDataBuffer` populated by a successful call to
                 /// `xrPollEvent`, which has not been moved since.
-                pub unsafe fn from_raw(raw: &'a sys::EventDataBuffer) -> Option<Self> {
-                    Some(match raw.ty {
+                pub unsafe fn from_raw(raw: *const sys::EventDataBuffer) -> Option<Self> {
+                    Some(match (raw as *const sys::BaseInStructure).read().ty {
                         #(#event_decodes)*
                         _ => { return None; }
                     })
@@ -1576,7 +1547,7 @@ impl Parser {
                         &self.inner
                     }
 
-                    #(#setters)*
+                    #setters
                 }
                 impl #type_params Deref for #ident #type_args {
                     type Target = #base_ident #type_args;
@@ -1764,7 +1735,7 @@ impl Parser {
                     &self.inner
                 }
 
-                #(#setters)*
+                #setters
             }
         }
     }
@@ -1918,6 +1889,7 @@ struct Struct {
     extension: Option<Rc<str>>,
     ty: Option<String>,
     parent: Option<String>,
+    mut_next: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -1959,31 +1931,18 @@ fn split_ty_ext(name: &str) -> (&str, &str) {
 
 fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
     let (ty, ext) = split_ty_ext(ty);
-    let (prefix_len, extra_prefix) = match ty {
-        "XrStructureType" => ("XR_TYPE_".len(), None),
-        "XrPerfSettingsNotificationLevel" => ("XR_PERF_SETTINGS_NOTIF_LEVEL_".len(), None),
-        "XrResult" => ("XR_".len(), None),
-        "XrActionType" => {
-            if name.starts_with("XR_OUTPUT") {
-                ("XR_OUTPUT_ACTION_TYPE_".len(), Some("OUTPUT"))
-            } else {
-                ("XR_INPUT_ACTION_TYPE_".len(), Some("INPUT"))
-            }
-        }
-        _ => (ty.to_shouty_snake_case().len() + 1, None),
+    let prefix_len = match ty {
+        "XrStructureType" => "XR_TYPE_".len(),
+        "XrPerfSettingsNotificationLevel" => "XR_PERF_SETTINGS_NOTIF_LEVEL_".len(),
+        "XrResult" => "XR_".len(),
+        _ => ty.to_shouty_snake_case().len() + 1,
     };
     let end = if ext.len() != 0 {
         name.len() - ext.len() - 1
     } else {
         name.len()
     };
-    let name = &name[prefix_len..end];
-    let name = if let Some(x) = extra_prefix {
-        format!("{}_{}", x, name)
-    } else {
-        name.into()
-    };
-    Ident::new(&name, Span::call_site())
+    Ident::new(&name[prefix_len..end], Span::call_site())
 }
 
 fn xr_bitmask_value_name(ty: &str, name: &str) -> Ident {
@@ -2100,4 +2059,17 @@ fn c_name(name: &str) -> LitByteStr {
     let mut name = name.as_bytes().to_vec();
     name.push(0);
     LitByteStr::new(&name, Span::call_site())
+}
+
+fn tidy_comment(s: &str) -> Option<String> {
+    let s = s.trim();
+    if s.is_empty() {
+        return None;
+    }
+
+    let strip_macros = Regex::new(r"\S+:(\S+)").unwrap();
+    let strip_links = Regex::new(r"<<\S+, ?([^>]+)>>").unwrap();
+
+    let s = strip_macros.replace_all(s, "$1");
+    Some(strip_links.replace_all(&s, "$1").into())
 }

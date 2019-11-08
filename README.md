@@ -6,16 +6,16 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE-APACHE)
 
 Rust bindings for the OpenXR virtual/augmented reality runtime
-API. Refer to [the provisional
-specification](https://www.khronos.org/registry/OpenXR/specs/0.90/html/xrspec.html)
+API. Refer to [the
+specification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html)
 for detailed documentation on individual API calls.
 
 ## `openxr` 
 
 The high-level bindings provide abstractions focusing on ergonomics
-and safety in exchange for minimal overhead. Escape hatches to the raw
-API are exposed to support unforeseen requirements, and patterns that
-cannot be efficiently exposed in safe terms are preserved as unsafe.
+and safety. Escape hatches to the raw API are exposed to support
+unforeseen requirements, and patterns that cannot be efficiently
+exposed in safe terms are preserved as unsafe.
 
 The crate exposes a number of cargo features:
 - `static` builds in the Khronos OpenXR loader, which can then be
@@ -25,9 +25,9 @@ The crate exposes a number of cargo features:
   implementation at run time. This allows for cases where a built-in
   Khronos loader, normally responsible for that task, cannot be used.
 - `linked` enables access to an OpenXR implementation linked in by the
-  application. This is useful when the target environment guarantees
-  the presence of an OpenXR implementation at a specific location,
-  making the loader redundant.
+  application. As opposed to `static`, this is useful when the target
+  environment guarantees the presence of an OpenXR implementation or
+  loader at a specific location, making a built-in loader redundant.
 - `nalgebra` exposes `Into` and `From` impls for converting to and
   from nalgebra types where appropriate.
 

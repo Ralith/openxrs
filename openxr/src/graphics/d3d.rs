@@ -4,39 +4,39 @@ use sys::platform::*;
 
 use crate::*;
 
-/// The Vulkan graphics API
+/// The D3D11 graphics API
 ///
-/// See [`XR_KHR_vulkan_enable`] for safety details.
+/// See [`XR_KHR_d3d11_enable`] for safety details.
 ///
-/// [`XR_KHR_vulkan_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable
-pub enum Vulkan {}
+/// [`XR_KHR_d3d_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable
+pub enum D3D11 {}
 
-impl Graphics for Vulkan {
+impl Graphics for D3D11 {
     type Requirements = Requirements;
-    type Format = VkFormat;
     type SessionCreateInfo = SessionCreateInfo;
-    type SwapchainImage = VkImage;
+    type Format = u32;
+    type SwapchainImage = *mut ID3D11Texture2D;
 
-    fn raise_format(x: i64) -> Self::Format {
+    fn raise_format(x: i64) -> u32 {
         x as _
     }
-    fn lower_format(x: Self::Format) -> i64 {
-        x as _
+    fn lower_format(x: u32) -> i64 {
+        x.into()
     }
 
-    fn requirements(instance: &Instance, system: SystemId) -> Result<Requirements> {
+    fn requirements(inst: &Instance, system: SystemId) -> Result<Requirements> {
         let out = unsafe {
-            let mut x = sys::GraphicsRequirementsVulkanKHR::out(ptr::null_mut());
-            cvt((instance.vulkan().get_vulkan_graphics_requirements)(
-                instance.as_raw(),
+            let mut x = sys::GraphicsRequirementsD3D11KHR::out(ptr::null_mut());
+            cvt((inst.d3d11().get_d3d11_graphics_requirements)(
+                inst.as_raw(),
                 system,
                 x.as_mut_ptr(),
             ))?;
             x.assume_init()
         };
         Ok(Requirements {
-            min_api_version_supported: out.min_api_version_supported,
-            max_api_version_supported: out.max_api_version_supported,
+            adapter_luid: out.adapter_luid,
+            min_feature_level: out.min_feature_level,
         })
     }
 
@@ -45,14 +45,10 @@ impl Graphics for Vulkan {
         system: SystemId,
         info: &Self::SessionCreateInfo,
     ) -> Result<sys::Session> {
-        let binding = sys::GraphicsBindingVulkanKHR {
-            ty: sys::GraphicsBindingVulkanKHR::TYPE,
+        let binding = sys::GraphicsBindingD3D11KHR {
+            ty: sys::GraphicsBindingD3D11KHR::TYPE,
             next: ptr::null(),
-            instance: info.instance,
-            physical_device: info.physical_device,
             device: info.device,
-            queue_family_index: info.queue_family_index,
-            queue_index: info.queue_index,
         };
         let info = sys::SessionCreateInfo {
             ty: sys::SessionCreateInfo::TYPE,
@@ -73,10 +69,10 @@ impl Graphics for Vulkan {
         swapchain: &Swapchain<Self>,
     ) -> Result<Vec<Self::SwapchainImage>> {
         let images = get_arr_init(
-            sys::SwapchainImageVulkanKHR {
-                ty: sys::SwapchainImageVulkanKHR::TYPE,
+            sys::SwapchainImageD3D11KHR {
+                ty: sys::SwapchainImageD3D11KHR::TYPE,
                 next: ptr::null_mut(),
-                image: 0,
+                texture: ptr::null_mut(),
             },
             |capacity, count, buf| unsafe {
                 (swapchain.instance().fp().enumerate_swapchain_images)(
@@ -87,21 +83,17 @@ impl Graphics for Vulkan {
                 )
             },
         )?;
-        Ok(images.into_iter().map(|x| x.image as _).collect())
+        Ok(images.into_iter().map(|x| x.texture).collect())
     }
 }
 
 #[derive(Copy, Clone)]
 pub struct Requirements {
-    pub min_api_version_supported: Version,
-    pub max_api_version_supported: Version,
+    pub adapter_luid: LUID,
+    pub min_feature_level: D3D_FEATURE_LEVEL,
 }
 
 #[derive(Copy, Clone)]
 pub struct SessionCreateInfo {
-    pub instance: VkInstance,
-    pub physical_device: VkPhysicalDevice,
-    pub device: VkDevice,
-    pub queue_family_index: u32,
-    pub queue_index: u32,
+    pub device: *mut ID3D11Device,
 }

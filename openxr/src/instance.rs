@@ -1,27 +1,72 @@
-use std::{ffi::CString, mem, ptr};
+use std::{
+    ffi::CString,
+    marker::PhantomData,
+    mem::{self, MaybeUninit},
+    ptr,
+    sync::{Arc, Mutex},
+};
 
 use sys::platform::*;
 
 use crate::*;
 
+/// Root object mediating an application's interaction with OpenXR
+///
+/// Constructed from an `Entry`.
+#[derive(Clone)]
+pub struct Instance {
+    inner: Arc<InstanceInner>,
+}
+
 impl Instance {
+    /// Take ownership of an existing instance handle
+    ///
+    /// # Safety
+    ///
+    /// `handle` must be the instance handle that was used to load `exts`.
+    pub unsafe fn from_raw(
+        entry: Entry,
+        handle: sys::Instance,
+        exts: InstanceExtensions,
+    ) -> Result<Self> {
+        Ok(Self {
+            inner: Arc::new(InstanceInner {
+                raw: raw::Instance::load(&entry, handle)?,
+                exts,
+                handle,
+                entry,
+                set_name_lock: Mutex::new(()),
+            }),
+        })
+    }
+
+    #[inline]
+    pub fn as_raw(&self) -> sys::Instance {
+        self.inner.handle
+    }
+
+    /// Access the entry points used to create self
+    #[inline]
+    pub fn entry(&self) -> &Entry {
+        &self.inner.entry
+    }
+
+    /// Access the core function pointers
+    #[inline]
+    pub fn fp(&self) -> &raw::Instance {
+        &self.inner.raw
+    }
+
+    /// Access the internal extension function pointers
+    #[inline]
+    pub fn exts(&self) -> &InstanceExtensions {
+        &self.inner.exts
+    }
+
     /// Set the debug name of this `Instance`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
-        if let Some(fp) = self.exts().ext_debug_utils.as_ref() {
-            let name = CString::new(name).unwrap();
-            let info = sys::DebugUtilsObjectNameInfoEXT {
-                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
-                next: ptr::null(),
-                object_type: ObjectType::INSTANCE,
-                object_handle: self.as_raw().into_raw(),
-                object_name: name.as_ptr(),
-            };
-            unsafe {
-                cvt((fp.set_debug_utils_object_name)(self.as_raw(), &info))?;
-            }
-        }
-        Ok(())
+        self.set_name_raw(self.as_raw().into_raw(), name)
     }
 
     #[inline]
@@ -106,18 +151,18 @@ impl Instance {
 
     /// Construct a `Path` from a string
     ///
-    /// # Safety
-    ///
-    /// A returned `Path` must not used with any other instance.
+    /// A `Path` should only be used with the instance that produced it.
     #[inline]
-    pub unsafe fn string_to_path(&self, string: &str) -> Result<Path> {
+    pub fn string_to_path(&self, string: &str) -> Result<Path> {
         let string = CString::new(string).map_err(|_| sys::Result::ERROR_PATH_FORMAT_INVALID)?;
         let mut out = Path::NULL;
-        cvt((self.fp().string_to_path)(
-            self.as_raw(),
-            string.as_ptr(),
-            &mut out,
-        ))?;
+        unsafe {
+            cvt((self.fp().string_to_path)(
+                self.as_raw(),
+                string.as_ptr(),
+                &mut out,
+            ))?;
+        }
         Ok(out)
     }
 
@@ -180,6 +225,17 @@ impl Instance {
 
     /// Create a session for a particular graphics API
     ///
+    /// Returns three separate objects:
+    /// - `Session` exposes most session-related operations and is cheap to clone
+    /// - `FrameWaiter` allows blocking until it is time to begin graphics device work, and cannot
+    ///   be cloned
+    /// - `FrameStream` allows callers to mark the beginning of graphics device work and submit
+    ///   completed frames for presentation
+    ///
+    /// These objects are separate to ensure multithreaded pipelined renderers can safely wait for
+    /// the cue to begin a new frame while a prior frame is still being rendered without additional
+    /// synchronization.
+    ///
     /// # Safety
     ///
     /// The requirements documented by the graphics API extension must be respected. Among other
@@ -190,15 +246,9 @@ impl Instance {
         &self,
         system: SystemId,
         info: &G::SessionCreateInfo,
-    ) -> Result<(Session<G>, FrameStream<G>)> {
+    ) -> Result<(Session<G>, FrameWaiter, FrameStream<G>)> {
         let handle = G::create_session(self, system, info)?;
         Ok(Session::from_raw(self.clone(), handle))
-    }
-
-    /// Create a session without graphics support
-    #[inline]
-    pub fn create_session_headless(&self, system: SystemId) -> Result<Session<Headless>> {
-        unsafe { Ok(self.create_session(system, &())?.0) }
     }
 
     /// Get the next event, if available
@@ -210,12 +260,15 @@ impl Instance {
             // Work around a shortcoming in NLL as of 2019-03-22
             let storage: *mut EventDataBuffer = storage;
             loop {
-                let status = cvt((self.fp().poll_event)(self.as_raw(), &mut (*storage).inner))?;
+                let status = cvt((self.fp().poll_event)(
+                    self.as_raw(),
+                    (*storage).inner.as_mut_ptr(),
+                ))?;
                 if status == sys::Result::EVENT_UNAVAILABLE {
                     return Ok(None);
                 }
                 debug_assert_eq!(status, sys::Result::SUCCESS);
-                if let x @ Some(_) = Event::from_raw(&(*storage).inner) {
+                if let x @ Some(_) = Event::from_raw((*storage).inner.as_ptr()) {
                     return Ok(x);
                 }
             }
@@ -240,20 +293,16 @@ impl Instance {
         system: SystemId,
         ty: ViewConfigurationType,
     ) -> Result<ViewConfigurationProperties> {
-        let mut out;
-        unsafe {
-            out = sys::ViewConfigurationProperties {
-                ty: sys::ViewConfigurationProperties::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+        let out = unsafe {
+            let mut x = sys::ViewConfigurationProperties::out(ptr::null_mut());
             cvt((self.fp().get_view_configuration_properties)(
                 self.as_raw(),
                 system,
                 ty,
-                &mut out,
+                x.as_mut_ptr(),
             ))?;
-        }
+            x.assume_init()
+        };
         Ok(ViewConfigurationProperties {
             view_configuration_type: out.view_configuration_type,
             fov_mutable: out.fov_mutable != sys::FALSE,
@@ -267,13 +316,7 @@ impl Instance {
         ty: ViewConfigurationType,
     ) -> Result<Vec<ViewConfigurationView>> {
         let views = get_arr_init(
-            unsafe {
-                sys::ViewConfigurationView {
-                    ty: sys::ViewConfigurationView::TYPE,
-                    next: ptr::null_mut(),
-                    ..mem::uninitialized()
-                }
-            },
+            sys::ViewConfigurationView::out(ptr::null_mut()),
             |capacity, count, buf| unsafe {
                 (self.fp().enumerate_view_configuration_views)(
                     self.as_raw(),
@@ -287,13 +330,16 @@ impl Instance {
         )?;
         Ok(views
             .into_iter()
-            .map(|x| ViewConfigurationView {
-                recommended_image_rect_width: x.recommended_image_rect_width,
-                max_image_rect_width: x.max_image_rect_width,
-                recommended_image_rect_height: x.recommended_image_rect_height,
-                max_image_rect_height: x.max_image_rect_height,
-                recommended_swapchain_sample_count: x.recommended_swapchain_sample_count,
-                max_swapchain_sample_count: x.max_swapchain_sample_count,
+            .map(|x| {
+                let x = unsafe { x.assume_init() };
+                ViewConfigurationView {
+                    recommended_image_rect_width: x.recommended_image_rect_width,
+                    max_image_rect_width: x.max_image_rect_width,
+                    recommended_image_rect_height: x.recommended_image_rect_height,
+                    max_image_rect_height: x.max_image_rect_height,
+                    recommended_swapchain_sample_count: x.recommended_swapchain_sample_count,
+                    max_swapchain_sample_count: x.max_swapchain_sample_count,
+                }
             })
             .collect())
     }
@@ -302,9 +348,17 @@ impl Instance {
     pub fn enumerate_environment_blend_modes(
         &self,
         system: SystemId,
+        view_configuration_type: ViewConfigurationType,
     ) -> Result<Vec<EnvironmentBlendMode>> {
         get_arr(|cap, count, buf| unsafe {
-            (self.fp().enumerate_environment_blend_modes)(self.as_raw(), system, cap, count, buf)
+            (self.fp().enumerate_environment_blend_modes)(
+                self.as_raw(),
+                system,
+                view_configuration_type,
+                cap,
+                count,
+                buf,
+            )
         })
     }
 
@@ -313,11 +367,13 @@ impl Instance {
     /// Requires KHR_convert_timespec_time. Most applications should use times from
     /// `FrameStream::wait` and `Action::state` instead.
     #[inline]
+    #[cfg(not(windows))]
     pub fn now(&self) -> Result<Time> {
         unsafe {
-            let mut now = mem::uninitialized();
-            libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now);
-            let mut out = mem::uninitialized();
+            let mut now = MaybeUninit::uninit();
+            libc::clock_gettime(libc::CLOCK_MONOTONIC, now.as_mut_ptr());
+            let now = now.assume_init();
+            let mut out = MaybeUninit::uninit();
             cvt((self
                 .exts()
                 .khr_convert_timespec_time
@@ -326,9 +382,83 @@ impl Instance {
                 .convert_timespec_time_to_time)(
                 self.as_raw(),
                 &now,
+                out.as_mut_ptr(),
+            ))?;
+            Ok(out.assume_init())
+        }
+    }
+
+    /// Obtain the current `Time`
+    ///
+    /// Requires KHR_win32_convert_performance_counter_time. Most applications should use
+    /// times from `FrameStream::wait` and `Action::state` instead.
+    #[inline]
+    #[cfg(windows)]
+    pub fn now(&self) -> Result<Time> {
+        unsafe {
+            let mut now = MaybeUninit::uninit();
+            winapi::um::profileapi::QueryPerformanceCounter(now.as_mut_ptr());
+            let now = now.assume_init();
+            let mut out = MaybeUninit::uninit();
+            cvt((self
+                .exts()
+                .khr_win32_convert_performance_counter_time
+                .as_ref()
+                .expect("KHR_win32_convert_performance_counter_time not loaded")
+                .convert_win32_performance_counter_to_time)(
+                self.as_raw(),
+                &now,
+                out.as_mut_ptr(),
+            ))?;
+            Ok(out.assume_init())
+        }
+    }
+
+    /// Specify default bindings for a well-known input archetype
+    #[inline]
+    pub fn suggest_interaction_profile_bindings(
+        &self,
+        interaction_profile: Path,
+        bindings: &[Binding],
+    ) -> Result<()> {
+        let info = sys::InteractionProfileSuggestedBinding {
+            ty: sys::InteractionProfileSuggestedBinding::TYPE,
+            next: ptr::null(),
+            interaction_profile,
+            count_suggested_bindings: bindings.len() as u32,
+            suggested_bindings: bindings.as_ptr() as *const _ as _,
+        };
+        unsafe {
+            cvt((self.fp().suggest_interaction_profile_bindings)(
+                self.as_raw(),
+                &info,
+            ))?;
+        }
+        Ok(())
+    }
+
+    /// Allocate a new [`ActionSet`]
+    ///
+    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#input-action-creation
+    #[inline]
+    pub fn create_action_set(
+        &self,
+        name: &str,
+        localized_name: &str,
+        priority: u32,
+    ) -> Result<ActionSet> {
+        let info = builder::ActionSetCreateInfo::new()
+            .action_set_name(name)
+            .localized_action_set_name(localized_name)
+            .priority(priority);
+        unsafe {
+            let mut out = sys::ActionSet::NULL;
+            cvt((self.fp().create_action_set)(
+                self.as_raw(),
+                info.as_raw(),
                 &mut out,
             ))?;
-            Ok(out)
+            Ok(ActionSet::from_raw(self.clone(), out))
         }
     }
 
@@ -336,6 +466,26 @@ impl Instance {
     // Internal helpers
     //
 
+    pub(crate) fn set_name_raw(&self, object: u64, name: &str) -> Result<()> {
+        if let Some(fp) = self.exts().ext_debug_utils.as_ref() {
+            let name = CString::new(name).unwrap();
+            let info = sys::DebugUtilsObjectNameInfoEXT {
+                ty: sys::DebugUtilsObjectNameInfoEXT::TYPE,
+                next: ptr::null(),
+                object_type: ObjectType::INSTANCE,
+                object_handle: object,
+                object_name: name.as_ptr(),
+            };
+            // The following function call must be synchronized for each object and shouldn't be
+            // performance-relevant, so we use a conservative instance-global lock for simplicity.
+            let guard = self.inner.set_name_lock.lock().unwrap();
+            unsafe {
+                cvt((fp.set_debug_utils_object_name)(self.as_raw(), &info))?;
+            }
+            drop(guard);
+        }
+        Ok(())
+    }
     pub(crate) fn vulkan(&self) -> &raw::VulkanEnableKHR {
         self.exts()
             .khr_vulkan_enable
@@ -348,11 +498,40 @@ impl Instance {
             .as_ref()
             .expect("KHR_opengl_enable not loaded")
     }
+    #[cfg(windows)]
+    pub(crate) fn d3d11(&self) -> &raw::D3d11EnableKHR {
+        self.exts()
+            .khr_d3d11_enable
+            .as_ref()
+            .expect("KHR_d3d11_enable not loaded")
+    }
+    pub(crate) fn visibility_mask(&self) -> &raw::VisibilityMaskKHR {
+        self.exts()
+            .khr_visibility_mask
+            .as_ref()
+            .expect("KHR_visibility_mask not loaded")
+    }
+}
+
+struct InstanceInner {
+    entry: Entry,
+    handle: sys::Instance,
+    raw: raw::Instance,
+    exts: InstanceExtensions,
+    set_name_lock: Mutex<()>,
+}
+
+impl Drop for InstanceInner {
+    fn drop(&mut self) {
+        unsafe {
+            (self.raw.destroy_instance)(self.handle);
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct InstanceProperties {
-    pub runtime_version: u32,
+    pub runtime_version: Version,
     pub runtime_name: String,
 }
 
@@ -377,7 +556,7 @@ pub struct ViewConfigurationProperties {
     pub fov_mutable: bool,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct ViewConfigurationView {
     pub recommended_image_rect_width: u32,
     pub max_image_rect_width: u32,
@@ -388,17 +567,38 @@ pub struct ViewConfigurationView {
 }
 
 pub struct EventDataBuffer {
-    inner: sys::EventDataBuffer,
+    inner: MaybeUninit<sys::EventDataBuffer>,
 }
 
 impl EventDataBuffer {
     pub fn new() -> Self {
-        Self {
-            inner: sys::EventDataBuffer {
+        let mut inner = MaybeUninit::uninit();
+        unsafe {
+            (inner.as_mut_ptr() as *mut sys::BaseInStructure).write(sys::BaseInStructure {
                 ty: sys::EventDataBuffer::TYPE,
-                next: ptr::null_mut(),
-                ..unsafe { mem::uninitialized() }
+                next: ptr::null(),
+            });
+        }
+        Self { inner }
+    }
+}
+
+#[repr(transparent)]
+#[derive(Copy, Clone)]
+pub struct Binding<'a> {
+    _inner: sys::ActionSuggestedBinding,
+    _marker: PhantomData<&'a ()>,
+}
+
+impl<'a> Binding<'a> {
+    #[inline]
+    pub fn new<T: ActionTy>(action: &'a Action<T>, binding: Path) -> Self {
+        Self {
+            _inner: sys::ActionSuggestedBinding {
+                action: action.as_raw(),
+                binding: binding,
             },
+            _marker: PhantomData,
         }
     }
 }

@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use std::fmt;
 
 #[macro_use]
@@ -5,8 +6,8 @@ mod support;
 mod generated;
 pub mod platform;
 
-#[cfg(feature = "nalgebra")]
-mod nalgebra;
+#[cfg(feature = "mint")]
+mod mint_impls;
 
 // Hand-written bindings for cases which are too few or weird to bother automating
 
@@ -44,11 +45,11 @@ impl From<bool> for Bool32 {
 #[repr(transparent)]
 pub struct Time(i64);
 impl Time {
-    pub fn from_raw(x: i64) -> Self {
+    pub fn from_nanos(x: i64) -> Self {
         Self(x)
     }
 
-    pub fn as_nanos(&self) -> i64 {
+    pub fn as_nanos(self) -> i64 {
         self.0
     }
 }
@@ -71,11 +72,11 @@ impl std::ops::Sub<Time> for Time {
 #[repr(transparent)]
 pub struct Duration(i64);
 impl Duration {
-    pub fn from_raw(x: i64) -> Self {
+    pub fn from_nanos(x: i64) -> Self {
         Self(x)
     }
 
-    pub fn as_nanos(&self) -> i64 {
+    pub fn as_nanos(self) -> i64 {
         self.0
     }
 }
@@ -98,8 +99,15 @@ impl From<Duration> for std::time::Duration {
     }
 }
 
+impl TryFrom<std::time::Duration> for Duration {
+    type Error = std::num::TryFromIntError;
+    fn try_from(x: std::time::Duration) -> std::result::Result<Self, Self::Error> {
+        Ok(Self::from_nanos(i64::try_from(x.as_nanos())?))
+    }
+}
+
 wrapper! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Path(u64)
 }
 
@@ -108,7 +116,7 @@ impl Path {
 }
 
 wrapper! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
     SystemId(u64)
 }
 
@@ -118,28 +126,34 @@ impl SystemId {
 
 wrapper! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-    Version(u32)
+    Version(u64)
 }
 
 impl Version {
     #[inline]
-    pub const fn new(major: u32, minor: u32, patch: u32) -> Self {
-        Self(major << 22 | minor << 12 | patch)
+    pub const fn new(major: u16, minor: u16, patch: u32) -> Self {
+        Self((major as u64) << 48 | (minor as u64) << 32 | patch as u64)
     }
 
     #[inline]
-    pub const fn major(self) -> u32 {
-        self.0 >> 22
+    pub const fn major(self) -> u16 {
+        (self.0 >> 48) as u16
     }
 
     #[inline]
-    pub const fn minor(self) -> u32 {
-        (self.0 >> 12) & 0x3fff
+    pub const fn minor(self) -> u16 {
+        (self.0 >> 32) as u16
     }
 
     #[inline]
     pub const fn patch(self) -> u32 {
-        self.0 & 0xfff
+        self.0 as u32
+    }
+}
+
+impl From<(u16, u16, u32)> for Version {
+    fn from(other: (u16, u16, u32)) -> Self {
+        Self::new(other.0, other.1, other.2)
     }
 }
 
@@ -150,5 +164,25 @@ impl fmt::Display for Version {
 }
 
 pub const FREQUENCY_UNSPECIFIED: f32 = 0.0;
+
+impl Quaternionf {
+    pub const IDENTITY: Quaternionf = Quaternionf {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        w: 1.0,
+    };
+}
+
+impl Posef {
+    pub const IDENTITY: Posef = Posef {
+        orientation: Quaternionf::IDENTITY,
+        position: Vector3f {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+    };
+}
 
 pub use generated::*;

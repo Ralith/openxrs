@@ -1,4 +1,4 @@
-use std::{ffi::CString, mem, ptr, sync::Arc};
+use std::{ffi::CString, ptr, sync::Arc};
 
 use crate::*;
 
@@ -27,11 +27,15 @@ impl Space {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid action space handle associated with `session`.
+    /// `handle` must be a valid action space handle for `action` and associated with `session`.
     #[inline]
-    pub unsafe fn action_from_raw(action: Action<Posef>, handle: sys::Space) -> Self {
+    pub unsafe fn action_from_raw<G: Graphics>(
+        action: Action<Posef>,
+        session: Session<G>,
+        handle: sys::Space,
+    ) -> Self {
         Self {
-            session: action.set().session().clone(),
+            session: session.inner,
             _action_guard: Some(action),
             handle,
         }
@@ -52,6 +56,7 @@ impl Space {
     /// Set the debug name of this `Space`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
+        // We don't forward to the locking version on Instance because this object can't be cloned
         if let Some(fp) = self.instance().exts().ext_debug_utils.as_ref() {
             let name = CString::new(name).unwrap();
             let info = sys::DebugUtilsObjectNameInfoEXT {
@@ -71,36 +76,58 @@ impl Space {
         Ok(())
     }
 
-    /// Determine the physical relationship of a space relative to a base space at a specified time,
-    /// if currently known by the runtime.
+    /// Determine the location of a space relative to a base space at a specified time, if currently
+    /// known by the runtime.
     #[inline]
-    pub fn locate(&self, base: &Space, time: Time) -> Result<SpaceRelation> {
+    pub fn locate(&self, base: &Space, time: Time) -> Result<SpaceLocation> {
         // This assert allows this function to be safe.
         assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
                    "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
-        let mut out;
-        unsafe {
-            out = sys::SpaceRelation {
-                ty: sys::SpaceRelation::TYPE,
-                next: ptr::null_mut(),
-                ..mem::uninitialized()
-            };
+        let out = unsafe {
+            let mut x = sys::SpaceLocation::out(ptr::null_mut());
             cvt((self.fp().locate_space)(
                 self.as_raw(),
                 base.as_raw(),
                 time,
-                &mut out,
+                x.as_mut_ptr(),
             ))?;
-        }
-        Ok(SpaceRelation {
-            relation_flags: out.relation_flags,
-            time: out.time,
+            x.assume_init()
+        };
+        Ok(SpaceLocation {
+            location_flags: out.location_flags,
             pose: out.pose,
-            linear_velocity: out.linear_velocity,
-            angular_velocity: out.angular_velocity,
-            linear_acceleration: out.linear_acceleration,
-            angular_acceleration: out.angular_acceleration,
         })
+    }
+
+    /// Determine the location and velocity of a space relative to a base space at a specified time,
+    /// if currently known by the runtime.
+    #[inline]
+    pub fn relate(&self, base: &Space, time: Time) -> Result<(SpaceLocation, SpaceVelocity)> {
+        // This assert allows this function to be safe.
+        assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
+                   "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
+        let (location, velocity) = unsafe {
+            let mut velocity = sys::SpaceVelocity::out(ptr::null_mut());
+            let mut location = sys::SpaceLocation::out(&mut velocity as *mut _ as _);
+            cvt((self.fp().locate_space)(
+                self.as_raw(),
+                base.as_raw(),
+                time,
+                location.as_mut_ptr(),
+            ))?;
+            (location.assume_init(), velocity.assume_init())
+        };
+        Ok((
+            SpaceLocation {
+                location_flags: location.location_flags,
+                pose: location.pose,
+            },
+            SpaceVelocity {
+                velocity_flags: velocity.velocity_flags,
+                linear_velocity: velocity.linear_velocity,
+                angular_velocity: velocity.angular_velocity,
+            },
+        ))
     }
 
     // Private helper
@@ -119,12 +146,14 @@ impl Drop for Space {
 }
 
 #[derive(Copy, Clone)]
-pub struct SpaceRelation {
-    pub relation_flags: SpaceRelationFlags,
-    pub time: Time,
+pub struct SpaceLocation {
+    pub location_flags: SpaceLocationFlags,
     pub pose: Posef,
+}
+
+#[derive(Copy, Clone)]
+pub struct SpaceVelocity {
+    pub velocity_flags: SpaceVelocityFlags,
     pub linear_velocity: Vector3f,
     pub angular_velocity: Vector3f,
-    pub linear_acceleration: Vector3f,
-    pub angular_acceleration: Vector3f,
 }

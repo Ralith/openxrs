@@ -1,3 +1,6 @@
 /target
+/openxr/target
+/sys/target
+/generator/target
 **/*.rs.bk
 Cargo.lock

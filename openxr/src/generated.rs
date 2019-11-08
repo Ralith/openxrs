@@ -1,5 +1,5 @@
 # ! [ doc = r" Automatically generated code; do not edit!" ]use crate::*;
-use std::{os::raw::c_char, sync::Arc};
+use std::os::raw::c_char;
 pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
@@ -7,71 +7,14 @@ pub use sys::{
     InstanceCreateFlags, ObjectType, Offset2Df, Offset2Di, PerfSettingsDomainEXT,
     PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
     Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState,
-    SpaceRelationFlags, StructureType, SwapchainCreateFlags, SwapchainUsageFlags,
-    SystemGraphicsProperties, Vector2f, Vector3f, Vector4f, ViewConfigurationType, ViewStateFlags,
-    VisibilityMaskTypeKHR,
+    SpaceLocationFlags, SpaceVelocityFlags, StructureType, SwapchainCreateFlags,
+    SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f, Vector4f,
+    ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
 };
-struct InstanceInner {
-    entry: Entry,
-    handle: sys::Instance,
-    raw: raw::Instance,
-    exts: InstanceExtensions,
-}
-impl Drop for InstanceInner {
-    fn drop(&mut self) {
-        unsafe {
-            (self.raw.destroy_instance)(self.handle);
-        }
-    }
-}
-pub struct Instance {
-    inner: Arc<InstanceInner>,
-}
-impl Instance {
-    #[doc = r" Take ownership of an existing instance handle"]
-    #[doc = r""]
-    #[doc = r" # Safety"]
-    #[doc = r""]
-    #[doc = r" `handle` must be the instance handle that was used to load `exts`."]
-    pub unsafe fn from_raw(
-        entry: Entry,
-        handle: sys::Instance,
-        exts: InstanceExtensions,
-    ) -> Result<Self> {
-        Ok(Self {
-            inner: Arc::new(InstanceInner {
-                raw: raw::Instance::load(&entry, handle)?,
-                exts,
-                handle,
-                entry,
-            }),
-        })
-    }
-    #[inline]
-    pub fn as_raw(&self) -> sys::Instance {
-        self.inner.handle
-    }
-    #[doc = r" Access the entry points used to create self"]
-    #[inline]
-    pub fn entry(&self) -> &Entry {
-        &self.inner.entry
-    }
-    #[doc = r" Access the core function pointers"]
-    #[inline]
-    pub fn fp(&self) -> &raw::Instance {
-        &self.inner.raw
-    }
-    #[doc = r" Access the internal extension function pointers"]
-    #[inline]
-    pub fn exts(&self) -> &InstanceExtensions {
-        &self.inner.exts
-    }
-    pub(crate) fn clone(&self) -> Self {
-        Self {
-            inner: self.inner.clone(),
-        }
-    }
-}
+#[doc = r" A subset of known extensions"]
+#[doc = r""]
+#[doc = r" Do not match on this exhaustively, as new fields are not considered breaking"]
+#[doc = r" changes."]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
 pub struct ExtensionSet {
     pub ext_performance_settings: bool,
@@ -85,15 +28,12 @@ pub struct ExtensionSet {
     #[cfg(target_os = "android")]
     pub khr_android_create_instance: bool,
     pub khr_composition_layer_depth: bool,
-    pub khr_headless: bool,
     pub khr_vulkan_swapchain_format_list: bool,
     pub khr_composition_layer_cylinder: bool,
     pub khr_composition_layer_equirect: bool,
     pub khr_opengl_enable: bool,
     pub khr_opengl_es_enable: bool,
     pub khr_vulkan_enable: bool,
-    #[cfg(windows)]
-    pub khr_d3d10_enable: bool,
     #[cfg(windows)]
     pub khr_d3d11_enable: bool,
     #[cfg(windows)]
@@ -102,6 +42,14 @@ pub struct ExtensionSet {
     #[cfg(windows)]
     pub khr_win32_convert_performance_counter_time: bool,
     pub khr_convert_timespec_time: bool,
+    pub mnd_headless: bool,
+    pub msft_unbounded_reference_space: bool,
+    pub msft_spatial_anchor: bool,
+    #[cfg(target_os = "android")]
+    pub oculus_android_session_state_enable: bool,
+    pub varjo_quad_views: bool,
+    #[doc(hidden)]
+    pub _non_exhaustive: (),
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
@@ -135,9 +83,6 @@ impl ExtensionSet {
                 raw::CompositionLayerDepthKHR::NAME => {
                     out.khr_composition_layer_depth = true;
                 }
-                raw::HeadlessKHR::NAME => {
-                    out.khr_headless = true;
-                }
                 raw::VulkanSwapchainFormatListKHR::NAME => {
                     out.khr_vulkan_swapchain_format_list = true;
                 }
@@ -157,10 +102,6 @@ impl ExtensionSet {
                     out.khr_vulkan_enable = true;
                 }
                 #[cfg(windows)]
-                raw::D3d10EnableKHR::NAME => {
-                    out.khr_d3d10_enable = true;
-                }
-                #[cfg(windows)]
                 raw::D3d11EnableKHR::NAME => {
                     out.khr_d3d11_enable = true;
                 }
@@ -177,6 +118,22 @@ impl ExtensionSet {
                 }
                 raw::ConvertTimespecTimeKHR::NAME => {
                     out.khr_convert_timespec_time = true;
+                }
+                raw::HeadlessMND::NAME => {
+                    out.mnd_headless = true;
+                }
+                raw::UnboundedReferenceSpaceMSFT::NAME => {
+                    out.msft_unbounded_reference_space = true;
+                }
+                raw::SpatialAnchorMSFT::NAME => {
+                    out.msft_spatial_anchor = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::AndroidSessionStateEnableOCULUS::NAME => {
+                    out.oculus_android_session_state_enable = true;
+                }
+                raw::QuadViewsVARJO::NAME => {
+                    out.varjo_quad_views = true;
                 }
                 _ => {}
             }
@@ -229,11 +186,6 @@ impl ExtensionSet {
             }
         }
         {
-            if self.khr_headless {
-                out.push(raw::HeadlessKHR::NAME.as_ptr() as *const _ as _);
-            }
-        }
-        {
             if self.khr_vulkan_swapchain_format_list {
                 out.push(raw::VulkanSwapchainFormatListKHR::NAME.as_ptr() as *const _ as _);
             }
@@ -261,12 +213,6 @@ impl ExtensionSet {
         {
             if self.khr_vulkan_enable {
                 out.push(raw::VulkanEnableKHR::NAME.as_ptr() as *const _ as _);
-            }
-        }
-        #[cfg(windows)]
-        {
-            if self.khr_d3d10_enable {
-                out.push(raw::D3d10EnableKHR::NAME.as_ptr() as *const _ as _);
             }
         }
         #[cfg(windows)]
@@ -299,6 +245,32 @@ impl ExtensionSet {
                 out.push(raw::ConvertTimespecTimeKHR::NAME.as_ptr() as *const _ as _);
             }
         }
+        {
+            if self.mnd_headless {
+                out.push(raw::HeadlessMND::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.msft_unbounded_reference_space {
+                out.push(raw::UnboundedReferenceSpaceMSFT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.msft_spatial_anchor {
+                out.push(raw::SpatialAnchorMSFT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.oculus_android_session_state_enable {
+                out.push(raw::AndroidSessionStateEnableOCULUS::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.varjo_quad_views {
+                out.push(raw::QuadViewsVARJO::NAME.as_ptr() as *const _ as _);
+            }
+        }
         out
     }
 }
@@ -316,15 +288,12 @@ pub struct InstanceExtensions {
     #[cfg(target_os = "android")]
     pub khr_android_create_instance: Option<raw::AndroidCreateInstanceKHR>,
     pub khr_composition_layer_depth: Option<raw::CompositionLayerDepthKHR>,
-    pub khr_headless: Option<raw::HeadlessKHR>,
     pub khr_vulkan_swapchain_format_list: Option<raw::VulkanSwapchainFormatListKHR>,
     pub khr_composition_layer_cylinder: Option<raw::CompositionLayerCylinderKHR>,
     pub khr_composition_layer_equirect: Option<raw::CompositionLayerEquirectKHR>,
     pub khr_opengl_enable: Option<raw::OpenglEnableKHR>,
     pub khr_opengl_es_enable: Option<raw::OpenglEsEnableKHR>,
     pub khr_vulkan_enable: Option<raw::VulkanEnableKHR>,
-    #[cfg(windows)]
-    pub khr_d3d10_enable: Option<raw::D3d10EnableKHR>,
     #[cfg(windows)]
     pub khr_d3d11_enable: Option<raw::D3d11EnableKHR>,
     #[cfg(windows)]
@@ -334,6 +303,12 @@ pub struct InstanceExtensions {
     pub khr_win32_convert_performance_counter_time:
         Option<raw::Win32ConvertPerformanceCounterTimeKHR>,
     pub khr_convert_timespec_time: Option<raw::ConvertTimespecTimeKHR>,
+    pub mnd_headless: Option<raw::HeadlessMND>,
+    pub msft_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceMSFT>,
+    pub msft_spatial_anchor: Option<raw::SpatialAnchorMSFT>,
+    #[cfg(target_os = "android")]
+    pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
+    pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
 }
 impl InstanceExtensions {
     #[doc = r" Load extension function pointer tables"]
@@ -390,11 +365,6 @@ impl InstanceExtensions {
             } else {
                 None
             },
-            khr_headless: if required.khr_headless {
-                Some(raw::HeadlessKHR {})
-            } else {
-                None
-            },
             khr_vulkan_swapchain_format_list: if required.khr_vulkan_swapchain_format_list {
                 Some(raw::VulkanSwapchainFormatListKHR {})
             } else {
@@ -422,12 +392,6 @@ impl InstanceExtensions {
             },
             khr_vulkan_enable: if required.khr_vulkan_enable {
                 Some(raw::VulkanEnableKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(windows)]
-            khr_d3d10_enable: if required.khr_d3d10_enable {
-                Some(raw::D3d10EnableKHR::load(entry, instance)?)
             } else {
                 None
             },
@@ -463,6 +427,32 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            mnd_headless: if required.mnd_headless {
+                Some(raw::HeadlessMND {})
+            } else {
+                None
+            },
+            msft_unbounded_reference_space: if required.msft_unbounded_reference_space {
+                Some(raw::UnboundedReferenceSpaceMSFT {})
+            } else {
+                None
+            },
+            msft_spatial_anchor: if required.msft_spatial_anchor {
+                Some(raw::SpatialAnchorMSFT::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            oculus_android_session_state_enable: if required.oculus_android_session_state_enable {
+                Some(raw::AndroidSessionStateEnableOCULUS {})
+            } else {
+                None
+            },
+            varjo_quad_views: if required.varjo_quad_views {
+                Some(raw::QuadViewsVARJO {})
+            } else {
+                None
+            },
         })
     }
 }
@@ -474,7 +464,7 @@ pub enum Event<'a> {
     ReferenceSpaceChangePending(ReferenceSpaceChangePending<'a>),
     PerfSettingsEXT(PerfSettingsEXT<'a>),
     VisibilityMaskChangedKHR(VisibilityMaskChangedKHR<'a>),
-    InteractionProfileChanged,
+    InteractionProfileChanged(InteractionProfileChanged<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -485,34 +475,35 @@ impl<'a> Event<'a> {
     #[doc = r""]
     #[doc = r" `raw` must refer to an `EventDataBuffer` populated by a successful call to"]
     #[doc = r" `xrPollEvent`, which has not been moved since."]
-    pub unsafe fn from_raw(raw: &'a sys::EventDataBuffer) -> Option<Self> {
-        Some(match raw.ty {
+    pub unsafe fn from_raw(raw: *const sys::EventDataBuffer) -> Option<Self> {
+        Some(match (raw as *const sys::BaseInStructure).read().ty {
             sys::StructureType::EVENT_DATA_EVENTS_LOST => {
-                let typed = &*(raw as *const _ as *const sys::EventDataEventsLost);
+                let typed = &*(raw as *const sys::EventDataEventsLost);
                 Event::EventsLost(EventsLost::new(typed))
             }
             sys::StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING => {
-                let typed = &*(raw as *const _ as *const sys::EventDataInstanceLossPending);
+                let typed = &*(raw as *const sys::EventDataInstanceLossPending);
                 Event::InstanceLossPending(InstanceLossPending::new(typed))
             }
             sys::StructureType::EVENT_DATA_SESSION_STATE_CHANGED => {
-                let typed = &*(raw as *const _ as *const sys::EventDataSessionStateChanged);
+                let typed = &*(raw as *const sys::EventDataSessionStateChanged);
                 Event::SessionStateChanged(SessionStateChanged::new(typed))
             }
             sys::StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING => {
-                let typed = &*(raw as *const _ as *const sys::EventDataReferenceSpaceChangePending);
+                let typed = &*(raw as *const sys::EventDataReferenceSpaceChangePending);
                 Event::ReferenceSpaceChangePending(ReferenceSpaceChangePending::new(typed))
             }
             sys::StructureType::EVENT_DATA_PERF_SETTINGS_EXT => {
-                let typed = &*(raw as *const _ as *const sys::EventDataPerfSettingsEXT);
+                let typed = &*(raw as *const sys::EventDataPerfSettingsEXT);
                 Event::PerfSettingsEXT(PerfSettingsEXT::new(typed))
             }
             sys::StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
-                let typed = &*(raw as *const _ as *const sys::EventDataVisibilityMaskChangedKHR);
+                let typed = &*(raw as *const sys::EventDataVisibilityMaskChangedKHR);
                 Event::VisibilityMaskChangedKHR(VisibilityMaskChangedKHR::new(typed))
             }
             sys::StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED => {
-                Event::InteractionProfileChanged
+                let typed = &*(raw as *const sys::EventDataInteractionProfileChanged);
+                Event::InteractionProfileChanged(InteractionProfileChanged::new(typed))
             }
             _ => {
                 return None;
@@ -572,6 +563,10 @@ impl<'a> ReferenceSpaceChangePending<'a> {
         Self(inner)
     }
     #[inline]
+    pub fn session(&self) -> sys::Session {
+        (self.0).session
+    }
+    #[inline]
     pub fn reference_space_type(&self) -> ReferenceSpaceType {
         (self.0).reference_space_type
     }
@@ -620,6 +615,10 @@ impl<'a> VisibilityMaskChangedKHR<'a> {
         Self(inner)
     }
     #[inline]
+    pub fn session(&self) -> sys::Session {
+        (self.0).session
+    }
+    #[inline]
     pub fn view_configuration_type(&self) -> ViewConfigurationType {
         (self.0).view_configuration_type
     }
@@ -634,6 +633,10 @@ impl<'a> InteractionProfileChanged<'a> {
     #[inline]
     pub fn new(inner: &'a sys::EventDataInteractionProfileChanged) -> Self {
         Self(inner)
+    }
+    #[inline]
+    pub fn session(&self) -> sys::Session {
+        (self.0).session
     }
 }
 pub mod raw {
@@ -664,6 +667,7 @@ pub mod raw {
         pub release_swapchain_image: pfn::ReleaseSwapchainImage,
         pub begin_session: pfn::BeginSession,
         pub end_session: pfn::EndSession,
+        pub request_exit_session: pfn::RequestExitSession,
         pub enumerate_reference_spaces: pfn::EnumerateReferenceSpaces,
         pub create_reference_space: pfn::CreateReferenceSpace,
         pub create_action_space: pfn::CreateActionSpace,
@@ -683,17 +687,18 @@ pub mod raw {
         pub path_to_string: pfn::PathToString,
         pub get_reference_space_bounds_rect: pfn::GetReferenceSpaceBoundsRect,
         pub get_action_state_boolean: pfn::GetActionStateBoolean,
-        pub get_action_state_vector1f: pfn::GetActionStateVector1f,
+        pub get_action_state_float: pfn::GetActionStateFloat,
         pub get_action_state_vector2f: pfn::GetActionStateVector2f,
         pub get_action_state_pose: pfn::GetActionStatePose,
         pub create_action_set: pfn::CreateActionSet,
         pub destroy_action_set: pfn::DestroyActionSet,
         pub create_action: pfn::CreateAction,
         pub destroy_action: pfn::DestroyAction,
-        pub set_interaction_profile_suggested_bindings: pfn::SetInteractionProfileSuggestedBindings,
+        pub suggest_interaction_profile_bindings: pfn::SuggestInteractionProfileBindings,
+        pub attach_session_action_sets: pfn::AttachSessionActionSets,
         pub get_current_interaction_profile: pfn::GetCurrentInteractionProfile,
-        pub sync_action_data: pfn::SyncActionData,
-        pub get_bound_sources_for_action: pfn::GetBoundSourcesForAction,
+        pub sync_actions: pfn::SyncActions,
+        pub enumerate_bound_sources_for_action: pfn::EnumerateBoundSourcesForAction,
         pub get_input_source_localized_name: pfn::GetInputSourceLocalizedName,
     }
     impl Instance {
@@ -796,6 +801,10 @@ pub mod raw {
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrEndSession\0"),
                 )?),
+                request_exit_session: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrRequestExitSession\0"),
+                )?),
                 enumerate_reference_spaces: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReferenceSpaces\0"),
@@ -872,9 +881,9 @@ pub mod raw {
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateBoolean\0"),
                 )?),
-                get_action_state_vector1f: mem::transmute(entry.get_instance_proc_addr(
+                get_action_state_float: mem::transmute(entry.get_instance_proc_addr(
                     instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector1f\0"),
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateFloat\0"),
                 )?),
                 get_action_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
                     instance,
@@ -900,25 +909,29 @@ pub mod raw {
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrDestroyAction\0"),
                 )?),
-                set_interaction_profile_suggested_bindings: mem::transmute(
+                suggest_interaction_profile_bindings: mem::transmute(
                     entry.get_instance_proc_addr(
                         instance,
                         CStr::from_bytes_with_nul_unchecked(
-                            b"xrSetInteractionProfileSuggestedBindings\0",
+                            b"xrSuggestInteractionProfileBindings\0",
                         ),
                     )?,
                 ),
+                attach_session_action_sets: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrAttachSessionActionSets\0"),
+                )?),
                 get_current_interaction_profile: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetCurrentInteractionProfile\0"),
                 )?),
-                sync_action_data: mem::transmute(entry.get_instance_proc_addr(
+                sync_actions: mem::transmute(entry.get_instance_proc_addr(
                     instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSyncActionData\0"),
+                    CStr::from_bytes_with_nul_unchecked(b"xrSyncActions\0"),
                 )?),
-                get_bound_sources_for_action: mem::transmute(entry.get_instance_proc_addr(
+                enumerate_bound_sources_for_action: mem::transmute(entry.get_instance_proc_addr(
                     instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetBoundSourcesForAction\0"),
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateBoundSourcesForAction\0"),
                 )?),
                 get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
                     instance,
@@ -1095,12 +1108,6 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
-    pub struct HeadlessKHR {}
-    impl HeadlessKHR {
-        pub const VERSION: u32 = sys::KHR_headless_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_HEADLESS_EXTENSION_NAME;
-    }
-    #[derive(Copy, Clone)]
     pub struct VulkanSwapchainFormatListKHR {}
     impl VulkanSwapchainFormatListKHR {
         pub const VERSION: u32 = sys::KHR_vulkan_swapchain_format_list_SPEC_VERSION;
@@ -1192,29 +1199,6 @@ pub mod raw {
                 get_vulkan_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsRequirementsKHR\0"),
-                )?),
-            })
-        }
-    }
-    #[cfg(windows)]
-    #[derive(Copy, Clone)]
-    pub struct D3d10EnableKHR {
-        pub get_d3d10_graphics_requirements: pfn::GetD3D10GraphicsRequirementsKHR,
-    }
-    #[cfg(windows)]
-    impl D3d10EnableKHR {
-        pub const VERSION: u32 = sys::KHR_D3D10_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_D3D10_ENABLE_EXTENSION_NAME;
-        #[doc = r" Load the extension's function pointer table"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" `instance` must be a valid instance handle."]
-        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_d3d10_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetD3D10GraphicsRequirementsKHR\0"),
                 )?),
             })
         }
@@ -1349,6 +1333,63 @@ pub mod raw {
             })
         }
     }
+    #[derive(Copy, Clone)]
+    pub struct HeadlessMND {}
+    impl HeadlessMND {
+        pub const VERSION: u32 = sys::MND_headless_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MND_HEADLESS_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct UnboundedReferenceSpaceMSFT {}
+    impl UnboundedReferenceSpaceMSFT {
+        pub const VERSION: u32 = sys::MSFT_unbounded_reference_space_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct SpatialAnchorMSFT {
+        pub create_spatial_anchor: pfn::CreateSpatialAnchorMSFT,
+        pub create_spatial_anchor_space: pfn::CreateSpatialAnchorSpaceMSFT,
+        pub destroy_spatial_anchor: pfn::DestroySpatialAnchorMSFT,
+    }
+    impl SpatialAnchorMSFT {
+        pub const VERSION: u32 = sys::MSFT_spatial_anchor_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_SPATIAL_ANCHOR_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorMSFT\0"),
+                )?),
+                create_spatial_anchor_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorSpaceMSFT\0"),
+                )?),
+                destroy_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpatialAnchorMSFT\0"),
+                )?),
+            })
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct AndroidSessionStateEnableOCULUS {}
+    #[cfg(target_os = "android")]
+    impl AndroidSessionStateEnableOCULUS {
+        pub const VERSION: u32 = sys::OCULUS_android_session_state_enable_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct QuadViewsVARJO {}
+    impl QuadViewsVARJO {
+        pub const VERSION: u32 = sys::VARJO_quad_views_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VARJO_QUAD_VIEWS_EXTENSION_NAME;
+    }
 }
 #[allow(unused)]
 pub(crate) mod builder {
@@ -1459,84 +1500,6 @@ pub(crate) mod builder {
         pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
             self.inner.sub_image = value.inner;
             self
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct FrameBeginInfo<'a> {
-        inner: sys::FrameBeginInfo,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> FrameBeginInfo<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::FrameBeginInfo {
-                    ty: sys::StructureType::FRAME_BEGIN_INFO,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::FrameBeginInfo) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::FrameBeginInfo {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::FrameBeginInfo {
-            &self.inner
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct FrameWaitInfo<'a> {
-        inner: sys::FrameWaitInfo,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> FrameWaitInfo<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::FrameWaitInfo {
-                    ty: sys::StructureType::FRAME_WAIT_INFO,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::FrameWaitInfo) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::FrameWaitInfo {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::FrameWaitInfo {
-            &self.inner
         }
     }
     #[derive(Copy, Clone)]
@@ -1784,7 +1747,7 @@ pub(crate) mod builder {
             self
         }
         #[inline]
-        pub fn size(mut self, value: Vector2f) -> Self {
+        pub fn size(mut self, value: Extent2Df) -> Self {
             self.inner.size = value;
             self
         }
@@ -1950,11 +1913,6 @@ pub(crate) mod builder {
             self.inner.orientation = value;
             self
         }
-        #[inline]
-        pub fn offset(mut self, value: Vector3f) -> Self {
-            self.inner.offset = value;
-            self
-        }
     }
     impl<'a, G: Graphics> Deref for CompositionLayerCubeKHR<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
@@ -2027,8 +1985,8 @@ pub(crate) mod builder {
             self
         }
         #[inline]
-        pub fn offset(mut self, value: Vector3f) -> Self {
-            self.inner.offset = value;
+        pub fn radius(mut self, value: f32) -> Self {
+            self.inner.radius = value;
             self
         }
         #[inline]

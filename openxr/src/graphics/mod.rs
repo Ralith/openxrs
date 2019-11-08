@@ -34,8 +34,10 @@ pub trait Graphics: Sized {
         -> Result<Vec<Self::SwapchainImage>>;
 }
 
-mod headless;
-pub use headless::Headless;
+#[cfg(windows)]
+pub mod d3d;
+#[cfg(windows)]
+pub use d3d::D3D11;
 
 pub mod vulkan;
 pub use vulkan::Vulkan;

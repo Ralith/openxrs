@@ -22,7 +22,8 @@ impl Entry {
     /// Access entry points linked directly into the binary at compile time
     ///
     /// Available if the `linked` feature is enabled. You must ensure that the entry points are
-    /// actually linked into the binary, e.g. by enabling the `static` feature.
+    /// actually linked into the binary, e.g. by enabling the `static` feature or manually linking
+    /// to an external loader or implementation.
     #[cfg(feature = "linked")]
     pub fn linked() -> Self {
         Self {
@@ -138,7 +139,7 @@ impl Entry {
                 application_version: app_info.application_version,
                 engine_name: [0; sys::MAX_ENGINE_NAME_SIZE],
                 engine_version: app_info.engine_version,
-                api_version: CURRENT_API_VERSION.into_raw(),
+                api_version: CURRENT_API_VERSION,
             },
             enabled_api_layer_count: 0,
             enabled_api_layer_names: ptr::null(),
@@ -164,24 +165,20 @@ impl Entry {
 
     /// Determine the set of extensions supported by this OpenXR implementation
     pub fn enumerate_extensions(&self) -> Result<ExtensionSet> {
-        let exts = unsafe {
-            get_arr_init(
-                sys::ExtensionProperties {
-                    ty: sys::ExtensionProperties::TYPE,
-                    next: ptr::null_mut(),
-                    ..mem::uninitialized()
-                },
+        unsafe {
+            let exts = get_arr_init(
+                sys::ExtensionProperties::out(ptr::null_mut()),
                 |cap, count, buf| {
                     (self.fp().enumerate_instance_extension_properties)(
                         ptr::null(),
                         cap,
                         count,
-                        buf,
+                        buf as _,
                     )
                 },
-            )?
-        };
-        Ok(ExtensionSet::from_properties(&exts))
+            )?;
+            Ok(ExtensionSet::from_properties(mem::transmute(&exts[..])))
+        }
     }
 }
 

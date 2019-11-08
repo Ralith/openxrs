@@ -1,31 +1,47 @@
-use std::{mem, ptr};
+use std::ptr;
 
 use crate::*;
 
 /// Handle for managing frame presentation
 ///
+/// This is a secondary interface to a `Session` object that exposes only the frame wait/begin/end
+/// operations. These are separated so that `&mut self` receivers can be used to statically
+/// guarantee that calls are synchronized as required by OpenXR, enabling a safe interface.
 ///
 /// # Example
+///
+/// A typical presentation loop body should look roughly as follows:
+///
 /// ```no_run
 /// # fn dummy<G: openxr::Graphics>(
 /// #     session: &openxr::Session<G>,
-/// #     swapchain: &openxr::Swapchain<G>,
+/// #     swapchain: &mut openxr::Swapchain<G>,
+/// #     frame_waiter: &mut openxr::FrameWaiter,
 /// #     frame_stream: &mut openxr::FrameStream<G>,
 /// #     world_space: &openxr::Space,
 /// #     view_resolution: &[openxr::Extent2Di],
 /// # ) {
-/// let state = frame_stream.wait().unwrap();
-/// let (view_flags, views) = session
-///     .locate_views(state.predicted_display_time, world_space)
-///     .unwrap();
-/// let status = frame_stream.begin().unwrap();
-/// if status != openxr::sys::Result::SESSION_VISIBILITY_UNAVAILABLE
-///     && view_flags.contains(
-///         openxr::ViewStateFlags::ORIENTATION_VALID | openxr::ViewStateFlags::POSITION_VALID,
-///     )
-/// {
-///     // draw views...
+/// let state = frame_waiter.wait().unwrap();
+/// let image = swapchain.acquire_image().unwrap();
+/// swapchain.wait_image(openxr::Duration::INFINITE).unwrap();
+///
+/// frame_stream.begin().unwrap();
+///
+/// if state.should_render {
+///     // draw scene...
 /// }
+///
+/// let (view_flags, views) = session
+///     .locate_views(
+///         openxr::ViewConfigurationType::PRIMARY_STEREO,
+///         state.predicted_display_time,
+///         world_space,
+///     )
+///     .unwrap();
+///
+/// // set view matrices and submit to GPU...
+///
+/// swapchain.release_image().unwrap();
 /// frame_stream
 ///     .end(
 ///         state.predicted_display_time,
@@ -64,52 +80,20 @@ use crate::*;
 /// ```
 pub struct FrameStream<G: Graphics> {
     session: Session<G>,
-    state: State,
 }
 
 impl<G: Graphics> FrameStream<G> {
     pub(crate) fn new(session: Session<G>) -> Self {
-        Self {
-            session,
-            state: State::End,
-        }
-    }
-
-    /// Block until rendering should begin
-    #[inline]
-    pub fn wait(&mut self) -> Result<FrameState> {
-        assert_eq!(self.state, State::End, "wait must be called after end");
-        let mut out = sys::FrameState {
-            ty: sys::FrameState::TYPE,
-            next: ptr::null_mut(),
-            ..unsafe { mem::uninitialized() }
-        };
-        unsafe {
-            cvt((self.fp().wait_frame)(
-                self.session.as_raw(),
-                builder::FrameWaitInfo::new().as_raw(),
-                &mut out,
-            ))?;
-        }
-        self.state = State::Wait;
-        Ok(FrameState {
-            predicted_display_time: out.predicted_display_time,
-            predicted_display_period: out.predicted_display_period,
-        })
+        Self { session }
     }
 
     /// Indicate that graphics device work is beginning
     #[inline]
-    pub fn begin(&mut self) -> Result<sys::Result> {
-        assert_eq!(self.state, State::Wait, "begin must be called after wait");
-        let x = unsafe {
-            cvt((self.fp().begin_frame)(
-                self.session.as_raw(),
-                builder::FrameBeginInfo::new().as_raw(),
-            ))?
-        };
-        self.state = State::Begin;
-        Ok(x)
+    pub fn begin(&mut self) -> Result<()> {
+        unsafe {
+            cvt((self.fp().begin_frame)(self.session.as_raw(), ptr::null()))?;
+        }
+        Ok(())
     }
 
     /// Indicate that all graphics work for the frame has been submitted
@@ -124,7 +108,6 @@ impl<G: Graphics> FrameStream<G> {
         layers: &[&CompositionLayerBase<'_, G>],
     ) -> Result<()> {
         assert!(layers.len() <= u32::max_value() as usize);
-        assert_eq!(self.state, State::Begin, "end must be called after begin");
         let info = sys::FrameEndInfo {
             ty: sys::FrameEndInfo::TYPE,
             next: ptr::null(),
@@ -136,7 +119,6 @@ impl<G: Graphics> FrameStream<G> {
         unsafe {
             cvt((self.fp().end_frame)(self.session.as_raw(), &info))?;
         }
-        self.state = State::End;
         Ok(())
     }
 
@@ -147,15 +129,9 @@ impl<G: Graphics> FrameStream<G> {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
-enum State {
-    End,
-    Wait,
-    Begin,
-}
-
 #[derive(Debug, Copy, Clone)]
 pub struct FrameState {
     pub predicted_display_time: Time,
     pub predicted_display_period: Duration,
+    pub should_render: bool,
 }
