@@ -556,7 +556,7 @@ pub struct ViewConfigurationProperties {
     pub fov_mutable: bool,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct ViewConfigurationView {
     pub recommended_image_rect_width: u32,
     pub max_image_rect_width: u32,

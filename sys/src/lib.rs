@@ -151,6 +151,12 @@ impl Version {
     }
 }
 
+impl From<(u16, u16, u32)> for Version {
+    fn from(other: (u16, u16, u32)) -> Self {
+        Self::new(other.0, other.1, other.2)
+    }
+}
+
 impl fmt::Display for Version {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "{}.{}.{}", self.major(), self.minor(), self.patch())
