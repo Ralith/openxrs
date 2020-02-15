@@ -14,15 +14,16 @@ pub use sys::{
     ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
 };
 #[doc = r" A subset of known extensions"]
-#[doc = r""]
-#[doc = r" Do not match on this exhaustively, as new fields are not considered breaking"]
-#[doc = r" changes."]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
+#[non_exhaustive]
 pub struct ExtensionSet {
     pub ext_performance_settings: bool,
     pub ext_thermal_query: bool,
     pub ext_debug_utils: bool,
     pub ext_view_configuration_depth_range: bool,
+    pub ext_conformance_automation: bool,
+    #[cfg(windows)]
+    pub ext_win32_appcontainer_compatible: bool,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: bool,
     #[cfg(target_os = "android")]
@@ -51,8 +52,6 @@ pub struct ExtensionSet {
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
     pub varjo_quad_views: bool,
-    #[doc(hidden)]
-    pub _non_exhaustive: (),
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
@@ -70,6 +69,13 @@ impl ExtensionSet {
                 }
                 raw::ViewConfigurationDepthRangeEXT::NAME => {
                     out.ext_view_configuration_depth_range = true;
+                }
+                raw::ConformanceAutomationEXT::NAME => {
+                    out.ext_conformance_automation = true;
+                }
+                #[cfg(windows)]
+                raw::Win32AppcontainerCompatibleEXT::NAME => {
+                    out.ext_win32_appcontainer_compatible = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::AndroidThreadSettingsKHR::NAME => {
@@ -166,6 +172,17 @@ impl ExtensionSet {
         {
             if self.ext_view_configuration_depth_range {
                 out.push(raw::ViewConfigurationDepthRangeEXT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.ext_conformance_automation {
+                out.push(raw::ConformanceAutomationEXT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        #[cfg(windows)]
+        {
+            if self.ext_win32_appcontainer_compatible {
+                out.push(raw::Win32AppcontainerCompatibleEXT::NAME.as_ptr() as *const _ as _);
             }
         }
         #[cfg(target_os = "android")]
@@ -292,6 +309,9 @@ pub struct InstanceExtensions {
     pub ext_thermal_query: Option<raw::ThermalQueryEXT>,
     pub ext_debug_utils: Option<raw::DebugUtilsEXT>,
     pub ext_view_configuration_depth_range: Option<raw::ViewConfigurationDepthRangeEXT>,
+    pub ext_conformance_automation: Option<raw::ConformanceAutomationEXT>,
+    #[cfg(windows)]
+    pub ext_win32_appcontainer_compatible: Option<raw::Win32AppcontainerCompatibleEXT>,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
     #[cfg(target_os = "android")]
@@ -351,6 +371,17 @@ impl InstanceExtensions {
             },
             ext_view_configuration_depth_range: if required.ext_view_configuration_depth_range {
                 Some(raw::ViewConfigurationDepthRangeEXT {})
+            } else {
+                None
+            },
+            ext_conformance_automation: if required.ext_conformance_automation {
+                Some(raw::ConformanceAutomationEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(windows)]
+            ext_win32_appcontainer_compatible: if required.ext_win32_appcontainer_compatible {
+                Some(raw::Win32AppcontainerCompatibleEXT {})
             } else {
                 None
             },
@@ -474,6 +505,7 @@ impl InstanceExtensions {
     }
 }
 #[derive(Copy, Clone)]
+#[non_exhaustive]
 pub enum Event<'a> {
     EventsLost(EventsLost<'a>),
     InstanceLossPending(InstanceLossPending<'a>),
@@ -1063,6 +1095,55 @@ pub mod raw {
     impl ViewConfigurationDepthRangeEXT {
         pub const VERSION: u32 = sys::EXT_view_configuration_depth_range_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ConformanceAutomationEXT {
+        pub set_input_device_active: pfn::SetInputDeviceActiveEXT,
+        pub set_input_device_state_bool: pfn::SetInputDeviceStateBoolEXT,
+        pub set_input_device_state_float: pfn::SetInputDeviceStateFloatEXT,
+        pub set_input_device_state_vector2f: pfn::SetInputDeviceStateVector2fEXT,
+        pub set_input_device_location: pfn::SetInputDeviceLocationEXT,
+    }
+    impl ConformanceAutomationEXT {
+        pub const VERSION: u32 = sys::EXT_conformance_automation_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                set_input_device_active: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceActiveEXT\0"),
+                )?),
+                set_input_device_state_bool: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateBoolEXT\0"),
+                )?),
+                set_input_device_state_float: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateFloatEXT\0"),
+                )?),
+                set_input_device_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateVector2fEXT\0"),
+                )?),
+                set_input_device_location: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceLocationEXT\0"),
+                )?),
+            })
+        }
+    }
+    #[cfg(windows)]
+    #[derive(Copy, Clone)]
+    pub struct Win32AppcontainerCompatibleEXT {}
+    #[cfg(windows)]
+    impl Win32AppcontainerCompatibleEXT {
+        pub const VERSION: u32 = sys::EXT_win32_appcontainer_compatible_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]

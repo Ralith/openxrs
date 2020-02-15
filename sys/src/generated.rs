@@ -11,7 +11,7 @@ use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 3u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 6u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -850,7 +850,7 @@ pub struct VisibilityMaskTypeKHR(i32);
 impl VisibilityMaskTypeKHR {
     #[doc = "exclusive mesh; indicates that which the viewer cannot see."]
     pub const HIDDEN_TRIANGLE_MESH: VisibilityMaskTypeKHR = VisibilityMaskTypeKHR(1i32);
-    #[doc = "incluse mesh; indicates strictly that which the viewer can see."]
+    #[doc = "inclusive mesh; indicates strictly that which the viewer can see."]
     pub const VISIBLE_TRIANGLE_MESH: VisibilityMaskTypeKHR = VisibilityMaskTypeKHR(2i32);
     #[doc = "line loop; traces the outline of the area the viewer can see."]
     pub const LINE_LOOP: VisibilityMaskTypeKHR = VisibilityMaskTypeKHR(3i32);
@@ -3145,6 +3145,42 @@ pub mod pfn {
     #[doc = "See [xrDestroySpatialAnchorMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroySpatialAnchorMSFT) - defined by [XR_MSFT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor)"]
     pub type DestroySpatialAnchorMSFT =
         unsafe extern "system" fn(anchor: SpatialAnchorMSFT) -> Result;
+    #[doc = "See [xrSetInputDeviceActiveEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetInputDeviceActiveEXT) - defined by [XR_EXT_conformance_automation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_conformance_automation)"]
+    pub type SetInputDeviceActiveEXT = unsafe extern "system" fn(
+        session: Session,
+        interaction_profile: Path,
+        top_level_path: Path,
+        is_active: Bool32,
+    ) -> Result;
+    #[doc = "See [xrSetInputDeviceStateBoolEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetInputDeviceStateBoolEXT) - defined by [XR_EXT_conformance_automation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_conformance_automation)"]
+    pub type SetInputDeviceStateBoolEXT = unsafe extern "system" fn(
+        session: Session,
+        top_level_path: Path,
+        input_source_path: Path,
+        state: Bool32,
+    ) -> Result;
+    #[doc = "See [xrSetInputDeviceStateFloatEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetInputDeviceStateFloatEXT) - defined by [XR_EXT_conformance_automation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_conformance_automation)"]
+    pub type SetInputDeviceStateFloatEXT = unsafe extern "system" fn(
+        session: Session,
+        top_level_path: Path,
+        input_source_path: Path,
+        state: f32,
+    ) -> Result;
+    #[doc = "See [xrSetInputDeviceStateVector2fEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetInputDeviceStateVector2fEXT) - defined by [XR_EXT_conformance_automation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_conformance_automation)"]
+    pub type SetInputDeviceStateVector2fEXT = unsafe extern "system" fn(
+        session: Session,
+        top_level_path: Path,
+        input_source_path: Path,
+        state: Vector2f,
+    ) -> Result;
+    #[doc = "See [xrSetInputDeviceLocationEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetInputDeviceLocationEXT) - defined by [XR_EXT_conformance_automation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_conformance_automation)"]
+    pub type SetInputDeviceLocationEXT = unsafe extern "system" fn(
+        session: Session,
+        top_level_path: Path,
+        input_source_path: Path,
+        space: Space,
+        pose: Posef,
+    ) -> Result;
 }
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 1u32;
 pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_EXT_performance_settings\0";
@@ -3155,6 +3191,13 @@ pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &[u8] = b"XR_EXT_debug_utils\0";
 pub const EXT_view_configuration_depth_range_SPEC_VERSION: u32 = 1u32;
 pub const EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_view_configuration_depth_range\0";
+pub const EXT_conformance_automation_SPEC_VERSION: u32 = 1u32;
+pub const EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME: &[u8] = b"XR_EXT_conformance_automation\0";
+#[cfg(windows)]
+pub const EXT_win32_appcontainer_compatible_SPEC_VERSION: u32 = 1u32;
+#[cfg(windows)]
+pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_win32_appcontainer_compatible\0";
 #[cfg(target_os = "android")]
 pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;
 #[cfg(target_os = "android")]
@@ -3181,7 +3224,7 @@ pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &[u8] =
 pub const KHR_composition_layer_equirect_SPEC_VERSION: u32 = 3u32;
 pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &[u8] =
     b"XR_KHR_composition_layer_equirect\0";
-pub const KHR_opengl_enable_SPEC_VERSION: u32 = 7u32;
+pub const KHR_opengl_enable_SPEC_VERSION: u32 = 8u32;
 pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_enable\0";
 pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 6u32;
 pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_es_enable\0";
@@ -3204,7 +3247,7 @@ pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &[u8] =
     b"XR_KHR_win32_convert_performance_counter_time\0";
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
 pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &[u8] = b"XR_KHR_convert_timespec_time\0";
-pub const MND_headless_SPEC_VERSION: u32 = 1u32;
+pub const MND_headless_SPEC_VERSION: u32 = 2u32;
 pub const MND_HEADLESS_EXTENSION_NAME: &[u8] = b"XR_MND_headless\0";
 pub const MSFT_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &[u8] =
