@@ -182,10 +182,8 @@ mod inner {
             if !extensions.khr_opengl_enable {
                 panic!("XR: OpenGL extension unsupported");
             }
-            let extension_set = xr::ExtensionSet {
-                khr_opengl_enable: true,
-                ..Default::default()
-            };
+            let mut extension_set = xr::ExtensionSet::default();
+            extension_set.khr_opengl_enable = true;
             let instance = entry.create_instance(&app_info, &extension_set).unwrap();
             let instance_props = instance.properties().expect("Cannot load instance props");
             println!(

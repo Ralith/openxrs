@@ -1356,14 +1356,10 @@ impl Parser {
             use crate::*;
 
             /// A subset of known extensions
-            ///
-            /// Do not match on this exhaustively, as new fields are not considered breaking
-            /// changes.
             #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
+            #[non_exhaustive]
             pub struct ExtensionSet {
                 #(#ext_set_fields)*
-                #[doc(hidden)]
-                pub _non_exhaustive: (),
             }
 
             impl ExtensionSet {
@@ -1405,6 +1401,7 @@ impl Parser {
             }
 
             #[derive(Copy, Clone)]
+            #[non_exhaustive]
             pub enum Event<'a> {
                 #(#event_cases,)*
             }
