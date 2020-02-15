@@ -1,5 +1,6 @@
 //! To get started, construct an `Entry` object.
 
+#![allow(clippy::transmute_ptr_to_ptr)]
 use std::os::raw::c_char;
 
 pub use sys::{
@@ -65,14 +66,14 @@ fn place_cstr(out: &mut [c_char], s: &str) {
     out[s.len()] = 0;
 }
 
-unsafe fn fixed_str<'a>(x: &'a [c_char]) -> &'a str {
+unsafe fn fixed_str(x: &[c_char]) -> &str {
     std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
 }
 
 /// Includes null for convenience of comparison with C string constants
-fn fixed_str_bytes<'a>(x: &'a [c_char]) -> &'a [u8] {
+fn fixed_str_bytes(x: &[c_char]) -> &[u8] {
     let end = x.iter().position(|&x| x == 0).unwrap();
-    unsafe { std::mem::transmute(&x[..end + 1]) }
+    unsafe { std::mem::transmute(&x[..=end]) }
 }
 
 fn get_str(mut getter: impl FnMut(u32, &mut u32, *mut c_char) -> sys::Result) -> Result<String> {

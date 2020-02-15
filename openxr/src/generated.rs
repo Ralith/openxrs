@@ -1,4 +1,6 @@
-# ! [ doc = r" Automatically generated code; do not edit!" ]use crate::*;
+#![doc = r" Automatically generated code; do not edit!"]
+#![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
+use crate::*;
 use std::os::raw::c_char;
 pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
@@ -20,6 +22,7 @@ pub struct ExtensionSet {
     pub ext_performance_settings: bool,
     pub ext_thermal_query: bool,
     pub ext_debug_utils: bool,
+    pub ext_view_configuration_depth_range: bool,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: bool,
     #[cfg(target_os = "android")]
@@ -64,6 +67,9 @@ impl ExtensionSet {
                 }
                 raw::DebugUtilsEXT::NAME => {
                     out.ext_debug_utils = true;
+                }
+                raw::ViewConfigurationDepthRangeEXT::NAME => {
+                    out.ext_view_configuration_depth_range = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::AndroidThreadSettingsKHR::NAME => {
@@ -155,6 +161,11 @@ impl ExtensionSet {
         {
             if self.ext_debug_utils {
                 out.push(raw::DebugUtilsEXT::NAME.as_ptr() as *const _ as _);
+            }
+        }
+        {
+            if self.ext_view_configuration_depth_range {
+                out.push(raw::ViewConfigurationDepthRangeEXT::NAME.as_ptr() as *const _ as _);
             }
         }
         #[cfg(target_os = "android")]
@@ -280,6 +291,7 @@ pub struct InstanceExtensions {
     pub ext_performance_settings: Option<raw::PerformanceSettingsEXT>,
     pub ext_thermal_query: Option<raw::ThermalQueryEXT>,
     pub ext_debug_utils: Option<raw::DebugUtilsEXT>,
+    pub ext_view_configuration_depth_range: Option<raw::ViewConfigurationDepthRangeEXT>,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
     #[cfg(target_os = "android")]
@@ -334,6 +346,11 @@ impl InstanceExtensions {
             },
             ext_debug_utils: if required.ext_debug_utils {
                 Some(raw::DebugUtilsEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            ext_view_configuration_depth_range: if required.ext_view_configuration_depth_range {
+                Some(raw::ViewConfigurationDepthRangeEXT {})
             } else {
                 None
             },
@@ -519,7 +536,7 @@ impl<'a> EventsLost<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn lost_event_count(&self) -> u32 {
+    pub fn lost_event_count(self) -> u32 {
         (self.0).lost_event_count
     }
 }
@@ -531,7 +548,7 @@ impl<'a> InstanceLossPending<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn loss_time(&self) -> Time {
+    pub fn loss_time(self) -> Time {
         (self.0).loss_time
     }
 }
@@ -543,15 +560,15 @@ impl<'a> SessionStateChanged<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn session(&self) -> sys::Session {
+    pub fn session(self) -> sys::Session {
         (self.0).session
     }
     #[inline]
-    pub fn state(&self) -> SessionState {
+    pub fn state(self) -> SessionState {
         (self.0).state
     }
     #[inline]
-    pub fn time(&self) -> Time {
+    pub fn time(self) -> Time {
         (self.0).time
     }
 }
@@ -563,23 +580,23 @@ impl<'a> ReferenceSpaceChangePending<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn session(&self) -> sys::Session {
+    pub fn session(self) -> sys::Session {
         (self.0).session
     }
     #[inline]
-    pub fn reference_space_type(&self) -> ReferenceSpaceType {
+    pub fn reference_space_type(self) -> ReferenceSpaceType {
         (self.0).reference_space_type
     }
     #[inline]
-    pub fn change_time(&self) -> Time {
+    pub fn change_time(self) -> Time {
         (self.0).change_time
     }
     #[inline]
-    pub fn pose_valid(&self) -> bool {
+    pub fn pose_valid(self) -> bool {
         (self.0).pose_valid.into()
     }
     #[inline]
-    pub fn pose_in_previous_space(&self) -> Posef {
+    pub fn pose_in_previous_space(self) -> Posef {
         (self.0).pose_in_previous_space
     }
 }
@@ -591,19 +608,19 @@ impl<'a> PerfSettingsEXT<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn domain(&self) -> PerfSettingsDomainEXT {
+    pub fn domain(self) -> PerfSettingsDomainEXT {
         (self.0).domain
     }
     #[inline]
-    pub fn sub_domain(&self) -> PerfSettingsSubDomainEXT {
+    pub fn sub_domain(self) -> PerfSettingsSubDomainEXT {
         (self.0).sub_domain
     }
     #[inline]
-    pub fn from_level(&self) -> PerfSettingsNotificationLevelEXT {
+    pub fn from_level(self) -> PerfSettingsNotificationLevelEXT {
         (self.0).from_level
     }
     #[inline]
-    pub fn to_level(&self) -> PerfSettingsNotificationLevelEXT {
+    pub fn to_level(self) -> PerfSettingsNotificationLevelEXT {
         (self.0).to_level
     }
 }
@@ -615,15 +632,15 @@ impl<'a> VisibilityMaskChangedKHR<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn session(&self) -> sys::Session {
+    pub fn session(self) -> sys::Session {
         (self.0).session
     }
     #[inline]
-    pub fn view_configuration_type(&self) -> ViewConfigurationType {
+    pub fn view_configuration_type(self) -> ViewConfigurationType {
         (self.0).view_configuration_type
     }
     #[inline]
-    pub fn view_index(&self) -> u32 {
+    pub fn view_index(self) -> u32 {
         (self.0).view_index
     }
 }
@@ -635,7 +652,7 @@ impl<'a> InteractionProfileChanged<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn session(&self) -> sys::Session {
+    pub fn session(self) -> sys::Session {
         (self.0).session
     }
 }
@@ -1040,6 +1057,12 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViewConfigurationDepthRangeEXT {}
+    impl ViewConfigurationDepthRangeEXT {
+        pub const VERSION: u32 = sys::EXT_view_configuration_depth_range_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -1448,6 +1471,11 @@ pub(crate) mod builder {
             self
         }
     }
+    impl<'a, G: Graphics> Default for SwapchainSubImage<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct CompositionLayerProjectionView<'a, G: Graphics> {
@@ -1502,6 +1530,11 @@ pub(crate) mod builder {
             self
         }
     }
+    impl<'a, G: Graphics> Default for CompositionLayerProjectionView<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct ActionSetCreateInfo<'a> {
@@ -1554,6 +1587,11 @@ pub(crate) mod builder {
         pub fn priority(mut self, value: u32) -> Self {
             self.inner.priority = value;
             self
+        }
+    }
+    impl<'a> Default for ActionSetCreateInfo<'a> {
+        fn default() -> Self {
+            Self::new()
         }
     }
     #[derive(Copy, Clone)]
@@ -1614,6 +1652,11 @@ pub(crate) mod builder {
         pub fn localized_action_name(mut self, value: &str) -> Self {
             place_cstr(&mut self.inner.localized_action_name, value);
             self
+        }
+    }
+    impl<'a> Default for ActionCreateInfo<'a> {
+        fn default() -> Self {
+            Self::new()
         }
     }
     #[repr(transparent)]
@@ -1681,6 +1724,11 @@ pub(crate) mod builder {
         #[inline]
         fn deref(&self) -> &Self::Target {
             unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerProjection<'a, G> {
+        fn default() -> Self {
+            Self::new()
         }
     }
     #[derive(Copy, Clone)]
@@ -1757,6 +1805,11 @@ pub(crate) mod builder {
         #[inline]
         fn deref(&self) -> &Self::Target {
             unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerQuad<'a, G> {
+        fn default() -> Self {
+            Self::new()
         }
     }
     #[derive(Copy, Clone)]
@@ -1845,6 +1898,11 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    impl<'a, G: Graphics> Default for CompositionLayerCylinderKHR<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct CompositionLayerCubeKHR<'a, G: Graphics> {
@@ -1919,6 +1977,11 @@ pub(crate) mod builder {
         #[inline]
         fn deref(&self) -> &Self::Target {
             unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerCubeKHR<'a, G> {
+        fn default() -> Self {
+            Self::new()
         }
     }
     #[derive(Copy, Clone)]
@@ -2007,6 +2070,11 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    impl<'a, G: Graphics> Default for CompositionLayerEquirectKHR<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
     #[repr(transparent)]
     pub struct HapticBase<'a> {
         _inner: sys::HapticBaseHeader,
@@ -2071,6 +2139,11 @@ pub(crate) mod builder {
         #[inline]
         fn deref(&self) -> &Self::Target {
             unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for HapticVibration<'a> {
+        fn default() -> Self {
+            Self::new()
         }
     }
 }

@@ -104,7 +104,7 @@ mod inner {
                     x_display: self.display as *mut _,
                     glx_fb_config: *self.fb_config as *mut _,
                     glx_drawable: self.drawable,
-                    visualid: visualid,
+                    visualid,
                     glx_context: self.context as *mut _,
                 };
                 xr.create_session(system, &info)
