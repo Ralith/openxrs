@@ -583,6 +583,12 @@ impl EventDataBuffer {
     }
 }
 
+impl Default for EventDataBuffer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[repr(transparent)]
 #[derive(Copy, Clone)]
 pub struct Binding<'a> {
@@ -596,7 +602,7 @@ impl<'a> Binding<'a> {
         Self {
             _inner: sys::ActionSuggestedBinding {
                 action: action.as_raw(),
-                binding: binding,
+                binding,
             },
             _marker: PhantomData,
         }

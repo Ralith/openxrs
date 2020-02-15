@@ -22,10 +22,7 @@ impl<G: Graphics> Session<G> {
         handle: sys::Session,
     ) -> (Self, FrameWaiter, FrameStream<G>) {
         let session = Self {
-            inner: Arc::new(SessionInner {
-                instance: instance.clone(),
-                handle,
-            }),
+            inner: Arc::new(SessionInner { instance, handle }),
             _marker: PhantomData,
         };
         (

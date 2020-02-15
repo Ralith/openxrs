@@ -1,11 +1,17 @@
-# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( non_upper_case_globals ) ]use crate::platform::*;
+#![doc = r" Automatically generated code; do not edit!"]
+#![allow(
+    non_upper_case_globals,
+    clippy::unreadable_literal,
+    clippy::identity_op
+)]
+use crate::platform::*;
 use crate::support::*;
 use crate::*;
 use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 2u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 3u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -111,6 +117,7 @@ impl StructureType {
     pub const EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR: StructureType = StructureType(1000031001i32);
     pub const SPATIAL_ANCHOR_CREATE_INFO_MSFT: StructureType = StructureType(1000039000i32);
     pub const SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT: StructureType = StructureType(1000039001i32);
+    pub const VIEW_CONFIGURATION_DEPTH_RANGE_EXT: StructureType = StructureType(1000046000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -230,6 +237,7 @@ impl fmt::Debug for StructureType {
             Self::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT => {
                 Some("SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT")
             }
+            Self::VIEW_CONFIGURATION_DEPTH_RANGE_EXT => Some("VIEW_CONFIGURATION_DEPTH_RANGE_EXT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -2613,6 +2621,32 @@ impl GraphicsRequirementsD3D12KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrViewConfigurationDepthRangeEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationDepthRangeEXT) - defined by [XR_EXT_view_configuration_depth_range](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_view_configuration_depth_range)"]
+pub struct ViewConfigurationDepthRangeEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub recommended_near_z: f32,
+    pub min_near_z: f32,
+    pub recommended_far_z: f32,
+    pub max_far_z: f32,
+}
+impl ViewConfigurationDepthRangeEXT {
+    pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_DEPTH_RANGE_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 #[doc = "See [XrSpatialAnchorCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorCreateInfoMSFT)"]
 pub struct SpatialAnchorCreateInfoMSFT {
     pub ty: StructureType,
@@ -3113,79 +3147,77 @@ pub mod pfn {
         unsafe extern "system" fn(anchor: SpatialAnchorMSFT) -> Result;
 }
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 1u32;
-pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &'static [u8] = b"XR_EXT_performance_settings\0";
+pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_EXT_performance_settings\0";
 pub const EXT_thermal_query_SPEC_VERSION: u32 = 1u32;
-pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &'static [u8] = b"XR_EXT_thermal_query\0";
+pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &[u8] = b"XR_EXT_thermal_query\0";
 pub const EXT_debug_utils_SPEC_VERSION: u32 = 3u32;
-pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &'static [u8] = b"XR_EXT_debug_utils\0";
+pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &[u8] = b"XR_EXT_debug_utils\0";
+pub const EXT_view_configuration_depth_range_SPEC_VERSION: u32 = 1u32;
+pub const EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_view_configuration_depth_range\0";
 #[cfg(target_os = "android")]
 pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;
 #[cfg(target_os = "android")]
-pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_android_thread_settings\0";
+pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_KHR_android_thread_settings\0";
 #[cfg(target_os = "android")]
 pub const KHR_android_surface_swapchain_SPEC_VERSION: u32 = 4u32;
 #[cfg(target_os = "android")]
-pub const KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME: &'static [u8] =
+pub const KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME: &[u8] =
     b"XR_KHR_android_surface_swapchain\0";
 pub const KHR_composition_layer_cube_SPEC_VERSION: u32 = 8u32;
-pub const KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_composition_layer_cube\0";
+pub const KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME: &[u8] = b"XR_KHR_composition_layer_cube\0";
 #[cfg(target_os = "android")]
 pub const KHR_android_create_instance_SPEC_VERSION: u32 = 3u32;
 #[cfg(target_os = "android")]
-pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_android_create_instance\0";
+pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &[u8] = b"XR_KHR_android_create_instance\0";
 pub const KHR_composition_layer_depth_SPEC_VERSION: u32 = 5u32;
-pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_composition_layer_depth\0";
+pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &[u8] = b"XR_KHR_composition_layer_depth\0";
 pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 2u32;
-pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &'static [u8] =
+pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &[u8] =
     b"XR_KHR_vulkan_swapchain_format_list\0";
 pub const KHR_composition_layer_cylinder_SPEC_VERSION: u32 = 4u32;
-pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &'static [u8] =
+pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &[u8] =
     b"XR_KHR_composition_layer_cylinder\0";
 pub const KHR_composition_layer_equirect_SPEC_VERSION: u32 = 3u32;
-pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &'static [u8] =
+pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &[u8] =
     b"XR_KHR_composition_layer_equirect\0";
 pub const KHR_opengl_enable_SPEC_VERSION: u32 = 7u32;
-pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_enable\0";
+pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_enable\0";
 pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 6u32;
-pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_opengl_es_enable\0";
+pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_es_enable\0";
 pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 6u32;
-pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_vulkan_enable\0";
+pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_vulkan_enable\0";
 #[cfg(windows)]
 pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 4u32;
 #[cfg(windows)]
-pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D11_enable\0";
+pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D11_enable\0";
 #[cfg(windows)]
 pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 5u32;
 #[cfg(windows)]
-pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &'static [u8] = b"XR_KHR_D3D12_enable\0";
+pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D12_enable\0";
 pub const KHR_visibility_mask_SPEC_VERSION: u32 = 2u32;
-pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &'static [u8] = b"XR_KHR_visibility_mask\0";
+pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &[u8] = b"XR_KHR_visibility_mask\0";
 #[cfg(windows)]
 pub const KHR_win32_convert_performance_counter_time_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
-pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &'static [u8] =
+pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &[u8] =
     b"XR_KHR_win32_convert_performance_counter_time\0";
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
-pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &'static [u8] =
-    b"XR_KHR_convert_timespec_time\0";
+pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &[u8] = b"XR_KHR_convert_timespec_time\0";
 pub const MND_headless_SPEC_VERSION: u32 = 1u32;
-pub const MND_HEADLESS_EXTENSION_NAME: &'static [u8] = b"XR_MND_headless\0";
+pub const MND_HEADLESS_EXTENSION_NAME: &[u8] = b"XR_MND_headless\0";
 pub const MSFT_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &'static [u8] =
+pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &[u8] =
     b"XR_MSFT_unbounded_reference_space\0";
 pub const MSFT_spatial_anchor_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &'static [u8] = b"XR_MSFT_spatial_anchor\0";
+pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_anchor\0";
 #[cfg(target_os = "android")]
 pub const OCULUS_android_session_state_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
-pub const OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME: &'static [u8] =
+pub const OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME: &[u8] =
     b"XR_OCULUS_android_session_state_enable\0";
 pub const VARJO_quad_views_SPEC_VERSION: u32 = 1u32;
-pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &'static [u8] = b"XR_VARJO_quad_views\0";
+pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &[u8] = b"XR_VARJO_quad_views\0";
 #[cfg(feature = "prototypes")]
 extern "system" {
     #[link_name = "xrGetInstanceProcAddr"]

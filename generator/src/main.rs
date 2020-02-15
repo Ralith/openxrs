@@ -258,7 +258,7 @@ impl Parser {
             }
         }
         if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
-            self.disabled_exts.insert(ext_name.into());
+            self.disabled_exts.insert(ext_name);
         } else {
             let (tag, _) = split_ext_tag(&ext_name);
             self.extensions
@@ -468,20 +468,17 @@ impl Parser {
                 _ => {}
             }
         }
-        match define_name.as_ref().map(|x| &x[..]) {
-            Some("XR_CURRENT_API_VERSION") => {
-                let version = define_val.unwrap();
-                assert!(version.starts_with("("));
-                assert!(version.ends_with(")"));
-                let version = &version[1..version.len() - 1];
-                let mut iter = version.split(", ").map(|x| x.parse::<u64>().unwrap());
-                self.api_version = Some((
-                    iter.next().unwrap() as u16,
-                    iter.next().unwrap() as u16,
-                    iter.next().unwrap() as u32,
-                ));
-            }
-            _ => {}
+        if define_name.as_ref().map(|x| &x[..]) == Some("XR_CURRENT_API_VERSION") {
+            let version = define_val.unwrap();
+            assert!(version.starts_with('('));
+            assert!(version.ends_with(')'));
+            let version = &version[1..version.len() - 1];
+            let mut iter = version.split(", ").map(|x| x.parse::<u64>().unwrap());
+            self.api_version = Some((
+                iter.next().unwrap() as u16,
+                iter.next().unwrap() as u16,
+                iter.next().unwrap() as u32,
+            ));
         }
     }
 
@@ -532,7 +529,6 @@ impl Parser {
                 members,
                 ty,
                 extension: None,
-                parent,
                 mut_next,
             },
         );
@@ -569,8 +565,8 @@ impl Parser {
                         is_const = ch.starts_with("const");
                     } else if member_name.is_none() {
                         ptr_depth = ch.chars().filter(|&x| x == '*').count();
-                    } else if ch.starts_with("[") && ch.len() > 1 {
-                        assert!(ch.ends_with("]"));
+                    } else if ch.starts_with('[') && ch.len() > 1 {
+                        assert!(ch.ends_with(']'));
                         static_array_len = Some(ch[1..ch.len() - 1].into());
                     }
                 }
@@ -589,7 +585,7 @@ impl Parser {
             ptr_depth,
             ty: member_ty.unwrap(),
             static_array_len,
-            len: attr(attrs, "len").map(|x| x.split(",").map(|x| x.into()).collect()),
+            len: attr(attrs, "len").map(|x| x.split(',').map(|x| x.into()).collect()),
         }
     }
 
@@ -660,7 +656,7 @@ impl Parser {
         let ty = attr(attrs, "type");
         if let Some(comment) = attr(attrs, "comment").and_then(tidy_comment) {
             if let Some(item) = self.enums.get_mut(name) {
-                item.comment = Some(comment.into());
+                item.comment = Some(comment);
             }
         }
 
@@ -855,7 +851,7 @@ impl Parser {
                         |x| {
                             let mut reason = x.to_string();
                             reason.get_mut(0..1).unwrap().make_ascii_lowercase();
-                            assert!(reason.ends_with("."));
+                            assert!(reason.ends_with('.'));
                             reason.truncate(reason.len() - 1);
                             reason
                         },
@@ -1030,7 +1026,7 @@ impl Parser {
                         #ident: #ty
                     }
                 });
-                let foo = if let Some(ref ext) = command.extension {
+                let doc = if let Some(ref ext) = command.extension {
                     if self.disabled_exts.contains(ext) {
                         return (quote! {}, quote! {});
                     }
@@ -1048,7 +1044,7 @@ impl Parser {
                 let params2 = params.clone();
                 let pfn_def = quote! {
                     #conditions
-                    #[doc = #foo]
+                    #[doc = #doc]
                     pub type #ident = unsafe extern "system" fn(#(#params),*) -> Result;
                 };
                 let proto = if command.extension.is_some() {
@@ -1084,7 +1080,7 @@ impl Parser {
                     #conds
                     pub const #version_ident: u32 = #version_lit;
                     #conds
-                    pub const #name_ident: &'static [u8] = #name_lit;
+                    pub const #name_ident: &[u8] = #name_lit;
                 }
             })
         });
@@ -1094,7 +1090,7 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
-            #![allow(non_upper_case_globals)]
+            #![allow(non_upper_case_globals, clippy::unreadable_literal, clippy::identity_op)]
             use std::fmt;
             use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};
@@ -1137,6 +1133,7 @@ impl Parser {
     }
 
     /// Generate high-level code
+    #[allow(clippy::cognitive_complexity)] // TODO
     fn generate_hl(&self) -> TokenStream {
         let (instance_pfn_fields, instance_pfn_inits) = self.commands.iter().map(|(name, command)| {
             if command.extension.is_some() {
@@ -1352,6 +1349,7 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
+            #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
             use std::os::raw::c_char;
             pub use sys::{#(#reexports),*};
 
@@ -1557,6 +1555,11 @@ impl Parser {
                         unsafe { mem::transmute(&self.inner) }
                     }
                 }
+                impl #type_params Default for #ident #type_args {
+                    fn default() -> Self {
+                        Self::new()
+                    }
+                }
             }
         });
 
@@ -1610,7 +1613,7 @@ impl Parser {
                     )
                 }
                 _ => {
-                    if let Some(_) = m.static_array_len {
+                    if m.static_array_len.is_some() {
                         if m.ty != "char" {
                             return None;
                         }
@@ -1737,6 +1740,12 @@ impl Parser {
 
                 #setters
             }
+
+            impl #type_params Default for #ident #type_args {
+                fn default() -> Self {
+                    Self::new()
+                }
+            }
         }
     }
 
@@ -1763,7 +1772,7 @@ impl Parser {
             };
             Some(quote! {
                 #[inline]
-                pub fn #ident(&self) -> #ty {
+                pub fn #ident(self) -> #ty {
                     #value
                 }
             })
@@ -1806,7 +1815,7 @@ struct StructMeta {
 }
 
 impl StructMeta {
-    fn type_params(&self) -> (TokenStream, TokenStream, TokenStream, TokenStream) {
+    fn type_params(self) -> (TokenStream, TokenStream, TokenStream, TokenStream) {
         let mut params = Vec::new();
         let mut args = Vec::new();
         if self.has_pointer {
@@ -1888,7 +1897,6 @@ struct Struct {
     members: Vec<Member>,
     extension: Option<Rc<str>>,
     ty: Option<String>,
-    parent: Option<String>,
     mut_next: bool,
 }
 
@@ -1937,7 +1945,7 @@ fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
         "XrResult" => "XR_".len(),
         _ => ty.to_shouty_snake_case().len() + 1,
     };
-    let end = if ext.len() != 0 {
+    let end = if !ext.is_empty() {
         name.len() - ext.len() - 1
     } else {
         name.len()
@@ -1950,7 +1958,7 @@ fn xr_bitmask_value_name(ty: &str, name: &str) -> Ident {
     assert!(ty.ends_with("Flags"));
     let ty = &ty[0..ty.len() - "Flags".len()];
     let prefix_len = ty.to_shouty_snake_case().len() + 1;
-    let end = if ext.len() != 0 {
+    let end = if !ext.is_empty() {
         name.len() - ext.len() - 1
     } else {
         name.len()
@@ -2050,7 +2058,7 @@ fn conditions(name: &str) -> TokenStream {
 fn split_ext_tag(name: &str) -> (&str, &str) {
     assert_eq!(&name[..3], "XR_");
     let name = &name[3..];
-    let tag_end = name.find("_").unwrap();
+    let tag_end = name.find('_').unwrap();
     let (tag, tail) = name.split_at(tag_end);
     (tag, &tail[1..])
 }
