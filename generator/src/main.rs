@@ -1351,6 +1351,7 @@ impl Parser {
 
             #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
             use std::os::raw::c_char;
+            use std::mem::MaybeUninit;
             pub use sys::{#(#reexports),*};
 
             use crate::*;
@@ -1415,7 +1416,8 @@ impl Parser {
                 ///
                 /// `raw` must refer to an `EventDataBuffer` populated by a successful call to
                 /// `xrPollEvent`, which has not been moved since.
-                pub unsafe fn from_raw(raw: *const sys::EventDataBuffer) -> Option<Self> {
+                pub unsafe fn from_raw(raw: &'a MaybeUninit<sys::EventDataBuffer>) -> Option<Self> {
+                    let raw = raw.as_ptr();
                     Some(match (raw as *const sys::BaseInStructure).read().ty {
                         #(#event_decodes)*
                         _ => { return None; }

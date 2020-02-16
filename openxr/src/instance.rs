@@ -268,7 +268,7 @@ impl Instance {
                     return Ok(None);
                 }
                 debug_assert_eq!(status, sys::Result::SUCCESS);
-                if let x @ Some(_) = Event::from_raw((*storage).inner.as_ptr()) {
+                if let x @ Some(_) = Event::from_raw(&(*storage).inner) {
                     return Ok(x);
                 }
             }

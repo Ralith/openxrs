@@ -1,6 +1,7 @@
 #![doc = r" Automatically generated code; do not edit!"]
 #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
 use crate::*;
+use std::mem::MaybeUninit;
 use std::os::raw::c_char;
 pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
@@ -524,7 +525,8 @@ impl<'a> Event<'a> {
     #[doc = r""]
     #[doc = r" `raw` must refer to an `EventDataBuffer` populated by a successful call to"]
     #[doc = r" `xrPollEvent`, which has not been moved since."]
-    pub unsafe fn from_raw(raw: *const sys::EventDataBuffer) -> Option<Self> {
+    pub unsafe fn from_raw(raw: &'a MaybeUninit<sys::EventDataBuffer>) -> Option<Self> {
+        let raw = raw.as_ptr();
         Some(match (raw as *const sys::BaseInStructure).read().ty {
             sys::StructureType::EVENT_DATA_EVENTS_LOST => {
                 let typed = &*(raw as *const sys::EventDataEventsLost);
