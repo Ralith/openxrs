@@ -20,7 +20,8 @@ exposed in safe terms are preserved as unsafe.
 The crate exposes a number of cargo features:
 - `static` builds in the Khronos OpenXR loader, which can then be
   accessed with `Entry::linked()`. This is the easiest way to get
-  going.
+  going, provided your environment has a working C++ compiler and
+  CMake installation.
 - `loaded` allows access to a manually identified OpenXR
   implementation at run time. This allows for cases where a built-in
   Khronos loader, normally responsible for that task, cannot be used.
@@ -28,8 +29,8 @@ The crate exposes a number of cargo features:
   application. As opposed to `static`, this is useful when the target
   environment guarantees the presence of an OpenXR implementation or
   loader at a specific location, making a built-in loader redundant.
-- `nalgebra` exposes `Into` and `From` impls for converting to and
-  from nalgebra types where appropriate.
+- `mint` exposes `Into` and `From` impls for converting to and from
+  [mint](https://github.com/kvark/mint) types where appropriate.
 
 ## `openxr-sys`
 
