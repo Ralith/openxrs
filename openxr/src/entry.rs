@@ -1,8 +1,8 @@
 #[cfg(feature = "loaded")]
-use shared_library::dynamic_library::DynamicLibrary;
+use libloading::Library;
 use std::{ffi::CStr, mem, ptr, sync::Arc};
 #[cfg(feature = "loaded")]
-use std::{fmt, os::raw::c_void, path::Path};
+use std::{fmt, path::Path};
 
 use crate::*;
 
@@ -61,27 +61,21 @@ impl Entry {
     /// Available if the `loaded` feature is enabled.
     #[cfg(feature = "loaded")]
     pub fn load_from(path: &Path) -> std::result::Result<Self, LoadError> {
-        let lib = DynamicLibrary::open(Some(path)).map_err(LoadError)?;
+        let lib = Library::new(path).map_err(LoadError)?;
         Ok(Self {
             inner: Arc::new(Inner {
                 raw: unsafe {
                     RawEntry {
-                        get_instance_proc_addr: mem::transmute(
-                            lib.symbol::<c_void>("xrGetInstanceProcAddr")
-                                .map_err(LoadError)?,
-                        ),
-                        create_instance: mem::transmute(
-                            lib.symbol::<c_void>("xrCreateInstance")
-                                .map_err(LoadError)?,
-                        ),
-                        enumerate_instance_extension_properties: mem::transmute(
-                            lib.symbol::<c_void>("xrEnumerateInstanceExtensionProperties")
-                                .map_err(LoadError)?,
-                        ),
-                        enumerate_api_layer_properties: mem::transmute(
-                            lib.symbol::<c_void>("xrEnumerateApiLayerProperties")
-                                .map_err(LoadError)?,
-                        ),
+                        get_instance_proc_addr: *lib
+                            .get(b"xrGetInstanceProcAddr\0")
+                            .map_err(LoadError)?,
+                        create_instance: *lib.get(b"xrCreateInstance\0").map_err(LoadError)?,
+                        enumerate_instance_extension_properties: *lib
+                            .get(b"xrEnumerateInstanceExtensionProperties\0")
+                            .map_err(LoadError)?,
+                        enumerate_api_layer_properties: *lib
+                            .get(b"xrEnumerateApiLayerProperties\0")
+                            .map_err(LoadError)?,
                     }
                 },
                 _lib_guard: Some(lib),
@@ -185,7 +179,7 @@ impl Entry {
 struct Inner {
     raw: RawEntry,
     #[cfg(feature = "loaded")]
-    _lib_guard: Option<DynamicLibrary>,
+    _lib_guard: Option<Library>,
 }
 
 pub struct RawEntry {
@@ -197,8 +191,7 @@ pub struct RawEntry {
 
 /// An error encountered while loading entry points from a dynamic library at run time
 #[cfg(feature = "loaded")]
-#[derive(Clone)]
-pub struct LoadError(String);
+pub struct LoadError(std::io::Error);
 
 #[cfg(feature = "loaded")]
 impl fmt::Debug for LoadError {
