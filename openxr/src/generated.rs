@@ -5,17 +5,19 @@ pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
     Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, InputSourceLocalizedNameFlags,
-    InstanceCreateFlags, ObjectType, Offset2Df, Offset2Di, PerfSettingsDomainEXT,
-    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
-    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState,
-    SpaceLocationFlags, SpaceVelocityFlags, StructureType, SwapchainCreateFlags,
-    SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f, Vector4f,
-    ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
+    InstanceCreateFlags, ObjectType, Offset2Df, Offset2Di, OverlayMainSessionFlagsEXTX,
+    OverlaySessionCreateFlagsEXTX, PerfSettingsDomainEXT, PerfSettingsLevelEXT,
+    PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef, Quaternionf, Rect2Df,
+    Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState, SpaceLocationFlags,
+    SpaceVelocityFlags, StructureType, SwapchainCreateFlags, SwapchainUsageFlags,
+    SystemGraphicsProperties, Vector2f, Vector3f, Vector4f, ViewConfigurationType, ViewStateFlags,
+    VisibilityMaskTypeKHR,
 };
 #[doc = r" A subset of known extensions"]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
 #[non_exhaustive]
 pub struct ExtensionSet {
+    pub epic_view_configuration_fov: bool,
     pub ext_performance_settings: bool,
     pub ext_thermal_query: bool,
     pub ext_debug_utils: bool,
@@ -23,6 +25,7 @@ pub struct ExtensionSet {
     pub ext_conformance_automation: bool,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: bool,
+    pub extx_overlay: bool,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: bool,
     #[cfg(target_os = "android")]
@@ -48,6 +51,7 @@ pub struct ExtensionSet {
     pub mnd_headless: bool,
     pub msft_unbounded_reference_space: bool,
     pub msft_spatial_anchor: bool,
+    pub msft_hand_interaction: bool,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
     pub varjo_quad_views: bool,
@@ -59,6 +63,9 @@ impl ExtensionSet {
         let mut out = Self::default();
         for ext in properties {
             match crate::fixed_str_bytes(&ext.extension_name) {
+                raw::ViewConfigurationFovEPIC::NAME => {
+                    out.epic_view_configuration_fov = true;
+                }
                 raw::PerformanceSettingsEXT::NAME => {
                     out.ext_performance_settings = true;
                 }
@@ -77,6 +84,9 @@ impl ExtensionSet {
                 #[cfg(windows)]
                 raw::Win32AppcontainerCompatibleEXT::NAME => {
                     out.ext_win32_appcontainer_compatible = true;
+                }
+                raw::OverlayEXTX::NAME => {
+                    out.extx_overlay = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::AndroidThreadSettingsKHR::NAME => {
@@ -141,6 +151,9 @@ impl ExtensionSet {
                 raw::SpatialAnchorMSFT::NAME => {
                     out.msft_spatial_anchor = true;
                 }
+                raw::HandInteractionMSFT::NAME => {
+                    out.msft_hand_interaction = true;
+                }
                 #[cfg(target_os = "android")]
                 raw::AndroidSessionStateEnableOCULUS::NAME => {
                     out.oculus_android_session_state_enable = true;
@@ -159,6 +172,11 @@ impl ExtensionSet {
     }
     pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
         let mut out = Vec::new();
+        {
+            if self.epic_view_configuration_fov {
+                out.push(raw::ViewConfigurationFovEPIC::NAME.into());
+            }
+        }
         {
             if self.ext_performance_settings {
                 out.push(raw::PerformanceSettingsEXT::NAME.into());
@@ -188,6 +206,11 @@ impl ExtensionSet {
         {
             if self.ext_win32_appcontainer_compatible {
                 out.push(raw::Win32AppcontainerCompatibleEXT::NAME.into());
+            }
+        }
+        {
+            if self.extx_overlay {
+                out.push(raw::OverlayEXTX::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
@@ -291,6 +314,11 @@ impl ExtensionSet {
                 out.push(raw::SpatialAnchorMSFT::NAME.into());
             }
         }
+        {
+            if self.msft_hand_interaction {
+                out.push(raw::HandInteractionMSFT::NAME.into());
+            }
+        }
         #[cfg(target_os = "android")]
         {
             if self.oculus_android_session_state_enable {
@@ -314,6 +342,7 @@ impl ExtensionSet {
 #[doc = r" Extensions used internally by the bindings"]
 #[derive(Default, Copy, Clone)]
 pub struct InstanceExtensions {
+    pub epic_view_configuration_fov: Option<raw::ViewConfigurationFovEPIC>,
     pub ext_performance_settings: Option<raw::PerformanceSettingsEXT>,
     pub ext_thermal_query: Option<raw::ThermalQueryEXT>,
     pub ext_debug_utils: Option<raw::DebugUtilsEXT>,
@@ -321,6 +350,7 @@ pub struct InstanceExtensions {
     pub ext_conformance_automation: Option<raw::ConformanceAutomationEXT>,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: Option<raw::Win32AppcontainerCompatibleEXT>,
+    pub extx_overlay: Option<raw::OverlayEXTX>,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
     #[cfg(target_os = "android")]
@@ -347,6 +377,7 @@ pub struct InstanceExtensions {
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub msft_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceMSFT>,
     pub msft_spatial_anchor: Option<raw::SpatialAnchorMSFT>,
+    pub msft_hand_interaction: Option<raw::HandInteractionMSFT>,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
@@ -363,6 +394,11 @@ impl InstanceExtensions {
         required: &ExtensionSet,
     ) -> Result<Self> {
         Ok(Self {
+            epic_view_configuration_fov: if required.epic_view_configuration_fov {
+                Some(raw::ViewConfigurationFovEPIC {})
+            } else {
+                None
+            },
             ext_performance_settings: if required.ext_performance_settings {
                 Some(raw::PerformanceSettingsEXT::load(entry, instance)?)
             } else {
@@ -391,6 +427,11 @@ impl InstanceExtensions {
             #[cfg(windows)]
             ext_win32_appcontainer_compatible: if required.ext_win32_appcontainer_compatible {
                 Some(raw::Win32AppcontainerCompatibleEXT {})
+            } else {
+                None
+            },
+            extx_overlay: if required.extx_overlay {
+                Some(raw::OverlayEXTX {})
             } else {
                 None
             },
@@ -499,6 +540,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            msft_hand_interaction: if required.msft_hand_interaction {
+                Some(raw::HandInteractionMSFT {})
+            } else {
+                None
+            },
             #[cfg(target_os = "android")]
             oculus_android_session_state_enable: if required.oculus_android_session_state_enable {
                 Some(raw::AndroidSessionStateEnableOCULUS {})
@@ -523,6 +569,7 @@ pub enum Event<'a> {
     PerfSettingsEXT(PerfSettingsEXT<'a>),
     VisibilityMaskChangedKHR(VisibilityMaskChangedKHR<'a>),
     InteractionProfileChanged(InteractionProfileChanged<'a>),
+    MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -563,6 +610,12 @@ impl<'a> Event<'a> {
             sys::StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED => {
                 let typed = &*(raw as *const sys::EventDataInteractionProfileChanged);
                 Event::InteractionProfileChanged(InteractionProfileChanged::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX => {
+                let typed = &*(raw as *const sys::EventDataMainSessionVisibilityChangedEXTX);
+                Event::MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX::new(
+                    typed,
+                ))
             }
             _ => {
                 return None;
@@ -696,6 +749,22 @@ impl<'a> InteractionProfileChanged<'a> {
     #[inline]
     pub fn session(self) -> sys::Session {
         (self.0).session
+    }
+}
+#[derive(Copy, Clone)]
+pub struct MainSessionVisibilityChangedEXTX<'a>(&'a sys::EventDataMainSessionVisibilityChangedEXTX);
+impl<'a> MainSessionVisibilityChangedEXTX<'a> {
+    #[inline]
+    pub fn new(inner: &'a sys::EventDataMainSessionVisibilityChangedEXTX) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn visible(self) -> bool {
+        (self.0).visible.into()
+    }
+    #[inline]
+    pub fn flags(self) -> OverlayMainSessionFlagsEXTX {
+        (self.0).flags
     }
 }
 pub mod raw {
@@ -1000,6 +1069,12 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct ViewConfigurationFovEPIC {}
+    impl ViewConfigurationFovEPIC {
+        pub const VERSION: u32 = sys::EPIC_view_configuration_fov_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct PerformanceSettingsEXT {
         pub perf_settings_set_performance_level: pfn::PerfSettingsSetPerformanceLevelEXT,
     }
@@ -1154,6 +1229,12 @@ pub mod raw {
     impl Win32AppcontainerCompatibleEXT {
         pub const VERSION: u32 = sys::EXT_win32_appcontainer_compatible_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct OverlayEXTX {}
+    impl OverlayEXTX {
+        pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXTX_OVERLAY_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -1489,6 +1570,12 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct HandInteractionMSFT {}
+    impl HandInteractionMSFT {
+        pub const VERSION: u32 = sys::MSFT_hand_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_HAND_INTERACTION_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
