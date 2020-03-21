@@ -124,6 +124,10 @@ impl Entry {
             sys::MAX_ENGINE_NAME_SIZE
         );
         let ext_names = required_extensions.names();
+        let ext_ptrs = ext_names
+            .iter()
+            .map(|x| x.as_ptr() as *const _)
+            .collect::<Vec<_>>();
         let mut info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
             next: ptr::null(),
@@ -137,8 +141,8 @@ impl Entry {
             },
             enabled_api_layer_count: 0,
             enabled_api_layer_names: ptr::null(),
-            enabled_extension_count: ext_names.len() as _,
-            enabled_extension_names: ext_names.as_ptr(),
+            enabled_extension_count: ext_ptrs.len() as _,
+            enabled_extension_names: ext_ptrs.as_ptr(),
         };
         place_cstr(
             &mut info.application_info.application_name,
