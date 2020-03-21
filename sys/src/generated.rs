@@ -1,10 +1,4 @@
-#![doc = r" Automatically generated code; do not edit!"]
-#![allow(
-    non_upper_case_globals,
-    clippy::unreadable_literal,
-    clippy::identity_op
-)]
-use crate::platform::*;
+# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( non_upper_case_globals , clippy :: unreadable_literal , clippy :: identity_op ) ]use crate::platform::*;
 use crate::support::*;
 use crate::*;
 use libc::timespec;

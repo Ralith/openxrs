@@ -1,8 +1,6 @@
-#![doc = r" Automatically generated code; do not edit!"]
-#![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
-use crate::*;
+# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( clippy :: wrong_self_convention , clippy :: transmute_ptr_to_ptr ) ]use crate::*;
+use std::borrow::Cow;
 use std::mem::MaybeUninit;
-use std::os::raw::c_char;
 pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
@@ -15,7 +13,7 @@ pub use sys::{
     ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
 };
 #[doc = r" A subset of known extensions"]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Eq, PartialEq, Default)]
 #[non_exhaustive]
 pub struct ExtensionSet {
     pub ext_performance_settings: bool,
@@ -53,6 +51,8 @@ pub struct ExtensionSet {
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
     pub varjo_quad_views: bool,
+    #[doc = r" Extensions unknown to the high-level bindings"]
+    other: Vec<String>,
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
@@ -148,157 +148,165 @@ impl ExtensionSet {
                 raw::QuadViewsVARJO::NAME => {
                     out.varjo_quad_views = true;
                 }
-                _ => {}
+                bytes => {
+                    if let Ok(name) = std::str::from_utf8(bytes) {
+                        out.other.push(name.into());
+                    }
+                }
             }
         }
         out
     }
-    pub(crate) fn names(&self) -> Vec<*const c_char> {
+    pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
         let mut out = Vec::new();
         {
             if self.ext_performance_settings {
-                out.push(raw::PerformanceSettingsEXT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::PerformanceSettingsEXT::NAME.into());
             }
         }
         {
             if self.ext_thermal_query {
-                out.push(raw::ThermalQueryEXT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::ThermalQueryEXT::NAME.into());
             }
         }
         {
             if self.ext_debug_utils {
-                out.push(raw::DebugUtilsEXT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::DebugUtilsEXT::NAME.into());
             }
         }
         {
             if self.ext_view_configuration_depth_range {
-                out.push(raw::ViewConfigurationDepthRangeEXT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::ViewConfigurationDepthRangeEXT::NAME.into());
             }
         }
         {
             if self.ext_conformance_automation {
-                out.push(raw::ConformanceAutomationEXT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::ConformanceAutomationEXT::NAME.into());
             }
         }
         #[cfg(windows)]
         {
             if self.ext_win32_appcontainer_compatible {
-                out.push(raw::Win32AppcontainerCompatibleEXT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::Win32AppcontainerCompatibleEXT::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_thread_settings {
-                out.push(raw::AndroidThreadSettingsKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::AndroidThreadSettingsKHR::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_surface_swapchain {
-                out.push(raw::AndroidSurfaceSwapchainKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::AndroidSurfaceSwapchainKHR::NAME.into());
             }
         }
         {
             if self.khr_composition_layer_cube {
-                out.push(raw::CompositionLayerCubeKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::CompositionLayerCubeKHR::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_create_instance {
-                out.push(raw::AndroidCreateInstanceKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::AndroidCreateInstanceKHR::NAME.into());
             }
         }
         {
             if self.khr_composition_layer_depth {
-                out.push(raw::CompositionLayerDepthKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::CompositionLayerDepthKHR::NAME.into());
             }
         }
         {
             if self.khr_vulkan_swapchain_format_list {
-                out.push(raw::VulkanSwapchainFormatListKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::VulkanSwapchainFormatListKHR::NAME.into());
             }
         }
         {
             if self.khr_composition_layer_cylinder {
-                out.push(raw::CompositionLayerCylinderKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::CompositionLayerCylinderKHR::NAME.into());
             }
         }
         {
             if self.khr_composition_layer_equirect {
-                out.push(raw::CompositionLayerEquirectKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::CompositionLayerEquirectKHR::NAME.into());
             }
         }
         {
             if self.khr_opengl_enable {
-                out.push(raw::OpenglEnableKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::OpenglEnableKHR::NAME.into());
             }
         }
         {
             if self.khr_opengl_es_enable {
-                out.push(raw::OpenglEsEnableKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::OpenglEsEnableKHR::NAME.into());
             }
         }
         {
             if self.khr_vulkan_enable {
-                out.push(raw::VulkanEnableKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::VulkanEnableKHR::NAME.into());
             }
         }
         #[cfg(windows)]
         {
             if self.khr_d3d11_enable {
-                out.push(raw::D3d11EnableKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::D3d11EnableKHR::NAME.into());
             }
         }
         #[cfg(windows)]
         {
             if self.khr_d3d12_enable {
-                out.push(raw::D3d12EnableKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::D3d12EnableKHR::NAME.into());
             }
         }
         {
             if self.khr_visibility_mask {
-                out.push(raw::VisibilityMaskKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::VisibilityMaskKHR::NAME.into());
             }
         }
         #[cfg(windows)]
         {
             if self.khr_win32_convert_performance_counter_time {
-                out.push(
-                    raw::Win32ConvertPerformanceCounterTimeKHR::NAME.as_ptr() as *const _ as _,
-                );
+                out.push(raw::Win32ConvertPerformanceCounterTimeKHR::NAME.into());
             }
         }
         {
             if self.khr_convert_timespec_time {
-                out.push(raw::ConvertTimespecTimeKHR::NAME.as_ptr() as *const _ as _);
+                out.push(raw::ConvertTimespecTimeKHR::NAME.into());
             }
         }
         {
             if self.mnd_headless {
-                out.push(raw::HeadlessMND::NAME.as_ptr() as *const _ as _);
+                out.push(raw::HeadlessMND::NAME.into());
             }
         }
         {
             if self.msft_unbounded_reference_space {
-                out.push(raw::UnboundedReferenceSpaceMSFT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::UnboundedReferenceSpaceMSFT::NAME.into());
             }
         }
         {
             if self.msft_spatial_anchor {
-                out.push(raw::SpatialAnchorMSFT::NAME.as_ptr() as *const _ as _);
+                out.push(raw::SpatialAnchorMSFT::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.oculus_android_session_state_enable {
-                out.push(raw::AndroidSessionStateEnableOCULUS::NAME.as_ptr() as *const _ as _);
+                out.push(raw::AndroidSessionStateEnableOCULUS::NAME.into());
             }
         }
         {
             if self.varjo_quad_views {
-                out.push(raw::QuadViewsVARJO::NAME.as_ptr() as *const _ as _);
+                out.push(raw::QuadViewsVARJO::NAME.into());
             }
+        }
+        for name in &self.other {
+            let mut bytes = Vec::with_capacity(name.len() + 1);
+            bytes.extend_from_slice(name.as_bytes());
+            bytes.push(0);
+            out.push(bytes.into());
         }
         out
     }
