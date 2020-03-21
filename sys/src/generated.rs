@@ -5,7 +5,7 @@ use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 6u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 7u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -109,9 +109,13 @@ impl StructureType {
     pub const GRAPHICS_REQUIREMENTS_D3D12_KHR: StructureType = StructureType(1000028002i32);
     pub const VISIBILITY_MASK_KHR: StructureType = StructureType(1000031000i32);
     pub const EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR: StructureType = StructureType(1000031001i32);
+    pub const SESSION_CREATE_INFO_OVERLAY_EXTX: StructureType = StructureType(1000033000i32);
+    pub const EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX: StructureType =
+        StructureType(1000033003i32);
     pub const SPATIAL_ANCHOR_CREATE_INFO_MSFT: StructureType = StructureType(1000039000i32);
     pub const SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT: StructureType = StructureType(1000039001i32);
     pub const VIEW_CONFIGURATION_DEPTH_RANGE_EXT: StructureType = StructureType(1000046000i32);
+    pub const VIEW_CONFIGURATION_VIEW_FOV_EPIC: StructureType = StructureType(1000059000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -227,11 +231,16 @@ impl fmt::Debug for StructureType {
             Self::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
                 Some("EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR")
             }
+            Self::SESSION_CREATE_INFO_OVERLAY_EXTX => Some("SESSION_CREATE_INFO_OVERLAY_EXTX"),
+            Self::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX => {
+                Some("EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX")
+            }
             Self::SPATIAL_ANCHOR_CREATE_INFO_MSFT => Some("SPATIAL_ANCHOR_CREATE_INFO_MSFT"),
             Self::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT => {
                 Some("SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT")
             }
             Self::VIEW_CONFIGURATION_DEPTH_RANGE_EXT => Some("VIEW_CONFIGURATION_DEPTH_RANGE_EXT"),
+            Self::VIEW_CONFIGURATION_VIEW_FOV_EPIC => Some("VIEW_CONFIGURATION_VIEW_FOV_EPIC"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1013,6 +1022,26 @@ impl DebugUtilsMessageTypeFlagsEXT {
     pub const CONFORMANCE: DebugUtilsMessageTypeFlagsEXT = DebugUtilsMessageTypeFlagsEXT(1 << 3u64);
 }
 bitmask!(DebugUtilsMessageTypeFlagsEXT);
+#[doc = "See [XrOverlayMainSessionFlagsEXTX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrOverlayMainSessionFlagsEXTX)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct OverlayMainSessionFlagsEXTX(u64);
+impl OverlayMainSessionFlagsEXTX {
+    #[doc = "Indicates the main session enabled XR_KHR_extra_layer_info_depth"]
+    pub const ENABLED_COMPOSITION_LAYER_INFO_DEPTH: OverlayMainSessionFlagsEXTX =
+        OverlayMainSessionFlagsEXTX(1 << 0u64);
+}
+bitmask!(OverlayMainSessionFlagsEXTX);
+#[doc = "See [XrOverlaySessionCreateFlagsEXTX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrOverlaySessionCreateFlagsEXTX)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct OverlaySessionCreateFlagsEXTX(u64);
+impl OverlaySessionCreateFlagsEXTX {
+    #[doc = "Indicates the runtime does not need to attempt to lock the overlay session displayTime to the main session displayTime"]
+    pub const RELAXED_DISPLAY_TIME: OverlaySessionCreateFlagsEXTX =
+        OverlaySessionCreateFlagsEXTX(1 << 0u64);
+}
+bitmask!(OverlaySessionCreateFlagsEXTX);
 #[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -2615,6 +2644,30 @@ impl GraphicsRequirementsD3D12KHR {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSessionCreateInfoOverlayEXTX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionCreateInfoOverlayEXTX) - defined by [XR_EXTX_overlay](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXTX_overlay)"]
+pub struct SessionCreateInfoOverlayEXTX {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub create_flags: OverlaySessionCreateFlagsEXTX,
+    pub session_layers_placement: u32,
+}
+impl SessionCreateInfoOverlayEXTX {
+    pub const TYPE: StructureType = StructureType::SESSION_CREATE_INFO_OVERLAY_EXTX;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrEventDataMainSessionVisibilityChangedEXTX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataMainSessionVisibilityChangedEXTX) - defined by [XR_EXTX_overlay](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXTX_overlay)"]
+pub struct EventDataMainSessionVisibilityChangedEXTX {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub visible: Bool32,
+    pub flags: OverlayMainSessionFlagsEXTX,
+}
+impl EventDataMainSessionVisibilityChangedEXTX {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 #[doc = "See [XrViewConfigurationDepthRangeEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationDepthRangeEXT) - defined by [XR_EXT_view_configuration_depth_range](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_view_configuration_depth_range)"]
 pub struct ViewConfigurationDepthRangeEXT {
     pub ty: StructureType,
@@ -2638,6 +2691,18 @@ impl ViewConfigurationDepthRangeEXT {
         }
         x
     }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrViewConfigurationViewFovEPIC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationViewFovEPIC) - defined by [XR_EPIC_view_configuration_fov](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EPIC_view_configuration_fov)"]
+pub struct ViewConfigurationViewFovEPIC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub recommended_mutable_fov: Fovf,
+    pub max_mutable_fov: Fovf,
+}
+impl ViewConfigurationViewFovEPIC {
+    pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW_FOV_EPIC;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -3176,6 +3241,8 @@ pub mod pfn {
         pose: Posef,
     ) -> Result;
 }
+pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 1u32;
+pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 1u32;
 pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_EXT_performance_settings\0";
 pub const EXT_thermal_query_SPEC_VERSION: u32 = 1u32;
@@ -3192,6 +3259,8 @@ pub const EXT_win32_appcontainer_compatible_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
 pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_win32_appcontainer_compatible\0";
+pub const EXTX_overlay_SPEC_VERSION: u32 = 3u32;
+pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
 #[cfg(target_os = "android")]
 pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;
 #[cfg(target_os = "android")]
@@ -3229,7 +3298,7 @@ pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 4u32;
 #[cfg(windows)]
 pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D11_enable\0";
 #[cfg(windows)]
-pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 5u32;
+pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 6u32;
 #[cfg(windows)]
 pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D12_enable\0";
 pub const KHR_visibility_mask_SPEC_VERSION: u32 = 2u32;
@@ -3248,6 +3317,8 @@ pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &[u8] =
     b"XR_MSFT_unbounded_reference_space\0";
 pub const MSFT_spatial_anchor_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_anchor\0";
+pub const MSFT_hand_interaction_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_interaction\0";
 #[cfg(target_os = "android")]
 pub const OCULUS_android_session_state_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
