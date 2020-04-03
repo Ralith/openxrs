@@ -1,11 +1,17 @@
-# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( non_upper_case_globals , clippy :: unreadable_literal , clippy :: identity_op ) ]use crate::platform::*;
+#![doc = r" Automatically generated code; do not edit!"]
+#![allow(
+    non_upper_case_globals,
+    clippy::unreadable_literal,
+    clippy::identity_op
+)]
+use crate::platform::*;
 use crate::support::*;
 use crate::*;
 use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 7u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 8u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -107,6 +113,9 @@ impl StructureType {
     pub const GRAPHICS_BINDING_D3D12_KHR: StructureType = StructureType(1000028000i32);
     pub const SWAPCHAIN_IMAGE_D3D12_KHR: StructureType = StructureType(1000028001i32);
     pub const GRAPHICS_REQUIREMENTS_D3D12_KHR: StructureType = StructureType(1000028002i32);
+    pub const SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT: StructureType =
+        StructureType(1000030000i32);
+    pub const EYE_GAZE_SAMPLE_TIME_EXT: StructureType = StructureType(1000030001i32);
     pub const VISIBILITY_MASK_KHR: StructureType = StructureType(1000031000i32);
     pub const EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR: StructureType = StructureType(1000031001i32);
     pub const SESSION_CREATE_INFO_OVERLAY_EXTX: StructureType = StructureType(1000033000i32);
@@ -227,6 +236,10 @@ impl fmt::Debug for StructureType {
             Self::GRAPHICS_BINDING_D3D12_KHR => Some("GRAPHICS_BINDING_D3D12_KHR"),
             Self::SWAPCHAIN_IMAGE_D3D12_KHR => Some("SWAPCHAIN_IMAGE_D3D12_KHR"),
             Self::GRAPHICS_REQUIREMENTS_D3D12_KHR => Some("GRAPHICS_REQUIREMENTS_D3D12_KHR"),
+            Self::SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT => {
+                Some("SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT")
+            }
+            Self::EYE_GAZE_SAMPLE_TIME_EXT => Some("EYE_GAZE_SAMPLE_TIME_EXT"),
             Self::VISIBILITY_MASK_KHR => Some("VISIBILITY_MASK_KHR"),
             Self::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
                 Some("EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR")
@@ -2706,6 +2719,52 @@ impl ViewConfigurationViewFovEPIC {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrSystemEyeGazeInteractionPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemEyeGazeInteractionPropertiesEXT) - defined by [XR_EXT_eye_gaze_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_eye_gaze_interaction)"]
+pub struct SystemEyeGazeInteractionPropertiesEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_eye_gaze_interaction: Bool32,
+}
+impl SystemEyeGazeInteractionPropertiesEXT {
+    pub const TYPE: StructureType = StructureType::SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrEyeGazeSampleTimeEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEyeGazeSampleTimeEXT) - defined by [XR_EXT_eye_gaze_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_eye_gaze_interaction)"]
+pub struct EyeGazeSampleTimeEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub time: Time,
+}
+impl EyeGazeSampleTimeEXT {
+    pub const TYPE: StructureType = StructureType::EYE_GAZE_SAMPLE_TIME_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 #[doc = "See [XrSpatialAnchorCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorCreateInfoMSFT)"]
 pub struct SpatialAnchorCreateInfoMSFT {
     pub ty: StructureType,
@@ -3249,6 +3308,8 @@ pub const EXT_thermal_query_SPEC_VERSION: u32 = 1u32;
 pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &[u8] = b"XR_EXT_thermal_query\0";
 pub const EXT_debug_utils_SPEC_VERSION: u32 = 3u32;
 pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &[u8] = b"XR_EXT_debug_utils\0";
+pub const EXT_eye_gaze_interaction_SPEC_VERSION: u32 = 1u32;
+pub const EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_EXT_eye_gaze_interaction\0";
 pub const EXT_view_configuration_depth_range_SPEC_VERSION: u32 = 1u32;
 pub const EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_view_configuration_depth_range\0";
@@ -3259,7 +3320,7 @@ pub const EXT_win32_appcontainer_compatible_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
 pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_win32_appcontainer_compatible\0";
-pub const EXTX_overlay_SPEC_VERSION: u32 = 3u32;
+pub const EXTX_overlay_SPEC_VERSION: u32 = 4u32;
 pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
 #[cfg(target_os = "android")]
 pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;

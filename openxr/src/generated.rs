@@ -1,4 +1,6 @@
-# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( clippy :: wrong_self_convention , clippy :: transmute_ptr_to_ptr ) ]use crate::*;
+#![doc = r" Automatically generated code; do not edit!"]
+#![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
+use crate::*;
 use std::borrow::Cow;
 use std::mem::MaybeUninit;
 pub use sys::{
@@ -21,6 +23,7 @@ pub struct ExtensionSet {
     pub ext_performance_settings: bool,
     pub ext_thermal_query: bool,
     pub ext_debug_utils: bool,
+    pub ext_eye_gaze_interaction: bool,
     pub ext_view_configuration_depth_range: bool,
     pub ext_conformance_automation: bool,
     #[cfg(windows)]
@@ -56,7 +59,7 @@ pub struct ExtensionSet {
     pub oculus_android_session_state_enable: bool,
     pub varjo_quad_views: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
-    other: Vec<String>,
+    pub other: Vec<String>,
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
@@ -74,6 +77,9 @@ impl ExtensionSet {
                 }
                 raw::DebugUtilsEXT::NAME => {
                     out.ext_debug_utils = true;
+                }
+                raw::EyeGazeInteractionEXT::NAME => {
+                    out.ext_eye_gaze_interaction = true;
                 }
                 raw::ViewConfigurationDepthRangeEXT::NAME => {
                     out.ext_view_configuration_depth_range = true;
@@ -190,6 +196,11 @@ impl ExtensionSet {
         {
             if self.ext_debug_utils {
                 out.push(raw::DebugUtilsEXT::NAME.into());
+            }
+        }
+        {
+            if self.ext_eye_gaze_interaction {
+                out.push(raw::EyeGazeInteractionEXT::NAME.into());
             }
         }
         {
@@ -346,6 +357,7 @@ pub struct InstanceExtensions {
     pub ext_performance_settings: Option<raw::PerformanceSettingsEXT>,
     pub ext_thermal_query: Option<raw::ThermalQueryEXT>,
     pub ext_debug_utils: Option<raw::DebugUtilsEXT>,
+    pub ext_eye_gaze_interaction: Option<raw::EyeGazeInteractionEXT>,
     pub ext_view_configuration_depth_range: Option<raw::ViewConfigurationDepthRangeEXT>,
     pub ext_conformance_automation: Option<raw::ConformanceAutomationEXT>,
     #[cfg(windows)]
@@ -411,6 +423,11 @@ impl InstanceExtensions {
             },
             ext_debug_utils: if required.ext_debug_utils {
                 Some(raw::DebugUtilsEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            ext_eye_gaze_interaction: if required.ext_eye_gaze_interaction {
+                Some(raw::EyeGazeInteractionEXT {})
             } else {
                 None
             },
@@ -1174,6 +1191,12 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct EyeGazeInteractionEXT {}
+    impl EyeGazeInteractionEXT {
+        pub const VERSION: u32 = sys::EXT_eye_gaze_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ViewConfigurationDepthRangeEXT {}
