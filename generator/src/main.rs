@@ -1362,7 +1362,7 @@ impl Parser {
             pub struct ExtensionSet {
                 #(#ext_set_fields)*
                 /// Extensions unknown to the high-level bindings
-                other: Vec<String>,
+                pub other: Vec<String>,
             }
 
             impl ExtensionSet {

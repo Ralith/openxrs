@@ -56,7 +56,7 @@ pub struct ExtensionSet {
     pub oculus_android_session_state_enable: bool,
     pub varjo_quad_views: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
-    other: Vec<String>,
+    pub other: Vec<String>,
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
