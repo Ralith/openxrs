@@ -195,7 +195,7 @@ pub struct RawEntry {
 
 /// An error encountered while loading entry points from a dynamic library at run time
 #[cfg(feature = "loaded")]
-pub struct LoadError(std::io::Error);
+pub struct LoadError(libloading::Error);
 
 #[cfg(feature = "loaded")]
 impl fmt::Debug for LoadError {
@@ -212,7 +212,11 @@ impl fmt::Display for LoadError {
 }
 
 #[cfg(feature = "loaded")]
-impl std::error::Error for LoadError {}
+impl std::error::Error for LoadError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        self.0.source()
+    }
+}
 
 #[derive(Debug, Copy, Clone, Default)]
 pub struct ApplicationInfo<'a> {
