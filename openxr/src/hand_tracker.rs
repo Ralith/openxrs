@@ -60,6 +60,7 @@ impl HandTracker {
         })
     }
 
+    /// Check if hand tracker is active
     pub fn is_active(&self, time: Time) -> Result<bool> {
         let mut state = sys::HandTrackerStateMSFT {
             ty: sys::HandTrackerStateMSFT::TYPE,
@@ -88,6 +89,7 @@ impl HandTracker {
             )
     }
 
+    /// Create a joint space
     pub fn create_joint_space(
         &self,
         joint: HandJoint,

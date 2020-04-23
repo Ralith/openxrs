@@ -342,6 +342,14 @@ impl<G: Graphics> Session<G> {
         }
     }
 
+    #[inline]
+    /// Create a hand tracker
+    ///
+    /// Requires [`XR_MSFT_hand_tracking_preview`](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_hand_tracking_preview)
+    pub fn create_hand_tracker(&self, hand: Hand) -> Result<HandTracker> {
+        HandTracker::create(self, hand)
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
