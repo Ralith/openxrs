@@ -113,6 +113,32 @@ impl Space {
         })
     }
 
+    /// Determine the location and radius of a hand joint space relative to a base space at a specified time,
+    /// if currently known by the runtime.
+    ///
+    /// XR_MSFT_hand_tracking_preview must be enabled
+    #[inline]
+    pub fn locate_radius(&self, base: &Space, time: Time) -> Result<(SpaceLocation, f32)> {
+        // This assert allows this function to be safe.
+        assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
+                   "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
+        let (out, radius) = unsafe {
+            let mut radius = sys::HandJointRadiusMSFT::out(ptr::null_mut());
+            let mut x = sys::SpaceLocation::out(&mut radius as *mut _ as _);
+            cvt((self.fp().locate_space)(
+                self.as_raw(),
+                base.as_raw(),
+                time,
+                x.as_mut_ptr(),
+            ))?;
+            (x.assume_init(), radius.assume_init())
+        };
+        Ok((SpaceLocation {
+            location_flags: out.location_flags,
+            pose: out.pose,
+        }, radius.radius))
+    }
+
     /// Determine the location and velocity of a space relative to a base space at a specified time,
     /// if currently known by the runtime.
     #[inline]
