@@ -2,6 +2,7 @@ use std::{ptr, sync::Arc};
 
 use crate::*;
 
+pub use sys::HandJointMSFT as HandJoint;
 pub use sys::HandMSFT as Hand;
 
 pub struct HandTracker {
@@ -26,7 +27,7 @@ impl HandTracker {
         }
     }
 
-    pub fn create<G: Graphics>(session: &Session<G>, hand: Hand) -> Result<Self> {
+    pub(crate) fn create<G: Graphics>(session: &Session<G>, hand: Hand) -> Result<Self> {
         let fp = session
             .inner
             .instance
@@ -85,6 +86,33 @@ impl HandTracker {
             .expect(
                 "Somehow created HandTracker without XR_MSFT_hand_tracking_preview being enabled",
             )
+    }
+
+    pub fn create_joint_space(
+        &self,
+        joint: HandJoint,
+        pose_in_joint_space: Posef,
+    ) -> Result<Space> {
+        let mut out = sys::Space::NULL;
+        let info = sys::HandJointSpaceCreateInfoMSFT {
+            ty: sys::HandJointSpaceCreateInfoMSFT::TYPE,
+            next: ptr::null(),
+            hand_tracker: self.handle,
+            joint,
+            pose_in_joint_space,
+        };
+        unsafe {
+            cvt((self.fp().create_hand_joint_space)(
+                self.session.handle,
+                &info,
+                &mut out,
+            ))?;
+            Ok(Space::hand_from_raw(self.clone(), out))
+        }
+    }
+
+    pub(crate) fn session_inner(&self) -> Arc<session::SessionInner> {
+        self.session.clone()
     }
 }
 

@@ -41,6 +41,20 @@ impl Space {
         }
     }
 
+    /// Take ownership of an existing hand tracker space handle
+    ///
+    /// # Safety
+    ///
+    /// `handle` must be associated with `hand`.
+    #[inline]
+    pub unsafe fn hand_from_raw(hand: &HandTracker, handle: sys::Space) -> Self {
+        Self {
+            session: hand.session_inner(),
+            _action_guard: None,
+            handle,
+        }
+    }
+
     /// Access the raw swapchain handle
     #[inline]
     pub fn as_raw(&self) -> sys::Space {
