@@ -1,4 +1,3 @@
-use std::mem::MaybeUninit;
 use std::{ptr, sync::Arc};
 
 use crate::*;
@@ -40,20 +39,40 @@ impl HandTracker {
             return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
         };
 
-        let mut out = MaybeUninit::uninit();
+        let mut out = sys::HandTrackerMSFT::NULL;
         let info = sys::HandTrackerCreateInfoMSFT {
             ty: sys::HandTrackerCreateInfoMSFT::TYPE,
             next: ptr::null(),
             hand,
         };
         let handle = unsafe {
-            cvt((fp.create_hand_tracker)(session.as_raw(), &info, out.as_mut_ptr()))?;
-            out.assume_init()
+            cvt((fp.create_hand_tracker)(
+                session.as_raw(),
+                &info,
+                &mut out,
+            ))?;
+            out
         };
         Ok(HandTracker {
             session: session.inner.clone(),
             handle,
         })
+    }
+
+    pub fn is_active(&self, time: Time) -> Result<bool> {
+        let mut state = sys::HandTrackerStateMSFT {
+            ty: sys::HandTrackerStateMSFT::TYPE,
+            next: ptr::null_mut(),
+            is_active: false.into(),
+        };
+        unsafe {
+            cvt((self.fp().get_hand_tracker_state)(
+                self.as_raw(),
+                time,
+                &mut state,
+            ))?;
+        }
+        Ok(state.is_active.into())
     }
 
     #[inline]
