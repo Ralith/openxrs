@@ -111,6 +111,7 @@ wrapper! {
     Path(u64)
 }
 
+
 impl Path {
     pub const NULL: Path = Path(0);
 }
@@ -183,6 +184,11 @@ impl Posef {
             z: 0.0,
         },
     };
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    ControllerModelKeyMSFT(u64)
 }
 
 pub use generated::*;
