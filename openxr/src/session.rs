@@ -61,6 +61,28 @@ impl<G: Graphics> Session<G> {
         unsafe { cvt((self.fp().begin_session)(self.as_raw(), &info)) }
     }
 
+    /// Request that the runtime show the application's rendered output to the user,
+    /// if `XR_MSFT_secondary_view_configuration` is loaded
+    #[inline]
+    pub fn begin_with_secondary(
+        &self,
+        ty: ViewConfigurationType,
+        secondary: &[ViewConfigurationType],
+    ) -> Result<sys::Result> {
+        let s = sys::SecondaryViewConfigurationSessionBeginInfoMSFT {
+            ty: sys::SecondaryViewConfigurationSessionBeginInfoMSFT::TYPE,
+            next: ptr::null(),
+            view_configuration_count: secondary.len() as u32,
+            enabled_view_configuration_types: secondary.as_ptr(),
+        };
+        let info = sys::SessionBeginInfo {
+            ty: sys::SessionBeginInfo::TYPE,
+            next: &s as *const _ as *const _,
+            primary_view_configuration_type: ty,
+        };
+        unsafe { cvt((self.fp().begin_session)(self.as_raw(), &info)) }
+    }
+
     /// Request a transition to `SessionState::STOPPING` so that `end` may be called.
     #[inline]
     pub fn request_exit(&self) -> Result<()> {
