@@ -122,6 +122,53 @@ impl<G: Graphics> FrameStream<G> {
         Ok(())
     }
 
+    /// Indicate that all graphics work for the frame has been submitted
+    ///
+    /// `layers` is an array of references to any type of composition layer,
+    /// e.g. `CompositionLayerProjection`.
+    ///
+    /// `secondary_info` has the same information for the secondary layer
+    ///
+    /// `XR_MSFT_secondary_view_configuration` must be loaded and the session
+    /// must have been started with begin_secondary
+    #[inline]
+    pub fn end_secondary(
+        &mut self,
+        display_time: Time,
+        environment_blend_mode: EnvironmentBlendMode,
+        layers: &[&CompositionLayerBase<'_, G>],
+        secondary_info: SecondaryEndInfo<'_, '_, '_, G>,
+    ) -> Result<()> {
+        assert!(layers.len() <= u32::max_value() as usize);
+        assert!(secondary_info.layers.len() <= u32::max_value() as usize);
+        let single_secondary_info = [sys::SecondaryViewConfigurationLayerInfoMSFT {
+            ty: sys::SecondaryViewConfigurationLayerInfoMSFT::TYPE,
+            next: ptr::null(),
+            view_configuration_type: secondary_info.ty,
+            environment_blend_mode: secondary_info.environment_blend_mode,
+            layer_count: secondary_info.layers.len() as u32,
+            layers: secondary_info.layers.as_ptr() as *const _,
+        }];
+        let secondary_info = sys::SecondaryViewConfigurationFrameEndInfoMSFT {
+            ty: sys::SecondaryViewConfigurationFrameEndInfoMSFT::TYPE,
+            next: ptr::null(),
+            view_configuration_count: 1,
+            view_configuration_layers_info: single_secondary_info.as_ptr() as *const _,
+        };
+        let info = sys::FrameEndInfo {
+            ty: sys::FrameEndInfo::TYPE,
+            next: &secondary_info as *const _ as *const _,
+            display_time,
+            environment_blend_mode,
+            layer_count: layers.len() as u32,
+            layers: layers.as_ptr() as _,
+        };
+        unsafe {
+            cvt((self.fp().end_frame)(self.session.as_raw(), &info))?;
+        }
+        Ok(())
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
