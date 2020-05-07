@@ -544,9 +544,7 @@ impl FrameWaiter {
     /// if `XR_MSFT_secondary_view_configuration` is loaded and the session has been
     /// initialized with `begin_secondary`
     #[inline]
-    pub fn wait_secondary(
-        &mut self,
-    ) -> Result<(FrameState, SecondaryViewState)> {
+    pub fn wait_secondary(&mut self) -> Result<(FrameState, SecondaryViewState)> {
         let mut state = [sys::SecondaryViewConfigurationStateMSFT::out(
             ptr::null_mut(),
         )];
