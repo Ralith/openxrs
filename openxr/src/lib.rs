@@ -29,6 +29,8 @@ mod action;
 pub use action::*;
 mod hand_tracker;
 pub use hand_tracker::*;
+mod secondary_view;
+pub use secondary_view::*;
 
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
