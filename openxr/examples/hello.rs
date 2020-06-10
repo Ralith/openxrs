@@ -19,6 +19,7 @@ fn main() {
                 ..Default::default()
             },
             &xr::ExtensionSet::default(),
+            &[],
         )
         .unwrap();
     let instance_props = instance.properties().unwrap();

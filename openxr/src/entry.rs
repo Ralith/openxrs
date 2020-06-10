@@ -1,6 +1,10 @@
 #[cfg(feature = "loaded")]
 use libloading::Library;
-use std::{ffi::CStr, mem, ptr, sync::Arc};
+use std::{
+    ffi::{CStr, CString},
+    mem, ptr,
+    sync::Arc,
+};
 #[cfg(feature = "loaded")]
 use std::{fmt, path::Path};
 
@@ -112,6 +116,7 @@ impl Entry {
         &self,
         app_info: &ApplicationInfo,
         required_extensions: &ExtensionSet,
+        layers: &[&str],
     ) -> Result<Instance> {
         assert!(
             app_info.application_name.len() < sys::MAX_APPLICATION_NAME_SIZE,
@@ -128,6 +133,14 @@ impl Entry {
             .iter()
             .map(|x| x.as_ptr() as *const _)
             .collect::<Vec<_>>();
+        let layer_names = layers
+            .iter()
+            .filter_map(|&x| CString::new(x).ok())
+            .collect::<Vec<_>>();
+        let layer_ptrs = layer_names
+            .iter()
+            .map(|x| x.as_ptr() as *const _)
+            .collect::<Vec<_>>();
         let mut info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
             next: ptr::null(),
@@ -139,8 +152,8 @@ impl Entry {
                 engine_version: app_info.engine_version,
                 api_version: CURRENT_API_VERSION,
             },
-            enabled_api_layer_count: 0,
-            enabled_api_layer_names: ptr::null(),
+            enabled_api_layer_count: layer_ptrs.len() as _,
+            enabled_api_layer_names: layer_ptrs.as_ptr(),
             enabled_extension_count: ext_ptrs.len() as _,
             enabled_extension_names: ext_ptrs.as_ptr(),
         };

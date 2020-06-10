@@ -184,7 +184,9 @@ mod inner {
             }
             let mut extension_set = xr::ExtensionSet::default();
             extension_set.khr_opengl_enable = true;
-            let instance = entry.create_instance(&app_info, &extension_set).unwrap();
+            let instance = entry
+                .create_instance(&app_info, &extension_set, &[])
+                .unwrap();
             let instance_props = instance.properties().expect("Cannot load instance props");
             println!(
                 "loaded instance: {} v{}",
