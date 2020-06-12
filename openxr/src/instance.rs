@@ -149,6 +149,20 @@ impl Instance {
         }
     }
 
+    #[inline]
+    pub fn supports_hand_tracking(&self, system: SystemId) -> Result<bool> {
+        unsafe {
+            let mut hand = sys::SystemHandTrackingPropertiesEXT::out(ptr::null_mut());
+            let mut p = sys::SystemProperties::out(&mut hand as *mut _ as _);
+            cvt((self.fp().get_system_properties)(
+                self.as_raw(),
+                system,
+                p.as_mut_ptr(),
+            ))?;
+            Ok(hand.assume_init().supports_hand_tracking.into())
+        }
+    }
+
     /// Construct a `Path` from a string
     ///
     /// A `Path` should only be used with the instance that produced it.

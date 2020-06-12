@@ -1,4 +1,4 @@
-use std::{ffi::CString, ptr, sync::Arc};
+use std::{ffi::CString, mem::MaybeUninit, ptr, sync::Arc};
 
 use crate::*;
 
@@ -128,6 +128,95 @@ impl Space {
                 angular_velocity: velocity.angular_velocity,
             },
         ))
+    }
+
+    /// Determine the locations of the joints of a hand tracker relative to this space at a
+    /// specified time, if currently known by the runtime.
+    ///
+    /// XR_EXT_hand_tracking must be enabled.
+    #[inline]
+    pub fn locate_hand_joints(
+        &self,
+        tracker: &HandTracker,
+        time: Time,
+    ) -> Result<Option<HandJointLocations>> {
+        // This assert allows this function to be safe.
+        assert_eq!(&*self.session as *const session::SessionInner, &*tracker.session as *const session::SessionInner,
+                   "`self` and `tracker` must have been created, allocated, or retrieved from the same `Session`");
+        unsafe {
+            let locate_info = sys::HandJointsLocateInfoEXT {
+                ty: sys::HandJointsLocateInfoEXT::TYPE,
+                next: ptr::null(),
+                base_space: self.as_raw(),
+                time,
+            };
+            let mut locations = MaybeUninit::<[HandJointLocation; HAND_JOINT_COUNT]>::uninit();
+            let mut location_info = sys::HandJointLocationsEXT {
+                ty: sys::HandJointLocationsEXT::TYPE,
+                next: ptr::null_mut(),
+                is_active: false.into(),
+                joint_count: HAND_JOINT_COUNT as u32,
+                joint_locations: locations.as_mut_ptr() as _,
+            };
+            cvt((tracker.fp().locate_hand_joints)(
+                tracker.as_raw(),
+                &locate_info,
+                &mut location_info,
+            ))?;
+            Ok(if location_info.is_active.into() {
+                Some(locations.assume_init())
+            } else {
+                None
+            })
+        }
+    }
+
+    /// Determine the locations and velocities of the joints of a hand tracker relative to this
+    /// space at a specified time, if currently known by the runtime.
+    ///
+    /// XR_EXT_hand_tracking must be enabled.
+    #[inline]
+    pub fn relate_hand_joints(
+        &self,
+        tracker: &HandTracker,
+        time: Time,
+    ) -> Result<Option<(HandJointLocations, HandJointVelocities)>> {
+        // This assert allows this function to be safe.
+        assert_eq!(&*self.session as *const session::SessionInner, &*tracker.session as *const session::SessionInner,
+                   "`self` and `tracker` must have been created, allocated, or retrieved from the same `Session`");
+        unsafe {
+            let locate_info = sys::HandJointsLocateInfoEXT {
+                ty: sys::HandJointsLocateInfoEXT::TYPE,
+                next: ptr::null(),
+                base_space: self.as_raw(),
+                time,
+            };
+            let mut velocities = MaybeUninit::<[HandJointVelocity; HAND_JOINT_COUNT]>::uninit();
+            let mut velocity_info = sys::HandJointVelocitiesEXT {
+                ty: sys::HandJointVelocitiesEXT::TYPE,
+                next: ptr::null_mut(),
+                joint_count: HAND_JOINT_COUNT as u32,
+                joint_velocities: velocities.as_mut_ptr() as _,
+            };
+            let mut locations = MaybeUninit::<[HandJointLocation; HAND_JOINT_COUNT]>::uninit();
+            let mut location_info = sys::HandJointLocationsEXT {
+                ty: sys::HandJointLocationsEXT::TYPE,
+                next: &mut velocity_info as *mut _ as _,
+                is_active: false.into(),
+                joint_count: HAND_JOINT_COUNT as u32,
+                joint_locations: locations.as_mut_ptr() as _,
+            };
+            cvt((tracker.fp().locate_hand_joints)(
+                tracker.as_raw(),
+                &locate_info,
+                &mut location_info,
+            ))?;
+            Ok(if location_info.is_active.into() {
+                Some((locations.assume_init(), velocities.assume_init()))
+            } else {
+                None
+            })
+        }
     }
 
     // Private helper

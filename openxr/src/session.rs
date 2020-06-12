@@ -342,6 +342,14 @@ impl<G: Graphics> Session<G> {
         }
     }
 
+    #[inline]
+    /// Create a hand tracker
+    ///
+    /// Requires [`XR_EXT_hand_tracking`](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)
+    pub fn create_hand_tracker(&self, hand: Hand) -> Result<HandTracker> {
+        HandTracker::create(self, hand)
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
