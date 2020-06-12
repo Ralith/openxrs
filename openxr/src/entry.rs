@@ -191,6 +191,27 @@ impl Entry {
             Ok(ExtensionSet::from_properties(mem::transmute(&exts[..])))
         }
     }
+
+    pub fn enumerate_layers(&self) -> Result<Vec<ApiLayerProperties>> {
+        unsafe {
+            let layers = get_arr_init(
+                sys::ApiLayerProperties::out(ptr::null_mut()),
+                |cap, count, buf| (self.fp().enumerate_api_layer_properties)(cap, count, buf as _),
+            )?;
+            Ok(layers
+                .into_iter()
+                .map(|x| {
+                    let x = x.assume_init();
+                    ApiLayerProperties {
+                        layer_name: fixed_str(&x.layer_name).into(),
+                        spec_version: x.spec_version,
+                        layer_version: x.layer_version,
+                        description: fixed_str(&x.description).into(),
+                    }
+                })
+                .collect())
+        }
+    }
 }
 
 struct Inner {
@@ -237,4 +258,13 @@ pub struct ApplicationInfo<'a> {
     pub application_version: u32,
     pub engine_name: &'a str,
     pub engine_version: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[doc = "See [XrApiLayerProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApiLayerProperties)"]
+pub struct ApiLayerProperties {
+    pub layer_name: String,
+    pub spec_version: Version,
+    pub layer_version: u32,
+    pub description: String,
 }

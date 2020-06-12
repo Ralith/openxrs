@@ -9,6 +9,8 @@ fn main() {
 
     let extensions = entry.enumerate_extensions().unwrap();
     println!("supported extensions: {:?}", extensions);
+    let layers = entry.enumerate_layers().unwrap();
+    println!("supported layers: {:?}", layers);
     if !extensions.khr_convert_timespec_time {
         panic!("timespec conversion unsupported");
     }
