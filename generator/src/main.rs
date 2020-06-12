@@ -1002,9 +1002,15 @@ impl Parser {
             } else {
                 quote! {}
             };
+            let meta = self.compute_meta(name, s);
+            let derives = if meta.has_pointer || meta.has_array {
+                quote! { #[derive(Copy, Clone)] }
+            } else {
+                quote! { #[derive(Copy, Clone, Default, PartialEq)] }
+            };
             quote! {
                 #[repr(C)]
-                #[derive(Copy, Clone)]
+                #derives
                 #[doc = #doc]
                 #conditions
                 pub struct #ident {
@@ -1319,7 +1325,7 @@ impl Parser {
             if name.starts_with("XrBase") {
                 continue;
             }
-            struct_meta.insert(name, self.compute_meta(&s));
+            struct_meta.insert(name, self.compute_meta(name, s));
         }
 
         let polymorphic_builders = self.base_headers.iter().filter_map(|(name, children)| {
@@ -1477,13 +1483,16 @@ impl Parser {
         }
     }
 
-    fn compute_meta(&self, s: &Struct) -> StructMeta {
+    fn compute_meta(&self, name: &str, s: &Struct) -> StructMeta {
         let mut out = StructMeta::default();
         for member in &s.members {
             out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
-            if let Some(x) = self.structs.get(&member.ty) {
-                out |= self.compute_meta(x);
+            out.has_array |= member.static_array_len.is_some();
+            if member.ty != name {
+                if let Some(x) = self.structs.get(&member.ty) {
+                    out |= self.compute_meta(&member.ty, x);
+                }
             }
         }
         out
@@ -1819,9 +1828,10 @@ impl Parser {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Default)]
 struct StructMeta {
     has_pointer: bool,
+    has_array: bool,
     has_graphics: bool,
 }
 
@@ -1855,15 +1865,6 @@ impl StructMeta {
                 quote! { _marker: PhantomData<#phantom> },
                 quote! { _marker: PhantomData },
             )
-        }
-    }
-}
-
-impl Default for StructMeta {
-    fn default() -> Self {
-        Self {
-            has_pointer: false,
-            has_graphics: false,
         }
     }
 }

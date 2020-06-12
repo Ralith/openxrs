@@ -1336,14 +1336,14 @@ handle!(SpatialAnchorMSFT);
 pub struct HandTrackerEXT(u64);
 handle!(HandTrackerEXT);
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector2f)"]
 pub struct Vector2f {
     pub x: f32,
     pub y: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrVector3f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector3f)"]
 pub struct Vector3f {
     pub x: f32,
@@ -1351,7 +1351,7 @@ pub struct Vector3f {
     pub z: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrVector4f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector4f)"]
 pub struct Vector4f {
     pub x: f32,
@@ -1360,7 +1360,7 @@ pub struct Vector4f {
     pub w: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrColor4f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrColor4f)"]
 pub struct Color4f {
     pub r: f32,
@@ -1369,7 +1369,7 @@ pub struct Color4f {
     pub a: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrQuaternionf](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrQuaternionf)"]
 pub struct Quaternionf {
     pub x: f32,
@@ -1378,49 +1378,49 @@ pub struct Quaternionf {
     pub w: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrPosef](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPosef)"]
 pub struct Posef {
     pub orientation: Quaternionf,
     pub position: Vector3f,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrOffset2Df](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrOffset2Df)"]
 pub struct Offset2Df {
     pub x: f32,
     pub y: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrExtent2Df](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExtent2Df)"]
 pub struct Extent2Df {
     pub width: f32,
     pub height: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrRect2Df](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRect2Df)"]
 pub struct Rect2Df {
     pub offset: Offset2Df,
     pub extent: Extent2Df,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrOffset2Di](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrOffset2Di)"]
 pub struct Offset2Di {
     pub x: i32,
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrExtent2Di](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExtent2Di)"]
 pub struct Extent2Di {
     pub width: i32,
     pub height: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrRect2Di](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRect2Di)"]
 pub struct Rect2Di {
     pub offset: Offset2Di,
@@ -1579,7 +1579,7 @@ impl SystemProperties {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrSystemGraphicsProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemGraphicsProperties)"]
 pub struct SystemGraphicsProperties {
     pub max_swapchain_image_height: u32,
@@ -1587,7 +1587,7 @@ pub struct SystemGraphicsProperties {
     pub max_layer_count: u32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrSystemTrackingProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemTrackingProperties)"]
 pub struct SystemTrackingProperties {
     pub orientation_tracking: Bool32,
@@ -1980,7 +1980,7 @@ impl SpaceVelocity {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrFovf](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFovf)"]
 pub struct Fovf {
     pub angle_left: f32,
@@ -3103,7 +3103,7 @@ impl HandJointsLocateInfoEXT {
     pub const TYPE: StructureType = StructureType::HAND_JOINTS_LOCATE_INFO_EXT;
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrHandJointLocationEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointLocationEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
 pub struct HandJointLocationEXT {
     pub location_flags: SpaceLocationFlags,
@@ -3111,7 +3111,7 @@ pub struct HandJointLocationEXT {
     pub radius: f32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrHandJointVelocityEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointVelocityEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
 pub struct HandJointVelocityEXT {
     pub velocity_flags: SpaceVelocityFlags,
@@ -3237,7 +3237,7 @@ pub struct HandMeshVertexBufferMSFT {
     pub vertices: *mut HandMeshVertexMSFT,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrHandMeshVertexMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshVertexMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
 pub struct HandMeshVertexMSFT {
     pub position: Vector3f,
