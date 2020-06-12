@@ -185,4 +185,6 @@ impl Posef {
     };
 }
 
+pub const HAND_JOINT_COUNT_EXT: u32 = 26;
+
 pub use generated::*;

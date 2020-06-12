@@ -3,7 +3,7 @@
 //! Cast to these from your bindings of choice.
 #![allow(non_camel_case_types)]
 
-use std::os::raw::{c_ulong, c_void};
+use std::os::raw::{c_char, c_ulong, c_void};
 
 // Vulkan
 pub type VkInstance = *const c_void;
@@ -48,3 +48,10 @@ pub use winapi::{
         winnt::LARGE_INTEGER,
     },
 };
+
+// EGL
+pub type EGLConfig = *mut c_void;
+pub type EGLContext = *mut c_void;
+pub type EGLDisplay = *mut c_void;
+pub type PFNEGLGETPROCADDRESSPROC =
+    unsafe extern "system" fn(*const c_char) -> Option<unsafe extern "system" fn()>;
