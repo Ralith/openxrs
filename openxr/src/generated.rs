@@ -1,19 +1,18 @@
-#![doc = r" Automatically generated code; do not edit!"]
-#![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
-use crate::*;
+# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( clippy :: wrong_self_convention , clippy :: transmute_ptr_to_ptr ) ]use crate::*;
 use std::borrow::Cow;
 use std::mem::MaybeUninit;
 pub use sys::{
     ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
     DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
-    Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, InputSourceLocalizedNameFlags,
-    InstanceCreateFlags, ObjectType, Offset2Df, Offset2Di, OverlayMainSessionFlagsEXTX,
-    OverlaySessionCreateFlagsEXTX, PerfSettingsDomainEXT, PerfSettingsLevelEXT,
-    PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef, Quaternionf, Rect2Df,
-    Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState, SpaceLocationFlags,
-    SpaceVelocityFlags, StructureType, SwapchainCreateFlags, SwapchainUsageFlags,
-    SystemGraphicsProperties, Vector2f, Vector3f, Vector4f, ViewConfigurationType, ViewStateFlags,
-    VisibilityMaskTypeKHR,
+    Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, HandEXT, HandJointEXT,
+    HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT, HandMeshVertexMSFT,
+    HandPoseTypeMSFT, InputSourceLocalizedNameFlags, InstanceCreateFlags, ObjectType, Offset2Df,
+    Offset2Di, OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX, PerfSettingsDomainEXT,
+    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
+    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState,
+    SpaceLocationFlags, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
+    SwapchainCreateFlags, SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f,
+    Vector4f, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
 };
 #[doc = r" A subset of known extensions"]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
@@ -26,9 +25,11 @@ pub struct ExtensionSet {
     pub ext_eye_gaze_interaction: bool,
     pub ext_view_configuration_depth_range: bool,
     pub ext_conformance_automation: bool,
+    pub ext_hand_tracking: bool,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: bool,
     pub extx_overlay: bool,
+    pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: bool,
     #[cfg(target_os = "android")]
@@ -52,9 +53,14 @@ pub struct ExtensionSet {
     pub khr_win32_convert_performance_counter_time: bool,
     pub khr_convert_timespec_time: bool,
     pub mnd_headless: bool,
+    pub mndx_egl_enable: bool,
     pub msft_unbounded_reference_space: bool,
     pub msft_spatial_anchor: bool,
+    pub msft_spatial_graph_bridge: bool,
     pub msft_hand_interaction: bool,
+    pub msft_hand_tracking_mesh: bool,
+    pub msft_secondary_view_configuration: bool,
+    pub msft_first_person_observer: bool,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
     pub varjo_quad_views: bool,
@@ -87,12 +93,18 @@ impl ExtensionSet {
                 raw::ConformanceAutomationEXT::NAME => {
                     out.ext_conformance_automation = true;
                 }
+                raw::HandTrackingEXT::NAME => {
+                    out.ext_hand_tracking = true;
+                }
                 #[cfg(windows)]
                 raw::Win32AppcontainerCompatibleEXT::NAME => {
                     out.ext_win32_appcontainer_compatible = true;
                 }
                 raw::OverlayEXTX::NAME => {
                     out.extx_overlay = true;
+                }
+                raw::ControllerInteractionHUAWEI::NAME => {
+                    out.huawei_controller_interaction = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::AndroidThreadSettingsKHR::NAME => {
@@ -151,14 +163,29 @@ impl ExtensionSet {
                 raw::HeadlessMND::NAME => {
                     out.mnd_headless = true;
                 }
+                raw::EglEnableMNDX::NAME => {
+                    out.mndx_egl_enable = true;
+                }
                 raw::UnboundedReferenceSpaceMSFT::NAME => {
                     out.msft_unbounded_reference_space = true;
                 }
                 raw::SpatialAnchorMSFT::NAME => {
                     out.msft_spatial_anchor = true;
                 }
+                raw::SpatialGraphBridgeMSFT::NAME => {
+                    out.msft_spatial_graph_bridge = true;
+                }
                 raw::HandInteractionMSFT::NAME => {
                     out.msft_hand_interaction = true;
+                }
+                raw::HandTrackingMeshMSFT::NAME => {
+                    out.msft_hand_tracking_mesh = true;
+                }
+                raw::SecondaryViewConfigurationMSFT::NAME => {
+                    out.msft_secondary_view_configuration = true;
+                }
+                raw::FirstPersonObserverMSFT::NAME => {
+                    out.msft_first_person_observer = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::AndroidSessionStateEnableOCULUS::NAME => {
@@ -213,6 +240,11 @@ impl ExtensionSet {
                 out.push(raw::ConformanceAutomationEXT::NAME.into());
             }
         }
+        {
+            if self.ext_hand_tracking {
+                out.push(raw::HandTrackingEXT::NAME.into());
+            }
+        }
         #[cfg(windows)]
         {
             if self.ext_win32_appcontainer_compatible {
@@ -222,6 +254,11 @@ impl ExtensionSet {
         {
             if self.extx_overlay {
                 out.push(raw::OverlayEXTX::NAME.into());
+            }
+        }
+        {
+            if self.huawei_controller_interaction {
+                out.push(raw::ControllerInteractionHUAWEI::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
@@ -316,6 +353,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.mndx_egl_enable {
+                out.push(raw::EglEnableMNDX::NAME.into());
+            }
+        }
+        {
             if self.msft_unbounded_reference_space {
                 out.push(raw::UnboundedReferenceSpaceMSFT::NAME.into());
             }
@@ -326,8 +368,28 @@ impl ExtensionSet {
             }
         }
         {
+            if self.msft_spatial_graph_bridge {
+                out.push(raw::SpatialGraphBridgeMSFT::NAME.into());
+            }
+        }
+        {
             if self.msft_hand_interaction {
                 out.push(raw::HandInteractionMSFT::NAME.into());
+            }
+        }
+        {
+            if self.msft_hand_tracking_mesh {
+                out.push(raw::HandTrackingMeshMSFT::NAME.into());
+            }
+        }
+        {
+            if self.msft_secondary_view_configuration {
+                out.push(raw::SecondaryViewConfigurationMSFT::NAME.into());
+            }
+        }
+        {
+            if self.msft_first_person_observer {
+                out.push(raw::FirstPersonObserverMSFT::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
@@ -360,9 +422,11 @@ pub struct InstanceExtensions {
     pub ext_eye_gaze_interaction: Option<raw::EyeGazeInteractionEXT>,
     pub ext_view_configuration_depth_range: Option<raw::ViewConfigurationDepthRangeEXT>,
     pub ext_conformance_automation: Option<raw::ConformanceAutomationEXT>,
+    pub ext_hand_tracking: Option<raw::HandTrackingEXT>,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: Option<raw::Win32AppcontainerCompatibleEXT>,
     pub extx_overlay: Option<raw::OverlayEXTX>,
+    pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
     #[cfg(target_os = "android")]
@@ -387,9 +451,14 @@ pub struct InstanceExtensions {
         Option<raw::Win32ConvertPerformanceCounterTimeKHR>,
     pub khr_convert_timespec_time: Option<raw::ConvertTimespecTimeKHR>,
     pub mnd_headless: Option<raw::HeadlessMND>,
+    pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
     pub msft_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceMSFT>,
     pub msft_spatial_anchor: Option<raw::SpatialAnchorMSFT>,
+    pub msft_spatial_graph_bridge: Option<raw::SpatialGraphBridgeMSFT>,
     pub msft_hand_interaction: Option<raw::HandInteractionMSFT>,
+    pub msft_hand_tracking_mesh: Option<raw::HandTrackingMeshMSFT>,
+    pub msft_secondary_view_configuration: Option<raw::SecondaryViewConfigurationMSFT>,
+    pub msft_first_person_observer: Option<raw::FirstPersonObserverMSFT>,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
@@ -441,6 +510,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            ext_hand_tracking: if required.ext_hand_tracking {
+                Some(raw::HandTrackingEXT::load(entry, instance)?)
+            } else {
+                None
+            },
             #[cfg(windows)]
             ext_win32_appcontainer_compatible: if required.ext_win32_appcontainer_compatible {
                 Some(raw::Win32AppcontainerCompatibleEXT {})
@@ -449,6 +523,11 @@ impl InstanceExtensions {
             },
             extx_overlay: if required.extx_overlay {
                 Some(raw::OverlayEXTX {})
+            } else {
+                None
+            },
+            huawei_controller_interaction: if required.huawei_controller_interaction {
+                Some(raw::ControllerInteractionHUAWEI {})
             } else {
                 None
             },
@@ -547,6 +626,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            mndx_egl_enable: if required.mndx_egl_enable {
+                Some(raw::EglEnableMNDX {})
+            } else {
+                None
+            },
             msft_unbounded_reference_space: if required.msft_unbounded_reference_space {
                 Some(raw::UnboundedReferenceSpaceMSFT {})
             } else {
@@ -557,8 +641,28 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            msft_spatial_graph_bridge: if required.msft_spatial_graph_bridge {
+                Some(raw::SpatialGraphBridgeMSFT::load(entry, instance)?)
+            } else {
+                None
+            },
             msft_hand_interaction: if required.msft_hand_interaction {
                 Some(raw::HandInteractionMSFT {})
+            } else {
+                None
+            },
+            msft_hand_tracking_mesh: if required.msft_hand_tracking_mesh {
+                Some(raw::HandTrackingMeshMSFT::load(entry, instance)?)
+            } else {
+                None
+            },
+            msft_secondary_view_configuration: if required.msft_secondary_view_configuration {
+                Some(raw::SecondaryViewConfigurationMSFT {})
+            } else {
+                None
+            },
+            msft_first_person_observer: if required.msft_first_person_observer {
+                Some(raw::FirstPersonObserverMSFT {})
             } else {
                 None
             },
@@ -1245,6 +1349,37 @@ pub mod raw {
             })
         }
     }
+    #[derive(Copy, Clone)]
+    pub struct HandTrackingEXT {
+        pub create_hand_tracker: pfn::CreateHandTrackerEXT,
+        pub destroy_hand_tracker: pfn::DestroyHandTrackerEXT,
+        pub locate_hand_joints: pfn::LocateHandJointsEXT,
+    }
+    impl HandTrackingEXT {
+        pub const VERSION: u32 = sys::EXT_hand_tracking_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_HAND_TRACKING_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateHandTrackerEXT\0"),
+                )?),
+                destroy_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyHandTrackerEXT\0"),
+                )?),
+                locate_hand_joints: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrLocateHandJointsEXT\0"),
+                )?),
+            })
+        }
+    }
     #[cfg(windows)]
     #[derive(Copy, Clone)]
     pub struct Win32AppcontainerCompatibleEXT {}
@@ -1258,6 +1393,12 @@ pub mod raw {
     impl OverlayEXTX {
         pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXTX_OVERLAY_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ControllerInteractionHUAWEI {}
+    impl ControllerInteractionHUAWEI {
+        pub const VERSION: u32 = sys::HUAWEI_controller_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -1558,6 +1699,12 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::MND_HEADLESS_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct EglEnableMNDX {}
+    impl EglEnableMNDX {
+        pub const VERSION: u32 = sys::MNDX_egl_enable_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MNDX_EGL_ENABLE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct UnboundedReferenceSpaceMSFT {}
     impl UnboundedReferenceSpaceMSFT {
         pub const VERSION: u32 = sys::MSFT_unbounded_reference_space_SPEC_VERSION;
@@ -1595,10 +1742,69 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct SpatialGraphBridgeMSFT {
+        pub create_spatial_graph_node_space: pfn::CreateSpatialGraphNodeSpaceMSFT,
+    }
+    impl SpatialGraphBridgeMSFT {
+        pub const VERSION: u32 = sys::MSFT_spatial_graph_bridge_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_spatial_graph_node_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialGraphNodeSpaceMSFT\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct HandInteractionMSFT {}
     impl HandInteractionMSFT {
         pub const VERSION: u32 = sys::MSFT_hand_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::MSFT_HAND_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct HandTrackingMeshMSFT {
+        pub create_hand_mesh_space: pfn::CreateHandMeshSpaceMSFT,
+        pub update_hand_mesh: pfn::UpdateHandMeshMSFT,
+    }
+    impl HandTrackingMeshMSFT {
+        pub const VERSION: u32 = sys::MSFT_hand_tracking_mesh_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_HAND_TRACKING_MESH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_hand_mesh_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateHandMeshSpaceMSFT\0"),
+                )?),
+                update_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrUpdateHandMeshMSFT\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct SecondaryViewConfigurationMSFT {}
+    impl SecondaryViewConfigurationMSFT {
+        pub const VERSION: u32 = sys::MSFT_secondary_view_configuration_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct FirstPersonObserverMSFT {}
+    impl FirstPersonObserverMSFT {
+        pub const VERSION: u32 = sys::MSFT_first_person_observer_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]

@@ -1,17 +1,11 @@
-#![doc = r" Automatically generated code; do not edit!"]
-#![allow(
-    non_upper_case_globals,
-    clippy::unreadable_literal,
-    clippy::identity_op
-)]
-use crate::platform::*;
+# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( non_upper_case_globals , clippy :: unreadable_literal , clippy :: identity_op ) ]use crate::platform::*;
 use crate::support::*;
 use crate::*;
 use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 8u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 9u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -124,6 +118,31 @@ impl StructureType {
     pub const SPATIAL_ANCHOR_CREATE_INFO_MSFT: StructureType = StructureType(1000039000i32);
     pub const SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT: StructureType = StructureType(1000039001i32);
     pub const VIEW_CONFIGURATION_DEPTH_RANGE_EXT: StructureType = StructureType(1000046000i32);
+    pub const GRAPHICS_BINDING_EGL_MNDX: StructureType = StructureType(1000048004i32);
+    pub const SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT: StructureType =
+        StructureType(1000049000i32);
+    pub const SYSTEM_HAND_TRACKING_PROPERTIES_EXT: StructureType = StructureType(1000051000i32);
+    pub const HAND_TRACKER_CREATE_INFO_EXT: StructureType = StructureType(1000051001i32);
+    pub const HAND_JOINTS_LOCATE_INFO_EXT: StructureType = StructureType(1000051002i32);
+    pub const HAND_JOINT_LOCATIONS_EXT: StructureType = StructureType(1000051003i32);
+    pub const HAND_JOINT_VELOCITIES_EXT: StructureType = StructureType(1000051004i32);
+    pub const SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT: StructureType =
+        StructureType(1000052000i32);
+    pub const HAND_MESH_SPACE_CREATE_INFO_MSFT: StructureType = StructureType(1000052001i32);
+    pub const HAND_MESH_UPDATE_INFO_MSFT: StructureType = StructureType(1000052002i32);
+    pub const HAND_MESH_MSFT: StructureType = StructureType(1000052003i32);
+    pub const HAND_POSE_TYPE_INFO_MSFT: StructureType = StructureType(1000052004i32);
+    pub const SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT: StructureType =
+        StructureType(1000053000i32);
+    pub const SECONDARY_VIEW_CONFIGURATION_STATE_MSFT: StructureType = StructureType(1000053001i32);
+    pub const SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT: StructureType =
+        StructureType(1000053002i32);
+    pub const SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT: StructureType =
+        StructureType(1000053003i32);
+    pub const SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT: StructureType =
+        StructureType(1000053004i32);
+    pub const SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT: StructureType =
+        StructureType(1000053005i32);
     pub const VIEW_CONFIGURATION_VIEW_FOV_EPIC: StructureType = StructureType(1000059000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
@@ -253,6 +272,42 @@ impl fmt::Debug for StructureType {
                 Some("SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT")
             }
             Self::VIEW_CONFIGURATION_DEPTH_RANGE_EXT => Some("VIEW_CONFIGURATION_DEPTH_RANGE_EXT"),
+            Self::GRAPHICS_BINDING_EGL_MNDX => Some("GRAPHICS_BINDING_EGL_MNDX"),
+            Self::SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT => {
+                Some("SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT")
+            }
+            Self::SYSTEM_HAND_TRACKING_PROPERTIES_EXT => {
+                Some("SYSTEM_HAND_TRACKING_PROPERTIES_EXT")
+            }
+            Self::HAND_TRACKER_CREATE_INFO_EXT => Some("HAND_TRACKER_CREATE_INFO_EXT"),
+            Self::HAND_JOINTS_LOCATE_INFO_EXT => Some("HAND_JOINTS_LOCATE_INFO_EXT"),
+            Self::HAND_JOINT_LOCATIONS_EXT => Some("HAND_JOINT_LOCATIONS_EXT"),
+            Self::HAND_JOINT_VELOCITIES_EXT => Some("HAND_JOINT_VELOCITIES_EXT"),
+            Self::SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT => {
+                Some("SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT")
+            }
+            Self::HAND_MESH_SPACE_CREATE_INFO_MSFT => Some("HAND_MESH_SPACE_CREATE_INFO_MSFT"),
+            Self::HAND_MESH_UPDATE_INFO_MSFT => Some("HAND_MESH_UPDATE_INFO_MSFT"),
+            Self::HAND_MESH_MSFT => Some("HAND_MESH_MSFT"),
+            Self::HAND_POSE_TYPE_INFO_MSFT => Some("HAND_POSE_TYPE_INFO_MSFT"),
+            Self::SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT => {
+                Some("SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT")
+            }
+            Self::SECONDARY_VIEW_CONFIGURATION_STATE_MSFT => {
+                Some("SECONDARY_VIEW_CONFIGURATION_STATE_MSFT")
+            }
+            Self::SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT => {
+                Some("SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT")
+            }
+            Self::SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT => {
+                Some("SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT")
+            }
+            Self::SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT => {
+                Some("SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT")
+            }
+            Self::SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT => {
+                Some("SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT")
+            }
             Self::VIEW_CONFIGURATION_VIEW_FOV_EPIC => Some("VIEW_CONFIGURATION_VIEW_FOV_EPIC"),
             _ => None,
         };
@@ -376,6 +431,9 @@ impl Result {
     pub const ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR: Result = Result(-1000003001i32);
     #[doc = "Spatial anchor could not be created at that location."]
     pub const ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT: Result = Result(-1000039001i32);
+    #[doc = "The secondary view configuration was not enabled when creating the session."]
+    pub const ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT: Result =
+        Result(-1000053000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -452,6 +510,9 @@ impl fmt::Debug for Result {
             Self::ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => {
                 Some("ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT")
             }
+            Self::ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => {
+                Some("ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT")
+            }
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -459,7 +520,7 @@ impl fmt::Debug for Result {
 }
 impl fmt::Display for Result {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let reason = match * self { Self :: SUCCESS => Some ( "function successfully completed" ) , Self :: TIMEOUT_EXPIRED => Some ( "the specified timeout time occurred before the operation could complete" ) , Self :: SESSION_LOSS_PENDING => Some ( "the session will be lost soon" ) , Self :: EVENT_UNAVAILABLE => Some ( "no event was available" ) , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ( "the space's bounds are not known at the moment" ) , Self :: SESSION_NOT_FOCUSED => Some ( "the session is not in the focused state" ) , Self :: FRAME_DISCARDED => Some ( "a frame has been discarded from composition" ) , Self :: ERROR_VALIDATION_FAILURE => Some ( "the function usage was invalid in some way" ) , Self :: ERROR_RUNTIME_FAILURE => Some ( "the runtime failed to handle the function in an unexpected way that is not covered by another error result" ) , Self :: ERROR_OUT_OF_MEMORY => Some ( "a memory allocation has failed" ) , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ( "the runtime does not support the requested API version" ) , Self :: ERROR_INITIALIZATION_FAILED => Some ( "initialization of object could not be completed" ) , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ( "the requested function was not found or is otherwise unsupported" ) , Self :: ERROR_FEATURE_UNSUPPORTED => Some ( "the requested feature is not supported" ) , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ( "a requested extension is not supported" ) , Self :: ERROR_LIMIT_REACHED => Some ( "the runtime supports no more of the requested resource" ) , Self :: ERROR_SIZE_INSUFFICIENT => Some ( "the supplied size was smaller than required" ) , Self :: ERROR_HANDLE_INVALID => Some ( "a supplied object handle was invalid" ) , Self :: ERROR_INSTANCE_LOST => Some ( "the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SESSION_RUNNING => Some ( "the session is already running" ) , Self :: ERROR_SESSION_NOT_RUNNING => Some ( "the session is not yet running" ) , Self :: ERROR_SESSION_LOST => Some ( "the XrSession was lost. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SYSTEM_INVALID => Some ( "the provided XrSystemId was invalid" ) , Self :: ERROR_PATH_INVALID => Some ( "the provided XrPath was not valid" ) , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ( "the maximum number of supported semantic paths has been reached" ) , Self :: ERROR_PATH_FORMAT_INVALID => Some ( "the semantic path character format is invalid" ) , Self :: ERROR_PATH_UNSUPPORTED => Some ( "the semantic path is unsupported" ) , Self :: ERROR_LAYER_INVALID => Some ( "the layer was NULL or otherwise invalid" ) , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ( "the number of specified layers is greater than the supported number" ) , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ( "the image rect was negatively sized or otherwise invalid" ) , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ( "the image format is not supported by the runtime or platform" ) , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ( "the API used to retrieve an action's state does not match the action's type" ) , Self :: ERROR_SESSION_NOT_READY => Some ( "the session is not in the ready state" ) , Self :: ERROR_SESSION_NOT_STOPPING => Some ( "the session is not in the stopping state" ) , Self :: ERROR_TIME_INVALID => Some ( "the provided XrTime was zero, negative, or out of range" ) , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ( "the specified reference space is not supported by the runtime or system" ) , Self :: ERROR_FILE_ACCESS_ERROR => Some ( "the file could not be accessed" ) , Self :: ERROR_FILE_CONTENTS_INVALID => Some ( "the file's contents were invalid" ) , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ( "the specified form factor is not supported by the current runtime or platform" ) , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ( "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off" ) , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ( "a requested API layer is not present or could not be loaded" ) , Self :: ERROR_CALL_ORDER_INVALID => Some ( "the call was made without having made a previously required call" ) , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ( "the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements" ) , Self :: ERROR_POSE_INVALID => Some ( "the supplied pose was invalid with respect to the requirements" ) , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ( "the supplied index was outside the range of valid indices" ) , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ( "the specified view configuration type is not supported by the runtime or platform" ) , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ( "the specified environment blend mode is not supported by the runtime or platform" ) , Self :: ERROR_NAME_DUPLICATED => Some ( "the name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_NAME_INVALID => Some ( "the name provided was invalid" ) , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ( "a referenced action set is not attached to the session" ) , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ( "the session already has attached action sets" ) , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ( "the localized name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ( "the localized name provided was invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed as thread id is invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority" ) , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ( "spatial anchor could not be created at that location" ) , _ => None , } ;
+        let reason = match * self { Self :: SUCCESS => Some ( "function successfully completed" ) , Self :: TIMEOUT_EXPIRED => Some ( "the specified timeout time occurred before the operation could complete" ) , Self :: SESSION_LOSS_PENDING => Some ( "the session will be lost soon" ) , Self :: EVENT_UNAVAILABLE => Some ( "no event was available" ) , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ( "the space's bounds are not known at the moment" ) , Self :: SESSION_NOT_FOCUSED => Some ( "the session is not in the focused state" ) , Self :: FRAME_DISCARDED => Some ( "a frame has been discarded from composition" ) , Self :: ERROR_VALIDATION_FAILURE => Some ( "the function usage was invalid in some way" ) , Self :: ERROR_RUNTIME_FAILURE => Some ( "the runtime failed to handle the function in an unexpected way that is not covered by another error result" ) , Self :: ERROR_OUT_OF_MEMORY => Some ( "a memory allocation has failed" ) , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ( "the runtime does not support the requested API version" ) , Self :: ERROR_INITIALIZATION_FAILED => Some ( "initialization of object could not be completed" ) , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ( "the requested function was not found or is otherwise unsupported" ) , Self :: ERROR_FEATURE_UNSUPPORTED => Some ( "the requested feature is not supported" ) , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ( "a requested extension is not supported" ) , Self :: ERROR_LIMIT_REACHED => Some ( "the runtime supports no more of the requested resource" ) , Self :: ERROR_SIZE_INSUFFICIENT => Some ( "the supplied size was smaller than required" ) , Self :: ERROR_HANDLE_INVALID => Some ( "a supplied object handle was invalid" ) , Self :: ERROR_INSTANCE_LOST => Some ( "the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SESSION_RUNNING => Some ( "the session is already running" ) , Self :: ERROR_SESSION_NOT_RUNNING => Some ( "the session is not yet running" ) , Self :: ERROR_SESSION_LOST => Some ( "the XrSession was lost. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SYSTEM_INVALID => Some ( "the provided XrSystemId was invalid" ) , Self :: ERROR_PATH_INVALID => Some ( "the provided XrPath was not valid" ) , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ( "the maximum number of supported semantic paths has been reached" ) , Self :: ERROR_PATH_FORMAT_INVALID => Some ( "the semantic path character format is invalid" ) , Self :: ERROR_PATH_UNSUPPORTED => Some ( "the semantic path is unsupported" ) , Self :: ERROR_LAYER_INVALID => Some ( "the layer was NULL or otherwise invalid" ) , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ( "the number of specified layers is greater than the supported number" ) , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ( "the image rect was negatively sized or otherwise invalid" ) , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ( "the image format is not supported by the runtime or platform" ) , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ( "the API used to retrieve an action's state does not match the action's type" ) , Self :: ERROR_SESSION_NOT_READY => Some ( "the session is not in the ready state" ) , Self :: ERROR_SESSION_NOT_STOPPING => Some ( "the session is not in the stopping state" ) , Self :: ERROR_TIME_INVALID => Some ( "the provided XrTime was zero, negative, or out of range" ) , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ( "the specified reference space is not supported by the runtime or system" ) , Self :: ERROR_FILE_ACCESS_ERROR => Some ( "the file could not be accessed" ) , Self :: ERROR_FILE_CONTENTS_INVALID => Some ( "the file's contents were invalid" ) , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ( "the specified form factor is not supported by the current runtime or platform" ) , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ( "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off" ) , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ( "a requested API layer is not present or could not be loaded" ) , Self :: ERROR_CALL_ORDER_INVALID => Some ( "the call was made without having made a previously required call" ) , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ( "the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements" ) , Self :: ERROR_POSE_INVALID => Some ( "the supplied pose was invalid with respect to the requirements" ) , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ( "the supplied index was outside the range of valid indices" ) , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ( "the specified view configuration type is not supported by the runtime or platform" ) , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ( "the specified environment blend mode is not supported by the runtime or platform" ) , Self :: ERROR_NAME_DUPLICATED => Some ( "the name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_NAME_INVALID => Some ( "the name provided was invalid" ) , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ( "a referenced action set is not attached to the session" ) , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ( "the session already has attached action sets" ) , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ( "the localized name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ( "the localized name provided was invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed as thread id is invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority" ) , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ( "spatial anchor could not be created at that location" ) , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ( "the secondary view configuration was not enabled when creating the session" ) , _ => None , } ;
         if let Some(reason) = reason {
             fmt.pad(reason)
         } else {
@@ -490,6 +551,8 @@ impl ObjectType {
     pub const DEBUG_UTILS_MESSENGER_EXT: ObjectType = ObjectType(1000019000i32);
     #[doc = "XrSpatialAnchorMSFT"]
     pub const SPATIAL_ANCHOR_MSFT: ObjectType = ObjectType(1000039000i32);
+    #[doc = "XrHandTrackerEXT"]
+    pub const HAND_TRACKER_EXT: ObjectType = ObjectType(1000051000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -509,6 +572,7 @@ impl fmt::Debug for ObjectType {
             Self::ACTION => Some("ACTION"),
             Self::DEBUG_UTILS_MESSENGER_EXT => Some("DEBUG_UTILS_MESSENGER_EXT"),
             Self::SPATIAL_ANCHOR_MSFT => Some("SPATIAL_ANCHOR_MSFT"),
+            Self::HAND_TRACKER_EXT => Some("HAND_TRACKER_EXT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -661,6 +725,8 @@ impl ViewConfigurationType {
     pub const PRIMARY_MONO: ViewConfigurationType = ViewConfigurationType(1i32);
     pub const PRIMARY_STEREO: ViewConfigurationType = ViewConfigurationType(2i32);
     pub const PRIMARY_QUAD_VARJO: ViewConfigurationType = ViewConfigurationType(1000037000i32);
+    pub const SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT: ViewConfigurationType =
+        ViewConfigurationType(1000054000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -674,6 +740,9 @@ impl fmt::Debug for ViewConfigurationType {
             Self::PRIMARY_MONO => Some("PRIMARY_MONO"),
             Self::PRIMARY_STEREO => Some("PRIMARY_STEREO"),
             Self::PRIMARY_QUAD_VARJO => Some("PRIMARY_QUAD_VARJO"),
+            Self::SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT => {
+                Some("SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT")
+            }
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -888,6 +957,172 @@ impl fmt::Debug for VisibilityMaskTypeKHR {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrSpatialGraphNodeTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialGraphNodeTypeMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialGraphNodeTypeMSFT(i32);
+impl SpatialGraphNodeTypeMSFT {
+    pub const STATIC: SpatialGraphNodeTypeMSFT = SpatialGraphNodeTypeMSFT(1i32);
+    pub const DYNAMIC: SpatialGraphNodeTypeMSFT = SpatialGraphNodeTypeMSFT(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialGraphNodeTypeMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::STATIC => Some("STATIC"),
+            Self::DYNAMIC => Some("DYNAMIC"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrHandEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct HandEXT(i32);
+impl HandEXT {
+    pub const LEFT: HandEXT = HandEXT(1i32);
+    pub const RIGHT: HandEXT = HandEXT(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for HandEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LEFT => Some("LEFT"),
+            Self::RIGHT => Some("RIGHT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrHandJointEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct HandJointEXT(i32);
+impl HandJointEXT {
+    pub const PALM: HandJointEXT = HandJointEXT(0i32);
+    pub const WRIST: HandJointEXT = HandJointEXT(1i32);
+    pub const THUMB_METACARPAL: HandJointEXT = HandJointEXT(2i32);
+    pub const THUMB_PROXIMAL: HandJointEXT = HandJointEXT(3i32);
+    pub const THUMB_DISTAL: HandJointEXT = HandJointEXT(4i32);
+    pub const THUMB_TIP: HandJointEXT = HandJointEXT(5i32);
+    pub const INDEX_METACARPAL: HandJointEXT = HandJointEXT(6i32);
+    pub const INDEX_PROXIMAL: HandJointEXT = HandJointEXT(7i32);
+    pub const INDEX_INTERMEDIATE: HandJointEXT = HandJointEXT(8i32);
+    pub const INDEX_DISTAL: HandJointEXT = HandJointEXT(9i32);
+    pub const INDEX_TIP: HandJointEXT = HandJointEXT(10i32);
+    pub const MIDDLE_METACARPAL: HandJointEXT = HandJointEXT(11i32);
+    pub const MIDDLE_PROXIMAL: HandJointEXT = HandJointEXT(12i32);
+    pub const MIDDLE_INTERMEDIATE: HandJointEXT = HandJointEXT(13i32);
+    pub const MIDDLE_DISTAL: HandJointEXT = HandJointEXT(14i32);
+    pub const MIDDLE_TIP: HandJointEXT = HandJointEXT(15i32);
+    pub const RING_METACARPAL: HandJointEXT = HandJointEXT(16i32);
+    pub const RING_PROXIMAL: HandJointEXT = HandJointEXT(17i32);
+    pub const RING_INTERMEDIATE: HandJointEXT = HandJointEXT(18i32);
+    pub const RING_DISTAL: HandJointEXT = HandJointEXT(19i32);
+    pub const RING_TIP: HandJointEXT = HandJointEXT(20i32);
+    pub const LITTLE_METACARPAL: HandJointEXT = HandJointEXT(21i32);
+    pub const LITTLE_PROXIMAL: HandJointEXT = HandJointEXT(22i32);
+    pub const LITTLE_INTERMEDIATE: HandJointEXT = HandJointEXT(23i32);
+    pub const LITTLE_DISTAL: HandJointEXT = HandJointEXT(24i32);
+    pub const LITTLE_TIP: HandJointEXT = HandJointEXT(25i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for HandJointEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PALM => Some("PALM"),
+            Self::WRIST => Some("WRIST"),
+            Self::THUMB_METACARPAL => Some("THUMB_METACARPAL"),
+            Self::THUMB_PROXIMAL => Some("THUMB_PROXIMAL"),
+            Self::THUMB_DISTAL => Some("THUMB_DISTAL"),
+            Self::THUMB_TIP => Some("THUMB_TIP"),
+            Self::INDEX_METACARPAL => Some("INDEX_METACARPAL"),
+            Self::INDEX_PROXIMAL => Some("INDEX_PROXIMAL"),
+            Self::INDEX_INTERMEDIATE => Some("INDEX_INTERMEDIATE"),
+            Self::INDEX_DISTAL => Some("INDEX_DISTAL"),
+            Self::INDEX_TIP => Some("INDEX_TIP"),
+            Self::MIDDLE_METACARPAL => Some("MIDDLE_METACARPAL"),
+            Self::MIDDLE_PROXIMAL => Some("MIDDLE_PROXIMAL"),
+            Self::MIDDLE_INTERMEDIATE => Some("MIDDLE_INTERMEDIATE"),
+            Self::MIDDLE_DISTAL => Some("MIDDLE_DISTAL"),
+            Self::MIDDLE_TIP => Some("MIDDLE_TIP"),
+            Self::RING_METACARPAL => Some("RING_METACARPAL"),
+            Self::RING_PROXIMAL => Some("RING_PROXIMAL"),
+            Self::RING_INTERMEDIATE => Some("RING_INTERMEDIATE"),
+            Self::RING_DISTAL => Some("RING_DISTAL"),
+            Self::RING_TIP => Some("RING_TIP"),
+            Self::LITTLE_METACARPAL => Some("LITTLE_METACARPAL"),
+            Self::LITTLE_PROXIMAL => Some("LITTLE_PROXIMAL"),
+            Self::LITTLE_INTERMEDIATE => Some("LITTLE_INTERMEDIATE"),
+            Self::LITTLE_DISTAL => Some("LITTLE_DISTAL"),
+            Self::LITTLE_TIP => Some("LITTLE_TIP"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrHandJointSetEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointSetEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct HandJointSetEXT(i32);
+impl HandJointSetEXT {
+    pub const DEFAULT: HandJointSetEXT = HandJointSetEXT(0i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for HandJointSetEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DEFAULT => Some("DEFAULT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrHandPoseTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandPoseTypeMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct HandPoseTypeMSFT(i32);
+impl HandPoseTypeMSFT {
+    pub const TRACKED: HandPoseTypeMSFT = HandPoseTypeMSFT(0i32);
+    pub const REFERENCE_OPEN_PALM: HandPoseTypeMSFT = HandPoseTypeMSFT(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for HandPoseTypeMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::TRACKED => Some("TRACKED"),
+            Self::REFERENCE_OPEN_PALM => Some("REFERENCE_OPEN_PALM"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrInstanceCreateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceCreateFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -1095,6 +1330,11 @@ handle!(DebugUtilsMessengerEXT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SpatialAnchorMSFT(u64);
 handle!(SpatialAnchorMSFT);
+#[doc = "See [XrHandTrackerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandTrackerEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct HandTrackerEXT(u64);
+handle!(HandTrackerEXT);
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector2f)"]
@@ -2788,6 +3028,356 @@ pub struct SpatialAnchorSpaceCreateInfoMSFT {
 impl SpatialAnchorSpaceCreateInfoMSFT {
     pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT;
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrGraphicsBindingEGLMNDX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingEGLMNDX) - defined by [XR_MNDX_egl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MNDX_egl_enable)"]
+pub struct GraphicsBindingEGLMNDX {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub get_proc_address: PFNEGLGETPROCADDRESSPROC,
+    pub display: EGLDisplay,
+    pub config: EGLConfig,
+    pub context: EGLContext,
+}
+impl GraphicsBindingEGLMNDX {
+    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_EGL_MNDX;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSpatialGraphNodeSpaceCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialGraphNodeSpaceCreateInfoMSFT) - defined by [XR_MSFT_spatial_graph_bridge](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_graph_bridge)"]
+pub struct SpatialGraphNodeSpaceCreateInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub node_type: SpatialGraphNodeTypeMSFT,
+    pub node_id: [u8; 16usize],
+    pub pose: Posef,
+}
+impl SpatialGraphNodeSpaceCreateInfoMSFT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSystemHandTrackingPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemHandTrackingPropertiesEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+pub struct SystemHandTrackingPropertiesEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_hand_tracking: Bool32,
+}
+impl SystemHandTrackingPropertiesEXT {
+    pub const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_PROPERTIES_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandTrackerCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandTrackerCreateInfoEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+pub struct HandTrackerCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub hand: HandEXT,
+    pub hand_joint_set: HandJointSetEXT,
+}
+impl HandTrackerCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::HAND_TRACKER_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandJointsLocateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointsLocateInfoEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+pub struct HandJointsLocateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+}
+impl HandJointsLocateInfoEXT {
+    pub const TYPE: StructureType = StructureType::HAND_JOINTS_LOCATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandJointLocationEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointLocationEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+pub struct HandJointLocationEXT {
+    pub location_flags: SpaceLocationFlags,
+    pub pose: Posef,
+    pub radius: f32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandJointVelocityEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointVelocityEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+pub struct HandJointVelocityEXT {
+    pub velocity_flags: SpaceVelocityFlags,
+    pub linear_velocity: Vector3f,
+    pub angular_velocity: Vector3f,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandJointLocationsEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointLocationsEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+pub struct HandJointLocationsEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub is_active: Bool32,
+    pub joint_count: u32,
+    pub joint_locations: *mut HandJointLocationEXT,
+}
+impl HandJointLocationsEXT {
+    pub const TYPE: StructureType = StructureType::HAND_JOINT_LOCATIONS_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandJointVelocitiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointVelocitiesEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+pub struct HandJointVelocitiesEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub joint_count: u32,
+    pub joint_velocities: *mut HandJointVelocityEXT,
+}
+impl HandJointVelocitiesEXT {
+    pub const TYPE: StructureType = StructureType::HAND_JOINT_VELOCITIES_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandMeshSpaceCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshSpaceCreateInfoMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct HandMeshSpaceCreateInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub hand_pose_type: HandPoseTypeMSFT,
+    pub pose_in_hand_mesh_space: Posef,
+}
+impl HandMeshSpaceCreateInfoMSFT {
+    pub const TYPE: StructureType = StructureType::HAND_MESH_SPACE_CREATE_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandMeshUpdateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshUpdateInfoMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct HandMeshUpdateInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub time: Time,
+    pub hand_pose_type: HandPoseTypeMSFT,
+}
+impl HandMeshUpdateInfoMSFT {
+    pub const TYPE: StructureType = StructureType::HAND_MESH_UPDATE_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandMeshMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct HandMeshMSFT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub is_active: Bool32,
+    pub index_buffer_changed: Bool32,
+    pub vertex_buffer_changed: Bool32,
+    pub index_buffer: HandMeshIndexBufferMSFT,
+    pub vertex_buffer: HandMeshVertexBufferMSFT,
+}
+impl HandMeshMSFT {
+    pub const TYPE: StructureType = StructureType::HAND_MESH_MSFT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandMeshIndexBufferMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshIndexBufferMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct HandMeshIndexBufferMSFT {
+    pub index_buffer_key: u32,
+    pub index_capacity_input: u32,
+    pub index_count_output: u32,
+    pub indices: *mut u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandMeshVertexBufferMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshVertexBufferMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct HandMeshVertexBufferMSFT {
+    pub vertex_update_time: Time,
+    pub vertex_capacity_input: u32,
+    pub vertex_count_output: u32,
+    pub vertices: *mut HandMeshVertexMSFT,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandMeshVertexMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshVertexMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct HandMeshVertexMSFT {
+    pub position: Vector3f,
+    pub normal: Vector3f,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSystemHandTrackingMeshPropertiesMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemHandTrackingMeshPropertiesMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct SystemHandTrackingMeshPropertiesMSFT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_hand_tracking_mesh: Bool32,
+    pub max_hand_mesh_index_count: u32,
+    pub max_hand_mesh_vertex_count: u32,
+}
+impl SystemHandTrackingMeshPropertiesMSFT {
+    pub const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandPoseTypeInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandPoseTypeInfoMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+pub struct HandPoseTypeInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub hand_pose_type: HandPoseTypeMSFT,
+}
+impl HandPoseTypeInfoMSFT {
+    pub const TYPE: StructureType = StructureType::HAND_POSE_TYPE_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSecondaryViewConfigurationSessionBeginInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationSessionBeginInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
+pub struct SecondaryViewConfigurationSessionBeginInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub view_configuration_count: u32,
+    pub enabled_view_configuration_types: *const ViewConfigurationType,
+}
+impl SecondaryViewConfigurationSessionBeginInfoMSFT {
+    pub const TYPE: StructureType =
+        StructureType::SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSecondaryViewConfigurationStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationStateMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
+pub struct SecondaryViewConfigurationStateMSFT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub view_configuration_type: ViewConfigurationType,
+    pub active: Bool32,
+}
+impl SecondaryViewConfigurationStateMSFT {
+    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_STATE_MSFT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSecondaryViewConfigurationFrameStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationFrameStateMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
+pub struct SecondaryViewConfigurationFrameStateMSFT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub view_configuration_count: u32,
+    pub view_configuration_states: *mut SecondaryViewConfigurationStateMSFT,
+}
+impl SecondaryViewConfigurationFrameStateMSFT {
+    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSecondaryViewConfigurationFrameEndInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationFrameEndInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
+pub struct SecondaryViewConfigurationFrameEndInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub view_configuration_count: u32,
+    pub view_configuration_layers_info: *const SecondaryViewConfigurationLayerInfoMSFT,
+}
+impl SecondaryViewConfigurationFrameEndInfoMSFT {
+    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSecondaryViewConfigurationLayerInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationLayerInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
+pub struct SecondaryViewConfigurationLayerInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub view_configuration_type: ViewConfigurationType,
+    pub environment_blend_mode: EnvironmentBlendMode,
+    pub layer_count: u32,
+    pub layers: *const *const CompositionLayerBaseHeader,
+}
+impl SecondaryViewConfigurationLayerInfoMSFT {
+    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSecondaryViewConfigurationSwapchainCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationSwapchainCreateInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
+pub struct SecondaryViewConfigurationSwapchainCreateInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub view_configuration_type: ViewConfigurationType,
+}
+impl SecondaryViewConfigurationSwapchainCreateInfoMSFT {
+    pub const TYPE: StructureType =
+        StructureType::SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT;
+}
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
     use super::*;
@@ -3299,6 +3889,39 @@ pub mod pfn {
         space: Space,
         pose: Posef,
     ) -> Result;
+    #[doc = "See [xrCreateSpatialGraphNodeSpaceMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSpatialGraphNodeSpaceMSFT) - defined by [XR_MSFT_spatial_graph_bridge](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_graph_bridge)"]
+    pub type CreateSpatialGraphNodeSpaceMSFT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialGraphNodeSpaceCreateInfoMSFT,
+        space: *mut Space,
+    ) -> Result;
+    #[doc = "See [xrCreateHandTrackerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateHandTrackerEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+    pub type CreateHandTrackerEXT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const HandTrackerCreateInfoEXT,
+        hand_tracker: *mut HandTrackerEXT,
+    ) -> Result;
+    #[doc = "See [xrDestroyHandTrackerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyHandTrackerEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+    pub type DestroyHandTrackerEXT =
+        unsafe extern "system" fn(hand_tracker: HandTrackerEXT) -> Result;
+    #[doc = "See [xrLocateHandJointsEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrLocateHandJointsEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
+    pub type LocateHandJointsEXT = unsafe extern "system" fn(
+        hand_tracker: HandTrackerEXT,
+        locate_info: *const HandJointsLocateInfoEXT,
+        locations: *mut HandJointLocationsEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateHandMeshSpaceMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateHandMeshSpaceMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+    pub type CreateHandMeshSpaceMSFT = unsafe extern "system" fn(
+        hand_tracker: HandTrackerEXT,
+        create_info: *const HandMeshSpaceCreateInfoMSFT,
+        space: *mut Space,
+    ) -> Result;
+    #[doc = "See [xrUpdateHandMeshMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrUpdateHandMeshMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
+    pub type UpdateHandMeshMSFT = unsafe extern "system" fn(
+        hand_tracker: HandTrackerEXT,
+        update_info: *const HandMeshUpdateInfoMSFT,
+        hand_mesh: *mut HandMeshMSFT,
+    ) -> Result;
 }
 pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 1u32;
 pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
@@ -3315,6 +3938,8 @@ pub const EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_view_configuration_depth_range\0";
 pub const EXT_conformance_automation_SPEC_VERSION: u32 = 1u32;
 pub const EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME: &[u8] = b"XR_EXT_conformance_automation\0";
+pub const EXT_hand_tracking_SPEC_VERSION: u32 = 2u32;
+pub const EXT_HAND_TRACKING_EXTENSION_NAME: &[u8] = b"XR_EXT_hand_tracking\0";
 #[cfg(windows)]
 pub const EXT_win32_appcontainer_compatible_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
@@ -3322,6 +3947,9 @@ pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_win32_appcontainer_compatible\0";
 pub const EXTX_overlay_SPEC_VERSION: u32 = 4u32;
 pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
+pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
+pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
+    b"XR_HUAWEI_controller_interaction\0";
 #[cfg(target_os = "android")]
 pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;
 #[cfg(target_os = "android")]
@@ -3373,13 +4001,24 @@ pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
 pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &[u8] = b"XR_KHR_convert_timespec_time\0";
 pub const MND_headless_SPEC_VERSION: u32 = 2u32;
 pub const MND_HEADLESS_EXTENSION_NAME: &[u8] = b"XR_MND_headless\0";
+pub const MNDX_egl_enable_SPEC_VERSION: u32 = 1u32;
+pub const MNDX_EGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_MNDX_egl_enable\0";
 pub const MSFT_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &[u8] =
     b"XR_MSFT_unbounded_reference_space\0";
 pub const MSFT_spatial_anchor_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_anchor\0";
+pub const MSFT_spatial_graph_bridge_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_graph_bridge\0";
 pub const MSFT_hand_interaction_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_interaction\0";
+pub const MSFT_hand_tracking_mesh_SPEC_VERSION: u32 = 2u32;
+pub const MSFT_HAND_TRACKING_MESH_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_tracking_mesh\0";
+pub const MSFT_secondary_view_configuration_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME: &[u8] =
+    b"XR_MSFT_secondary_view_configuration\0";
+pub const MSFT_first_person_observer_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME: &[u8] = b"XR_MSFT_first_person_observer\0";
 #[cfg(target_os = "android")]
 pub const OCULUS_android_session_state_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
