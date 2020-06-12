@@ -12,7 +12,7 @@ mod mint_impls;
 // Hand-written bindings for cases which are too few or weird to bother automating
 
 wrapper! {
-    #[derive(Copy, Clone, Eq, PartialEq)]
+    #[derive(Copy, Clone, Eq, PartialEq, Default)]
     Bool32(u32)
 }
 pub const TRUE: Bool32 = Bool32(1);
