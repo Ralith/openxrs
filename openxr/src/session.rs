@@ -365,7 +365,7 @@ impl<G: Graphics> Session<G> {
 }
 
 /// Mesh obtained from `Session::get_visibility_mask`
-#[derive(Clone)]
+#[derive(Clone, Default, PartialEq)]
 pub struct VisibilityMask {
     pub vertices: Vec<Vector2f>,
     pub indices: Vec<u32>,
@@ -406,7 +406,7 @@ pub struct SwapchainCreateInfo<G: Graphics> {
     pub mip_count: u32,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 pub struct View {
     pub pose: Posef,
     pub fov: Fovf,

@@ -234,13 +234,13 @@ impl Drop for Space {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 pub struct SpaceLocation {
     pub location_flags: SpaceLocationFlags,
     pub pose: Posef,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq)]
 pub struct SpaceVelocity {
     pub velocity_flags: SpaceVelocityFlags,
     pub linear_velocity: Vector3f,
