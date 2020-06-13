@@ -79,6 +79,11 @@ impl Drop for HandTracker {
 }
 
 /// An array of `HandJointLocation`s, one for each `HandJoint`.
+///
+/// `HandJoint`s can be used directly as an index for convenience.
 pub type HandJointLocations = [HandJointLocation; HAND_JOINT_COUNT];
+
 /// An array of `HandJointVelocity`s, one for each `HandJoint`.
+///
+/// `HandJoint`s can be used directly as an index for convenience.
 pub type HandJointVelocities = [HandJointVelocity; HAND_JOINT_COUNT];
