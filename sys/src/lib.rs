@@ -188,3 +188,16 @@ impl Posef {
 pub const HAND_JOINT_COUNT_EXT: u32 = 26;
 
 pub use generated::*;
+
+impl<T> std::ops::Index<HandJointEXT> for [T] {
+    type Output = T;
+    fn index(&self, joint: HandJointEXT) -> &T {
+        &self[joint.into_raw() as usize]
+    }
+}
+
+impl<T> std::ops::IndexMut<HandJointEXT> for [T] {
+    fn index_mut(&mut self, joint: HandJointEXT) -> &mut T {
+        &mut self[joint.into_raw() as usize]
+    }
+}
