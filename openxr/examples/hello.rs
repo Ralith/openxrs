@@ -8,12 +8,9 @@ fn main() {
         .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
 
     let extensions = entry.enumerate_extensions().unwrap();
-    println!("supported extensions: {:?}", extensions);
+    println!("supported extensions: {:#?}", extensions);
     let layers = entry.enumerate_layers().unwrap();
     println!("supported layers: {:?}", layers);
-    if !extensions.khr_convert_timespec_time {
-        panic!("timespec conversion unsupported");
-    }
     let instance = entry
         .create_instance(
             &xr::ApplicationInfo {
@@ -47,5 +44,5 @@ fn main() {
     let view_config_views = instance
         .enumerate_view_configuration_views(system, xr::ViewConfigurationType::PRIMARY_STEREO)
         .unwrap();
-    println!("view configuration views: {:?}", view_config_views);
+    println!("view configuration views: {:#?}", view_config_views);
 }
