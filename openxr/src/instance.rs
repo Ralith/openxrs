@@ -274,6 +274,12 @@ impl Instance {
             // Work around a shortcoming in NLL as of 2019-03-22
             let storage: *mut EventDataBuffer = storage;
             loop {
+                ((*storage).inner.as_mut_ptr() as *mut sys::BaseInStructure).write(
+                    sys::BaseInStructure {
+                        ty: sys::EventDataBuffer::TYPE,
+                        next: ptr::null(),
+                    },
+                );
                 let status = cvt((self.fp().poll_event)(
                     self.as_raw(),
                     (*storage).inner.as_mut_ptr(),
@@ -586,14 +592,9 @@ pub struct EventDataBuffer {
 
 impl EventDataBuffer {
     pub fn new() -> Self {
-        let mut inner = MaybeUninit::uninit();
-        unsafe {
-            (inner.as_mut_ptr() as *mut sys::BaseInStructure).write(sys::BaseInStructure {
-                ty: sys::EventDataBuffer::TYPE,
-                next: ptr::null(),
-            });
+        Self {
+            inner: MaybeUninit::uninit(),
         }
-        Self { inner }
     }
 }
 
