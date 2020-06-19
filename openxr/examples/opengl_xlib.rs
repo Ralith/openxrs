@@ -162,6 +162,7 @@ mod inner {
         frame_waiter: xr::FrameWaiter,
         frame_stream: xr::FrameStream<xr::OpenGL>,
         swapchain: Option<xr::Swapchain<xr::OpenGL>>,
+        stage: xr::Space,
     }
 
     impl OpenXR {
@@ -199,6 +200,10 @@ mod inner {
             let (session, frame_waiter, frame_stream) =
                 backend.xr_create_session(&instance, system).unwrap();
 
+            let stage = session
+                .create_reference_space(xr::ReferenceSpaceType::STAGE, xr::Posef::IDENTITY)
+                .unwrap();
+
             Self {
                 instance,
                 system,
@@ -208,6 +213,7 @@ mod inner {
                 resolution: (0, 0),
                 predicted_display_time: None,
                 swapchain: None,
+                stage,
             }
         }
         pub fn handle_events(&mut self) -> bool {
@@ -328,6 +334,12 @@ mod inner {
             };
 
             let time = self.predicted_display_time.take().unwrap();
+
+            let (_, views) = self
+                .session
+                .locate_views(xr::ViewConfigurationType::PRIMARY_STEREO, time, &self.stage)
+                .unwrap();
+
             let left_subimage: xr::SwapchainSubImage<xr::OpenGL> = openxr::SwapchainSubImage::new()
                 .swapchain(swapchain)
                 .image_array_index(0)
@@ -338,12 +350,18 @@ mod inner {
                     .image_array_index(1)
                     .image_rect(eye_rect);
 
-            let projection_view_left =
-                xr::CompositionLayerProjectionView::new().sub_image(left_subimage);
-            let projection_view_right =
-                xr::CompositionLayerProjectionView::new().sub_image(right_subimage);
+            let projection_view_left = xr::CompositionLayerProjectionView::new()
+                .sub_image(left_subimage)
+                .pose(views[0].pose)
+                .fov(views[0].fov);
+            let projection_view_right = xr::CompositionLayerProjectionView::new()
+                .sub_image(right_subimage)
+                .pose(views[1].pose)
+                .fov(views[1].fov);
             let proj_views = [projection_view_left, projection_view_right];
-            let projection = xr::CompositionLayerProjection::new().views(&proj_views);
+            let projection = xr::CompositionLayerProjection::new()
+                .views(&proj_views)
+                .space(&self.stage);
             self.frame_stream
                 .end(time, xr::EnvironmentBlendMode::OPAQUE, &[&projection])
                 .unwrap();
