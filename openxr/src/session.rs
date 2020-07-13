@@ -498,6 +498,8 @@ impl FrameWaiter {
 
     /// Same as .wait() but also returns whether each secondary view is active
     /// (`XR_MSFT_secondary_view_configuration` must be loaded)
+    ///
+    /// `count` must be the number of enabled secondary views
     #[inline]
     pub fn wait_secondary_multiple(
         &mut self,
@@ -543,6 +545,8 @@ impl FrameWaiter {
     /// Same as .wait() but also returns whether the secondary view is active,
     /// if `XR_MSFT_secondary_view_configuration` is loaded and the session has been
     /// initialized with `begin_secondary`
+    ///
+    /// There must only be a single enabled secondary view
     #[inline]
     pub fn wait_secondary(&mut self) -> Result<(FrameState, SecondaryViewState)> {
         let mut state = [sys::SecondaryViewConfigurationStateMSFT::out(
