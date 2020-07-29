@@ -5,7 +5,7 @@ use libc::timespec;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 9u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 10u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -144,6 +144,9 @@ impl StructureType {
     pub const SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT: StructureType =
         StructureType(1000053005i32);
     pub const VIEW_CONFIGURATION_VIEW_FOV_EPIC: StructureType = StructureType(1000059000i32);
+    pub const HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT: StructureType = StructureType(1000063000i32);
+    pub const INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE: StructureType =
+        StructureType(1000079000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -309,6 +312,10 @@ impl fmt::Debug for StructureType {
                 Some("SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT")
             }
             Self::VIEW_CONFIGURATION_VIEW_FOV_EPIC => Some("VIEW_CONFIGURATION_VIEW_FOV_EPIC"),
+            Self::HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT => Some("HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT"),
+            Self::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE => {
+                Some("INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE")
+            }
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1165,6 +1172,8 @@ impl SwapchainUsageFlags {
     pub const SAMPLED: SwapchainUsageFlags = SwapchainUsageFlags(1 << 5u64);
     #[doc = "Specifies that the image can: be reinterpreted as another image format."]
     pub const MUTABLE_FORMAT: SwapchainUsageFlags = SwapchainUsageFlags(1 << 6u64);
+    #[doc = "Specifies that the image can: be used as a input attachment."]
+    pub const INPUT_ATTACHMENT: SwapchainUsageFlags = SwapchainUsageFlags(1 << 7u64);
 }
 bitmask!(SwapchainUsageFlags);
 #[doc = "See [XrViewStateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewStateFlagBits)"]
@@ -2951,11 +2960,27 @@ impl ViewConfigurationDepthRangeEXT {
 pub struct ViewConfigurationViewFovEPIC {
     pub ty: StructureType,
     pub next: *const c_void,
-    pub recommended_mutable_fov: Fovf,
+    pub recommended_fov: Fovf,
     pub max_mutable_fov: Fovf,
 }
 impl ViewConfigurationViewFovEPIC {
     pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW_FOV_EPIC;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrInteractionProfileAnalogThresholdVALVE](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInteractionProfileAnalogThresholdVALVE) - defined by [XR_VALVE_analog_threshold](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VALVE_analog_threshold)"]
+pub struct InteractionProfileAnalogThresholdVALVE {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub action: Action,
+    pub binding: Path,
+    pub on_threshold: f32,
+    pub off_threshold: f32,
+    pub on_haptic: *const HapticBaseHeader,
+    pub off_haptic: *const HapticBaseHeader,
+}
+impl InteractionProfileAnalogThresholdVALVE {
+    pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -3377,6 +3402,20 @@ pub struct SecondaryViewConfigurationSwapchainCreateInfoMSFT {
 impl SecondaryViewConfigurationSwapchainCreateInfoMSFT {
     pub const TYPE: StructureType =
         StructureType::SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHolographicWindowAttachmentMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHolographicWindowAttachmentMSFT) - defined by [XR_MSFT_holographic_window_attachment](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_holographic_window_attachment)"]
+#[cfg(windows)]
+pub struct HolographicWindowAttachmentMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub holographic_space: *mut IUnknown,
+    pub core_window: *mut IUnknown,
+}
+#[cfg(windows)]
+impl HolographicWindowAttachmentMSFT {
+    pub const TYPE: StructureType = StructureType::HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT;
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
@@ -3923,7 +3962,7 @@ pub mod pfn {
         hand_mesh: *mut HandMeshMSFT,
     ) -> Result;
 }
-pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 1u32;
+pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 2u32;
 pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 1u32;
 pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_EXT_performance_settings\0";
@@ -3945,6 +3984,12 @@ pub const EXT_win32_appcontainer_compatible_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
 pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_win32_appcontainer_compatible\0";
+pub const EXT_samsung_odyssey_controller_SPEC_VERSION: u32 = 1u32;
+pub const EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_samsung_odyssey_controller\0";
+pub const EXT_hp_mixed_reality_controller_SPEC_VERSION: u32 = 1u32;
+pub const EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_hp_mixed_reality_controller\0";
 pub const EXTX_overlay_SPEC_VERSION: u32 = 4u32;
 pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
 pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
@@ -4001,6 +4046,9 @@ pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
 pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &[u8] = b"XR_KHR_convert_timespec_time\0";
 pub const MND_headless_SPEC_VERSION: u32 = 2u32;
 pub const MND_HEADLESS_EXTENSION_NAME: &[u8] = b"XR_MND_headless\0";
+pub const MND_swapchain_usage_input_attachment_bit_SPEC_VERSION: u32 = 2u32;
+pub const MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME: &[u8] =
+    b"XR_MND_swapchain_usage_input_attachment_bit\0";
 pub const MNDX_egl_enable_SPEC_VERSION: u32 = 1u32;
 pub const MNDX_EGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_MNDX_egl_enable\0";
 pub const MSFT_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
@@ -4019,11 +4067,18 @@ pub const MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME: &[u8] =
     b"XR_MSFT_secondary_view_configuration\0";
 pub const MSFT_first_person_observer_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME: &[u8] = b"XR_MSFT_first_person_observer\0";
+#[cfg(windows)]
+pub const MSFT_holographic_window_attachment_SPEC_VERSION: u32 = 1u32;
+#[cfg(windows)]
+pub const MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME: &[u8] =
+    b"XR_MSFT_holographic_window_attachment\0";
 #[cfg(target_os = "android")]
 pub const OCULUS_android_session_state_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME: &[u8] =
     b"XR_OCULUS_android_session_state_enable\0";
+pub const VALVE_analog_threshold_SPEC_VERSION: u32 = 1u32;
+pub const VALVE_ANALOG_THRESHOLD_EXTENSION_NAME: &[u8] = b"XR_VALVE_analog_threshold\0";
 pub const VARJO_quad_views_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &[u8] = b"XR_VARJO_quad_views\0";
 #[cfg(feature = "prototypes")]
