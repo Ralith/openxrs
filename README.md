@@ -32,6 +32,9 @@ The crate exposes a number of cargo features:
 - `mint` exposes `From` impls for converting to and from
   [mint](https://github.com/kvark/mint) types where appropriate.
 
+See `openxr/examples/vulkan.rs` for an example high-performance Vulkan
+rendering workflow.
+
 ## `openxr-sys`
 
 The low-level bindings provide faithful unsafe access to the raw API,

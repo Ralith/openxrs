@@ -25,6 +25,10 @@ sys = { package = "openxr-sys", path = "../sys", version = "0.8.2" }
 libc = "0.2.50"
 libloading = { version = "0.6.1", optional = true }
 
+[dev-dependencies]
+ash = "0.31"
+ctrlc = "3.1.5"
+
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["profileapi"] }
 
