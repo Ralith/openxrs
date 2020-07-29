@@ -28,6 +28,8 @@ pub struct ExtensionSet {
     pub ext_hand_tracking: bool,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: bool,
+    pub ext_samsung_odyssey_controller: bool,
+    pub ext_hp_mixed_reality_controller: bool,
     pub extx_overlay: bool,
     pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
@@ -53,6 +55,7 @@ pub struct ExtensionSet {
     pub khr_win32_convert_performance_counter_time: bool,
     pub khr_convert_timespec_time: bool,
     pub mnd_headless: bool,
+    pub mnd_swapchain_usage_input_attachment_bit: bool,
     pub mndx_egl_enable: bool,
     pub msft_unbounded_reference_space: bool,
     pub msft_spatial_anchor: bool,
@@ -61,8 +64,11 @@ pub struct ExtensionSet {
     pub msft_hand_tracking_mesh: bool,
     pub msft_secondary_view_configuration: bool,
     pub msft_first_person_observer: bool,
+    #[cfg(windows)]
+    pub msft_holographic_window_attachment: bool,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
+    pub valve_analog_threshold: bool,
     pub varjo_quad_views: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<String>,
@@ -99,6 +105,12 @@ impl ExtensionSet {
                 #[cfg(windows)]
                 raw::Win32AppcontainerCompatibleEXT::NAME => {
                     out.ext_win32_appcontainer_compatible = true;
+                }
+                raw::SamsungOdysseyControllerEXT::NAME => {
+                    out.ext_samsung_odyssey_controller = true;
+                }
+                raw::HpMixedRealityControllerEXT::NAME => {
+                    out.ext_hp_mixed_reality_controller = true;
                 }
                 raw::OverlayEXTX::NAME => {
                     out.extx_overlay = true;
@@ -163,6 +175,9 @@ impl ExtensionSet {
                 raw::HeadlessMND::NAME => {
                     out.mnd_headless = true;
                 }
+                raw::SwapchainUsageInputAttachmentBitMND::NAME => {
+                    out.mnd_swapchain_usage_input_attachment_bit = true;
+                }
                 raw::EglEnableMNDX::NAME => {
                     out.mndx_egl_enable = true;
                 }
@@ -187,9 +202,16 @@ impl ExtensionSet {
                 raw::FirstPersonObserverMSFT::NAME => {
                     out.msft_first_person_observer = true;
                 }
+                #[cfg(windows)]
+                raw::HolographicWindowAttachmentMSFT::NAME => {
+                    out.msft_holographic_window_attachment = true;
+                }
                 #[cfg(target_os = "android")]
                 raw::AndroidSessionStateEnableOCULUS::NAME => {
                     out.oculus_android_session_state_enable = true;
+                }
+                raw::AnalogThresholdVALVE::NAME => {
+                    out.valve_analog_threshold = true;
                 }
                 raw::QuadViewsVARJO::NAME => {
                     out.varjo_quad_views = true;
@@ -249,6 +271,16 @@ impl ExtensionSet {
         {
             if self.ext_win32_appcontainer_compatible {
                 out.push(raw::Win32AppcontainerCompatibleEXT::NAME.into());
+            }
+        }
+        {
+            if self.ext_samsung_odyssey_controller {
+                out.push(raw::SamsungOdysseyControllerEXT::NAME.into());
+            }
+        }
+        {
+            if self.ext_hp_mixed_reality_controller {
+                out.push(raw::HpMixedRealityControllerEXT::NAME.into());
             }
         }
         {
@@ -353,6 +385,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.mnd_swapchain_usage_input_attachment_bit {
+                out.push(raw::SwapchainUsageInputAttachmentBitMND::NAME.into());
+            }
+        }
+        {
             if self.mndx_egl_enable {
                 out.push(raw::EglEnableMNDX::NAME.into());
             }
@@ -392,10 +429,21 @@ impl ExtensionSet {
                 out.push(raw::FirstPersonObserverMSFT::NAME.into());
             }
         }
+        #[cfg(windows)]
+        {
+            if self.msft_holographic_window_attachment {
+                out.push(raw::HolographicWindowAttachmentMSFT::NAME.into());
+            }
+        }
         #[cfg(target_os = "android")]
         {
             if self.oculus_android_session_state_enable {
                 out.push(raw::AndroidSessionStateEnableOCULUS::NAME.into());
+            }
+        }
+        {
+            if self.valve_analog_threshold {
+                out.push(raw::AnalogThresholdVALVE::NAME.into());
             }
         }
         {
@@ -425,6 +473,8 @@ pub struct InstanceExtensions {
     pub ext_hand_tracking: Option<raw::HandTrackingEXT>,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: Option<raw::Win32AppcontainerCompatibleEXT>,
+    pub ext_samsung_odyssey_controller: Option<raw::SamsungOdysseyControllerEXT>,
+    pub ext_hp_mixed_reality_controller: Option<raw::HpMixedRealityControllerEXT>,
     pub extx_overlay: Option<raw::OverlayEXTX>,
     pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
@@ -451,6 +501,7 @@ pub struct InstanceExtensions {
         Option<raw::Win32ConvertPerformanceCounterTimeKHR>,
     pub khr_convert_timespec_time: Option<raw::ConvertTimespecTimeKHR>,
     pub mnd_headless: Option<raw::HeadlessMND>,
+    pub mnd_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitMND>,
     pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
     pub msft_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceMSFT>,
     pub msft_spatial_anchor: Option<raw::SpatialAnchorMSFT>,
@@ -459,8 +510,11 @@ pub struct InstanceExtensions {
     pub msft_hand_tracking_mesh: Option<raw::HandTrackingMeshMSFT>,
     pub msft_secondary_view_configuration: Option<raw::SecondaryViewConfigurationMSFT>,
     pub msft_first_person_observer: Option<raw::FirstPersonObserverMSFT>,
+    #[cfg(windows)]
+    pub msft_holographic_window_attachment: Option<raw::HolographicWindowAttachmentMSFT>,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
+    pub valve_analog_threshold: Option<raw::AnalogThresholdVALVE>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
 }
 impl InstanceExtensions {
@@ -518,6 +572,16 @@ impl InstanceExtensions {
             #[cfg(windows)]
             ext_win32_appcontainer_compatible: if required.ext_win32_appcontainer_compatible {
                 Some(raw::Win32AppcontainerCompatibleEXT {})
+            } else {
+                None
+            },
+            ext_samsung_odyssey_controller: if required.ext_samsung_odyssey_controller {
+                Some(raw::SamsungOdysseyControllerEXT {})
+            } else {
+                None
+            },
+            ext_hp_mixed_reality_controller: if required.ext_hp_mixed_reality_controller {
+                Some(raw::HpMixedRealityControllerEXT {})
             } else {
                 None
             },
@@ -626,6 +690,13 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            mnd_swapchain_usage_input_attachment_bit: if required
+                .mnd_swapchain_usage_input_attachment_bit
+            {
+                Some(raw::SwapchainUsageInputAttachmentBitMND {})
+            } else {
+                None
+            },
             mndx_egl_enable: if required.mndx_egl_enable {
                 Some(raw::EglEnableMNDX {})
             } else {
@@ -666,9 +737,20 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            #[cfg(windows)]
+            msft_holographic_window_attachment: if required.msft_holographic_window_attachment {
+                Some(raw::HolographicWindowAttachmentMSFT {})
+            } else {
+                None
+            },
             #[cfg(target_os = "android")]
             oculus_android_session_state_enable: if required.oculus_android_session_state_enable {
                 Some(raw::AndroidSessionStateEnableOCULUS {})
+            } else {
+                None
+            },
+            valve_analog_threshold: if required.valve_analog_threshold {
+                Some(raw::AnalogThresholdVALVE {})
             } else {
                 None
             },
@@ -1389,6 +1471,18 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct SamsungOdysseyControllerEXT {}
+    impl SamsungOdysseyControllerEXT {
+        pub const VERSION: u32 = sys::EXT_samsung_odyssey_controller_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct HpMixedRealityControllerEXT {}
+    impl HpMixedRealityControllerEXT {
+        pub const VERSION: u32 = sys::EXT_hp_mixed_reality_controller_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct OverlayEXTX {}
     impl OverlayEXTX {
         pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
@@ -1699,6 +1793,13 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::MND_HEADLESS_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct SwapchainUsageInputAttachmentBitMND {}
+    impl SwapchainUsageInputAttachmentBitMND {
+        pub const VERSION: u32 = sys::MND_swapchain_usage_input_attachment_bit_SPEC_VERSION;
+        pub const NAME: &'static [u8] =
+            sys::MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct EglEnableMNDX {}
     impl EglEnableMNDX {
         pub const VERSION: u32 = sys::MNDX_egl_enable_SPEC_VERSION;
@@ -1806,6 +1907,14 @@ pub mod raw {
         pub const VERSION: u32 = sys::MSFT_first_person_observer_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME;
     }
+    #[cfg(windows)]
+    #[derive(Copy, Clone)]
+    pub struct HolographicWindowAttachmentMSFT {}
+    #[cfg(windows)]
+    impl HolographicWindowAttachmentMSFT {
+        pub const VERSION: u32 = sys::MSFT_holographic_window_attachment_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME;
+    }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct AndroidSessionStateEnableOCULUS {}
@@ -1813,6 +1922,12 @@ pub mod raw {
     impl AndroidSessionStateEnableOCULUS {
         pub const VERSION: u32 = sys::OCULUS_android_session_state_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct AnalogThresholdVALVE {}
+    impl AnalogThresholdVALVE {
+        pub const VERSION: u32 = sys::VALVE_analog_threshold_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VALVE_ANALOG_THRESHOLD_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct QuadViewsVARJO {}

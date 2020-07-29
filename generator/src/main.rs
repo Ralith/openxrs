@@ -209,20 +209,41 @@ impl Parser {
                             if let Some(extends) = attr(&attributes, "extends") {
                                 const EXT_BASE: i32 = 1_000_000_000;
                                 const EXT_BLOCK_SIZE: i32 = 1000;
-                                let offset =
-                                    attr(&attributes, "offset").unwrap().parse::<i32>().unwrap();
-                                let sign = if attr(&attributes, "dir").map_or(false, |x| x == "-") {
-                                    -1
+
+                                let value = if let Some(offset) = attr(&attributes, "offset") {
+                                    let offset = offset.parse::<i32>().unwrap();
+                                    let sign =
+                                        if attr(&attributes, "dir").map_or(false, |x| x == "-") {
+                                            -1
+                                        } else {
+                                            1
+                                        };
+                                    sign * (EXT_BASE + (ext_number - 1) * EXT_BLOCK_SIZE + offset)
                                 } else {
-                                    1
+                                    attr(&attributes, "bitpos").unwrap().parse::<i32>().unwrap()
                                 };
-                                let value =
-                                    sign * (EXT_BASE + (ext_number - 1) * EXT_BLOCK_SIZE + offset);
-                                self.enums.get_mut(extends).unwrap().values.push(Constant {
-                                    name: name.into(),
-                                    value,
-                                    comment: attr(&attributes, "comment").and_then(tidy_comment),
-                                });
+                                let bitmasks = &mut self.bitmasks;
+                                if let Some(e) = self.enums.get_mut(extends) {
+                                    e.values.push(Constant {
+                                        name: name.into(),
+                                        value,
+                                        comment: attr(&attributes, "comment")
+                                            .and_then(tidy_comment),
+                                    });
+                                } else if let Some(e) = self
+                                    .bitvalues
+                                    .get(extends)
+                                    .and_then(|x| bitmasks.get_mut(x))
+                                {
+                                    e.values.push(Constant {
+                                        name: name.into(),
+                                        value: value as u64,
+                                        comment: attr(&attributes, "comment")
+                                            .and_then(tidy_comment),
+                                    });
+                                } else {
+                                    eprintln!("extension to unrecognized type {}", extends);
+                                }
                             } else if name.ends_with("SPEC_VERSION") {
                                 let value = attr(&attributes, "value").unwrap();
                                 ext_version = Some(value.parse().unwrap());
@@ -970,7 +991,7 @@ impl Parser {
             } else {
                 format!("See {}", self.doc_link(name))
             };
-            let conditions = conditions(&name);
+            let conditions = conditions(&name, s.extension.as_ref().map(|x| &x[..]));
             let ty = if let Some(ref ty) = s.ty {
                 let conditions2 = conditions.clone();
                 let ty = xr_enum_value_name("XrStructureType", ty);
@@ -1045,7 +1066,7 @@ impl Parser {
                 } else {
                     format!("See {}", self.doc_link(name))
                 };
-                let conditions = conditions(&name);
+                let conditions = conditions(&name, command.extension.as_ref().map(|x| &x[..]));
                 let conditions2 = conditions.clone();
                 let params2 = params.clone();
                 let pfn_def = quote! {
@@ -1080,7 +1101,7 @@ impl Parser {
                 let version_ident =
                     Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
                 let version_lit = ext.version;
-                let conds = conditions(&ext.name);
+                let conds = conditions(&ext.name, Some(&ext.name));
                 // TODO: &'static CStr name
                 quote! {
                     #conds
@@ -1194,7 +1215,7 @@ impl Parser {
                     &format!("{}{}", ext_name.to_camel_case(), tag_name),
                     Span::call_site(),
                 );
-                let conds = conditions(&ext.name);
+                let conds = conditions(&ext.name, Some(&ext.name));
                 let conds2 = conds.clone();
                 let conds3 = conds.clone();
                 let conds4 = conds.clone();
@@ -1711,7 +1732,7 @@ impl Parser {
         let ident = xr_ty_name(name);
         let (type_params, type_args, marker, marker_init) = meta.get(name).unwrap().type_params();
         let inits = self.generate_builder_inits(s);
-        let conds = conditions(&name);
+        let conds = conditions(&name, s.extension.as_ref().map(|x| &x[..]));
         let conds2 = conds.clone();
         quote! {
             #[derive(Copy, Clone)]
@@ -1885,6 +1906,7 @@ struct Command {
     extension: Option<Rc<str>>,
 }
 
+#[derive(Debug)]
 struct Enum<T> {
     comment: Option<String>,
     values: Vec<Constant<T>>,
@@ -1899,6 +1921,7 @@ impl<T> Enum<T> {
     }
 }
 
+#[derive(Debug)]
 struct Constant<T> {
     name: String,
     value: T,
@@ -1966,17 +1989,11 @@ fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
 }
 
 fn xr_bitmask_value_name(ty: &str, name: &str) -> Ident {
-    let (ty, ext) = split_ty_ext(ty);
+    let (ty, _) = split_ty_ext(ty);
     assert!(ty.ends_with("Flags"));
     let ty = &ty[0..ty.len() - "Flags".len()];
     let prefix_len = ty.to_shouty_snake_case().len() + 1;
-    let end = if !ext.is_empty() {
-        name.len() - ext.len() - 1
-    } else {
-        name.len()
-    };
-    assert!(name[..end].ends_with("_BIT"));
-    let end = end - "_BIT".len();
+    let end = name.rfind("_BIT").unwrap();
     Ident::new(&name[prefix_len..end], Span::call_site())
 }
 
@@ -2051,10 +2068,13 @@ fn xr_command_name(raw: &str) -> Ident {
     Ident::new(&raw[2..], Span::call_site())
 }
 
-fn conditions(name: &str) -> TokenStream {
+fn conditions(name: &str, ext: Option<&str>) -> TokenStream {
     let name = name.to_lowercase();
     let mut conditions = Vec::new();
-    if name.contains("win32") || name.contains("d3d") {
+    if name.contains("win32")
+        || name.contains("d3d")
+        || ext == Some("XR_MSFT_holographic_window_attachment")
+    {
         conditions.push(quote! { windows });
     }
     if name.contains("android") {
