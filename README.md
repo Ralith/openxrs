@@ -29,7 +29,7 @@ The crate exposes a number of cargo features:
   application. As opposed to `static`, this is useful when the target
   environment guarantees the presence of an OpenXR implementation or
   loader at a specific location, making a built-in loader redundant.
-- `mint` exposes `Into` and `From` impls for converting to and from
+- `mint` exposes `From` impls for converting to and from
   [mint](https://github.com/kvark/mint) types where appropriate.
 
 ## `openxr-sys`
