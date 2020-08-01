@@ -352,14 +352,17 @@ fn main() {
         // Index of the current frame, wrapped by PIPELINE_DEPTH. Not to be confused with the
         // swapchain image index.
         let mut frame = 0;
+        let mut exiting = false;
         'main_loop: loop {
-            if !running.load(Ordering::Relaxed) {
+            if !running.load(Ordering::Relaxed) && !exiting {
                 println!("requesting exit");
                 // The OpenXR runtime may want to perform a smooth transition between scenes, so we
                 // can't necessarily exit instantly. Instead, we must notify the runtime of our
                 // intent and wait for it to tell us when we're actually done.
                 match session.request_exit() {
-                    Ok(()) => {}
+                    Ok(()) => {
+                        exiting = true;
+                    }
                     Err(xr::sys::Result::ERROR_SESSION_NOT_RUNNING) => break,
                     Err(e) => panic!("{}", e),
                 }
