@@ -51,7 +51,7 @@ jobs:
         if: matrix.target == 'aarch64-linux-android'
         with:
           command: apk
-          args: build --workspace --all-targets --target ${{ matrix.target }}
+          args: build --manifest-path openxr/Cargo.toml --target ${{ matrix.target }}
       - uses: actions-rs/cargo@v1
         if: matrix.target != 'aarch64-linux-android'
         with:
