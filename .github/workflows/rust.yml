@@ -2,20 +2,29 @@ name: CI
 
 on:
   push:
-    branches: ['master']
+    branches: ["master"]
   pull_request:
 
 jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        rust: [stable, beta]
-        exclude:
-          - os: macos-latest
+        include:
+          - os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
             rust: beta
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            rust: stable
+            target: aarch64-linux-android
           - os: windows-latest
-            rust: beta
+            rust: stable
+            target: x86_64-pc-windows-msvc
+          - os: macOS-latest
+            rust: stable
+            target: x86_64-apple-darwin
 
     runs-on: ${{ matrix.os }}
 
@@ -28,12 +37,25 @@ jobs:
         with:
           profile: minimal
           toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
           override: true
       - uses: actions-rs/cargo@v1
+        if: matrix.target != 'aarch64-linux-android'
         with:
           command: build
-          args: --workspace --all-targets
+          args: --workspace --all-targets --target ${{ matrix.target }}
       - uses: actions-rs/cargo@v1
+        if: matrix.target == 'aarch64-linux-android'
+        env:
+          TARGET_aarch64_linux_android_CC: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-clang
+          TARGET_aarch64_linux_android_CXX: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-clang++
+          TARGET_aarch64_linux_android_AR: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar
+          RUSTFLAGS: -C linker=aarch64-linux-android-ld.gold
+        with:
+          command: build
+          args: --target ${{ matrix.target }} --manifest-path openxr/Cargo.toml
+      - uses: actions-rs/cargo@v1
+        if: matrix.target != 'aarch64-linux-android'
         with:
           command: test
           args: --workspace

@@ -24,6 +24,9 @@ mint = { version = "0.5.3", optional = true }
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["windef", "ntdef", "d3dcommon", "d3d11", "d3d12"] }
 
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.17.0"
+
 [build-dependencies]
 cmake = { version = "0.1.35", optional = true }
 
