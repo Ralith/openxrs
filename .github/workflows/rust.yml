@@ -32,9 +32,6 @@ jobs:
       - name: Install foreign dependencies
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt update && sudo apt-get -y install libxxf86vm-dev libxrandr-dev libgl1-mesa-dev
-      - name: Install cargo-apk
-        if: matrix.target == 'aarch64-linux-android'
-        run: cargo install cargo-apk
       - uses: actions/checkout@v1
       - uses: actions-rs/toolchain@v1
         with:
@@ -49,9 +46,14 @@ jobs:
           args: --workspace --all-targets --target ${{ matrix.target }}
       - uses: actions-rs/cargo@v1
         if: matrix.target == 'aarch64-linux-android'
+        env:
+          TARGET_aarch64_linux_android_CC: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-clang
+          TARGET_aarch64_linux_android_CXX: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-clang++
+          TARGET_aarch64_linux_android_AR: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar
+          RUSTFLAGS: -C linker=aarch64-linux-android-ld.gold
         with:
-          command: apk
-          args: build --manifest-path openxr/Cargo.toml --target ${{ matrix.target }}
+          command: build
+          args: --target ${{ matrix.target }} --manifest-path openxr/Cargo.toml
       - uses: actions-rs/cargo@v1
         if: matrix.target != 'aarch64-linux-android'
         with:
