@@ -32,9 +32,5 @@ ctrlc = "3.1.5"
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["profileapi"] }
 
-[target.'cfg(target_os = "linux")'.dev-dependencies]
-glium = { version = "0.27.0", default-features = false }
-x11 = { version = "2.18.1", features = ["xlib", "glx"] }
-
 [package.metadata.docs.rs]
 features = ["linked", "loaded", "mint"]

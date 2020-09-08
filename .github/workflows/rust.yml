@@ -29,9 +29,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Install foreign dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt update && sudo apt-get -y install libxxf86vm-dev libxrandr-dev libgl1-mesa-dev
       - uses: actions/checkout@v1
       - uses: actions-rs/toolchain@v1
         with:
