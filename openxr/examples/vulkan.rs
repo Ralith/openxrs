@@ -128,6 +128,12 @@ fn main() {
                 .unwrap() as _,
         );
 
+        let vk_device_properties = vk_instance.get_physical_device_properties(vk_physical_device);
+        if vk_device_properties.api_version < vk::make_version(1, 1, 0) {
+            vk_instance.destroy_instance(None);
+            panic!("Vulkan phyiscal device doesn't support version 1.1");
+        }
+
         let queue_family_index = vk_instance
             .get_physical_device_queue_family_properties(vk_physical_device)
             .into_iter()
