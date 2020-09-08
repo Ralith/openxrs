@@ -454,7 +454,7 @@ fn main() {
                                 .create_image_view(
                                     &vk::ImageViewCreateInfo::builder()
                                         .image(color_image)
-                                        .view_type(vk::ImageViewType::TYPE_2D)
+                                        .view_type(vk::ImageViewType::TYPE_2D_ARRAY)
                                         .format(COLOR_FORMAT)
                                         .subresource_range(vk::ImageSubresourceRange {
                                             aspect_mask: vk::ImageAspectFlags::COLOR,
