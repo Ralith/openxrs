@@ -445,6 +445,9 @@ fn main() {
                         usage_flags: xr::SwapchainUsageFlags::COLOR_ATTACHMENT
                             | xr::SwapchainUsageFlags::SAMPLED,
                         format: COLOR_FORMAT.as_raw() as _,
+                        // The Vulkan graphics pipeline we create is not set up for multisampling,
+                        // so we hardcode this to 1. If we used a proper multisampling setup, we
+                        // could set this to `views[0].recommended_swapchain_sample_count`.
                         sample_count: 1,
                         width: resolution.width,
                         height: resolution.height,
