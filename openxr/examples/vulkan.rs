@@ -58,6 +58,11 @@ fn main() {
     let system = xr_instance
         .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
         .unwrap();
+
+    let environment_blend_mode = xr_instance
+        .enumerate_environment_blend_modes(system, xr::ViewConfigurationType::PRIMARY_STEREO)
+        .unwrap()[0];
+
     let vk_instance_exts = xr_instance
         .vulkan_instance_extensions(system)
         .unwrap()
@@ -416,7 +421,7 @@ fn main() {
                 frame_stream
                     .end(
                         xr_frame_state.predicted_display_time,
-                        xr::EnvironmentBlendMode::OPAQUE,
+                        environment_blend_mode,
                         &[],
                     )
                     .unwrap();
@@ -581,7 +586,7 @@ fn main() {
             frame_stream
                 .end(
                     xr_frame_state.predicted_display_time,
-                    xr::EnvironmentBlendMode::OPAQUE,
+                    environment_blend_mode,
                     &[
                         &xr::CompositionLayerProjection::new().space(&stage).views(&[
                             xr::CompositionLayerProjectionView::new()
