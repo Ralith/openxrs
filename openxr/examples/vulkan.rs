@@ -35,6 +35,19 @@ fn main() {
     let entry = xr::Entry::load()
         .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
 
+    // OpenXR will fail to initialize if we ask for an extension that OpenXR can't provide! So we
+    // need to check all our extensions before initializing OpenXR with them. Note that even if the
+    // extension is present, it's still possible you may not be able to use it. For example: the
+    // hand tracking extension may be present, but the hand sensor might not be plugged in or turned
+    // on. There are often additional checks that should be made before using certain features!
+    let available_extensions = entry.enumerate_extensions().unwrap();
+
+    // If a required extension isn't present, you want to ditch out here! It's possible something
+    // like your rendering API might not be provided by the active runtime. APIs like OpenGL don't
+    // have universal support.
+    assert!(available_extensions.khr_vulkan_enable);
+
+    // Initialize OpenXR with the extensions we've found!
     let mut enabled_extensions = xr::ExtensionSet::default();
     enabled_extensions.khr_vulkan_enable = true;
     let xr_instance = entry
@@ -55,13 +68,20 @@ fn main() {
         instance_props.runtime_name, instance_props.runtime_version
     );
 
+    // Request a form factor from the device (HMD, Handheld, etc.)
     let system = xr_instance
         .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
         .unwrap();
 
+    // Check what blend mode is valid for this device (opaque vs transparent displays). We'll just
+    // take the first one available!
     let environment_blend_mode = xr_instance
         .enumerate_environment_blend_modes(system, xr::ViewConfigurationType::PRIMARY_STEREO)
         .unwrap()[0];
+
+    // OpenXR wants to ensure apps are using the correct graphics card, so the renderer MUST be set
+    // up before Instance::create_session. This is crucial on devices that have multiple graphics
+    // cards, like laptops with integrated graphics chips in addition to dedicated graphics cards.
 
     let vk_instance_exts = xr_instance
         .vulkan_instance_extensions(system)
@@ -311,6 +331,9 @@ fn main() {
         vk_device.destroy_shader_module(vert, None);
         vk_device.destroy_shader_module(frag, None);
 
+        // A session represents this application's desire to display things! This is where we hook
+        // up our graphics API. This does not start the session; for that, you'll need a call to
+        // Session::begin, which we do in 'main_loop below.
         let (session, mut frame_wait, mut frame_stream) = xr_instance
             .create_session::<xr::Vulkan>(
                 system,
@@ -323,6 +346,10 @@ fn main() {
                 },
             )
             .unwrap();
+
+        // OpenXR uses a couple different types of reference frames for positioning content; we need
+        // to choose one for displaying our content! STAGE would be relative to the center of your
+        // guardian system's bounds, and LOCAL would be relative to your device's starting location.
         let stage = session
             .create_reference_space(xr::ReferenceSpaceType::STAGE, xr::Posef::IDENTITY)
             .unwrap();
@@ -380,6 +407,8 @@ fn main() {
                 use xr::Event::*;
                 match event {
                     SessionStateChanged(e) => {
+                        // Session state change is where we can begin and end sessions, as well as
+                        // find quit messages!
                         println!("entered state {:?}", e.state());
                         match e.state() {
                             xr::SessionState::READY => {
@@ -414,7 +443,11 @@ fn main() {
                 continue;
             }
 
+            // Block until the previous frame is finished displaying, and is ready for another one.
+            // Also returns a prediction of when the next frame will be displayed, for use with
+            // predicting locations of controllers, viewpoints, etc.
             let xr_frame_state = frame_wait.wait().unwrap();
+            // Must be called before any rendering is done!
             frame_stream.begin().unwrap();
 
             if !xr_frame_state.should_render {
@@ -429,12 +462,22 @@ fn main() {
             }
 
             if swapchain.is_none() {
+                // Now we need to find all the viewpoints we need to take care of! For a stereo
+                // headset, this should be 2. Similarly, for an AR phone, we'll need 1, and a VR
+                // cave could have 6, or even 12!
+                //
+                // Because we are using multiview in this example, we will only look at the first
+                // viewpoint, and assume that the other viewpoints are identical.
                 let views = xr_instance
                     .enumerate_view_configuration_views(
                         system,
                         xr::ViewConfigurationType::PRIMARY_STEREO,
                     )
                     .unwrap();
+
+                // Create a swapchain for the viewpoints! A swapchain is a set of texture buffers
+                // used for displaying to screen, typically this is a backbuffer and a front buffer,
+                // one for rendering data to, and one for displaying on-screen.
                 let resolution = vk::Extent2D {
                     width: views[0].recommended_image_rect_width,
                     height: views[0].recommended_image_rect_height,
@@ -456,6 +499,9 @@ fn main() {
                         mip_count: 1,
                     })
                     .unwrap();
+
+                // We'll want to track our own information about the swapchain, so we can draw stuff
+                // onto it! We'll also create a buffer for each generated texture here as well.
                 let images = handle.enumerate_images().unwrap();
                 swapchain = Some(Swapchain {
                     handle,
@@ -497,7 +543,13 @@ fn main() {
                 });
             }
             let swapchain = swapchain.as_mut().unwrap();
+
+            // We need to ask which swapchain image to use for rendering! Which one will we get?
+            // Who knows! It's up to the runtime to decide.
             let image_index = swapchain.handle.acquire_image().unwrap();
+
+            // Wait until the image is available to render to. The compositor could still be
+            // reading from it.
             swapchain.handle.wait_image(xr::Duration::INFINITE).unwrap();
 
             // Ensure the last use of this frame's resources is 100% done
