@@ -1,5 +1,7 @@
 //! Illustrates rendering using Vulkan with multiview. Supports any Vulkan 1.1 capable environment.
 //!
+//! Renders a smooth gradient across the entire view, with different colors per eye.
+//!
 //! This example uses minimal abstraction for clarity. Real-world code should encapsulate and
 //! largely decouple its Vulkan and OpenXR components and handle errors gracefully.
 
