@@ -4,7 +4,7 @@ use std::{
     collections::{HashMap, HashSet},
     env,
     fs::File,
-    io::{Seek, SeekFrom, Write},
+    io::Write,
     path::{Path, PathBuf},
     rc::Rc,
 };
@@ -23,13 +23,11 @@ use xml::{
 fn main() {
     let mut args = env::args_os();
     args.next().unwrap();
-    let mut source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
+    let source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
         Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../sys/OpenXR-SDK/specification/registry/xr.xml")
     }))
     .expect("failed to open registry XML file");
-    // Hack around leading garbage in 1.0 revision of XML
-    source.seek(SeekFrom::Start(3)).unwrap();
 
     let mut parser = Parser::new(source);
     parser.parse();
@@ -47,8 +45,10 @@ struct Parser {
     bitvalues: HashMap<String, String>,
     handles: IndexSet<String>,
     structs: IndexMap<String, Struct>,
+    struct_aliases: Vec<(String, String)>,
     api_constants: Vec<(String, usize)>,
     commands: IndexMap<String, Command>,
+    cmd_aliases: Vec<(String, String)>,
     extensions: IndexMap<String, Tag>,
     disabled_exts: HashSet<Rc<str>>,
     api_version: Option<(u16, u16, u32)>,
@@ -67,8 +67,10 @@ impl Parser {
             bitvalues: HashMap::new(),
             handles: IndexSet::new(),
             structs: IndexMap::new(),
+            struct_aliases: Vec::new(),
             api_constants: Vec::new(),
             commands: IndexMap::new(),
+            cmd_aliases: Vec::new(),
             extensions: IndexMap::new(),
             disabled_exts: HashSet::new(),
             api_version: None,
@@ -201,7 +203,9 @@ impl Parser {
                     match &name.local_name[..] {
                         "command" => {
                             let cmd = attr(&attributes, "name").unwrap();
-                            self.commands.get_mut(cmd).unwrap().extension = Some(ext_name.clone());
+                            if let Some(command) = self.commands.get_mut(cmd) {
+                                command.extension = Some(ext_name.clone());
+                            }
                             commands.push(cmd.into());
                         }
                         "enum" => {
@@ -218,9 +222,15 @@ impl Parser {
                                         } else {
                                             1
                                         };
-                                    sign * (EXT_BASE + (ext_number - 1) * EXT_BLOCK_SIZE + offset)
+                                    ConstantValue::Literal(
+                                        sign * (EXT_BASE
+                                            + (ext_number - 1) * EXT_BLOCK_SIZE
+                                            + offset),
+                                    )
+                                } else if let Some(bitpos) = attr(&attributes, "bitpos") {
+                                    ConstantValue::Literal(bitpos.parse::<i32>().unwrap())
                                 } else {
-                                    attr(&attributes, "bitpos").unwrap().parse::<i32>().unwrap()
+                                    ConstantValue::Alias(attr(&attributes, "alias").unwrap().into())
                                 };
                                 let bitmasks = &mut self.bitmasks;
                                 if let Some(e) = self.enums.get_mut(extends) {
@@ -237,7 +247,12 @@ impl Parser {
                                 {
                                     e.values.push(Constant {
                                         name: name.into(),
-                                        value: value as u64,
+                                        value: match value {
+                                            ConstantValue::Literal(x) => {
+                                                ConstantValue::Literal(x as u64)
+                                            }
+                                            ConstantValue::Alias(x) => ConstantValue::Alias(x),
+                                        },
                                         comment: attr(&attributes, "comment")
                                             .and_then(tidy_comment),
                                     });
@@ -251,7 +266,9 @@ impl Parser {
                                 let value = attr(&attributes, "value").unwrap();
                                 assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
                             } else {
-                                eprintln!("unrecognized extension constant {}", name);
+                                let value = attr(&attributes, "value").unwrap();
+                                self.api_constants
+                                    .push((name.into(), value.parse().unwrap()));
                             }
                         }
                         "type" => {
@@ -322,7 +339,7 @@ impl Parser {
         }
     }
 
-    fn parse_command(&mut self, _attrs: &[OwnedAttribute]) {
+    fn parse_command(&mut self, attrs: &[OwnedAttribute]) {
         let mut command_name = None;
         let mut params = Vec::new();
         loop {
@@ -381,13 +398,19 @@ impl Parser {
                 _ => {}
             }
         }
-        self.commands.insert(
-            command_name.unwrap(),
-            Command {
-                params,
-                extension: None,
-            },
-        );
+        if let Some(name) = command_name {
+            self.commands.insert(
+                name,
+                Command {
+                    params,
+                    extension: None,
+                },
+            );
+        } else {
+            let name = attr(attrs, "name").unwrap();
+            let alias_of = attr(attrs, "alias").unwrap();
+            self.cmd_aliases.push((name.into(), alias_of.into()));
+        }
     }
 
     fn parse_types(&mut self) {
@@ -544,15 +567,20 @@ impl Parser {
                 .or_insert_with(Vec::new)
                 .push(struct_name.into());
         }
-        self.structs.insert(
-            struct_name.into(),
-            Struct {
-                members,
-                ty,
-                extension: None,
-                mut_next,
-            },
-        );
+        if let Some(target) = attr(attrs, "alias") {
+            self.struct_aliases
+                .push((struct_name.into(), target.into()));
+        } else {
+            self.structs.insert(
+                struct_name.into(),
+                Struct {
+                    members,
+                    ty,
+                    extension: None,
+                    mut_next,
+                },
+            );
+        }
     }
 
     fn parse_var(&mut self, elt_name: &'static str, attrs: &[OwnedAttribute]) -> Member {
@@ -695,7 +723,7 @@ impl Parser {
                             let comment = attr(&attributes, "comment");
                             item.values.push(Constant {
                                 name: name.into(),
-                                value: value.parse().unwrap(),
+                                value: ConstantValue::Literal(value.parse().unwrap()),
                                 comment: comment.and_then(tidy_comment),
                             });
                         }
@@ -728,7 +756,7 @@ impl Parser {
                             let comment = attr(&attributes, "comment");
                             bitmask.values.push(Constant {
                                 name: name.into(),
-                                value: bitpos.parse().unwrap(),
+                                value: ConstantValue::Literal(bitpos.parse().unwrap()),
                                 comment: comment.and_then(tidy_comment),
                             });
                         }
@@ -841,7 +869,13 @@ impl Parser {
             let ident = xr_ty_name(name);
             let values = e.values.iter().map(|v| {
                 let value_name = xr_enum_value_name(&name, &v.name);
-                let value = v.value;
+                let value = match v.value {
+                    ConstantValue::Literal(x) => quote! {Self(#x)},
+                    ConstantValue::Alias(ref x) => {
+                        let ident = xr_enum_value_name(&name, x);
+                        quote! { Self::#ident }
+                    }
+                };
                 let doc = if let Some(comment) = v.comment.as_ref() {
                     quote! {#[doc = #comment]}
                 } else {
@@ -849,7 +883,7 @@ impl Parser {
                 };
                 quote! {
                     #doc
-                    pub const #value_name: #ident = #ident(#value);
+                    pub const #value_name: #ident = #value;
                 }
             });
             let doc = if let Some(comment) = e.comment.as_ref() {
@@ -857,12 +891,16 @@ impl Parser {
             } else {
                 format!("See {}", self.doc_link(name))
             };
-            let debug_cases = e.values.iter().map(|v| {
+            let debug_cases = e.values.iter().filter_map(|v| {
+                if matches!(v.value, ConstantValue::Alias(_)) {
+                    // Skip unreachable cases
+                    return None;
+                }
                 let ident = xr_enum_value_name(&name, &v.name);
                 let name = ident.to_string();
-                quote! {
+                Some(quote! {
                     Self::#ident => Some(#name)
-                }
+                })
             });
             let result_extras = if name == "XrResult" {
                 let cases = e.values.iter().map(|v| {
@@ -933,7 +971,13 @@ impl Parser {
             };
             let values = bitmask.values.iter().map(|v| {
                 let value_name = xr_bitmask_value_name(&name, &v.name);
-                let value = v.value;
+                let value = match v.value {
+                    ConstantValue::Literal(x) => quote! {Self(1 << #x)},
+                    ConstantValue::Alias(ref x) => {
+                        let ident = xr_enum_value_name(&name, x);
+                        quote! { Self::#ident }
+                    }
+                };
                 let doc = if let Some(comment) = v.comment.as_ref() {
                     quote! {#[doc = #comment]}
                 } else {
@@ -941,7 +985,7 @@ impl Parser {
                 };
                 quote! {
                     #doc
-                    pub const #value_name: #ident = #ident(1 << #value);
+                    pub const #value_name: #ident = #value;
                 }
             });
             quote! {
@@ -1041,9 +1085,13 @@ impl Parser {
             }
         });
 
-        let (pfns, protos) = self
-            .commands
-            .iter()
+        let commands = self.commands.iter().chain(
+            self.cmd_aliases
+                .iter()
+                .map(|&(ref name, ref target)| (name, self.commands.get(target).unwrap())),
+        );
+
+        let (pfns, protos) = commands
             .map(|(name, command)| {
                 let ident = xr_command_name(&name);
                 let params = command.params.iter().map(|param| {
@@ -1350,7 +1398,10 @@ impl Parser {
         }
 
         let polymorphic_builders = self.base_headers.iter().filter_map(|(name, children)| {
-            if name == "XrSwapchainImageBaseHeader" || name == "XrEventDataBaseHeader" {
+            if name == "XrSwapchainImageBaseHeader"
+                || name == "XrEventDataBaseHeader"
+                || name == "XrLoaderInitInfoBaseHeaderKHR"
+            {
                 return None;
             }
             Some(self.generate_polymorphic_builders(&struct_meta, &simple_structs, name, children))
@@ -1527,9 +1578,10 @@ impl Parser {
         children: &[String],
     ) -> TokenStream {
         let sys_ident = xr_ty_name(base_name);
-        assert!(base_name.starts_with("Xr") && base_name.ends_with("BaseHeader"));
+        let base_header_pos = base_name.find("BaseHeader").unwrap();
+        assert!(base_name.starts_with("Xr"));
         let base_ident = Ident::new(
-            &base_name[2..base_name.len() - "Header".len()],
+            &base_name[2..base_header_pos + "Base".len()],
             Span::call_site(),
         );
         let mut base_meta = StructMeta::default();
@@ -1541,15 +1593,18 @@ impl Parser {
         let builders = children.iter().map(|name| {
             let ident = xr_ty_name(name);
             let s = self.structs.get(name).unwrap();
+            let conds = conditions(&name, s.extension.as_ref().map(|x| &x[..]));
             let inits = self.generate_builder_inits(s);
             let setters = self.generate_setters(meta, simple, s);
             quote! {
+                #conds
                 #[derive(Copy, Clone)]
                 #[repr(transparent)]
                 pub struct #ident #type_params {
                     inner: sys::#ident,
                     #marker
                 }
+                #conds
                 impl #type_params #ident #type_args {
                     #[inline]
                     pub fn new() -> Self {
@@ -1588,6 +1643,7 @@ impl Parser {
 
                     #setters
                 }
+                #conds
                 impl #type_params Deref for #ident #type_args {
                     type Target = #base_ident #type_args;
 
@@ -1596,6 +1652,7 @@ impl Parser {
                         unsafe { mem::transmute(&self.inner) }
                     }
                 }
+                #conds
                 impl #type_params Default for #ident #type_args {
                     fn default() -> Self {
                         Self::new()
@@ -1924,8 +1981,14 @@ impl<T> Enum<T> {
 #[derive(Debug)]
 struct Constant<T> {
     name: String,
-    value: T,
+    value: ConstantValue<T>,
     comment: Option<String>,
+}
+
+#[derive(Debug)]
+enum ConstantValue<T> {
+    Literal(T),
+    Alias(String),
 }
 
 struct Struct {
@@ -2021,8 +2084,16 @@ fn xr_var_ty(member: &Member) -> TokenStream {
         let ident = xr_ty_name(&member.ty);
         quote! { #ident }
     } else if member.ty.starts_with("PFN_") {
-        let ident = xr_command_name(&member.ty["PFN_".len()..]);
-        quote! { Option<pfn::#ident> }
+        if member.ty.starts_with("PFN_vk") {
+            let ident = Ident::new(
+                &format!("Vk{}", &member.ty["PFN_vk".len()..]),
+                Span::call_site(),
+            );
+            quote! { Option<#ident> }
+        } else {
+            let ident = xr_command_name(&member.ty["PFN_".len()..]);
+            quote! { Option<pfn::#ident> }
+        }
     } else {
         let ty = match &member.ty[..] {
             "uint64_t" => "u64",
@@ -2064,8 +2135,8 @@ fn xr_var_ty(member: &Member) -> TokenStream {
 }
 
 fn xr_command_name(raw: &str) -> Ident {
-    assert!(raw.starts_with("xr"));
-    Ident::new(&raw[2..], Span::call_site())
+    let start = if raw.starts_with("xr") { 2 } else { 0 };
+    Ident::new(&raw[start..], Span::call_site())
 }
 
 fn conditions(name: &str, ext: Option<&str>) -> TokenStream {

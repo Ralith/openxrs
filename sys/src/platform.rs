@@ -11,6 +11,12 @@ pub type VkPhysicalDevice = *const c_void;
 pub type VkDevice = *const c_void;
 pub type VkImage = u64;
 pub type VkFormat = u32;
+pub type VkInstanceCreateInfo = c_void;
+pub type VkDeviceCreateInfo = c_void;
+pub type VkAllocationCallbacks = c_void;
+pub type VkResult = i32;
+pub type VkGetInstanceProcAddr =
+    unsafe extern "system" fn(VkInstance, *const c_char) -> Option<unsafe extern "system" fn()>;
 
 // Xlib
 pub type GLXFBConfig = *mut c_void;
