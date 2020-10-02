@@ -13,6 +13,7 @@ pub use sys::{
     SpaceLocationFlags, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
     SwapchainCreateFlags, SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f,
     Vector4f, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
+    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR,
 };
 #[doc = r" A subset of known extensions"]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
@@ -51,9 +52,15 @@ pub struct ExtensionSet {
     #[cfg(windows)]
     pub khr_d3d12_enable: bool,
     pub khr_visibility_mask: bool,
+    pub khr_composition_layer_color_scale_bias: bool,
     #[cfg(windows)]
     pub khr_win32_convert_performance_counter_time: bool,
     pub khr_convert_timespec_time: bool,
+    pub khr_loader_init: bool,
+    #[cfg(target_os = "android")]
+    pub khr_loader_init_android: bool,
+    pub khr_vulkan_enable2: bool,
+    pub khr_composition_layer_equirect2: bool,
     pub mnd_headless: bool,
     pub mnd_swapchain_usage_input_attachment_bit: bool,
     pub mndx_egl_enable: bool,
@@ -64,6 +71,7 @@ pub struct ExtensionSet {
     pub msft_hand_tracking_mesh: bool,
     pub msft_secondary_view_configuration: bool,
     pub msft_first_person_observer: bool,
+    pub msft_controller_model: bool,
     #[cfg(windows)]
     pub msft_holographic_window_attachment: bool,
     #[cfg(target_os = "android")]
@@ -165,12 +173,28 @@ impl ExtensionSet {
                 raw::VisibilityMaskKHR::NAME => {
                     out.khr_visibility_mask = true;
                 }
+                raw::CompositionLayerColorScaleBiasKHR::NAME => {
+                    out.khr_composition_layer_color_scale_bias = true;
+                }
                 #[cfg(windows)]
                 raw::Win32ConvertPerformanceCounterTimeKHR::NAME => {
                     out.khr_win32_convert_performance_counter_time = true;
                 }
                 raw::ConvertTimespecTimeKHR::NAME => {
                     out.khr_convert_timespec_time = true;
+                }
+                raw::LoaderInitKHR::NAME => {
+                    out.khr_loader_init = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::LoaderInitAndroidKHR::NAME => {
+                    out.khr_loader_init_android = true;
+                }
+                raw::VulkanEnable2KHR::NAME => {
+                    out.khr_vulkan_enable2 = true;
+                }
+                raw::CompositionLayerEquirect2KHR::NAME => {
+                    out.khr_composition_layer_equirect2 = true;
                 }
                 raw::HeadlessMND::NAME => {
                     out.mnd_headless = true;
@@ -201,6 +225,9 @@ impl ExtensionSet {
                 }
                 raw::FirstPersonObserverMSFT::NAME => {
                     out.msft_first_person_observer = true;
+                }
+                raw::ControllerModelMSFT::NAME => {
+                    out.msft_controller_model = true;
                 }
                 #[cfg(windows)]
                 raw::HolographicWindowAttachmentMSFT::NAME => {
@@ -368,6 +395,11 @@ impl ExtensionSet {
                 out.push(raw::VisibilityMaskKHR::NAME.into());
             }
         }
+        {
+            if self.khr_composition_layer_color_scale_bias {
+                out.push(raw::CompositionLayerColorScaleBiasKHR::NAME.into());
+            }
+        }
         #[cfg(windows)]
         {
             if self.khr_win32_convert_performance_counter_time {
@@ -377,6 +409,27 @@ impl ExtensionSet {
         {
             if self.khr_convert_timespec_time {
                 out.push(raw::ConvertTimespecTimeKHR::NAME.into());
+            }
+        }
+        {
+            if self.khr_loader_init {
+                out.push(raw::LoaderInitKHR::NAME.into());
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.khr_loader_init_android {
+                out.push(raw::LoaderInitAndroidKHR::NAME.into());
+            }
+        }
+        {
+            if self.khr_vulkan_enable2 {
+                out.push(raw::VulkanEnable2KHR::NAME.into());
+            }
+        }
+        {
+            if self.khr_composition_layer_equirect2 {
+                out.push(raw::CompositionLayerEquirect2KHR::NAME.into());
             }
         }
         {
@@ -427,6 +480,11 @@ impl ExtensionSet {
         {
             if self.msft_first_person_observer {
                 out.push(raw::FirstPersonObserverMSFT::NAME.into());
+            }
+        }
+        {
+            if self.msft_controller_model {
+                out.push(raw::ControllerModelMSFT::NAME.into());
             }
         }
         #[cfg(windows)]
@@ -496,10 +554,16 @@ pub struct InstanceExtensions {
     #[cfg(windows)]
     pub khr_d3d12_enable: Option<raw::D3d12EnableKHR>,
     pub khr_visibility_mask: Option<raw::VisibilityMaskKHR>,
+    pub khr_composition_layer_color_scale_bias: Option<raw::CompositionLayerColorScaleBiasKHR>,
     #[cfg(windows)]
     pub khr_win32_convert_performance_counter_time:
         Option<raw::Win32ConvertPerformanceCounterTimeKHR>,
     pub khr_convert_timespec_time: Option<raw::ConvertTimespecTimeKHR>,
+    pub khr_loader_init: Option<raw::LoaderInitKHR>,
+    #[cfg(target_os = "android")]
+    pub khr_loader_init_android: Option<raw::LoaderInitAndroidKHR>,
+    pub khr_vulkan_enable2: Option<raw::VulkanEnable2KHR>,
+    pub khr_composition_layer_equirect2: Option<raw::CompositionLayerEquirect2KHR>,
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub mnd_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitMND>,
     pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
@@ -510,6 +574,7 @@ pub struct InstanceExtensions {
     pub msft_hand_tracking_mesh: Option<raw::HandTrackingMeshMSFT>,
     pub msft_secondary_view_configuration: Option<raw::SecondaryViewConfigurationMSFT>,
     pub msft_first_person_observer: Option<raw::FirstPersonObserverMSFT>,
+    pub msft_controller_model: Option<raw::ControllerModelMSFT>,
     #[cfg(windows)]
     pub msft_holographic_window_attachment: Option<raw::HolographicWindowAttachmentMSFT>,
     #[cfg(target_os = "android")]
@@ -670,6 +735,13 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            khr_composition_layer_color_scale_bias: if required
+                .khr_composition_layer_color_scale_bias
+            {
+                Some(raw::CompositionLayerColorScaleBiasKHR {})
+            } else {
+                None
+            },
             #[cfg(windows)]
             khr_win32_convert_performance_counter_time: if required
                 .khr_win32_convert_performance_counter_time
@@ -682,6 +754,27 @@ impl InstanceExtensions {
             },
             khr_convert_timespec_time: if required.khr_convert_timespec_time {
                 Some(raw::ConvertTimespecTimeKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            khr_loader_init: if required.khr_loader_init {
+                Some(raw::LoaderInitKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            khr_loader_init_android: if required.khr_loader_init_android {
+                Some(raw::LoaderInitAndroidKHR {})
+            } else {
+                None
+            },
+            khr_vulkan_enable2: if required.khr_vulkan_enable2 {
+                Some(raw::VulkanEnable2KHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            khr_composition_layer_equirect2: if required.khr_composition_layer_equirect2 {
+                Some(raw::CompositionLayerEquirect2KHR {})
             } else {
                 None
             },
@@ -734,6 +827,11 @@ impl InstanceExtensions {
             },
             msft_first_person_observer: if required.msft_first_person_observer {
                 Some(raw::FirstPersonObserverMSFT {})
+            } else {
+                None
+            },
+            msft_controller_model: if required.msft_controller_model {
+                Some(raw::ControllerModelMSFT::load(entry, instance)?)
             } else {
                 None
             },
@@ -1723,6 +1821,12 @@ pub mod raw {
             })
         }
     }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerColorScaleBiasKHR {}
+    impl CompositionLayerColorScaleBiasKHR {
+        pub const VERSION: u32 = sys::KHR_composition_layer_color_scale_bias_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME;
+    }
     #[cfg(windows)]
     #[derive(Copy, Clone)]
     pub struct Win32ConvertPerformanceCounterTimeKHR {
@@ -1785,6 +1889,77 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct LoaderInitKHR {
+        pub initialize_loader: pfn::InitializeLoaderKHR,
+    }
+    impl LoaderInitKHR {
+        pub const VERSION: u32 = sys::KHR_loader_init_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_LOADER_INIT_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                initialize_loader: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrInitializeLoaderKHR\0"),
+                )?),
+            })
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct LoaderInitAndroidKHR {}
+    #[cfg(target_os = "android")]
+    impl LoaderInitAndroidKHR {
+        pub const VERSION: u32 = sys::KHR_loader_init_android_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_LOADER_INIT_ANDROID_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct VulkanEnable2KHR {
+        pub create_vulkan_instance: pfn::CreateVulkanInstanceKHR,
+        pub create_vulkan_device: pfn::CreateVulkanDeviceKHR,
+        pub get_vulkan_graphics_device2: pfn::GetVulkanGraphicsDevice2KHR,
+        pub get_vulkan_graphics_requirements2: pfn::GetVulkanGraphicsRequirements2KHR,
+    }
+    impl VulkanEnable2KHR {
+        pub const VERSION: u32 = sys::KHR_vulkan_enable2_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_VULKAN_ENABLE2_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_vulkan_instance: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanInstanceKHR\0"),
+                )?),
+                create_vulkan_device: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanDeviceKHR\0"),
+                )?),
+                get_vulkan_graphics_device2: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDevice2KHR\0"),
+                )?),
+                get_vulkan_graphics_requirements2: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsRequirements2KHR\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerEquirect2KHR {}
+    impl CompositionLayerEquirect2KHR {
+        pub const VERSION: u32 = sys::KHR_composition_layer_equirect2_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HeadlessMND {}
@@ -1906,6 +2081,42 @@ pub mod raw {
     impl FirstPersonObserverMSFT {
         pub const VERSION: u32 = sys::MSFT_first_person_observer_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ControllerModelMSFT {
+        pub get_controller_model_key: pfn::GetControllerModelKeyMSFT,
+        pub load_controller_model: pfn::LoadControllerModelMSFT,
+        pub get_controller_model_properties: pfn::GetControllerModelPropertiesMSFT,
+        pub get_controller_model_state: pfn::GetControllerModelStateMSFT,
+    }
+    impl ControllerModelMSFT {
+        pub const VERSION: u32 = sys::MSFT_controller_model_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_CONTROLLER_MODEL_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_controller_model_key: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelKeyMSFT\0"),
+                )?),
+                load_controller_model: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrLoadControllerModelMSFT\0"),
+                )?),
+                get_controller_model_properties: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelPropertiesMSFT\0"),
+                )?),
+                get_controller_model_state: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelStateMSFT\0"),
+                )?),
+            })
+        }
     }
     #[cfg(windows)]
     #[derive(Copy, Clone)]
@@ -2593,6 +2804,102 @@ pub(crate) mod builder {
         }
     }
     impl<'a, G: Graphics> Default for CompositionLayerEquirectKHR<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct CompositionLayerEquirect2KHR<'a, G: Graphics> {
+        inner: sys::CompositionLayerEquirect2KHR,
+        _marker: PhantomData<&'a G>,
+    }
+    impl<'a, G: Graphics> CompositionLayerEquirect2KHR<'a, G> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::CompositionLayerEquirect2KHR {
+                    ty: sys::StructureType::COMPOSITION_LAYER_EQUIRECT2_KHR,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::CompositionLayerEquirect2KHR) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::CompositionLayerEquirect2KHR {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::CompositionLayerEquirect2KHR {
+            &self.inner
+        }
+        #[inline]
+        pub fn layer_flags(mut self, value: CompositionLayerFlags) -> Self {
+            self.inner.layer_flags = value;
+            self
+        }
+        #[inline]
+        pub fn space(mut self, value: &'a Space) -> Self {
+            self.inner.space = value.as_raw();
+            self
+        }
+        #[inline]
+        pub fn eye_visibility(mut self, value: EyeVisibility) -> Self {
+            self.inner.eye_visibility = value;
+            self
+        }
+        #[inline]
+        pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
+            self.inner.sub_image = value.inner;
+            self
+        }
+        #[inline]
+        pub fn pose(mut self, value: Posef) -> Self {
+            self.inner.pose = value;
+            self
+        }
+        #[inline]
+        pub fn radius(mut self, value: f32) -> Self {
+            self.inner.radius = value;
+            self
+        }
+        #[inline]
+        pub fn central_horizontal_angle(mut self, value: f32) -> Self {
+            self.inner.central_horizontal_angle = value;
+            self
+        }
+        #[inline]
+        pub fn upper_vertical_angle(mut self, value: f32) -> Self {
+            self.inner.upper_vertical_angle = value;
+            self
+        }
+        #[inline]
+        pub fn lower_vertical_angle(mut self, value: f32) -> Self {
+            self.inner.lower_vertical_angle = value;
+            self
+        }
+    }
+    impl<'a, G: Graphics> Deref for CompositionLayerEquirect2KHR<'a, G> {
+        type Target = CompositionLayerBase<'a, G>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerEquirect2KHR<'a, G> {
         fn default() -> Self {
             Self::new()
         }

@@ -124,6 +124,15 @@ impl SystemId {
 }
 
 wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    ControllerModelKeyMSFT(u64)
+}
+
+impl ControllerModelKeyMSFT {
+    pub const NULL: ControllerModelKeyMSFT = ControllerModelKeyMSFT(0);
+}
+
+wrapper! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Version(u64)
 }
