@@ -76,7 +76,7 @@ fn main() {
     // Check what blend mode is valid for this device (opaque vs transparent displays). We'll just
     // take the first one available!
     let environment_blend_mode = xr_instance
-        .enumerate_environment_blend_modes(system, xr::ViewConfigurationType::PRIMARY_STEREO)
+        .enumerate_environment_blend_modes(system, VIEW_TYPE)
         .unwrap()[0];
 
     // OpenXR wants to ensure apps are using the correct graphics card, so the renderer MUST be set
@@ -412,9 +412,7 @@ fn main() {
                         println!("entered state {:?}", e.state());
                         match e.state() {
                             xr::SessionState::READY => {
-                                session
-                                    .begin(xr::ViewConfigurationType::PRIMARY_STEREO)
-                                    .unwrap();
+                                session.begin(VIEW_TYPE).unwrap();
                                 session_running = true;
                             }
                             xr::SessionState::STOPPING => {
@@ -462,18 +460,17 @@ fn main() {
             }
 
             if swapchain.is_none() {
-                // Now we need to find all the viewpoints we need to take care of! For a stereo
-                // headset, this should be 2. Similarly, for an AR phone, we'll need 1, and a VR
-                // cave could have 6, or even 12!
+                // Now we need to find all the viewpoints we need to take care of! This is a
+                // property of the view configuration type; in this example we use PRIMARY_STEREO,
+                // so we should have 2 viewpoints.
                 //
                 // Because we are using multiview in this example, we will only look at the first
                 // viewpoint, and assume that the other viewpoints are identical.
                 let views = xr_instance
-                    .enumerate_view_configuration_views(
-                        system,
-                        xr::ViewConfigurationType::PRIMARY_STEREO,
-                    )
+                    .enumerate_view_configuration_views(system, VIEW_TYPE)
                     .unwrap();
+                assert_eq!(views.len(), VIEW_COUNT as usize);
+                assert_eq!(views[0], views[1]);
 
                 // Create a swapchain for the viewpoints! A swapchain is a set of texture buffers
                 // used for displaying to screen, typically this is a backbuffer and a front buffer,
@@ -613,11 +610,7 @@ fn main() {
             // to the GPU just-in-time by writing them to per-frame host-visible memory which the
             // GPU will only read once the command buffer is submitted.
             let (_, views) = session
-                .locate_views(
-                    xr::ViewConfigurationType::PRIMARY_STEREO,
-                    xr_frame_state.predicted_display_time,
-                    &stage,
-                )
+                .locate_views(VIEW_TYPE, xr_frame_state.predicted_display_time, &stage)
                 .unwrap();
 
             // Submit commands to the GPU, then tell OpenXR we're done with our part.
@@ -699,6 +692,7 @@ fn main() {
 
 pub const COLOR_FORMAT: vk::Format = vk::Format::B8G8R8A8_SRGB;
 pub const VIEW_COUNT: u32 = 2;
+const VIEW_TYPE: xr::ViewConfigurationType = xr::ViewConfigurationType::PRIMARY_STEREO;
 
 struct Swapchain {
     handle: xr::Swapchain<xr::Vulkan>,
