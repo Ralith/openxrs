@@ -464,8 +464,8 @@ fn main() {
                 // property of the view configuration type; in this example we use PRIMARY_STEREO,
                 // so we should have 2 viewpoints.
                 //
-                // Because we are using multiview in this example, we will only look at the first
-                // viewpoint, and assume that the other viewpoints are identical.
+                // Because we are using multiview in this example, we require that all view
+                // dimensions are identical.
                 let views = xr_instance
                     .enumerate_view_configuration_views(system, VIEW_TYPE)
                     .unwrap();
