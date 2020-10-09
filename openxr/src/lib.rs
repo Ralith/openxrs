@@ -82,8 +82,10 @@ fn fixed_str_bytes(x: &[c_char]) -> &[u8] {
 
 fn get_str(mut getter: impl FnMut(u32, &mut u32, *mut c_char) -> sys::Result) -> Result<String> {
     let mut bytes = get_arr(|x, y, z| getter(x, y, z as _))?;
-    // Strip null byte
-    bytes.truncate(bytes.len() - 1);
+    // Truncate at first null byte
+    let first_nt = bytes.iter().rposition(|&x| x != 0).expect("missing null") + 1;
+    bytes.truncate(first_nt);
+
     unsafe { Ok(String::from_utf8_unchecked(bytes)) }
 }
 
