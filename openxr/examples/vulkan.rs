@@ -6,7 +6,7 @@
 //! largely decouple its Vulkan and OpenXR components and handle errors gracefully.
 
 use std::{
-    ffi::CString,
+    ffi::{CStr, CString},
     io::Cursor,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -102,6 +102,22 @@ fn main() {
 
     let vk_entry = ash::Entry::new().unwrap();
 
+    // Check that we have the required Vulkan instance extensions.
+    let instance_extensions = vk_entry.enumerate_instance_extension_properties().unwrap();
+    for ext in &vk_instance_exts {
+        unsafe {
+            if !instance_extensions
+                .iter()
+                .any(|inst_ext| CStr::from_ptr(inst_ext.extension_name.as_ptr()) == ext.as_c_str())
+            {
+                panic!(
+                    "OpenXR runtime requires missing Vulkan instance extension {:?}",
+                    ext
+                );
+            }
+        }
+    }
+
     let vk_app_info = vk::ApplicationInfo::builder()
         .application_version(0)
         .engine_version(0)
@@ -174,6 +190,22 @@ fn main() {
             })
             .next()
             .expect("Vulkan device has no graphics queue");
+
+        // Check that we have the required Vulkan device extensions.
+        let device_extensions = vk_instance
+            .enumerate_device_extension_properties(vk_physical_device)
+            .unwrap();
+        for ext in &vk_device_exts {
+            if !device_extensions
+                .iter()
+                .any(|inst_ext| CStr::from_ptr(inst_ext.extension_name.as_ptr()) == ext.as_c_str())
+            {
+                panic!(
+                    "OpenXR runtime requires missing Vulkan device extension {:?}",
+                    ext
+                );
+            }
+        }
 
         let vk_device = vk_instance
             .create_device(
