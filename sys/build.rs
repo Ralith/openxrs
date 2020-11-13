@@ -6,6 +6,7 @@ fn main() {
         .define("OpenGL_GL_PREFERENCE", "GLVND")
         .define("DYNAMIC_LOADER", "OFF")
         .define("CMAKE_INSTALL_LIBDIR", "lib")
+        .profile("Release")
         .build();
 
     println!(
