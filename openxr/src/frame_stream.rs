@@ -175,10 +175,3 @@ impl<G: Graphics> FrameStream<G> {
         self.session.instance().fp()
     }
 }
-
-#[derive(Debug, Copy, Clone)]
-pub struct FrameState {
-    pub predicted_display_time: Time,
-    pub predicted_display_period: Duration,
-    pub should_render: bool,
-}

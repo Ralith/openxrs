@@ -579,3 +579,11 @@ impl FrameWaiter {
         ))
     }
 }
+
+/// Result of method calls on [`FrameWaiter`]
+#[derive(Debug, Copy, Clone)]
+pub struct FrameState {
+    pub predicted_display_time: Time,
+    pub predicted_display_period: Duration,
+    pub should_render: bool,
+}
