@@ -187,49 +187,109 @@ impl Instance {
         })
     }
 
-    /// Identify the Vulkan instance extensions required by a system
+    /// Create a Vulkan instance suitable for use with a particular `system`
     ///
-    /// Returns a space-delimited list of Vulkan instance extension names.
+    /// `Instance::graphics_requirements::<Vulkan>()` must be called first.
+    ///
+    /// # Safety
+    ///
+    /// See [`XR_KHR_vulkan_enable2`].
+    ///
+    /// [`XR_KHR_vulkan_enable2`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#_vulkan_instance_creation
     #[inline]
-    pub fn vulkan_instance_extensions(&self, system: SystemId) -> Result<String> {
-        get_str(|input, output, buf| unsafe {
-            (self.vulkan().get_vulkan_instance_extensions)(
-                self.as_raw(),
-                system,
-                input,
-                output,
-                buf,
-            )
-        })
+    pub unsafe fn create_vulkan_instance(
+        &self,
+        system: SystemId,
+        get_instance_proc_addr: VkGetInstanceProcAddr,
+        create_info: *const VkInstanceCreateInfo,
+    ) -> Result<Result<VkInstance, VkResult>> {
+        let mut instance = ptr::null();
+        let mut result = 0;
+        cvt((self.vulkan().create_vulkan_instance)(
+            self.as_raw(),
+            &sys::VulkanInstanceCreateInfoKHR {
+                ty: sys::VulkanInstanceCreateInfoKHR::TYPE,
+                next: ptr::null(),
+                system_id: system,
+                create_flags: sys::VulkanInstanceCreateFlagsKHR::EMPTY,
+                pfn_get_instance_proc_addr: Some(get_instance_proc_addr),
+                vulkan_create_info: create_info,
+                vulkan_allocator: ptr::null(),
+            },
+            &mut instance,
+            &mut result,
+        ))?;
+        if result < 0 {
+            return Ok(Err(result));
+        }
+        Ok(Ok(instance))
     }
 
-    /// Identify the Vulkan device extensions required by a system
+    /// Get a suitable [`VkPhysicalDevice`] for use with a particular `system`
     ///
-    /// Returns a space-delimited list of Vulkan device extension names.
-    #[inline]
-    pub fn vulkan_device_extensions(&self, system: SystemId) -> Result<String> {
-        get_str(|input, output, buf| unsafe {
-            (self.vulkan().get_vulkan_device_extensions)(self.as_raw(), system, input, output, buf)
-        })
-    }
-
-    /// Identify the Vulkan graphics device to use for a system
+    /// Call [`Instance::create_vulkan_instance()`] first to get a suitable `VkInstance`.
+    ///
+    /// Requires KHR_vulkan_enable2.
     #[inline]
     pub fn vulkan_graphics_device(
         &self,
         system: SystemId,
-        vk_instance: VkInstance,
+        vulkan_instance: VkInstance,
     ) -> Result<VkPhysicalDevice> {
         let mut out = ptr::null();
         unsafe {
-            cvt((self.vulkan().get_vulkan_graphics_device)(
+            cvt((self.vulkan().get_vulkan_graphics_device2)(
                 self.as_raw(),
-                system,
-                vk_instance,
+                &sys::VulkanGraphicsDeviceGetInfoKHR {
+                    ty: sys::VulkanGraphicsDeviceGetInfoKHR::TYPE,
+                    next: ptr::null(),
+                    system_id: system,
+                    vulkan_instance,
+                },
                 &mut out,
             ))?;
         }
         Ok(out)
+    }
+
+    /// Get a suitable [`VkDevice`] for use with a particular `system`
+    ///
+    /// Call [`Instance::vulkan_graphics_device()`] first to get a suitable `VkPhysicalDevice`.
+    ///
+    /// # Safety
+    ///
+    /// See [`XR_KHR_vulkan_enable2`].
+    ///
+    /// [`XR_KHR_vulkan_enable2`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#_vulkan_device_creation
+    #[inline]
+    pub unsafe fn create_vulkan_device(
+        &self,
+        system: SystemId,
+        get_instance_proc_addr: VkGetInstanceProcAddr,
+        physical_device: VkPhysicalDevice,
+        create_info: *const VkDeviceCreateInfo,
+    ) -> Result<Result<VkDevice, VkResult>> {
+        let mut device = ptr::null();
+        let mut result = 0;
+        cvt((self.vulkan().create_vulkan_device)(
+            self.as_raw(),
+            &sys::VulkanDeviceCreateInfoKHR {
+                ty: sys::VulkanDeviceCreateInfoKHR::TYPE,
+                next: ptr::null(),
+                system_id: system,
+                create_flags: sys::VulkanDeviceCreateFlagsKHR::EMPTY,
+                pfn_get_instance_proc_addr: Some(get_instance_proc_addr),
+                vulkan_physical_device: physical_device,
+                vulkan_create_info: create_info,
+                vulkan_allocator: ptr::null(),
+            },
+            &mut device,
+            &mut result,
+        ))?;
+        if result < 0 {
+            return Ok(Err(result));
+        }
+        Ok(Ok(device))
     }
 
     /// Query graphics API version requirements
@@ -506,11 +566,11 @@ impl Instance {
         }
         Ok(())
     }
-    pub(crate) fn vulkan(&self) -> &raw::VulkanEnableKHR {
+    pub(crate) fn vulkan(&self) -> &raw::VulkanEnable2KHR {
         self.exts()
-            .khr_vulkan_enable
+            .khr_vulkan_enable2
             .as_ref()
-            .expect("KHR_vulkan_enable not loaded")
+            .expect("KHR_vulkan_enable2 not loaded")
     }
     pub(crate) fn opengl(&self) -> &raw::OpenglEnableKHR {
         self.exts()
