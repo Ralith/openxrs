@@ -38,7 +38,7 @@ pub use builder::{
     CompositionLayerQuad, HapticBase, HapticVibration, SwapchainSubImage,
 };
 
-pub type Result<T> = std::result::Result<T, sys::Result>;
+pub type Result<T, E = sys::Result> = std::result::Result<T, E>;
 
 // Reserved semantic paths
 pub const USER_HAND_LEFT: &str = "/user/hand/left";

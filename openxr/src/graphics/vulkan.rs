@@ -6,9 +6,9 @@ use crate::*;
 
 /// The Vulkan graphics API
 ///
-/// See [`XR_KHR_vulkan_enable`] for safety details.
+/// See [`XR_KHR_vulkan_enable2`] for safety details.
 ///
-/// [`XR_KHR_vulkan_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable
+/// [`XR_KHR_vulkan_enable2`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable2
 pub enum Vulkan {}
 
 impl Graphics for Vulkan {
@@ -27,7 +27,7 @@ impl Graphics for Vulkan {
     fn requirements(instance: &Instance, system: SystemId) -> Result<Requirements> {
         let out = unsafe {
             let mut x = sys::GraphicsRequirementsVulkanKHR::out(ptr::null_mut());
-            cvt((instance.vulkan().get_vulkan_graphics_requirements)(
+            cvt((instance.vulkan().get_vulkan_graphics_requirements2)(
                 instance.as_raw(),
                 system,
                 x.as_mut_ptr(),
