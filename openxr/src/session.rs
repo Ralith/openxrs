@@ -332,6 +332,8 @@ impl<G: Graphics> Session<G> {
                 indices: Vec::with_capacity(info.index_count_output as usize),
             };
             loop {
+                info.vertices = out.vertices.as_mut_ptr();
+                info.indices = out.indices.as_mut_ptr();
                 info.vertex_capacity_input = out.vertices.capacity() as u32;
                 info.index_capacity_input = out.indices.capacity() as u32;
                 match cvt((self.instance().visibility_mask().get_visibility_mask)(
