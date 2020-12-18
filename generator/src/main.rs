@@ -849,8 +849,8 @@ impl Parser {
     }
 
     fn doc_link(&self, name: &str) -> String {
-        let name = if name.ends_with("Flags") {
-            format!("{}FlagBits", &name[..name.len() - "Flags".len()])
+        let name = if let Some(stripped) = name.strip_suffix("Flags") {
+            format!("{}FlagBits", stripped)
         } else {
             name.into()
         };
@@ -2022,11 +2022,9 @@ fn attr<'a>(attrs: &'a [OwnedAttribute], name: &str) -> Option<&'a str> {
 }
 
 fn xr_ty_name(raw: &str) -> Ident {
-    let trimmed = if raw.starts_with("Xr") {
-        &raw[2..]
-    } else {
-        panic!("not an XR type: {}", raw);
-    };
+    let trimmed = raw
+        .strip_prefix("Xr")
+        .unwrap_or_else(|| panic!("not an XR type: {}", raw));
     Ident::new(trimmed, Span::call_site())
 }
 
