@@ -1,4 +1,6 @@
-# ! [ doc = r" Automatically generated code; do not edit!" ] # ! [ allow ( clippy :: wrong_self_convention , clippy :: transmute_ptr_to_ptr ) ]use crate::*;
+#![doc = r" Automatically generated code; do not edit!"]
+#![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
+use crate::*;
 use std::borrow::Cow;
 use std::mem::MaybeUninit;
 pub use sys::{
