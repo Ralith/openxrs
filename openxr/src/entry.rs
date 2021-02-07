@@ -111,7 +111,7 @@ impl Entry {
     /// Create an OpenXR instance with certain extensions enabled
     ///
     /// Most applications will want to enable at least one graphics API extension
-    /// (e.g. `khr_vulkan_enable`) so that a `Session` can be created for rendering.
+    /// (e.g. `khr_vulkan_enable2`) so that a `Session` can be created for rendering.
     pub fn create_instance(
         &self,
         app_info: &ApplicationInfo,
