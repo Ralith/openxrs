@@ -65,7 +65,7 @@ impl Entry {
     /// Available if the `loaded` feature is enabled.
     #[cfg(feature = "loaded")]
     pub fn load_from(path: &Path) -> std::result::Result<Self, LoadError> {
-        let lib = Library::new(path).map_err(LoadError)?;
+        let lib = unsafe { Library::new(path).map_err(LoadError)? };
         Ok(Self {
             inner: Arc::new(Inner {
                 raw: unsafe {

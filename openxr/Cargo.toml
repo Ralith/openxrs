@@ -23,7 +23,7 @@ default = ["loaded"]
 [dependencies]
 sys = { package = "openxr-sys", path = "../sys", version = "0.8.5" }
 libc = "0.2.50"
-libloading = { version = "0.6.1", optional = true }
+libloading = { version = "0.7", optional = true }
 
 [dev-dependencies]
 ash = "0.31"
