@@ -21,6 +21,7 @@ use ash::{
 };
 use openxr as xr;
 
+#[allow(clippy::field_reassign_with_default)] // False positive, might be fixed 1.51
 fn main() {
     // Handle interrupts gracefully
     let running = Arc::new(AtomicBool::new(true));
