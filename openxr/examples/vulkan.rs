@@ -85,20 +85,17 @@ fn main() {
     // extensions, so the instance and device MUST be set up before Instance::create_session.
 
     let vk_target_version = vk::make_version(1, 1, 0); // Vulkan 1.1 guarantees multiview support
+    let vk_target_version_xr = xr::Version::new(1, 1, 0);
 
     let reqs = xr_instance
         .graphics_requirements::<xr::Vulkan>(system)
         .unwrap();
-    if reqs.min_api_version_supported
-        > xr::Version::new(
-            vk::version_major(vk_target_version) as u16,
-            vk::version_minor(vk_target_version) as u16,
-            0,
-        )
+    if !(reqs.min_api_version_supported..=reqs.max_api_version_supported)
+        .contains(&vk_target_version_xr)
     {
         panic!(
             "OpenXR runtime requires Vulkan version > {}",
-            reqs.min_api_version_supported
+            reqs.max_api_version_supported
         );
     }
 
@@ -132,7 +129,7 @@ fn main() {
         );
 
         let vk_device_properties = vk_instance.get_physical_device_properties(vk_physical_device);
-        if vk_device_properties.api_version < vk::make_version(1, 1, 0) {
+        if vk_device_properties.api_version < vk_target_version {
             vk_instance.destroy_instance(None);
             panic!("Vulkan phyiscal device doesn't support version 1.1");
         }
