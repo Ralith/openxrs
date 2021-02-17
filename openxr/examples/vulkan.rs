@@ -85,20 +85,17 @@ fn main() {
     // extensions, so the instance and device MUST be set up before Instance::create_session.
 
     let vk_target_version = vk::make_version(1, 1, 0); // Vulkan 1.1 guarantees multiview support
+    let vk_target_version_xr = xr::Version::new(1, 1, 0);
 
     let reqs = xr_instance
         .graphics_requirements::<xr::Vulkan>(system)
         .unwrap();
-    if reqs.min_api_version_supported
-        > xr::Version::new(
-            vk::version_major(vk_target_version) as u16,
-            vk::version_minor(vk_target_version) as u16,
-            0,
-        )
+    if !(reqs.min_api_version_supported..=reqs.max_api_version_supported)
+        .contains(&vk_target_version_xr)
     {
         panic!(
             "OpenXR runtime requires Vulkan version > {}",
-            reqs.min_api_version_supported
+            reqs.max_api_version_supported
         );
     }
 
@@ -132,7 +129,7 @@ fn main() {
         );
 
         let vk_device_properties = vk_instance.get_physical_device_properties(vk_physical_device);
-        if vk_device_properties.api_version < vk::make_version(1, 1, 0) {
+        if vk_device_properties.api_version < vk_target_version {
             vk_instance.destroy_instance(None);
             panic!("Vulkan phyiscal device doesn't support version 1.1");
         }
@@ -141,14 +138,13 @@ fn main() {
             .get_physical_device_queue_family_properties(vk_physical_device)
             .into_iter()
             .enumerate()
-            .filter_map(|(queue_family_index, info)| {
+            .find_map(|(queue_family_index, info)| {
                 if info.queue_flags.contains(vk::QueueFlags::GRAPHICS) {
                     Some(queue_family_index as u32)
                 } else {
                     None
                 }
             })
-            .next()
             .expect("Vulkan device has no graphics queue");
 
         let vk_device = xr_instance
@@ -330,6 +326,54 @@ fn main() {
             )
             .unwrap();
 
+        // Create an action set to encapsulate our actions
+        let action_set = xr_instance
+            .create_action_set("input", "input pose information", 0)
+            .unwrap();
+
+        let right_action = action_set
+            .create_action::<xr::Posef>("right_hand", "Right Hand Controller", &[])
+            .unwrap();
+        let left_action = action_set
+            .create_action::<xr::Posef>("left_hand", "Left Hand Controller", &[])
+            .unwrap();
+
+        // Bind our actions to input devices using the given profile
+        // If you want to access inputs specific to a particular device you may specify a different
+        // interaction profile
+        xr_instance
+            .suggest_interaction_profile_bindings(
+                xr_instance
+                    .string_to_path("/interaction_profiles/khr/simple_controller")
+                    .unwrap(),
+                &[
+                    xr::Binding::new(
+                        &right_action,
+                        xr_instance
+                            .string_to_path("/user/hand/right/input/grip/pose")
+                            .unwrap(),
+                    ),
+                    xr::Binding::new(
+                        &left_action,
+                        xr_instance
+                            .string_to_path("/user/hand/left/input/grip/pose")
+                            .unwrap(),
+                    ),
+                ],
+            )
+            .unwrap();
+
+        // Attach the action set to the session
+        session.attach_action_sets(&[&action_set]).unwrap();
+
+        // Create an action space for each device we want to locate
+        let right_space = right_action
+            .create_space(session.clone(), xr::Path::NULL, xr::Posef::IDENTITY)
+            .unwrap();
+        let left_space = left_action
+            .create_space(session.clone(), xr::Path::NULL, xr::Posef::IDENTITY)
+            .unwrap();
+
         // OpenXR uses a couple different types of reference frames for positioning content; we need
         // to choose one for displaying our content! STAGE would be relative to the center of your
         // guardian system's bounds, and LOCAL would be relative to your device's starting location.
@@ -442,7 +486,7 @@ fn main() {
                 continue;
             }
 
-            if swapchain.is_none() {
+            let swapchain = swapchain.get_or_insert_with(|| {
                 // Now we need to find all the viewpoints we need to take care of! This is a
                 // property of the view configuration type; in this example we use PRIMARY_STEREO,
                 // so we should have 2 viewpoints.
@@ -483,7 +527,7 @@ fn main() {
                 // We'll want to track our own information about the swapchain, so we can draw stuff
                 // onto it! We'll also create a buffer for each generated texture here as well.
                 let images = handle.enumerate_images().unwrap();
-                swapchain = Some(Swapchain {
+                Swapchain {
                     handle,
                     resolution,
                     buffers: images
@@ -520,9 +564,8 @@ fn main() {
                             Framebuffer { framebuffer, color }
                         })
                         .collect(),
-                });
-            }
-            let swapchain = swapchain.as_mut().unwrap();
+                }
+            });
 
             // We need to ask which swapchain image to use for rendering! Which one will we get?
             // Who knows! It's up to the runtime to decide.
@@ -587,6 +630,36 @@ fn main() {
             vk_device.cmd_end_render_pass(cmd);
             vk_device.end_command_buffer(cmd).unwrap();
 
+            session.sync_actions(&[(&action_set).into()]).unwrap();
+
+            // Find where our controllers are located in the Stage space
+            let right_location = right_space
+                .locate(&stage, xr_frame_state.predicted_display_time)
+                .unwrap();
+
+            let left_location = left_space
+                .locate(&stage, xr_frame_state.predicted_display_time)
+                .unwrap();
+
+            if left_action.is_active(&session, xr::Path::NULL).unwrap() {
+                print!(
+                    "Left Hand: ({:0<12},{:0<12},{:0<12}), ",
+                    left_location.pose.position.x,
+                    left_location.pose.position.y,
+                    left_location.pose.position.z
+                );
+            }
+
+            if right_action.is_active(&session, xr::Path::NULL).unwrap() {
+                print!(
+                    "Right Hand: ({:0<12},{:0<12},{:0<12})",
+                    right_location.pose.position.x,
+                    right_location.pose.position.y,
+                    right_location.pose.position.z
+                );
+            }
+            println!();
+
             // Fetch the view transforms. To minimize latency, we intentionally do this *after*
             // recording commands to render the scene, i.e. at the last possible moment before
             // rendering begins in earnest on the GPU. Uniforms dependent on this data can be sent
@@ -647,7 +720,17 @@ fn main() {
 
         // OpenXR MUST be allowed to clean up before we destroy Vulkan resources it could touch, so
         // first we must drop all its handles.
-        drop((session, frame_wait, frame_stream, stage));
+        drop((
+            session,
+            frame_wait,
+            frame_stream,
+            stage,
+            action_set,
+            left_space,
+            right_space,
+            left_action,
+            right_action,
+        ));
 
         // Ensure all in-flight frames are finished before destroying resources they might use
         vk_device.wait_for_fences(&fences, true, !0).unwrap();
