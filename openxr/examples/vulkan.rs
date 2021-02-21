@@ -90,12 +90,13 @@ fn main() {
     let reqs = xr_instance
         .graphics_requirements::<xr::Vulkan>(system)
         .unwrap();
-    if !(reqs.min_api_version_supported..=reqs.max_api_version_supported)
-        .contains(&vk_target_version_xr)
+    if vk_target_version_xr < reqs.min_api_version_supported
+        || vk_target_version_xr.major() > reqs.max_api_version_supported.major()
     {
         panic!(
-            "OpenXR runtime requires Vulkan version > {}",
-            reqs.max_api_version_supported
+            "OpenXR runtime requires Vulkan version > {}, < {}.0.0",
+            reqs.min_api_version_supported,
+            reqs.max_api_version_supported.major() + 1
         );
     }
 
