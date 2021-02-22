@@ -1,12 +1,13 @@
 //! Illustrates rendering using Vulkan with multiview. Supports any Vulkan 1.1 capable environment.
 //!
-//! Renders a smooth gradient across the entire view, with different colors per eye.
+//! Renders a large cube at the world origin, and a small cube atached to each tracked hand controllers
 //!
 //! This example uses minimal abstraction for clarity. Real-world code should encapsulate and
 //! largely decouple its Vulkan and OpenXR components and handle errors gracefully.
 
 use std::{
     io::Cursor,
+    mem,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -20,6 +21,11 @@ use ash::{
     vk::{self, Handle},
 };
 use openxr as xr;
+
+use mint_dev as mint; // We can't have a dev dependency with the same name as a feature :/
+
+use cgmath::prelude::*;
+use cgmath::{Matrix4, Point3, Quaternion, Vector3};
 
 #[allow(clippy::field_reassign_with_default)] // False positive, might be fixed 1.51
 fn main() {
@@ -112,8 +118,9 @@ fn main() {
             .create_vulkan_instance(
                 system,
                 std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
-                &vk::InstanceCreateInfo::builder().application_info(&vk_app_info) as *const _
-                    as *const _,
+                &vk::InstanceCreateInfo::builder()
+                    //.enabled_layer_names(&[b"VK_LAYER_KHRONOS_validation\0" as *const _ as _])
+                    .application_info(&vk_app_info) as *const _ as *const _,
             )
             .expect("XR error creating Vulkan instance")
             .map_err(vk::Result::from_raw)
@@ -175,28 +182,48 @@ fn main() {
         let render_pass = vk_device
             .create_render_pass(
                 &vk::RenderPassCreateInfo::builder()
-                    .attachments(&[vk::AttachmentDescription {
-                        format: COLOR_FORMAT,
-                        samples: vk::SampleCountFlags::TYPE_1,
-                        load_op: vk::AttachmentLoadOp::CLEAR,
-                        store_op: vk::AttachmentStoreOp::STORE,
-                        initial_layout: vk::ImageLayout::UNDEFINED,
-                        final_layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
-                        ..Default::default()
-                    }])
+                    .attachments(&[
+                        vk::AttachmentDescription {
+                            format: COLOR_FORMAT,
+                            samples: vk::SampleCountFlags::TYPE_1,
+                            load_op: vk::AttachmentLoadOp::CLEAR,
+                            store_op: vk::AttachmentStoreOp::STORE,
+                            initial_layout: vk::ImageLayout::UNDEFINED,
+                            final_layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
+                            ..Default::default()
+                        },
+                        vk::AttachmentDescription {
+                            format: DEPTH_FORMAT,
+                            samples: vk::SampleCountFlags::TYPE_1,
+                            load_op: vk::AttachmentLoadOp::CLEAR,
+                            store_op: vk::AttachmentStoreOp::DONT_CARE,
+                            stencil_load_op: vk::AttachmentLoadOp::DONT_CARE,
+                            stencil_store_op: vk::AttachmentStoreOp::DONT_CARE,
+                            initial_layout: vk::ImageLayout::UNDEFINED,
+                            final_layout: vk::ImageLayout::DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                            ..Default::default()
+                        },
+                    ])
                     .subpasses(&[vk::SubpassDescription::builder()
                         .color_attachments(&[vk::AttachmentReference {
                             attachment: 0,
                             layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
                         }])
+                        .depth_stencil_attachment(&vk::AttachmentReference {
+                            attachment: 1,
+                            layout: vk::ImageLayout::DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                        })
                         .pipeline_bind_point(vk::PipelineBindPoint::GRAPHICS)
                         .build()])
                     .dependencies(&[vk::SubpassDependency {
                         src_subpass: vk::SUBPASS_EXTERNAL,
                         dst_subpass: 0,
-                        src_stage_mask: vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
-                        dst_stage_mask: vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
-                        dst_access_mask: vk::AccessFlags::COLOR_ATTACHMENT_WRITE,
+                        src_stage_mask: vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT
+                            | vk::PipelineStageFlags::EARLY_FRAGMENT_TESTS,
+                        dst_stage_mask: vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT
+                            | vk::PipelineStageFlags::EARLY_FRAGMENT_TESTS,
+                        dst_access_mask: vk::AccessFlags::COLOR_ATTACHMENT_WRITE
+                            | vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_WRITE,
                         ..Default::default()
                     }])
                     .push_next(
@@ -208,7 +235,7 @@ fn main() {
             )
             .unwrap();
 
-        let vert = read_spv(&mut Cursor::new(&include_bytes!("fullscreen.vert.spv")[..])).unwrap();
+        let vert = read_spv(&mut Cursor::new(&include_bytes!("transform.vert.spv")[..])).unwrap();
         let frag = read_spv(&mut Cursor::new(
             &include_bytes!("debug_pattern.frag.spv")[..],
         ))
@@ -220,9 +247,28 @@ fn main() {
             .create_shader_module(&vk::ShaderModuleCreateInfo::builder().code(&frag), None)
             .unwrap();
 
+        let descriptor_layout = vk_device
+            .create_descriptor_set_layout(
+                &vk::DescriptorSetLayoutCreateInfo::builder().bindings(&[
+                    vk::DescriptorSetLayoutBinding::builder()
+                        .binding(0)
+                        .descriptor_type(vk::DescriptorType::UNIFORM_BUFFER)
+                        .descriptor_count(1)
+                        .stage_flags(vk::ShaderStageFlags::VERTEX)
+                        .build(),
+                ]),
+                None,
+            )
+            .unwrap();
+
         let pipeline_layout = vk_device
             .create_pipeline_layout(
-                &vk::PipelineLayoutCreateInfo::builder().set_layouts(&[]),
+                &vk::PipelineLayoutCreateInfo::builder()
+                    .set_layouts(&[descriptor_layout])
+                    .push_constant_ranges(&[*vk::PushConstantRange::builder()
+                        .stage_flags(vk::ShaderStageFlags::VERTEX)
+                        .offset(0)
+                        .size(mem::size_of::<ModelTransform>() as _)]),
                 None,
             )
             .unwrap();
@@ -253,10 +299,14 @@ fn main() {
                             ..Default::default()
                         },
                     ])
-                    .vertex_input_state(&vk::PipelineVertexInputStateCreateInfo::default())
+                    .vertex_input_state(
+                        &vk::PipelineVertexInputStateCreateInfo::builder()
+                            .vertex_binding_descriptions(&[Vertex::get_binding_description()])
+                            .vertex_attribute_descriptions(&Vertex::get_attribute_descriptions()),
+                    )
                     .input_assembly_state(
                         &vk::PipelineInputAssemblyStateCreateInfo::builder()
-                            .topology(vk::PrimitiveTopology::TRIANGLE_LIST),
+                            .topology(vk::PrimitiveTopology::TRIANGLE_STRIP),
                     )
                     .viewport_state(
                         &vk::PipelineViewportStateCreateInfo::builder()
@@ -275,8 +325,13 @@ fn main() {
                     )
                     .depth_stencil_state(
                         &vk::PipelineDepthStencilStateCreateInfo::builder()
-                            .depth_test_enable(false)
-                            .depth_write_enable(false)
+                            .depth_test_enable(true)
+                            .depth_write_enable(true)
+                            .depth_compare_op(vk::CompareOp::LESS)
+                            .depth_bounds_test_enable(false)
+                            .min_depth_bounds(0.0)
+                            .max_depth_bounds(1.0)
+                            .stencil_test_enable(false)
                             .front(noop_stencil_state)
                             .back(noop_stencil_state),
                     )
@@ -381,6 +436,163 @@ fn main() {
         let stage = session
             .create_reference_space(xr::ReferenceSpaceType::STAGE, xr::Posef::IDENTITY)
             .unwrap();
+
+        let vk_memory_properties =
+            vk_instance.get_physical_device_memory_properties(vk_physical_device);
+
+        // Setup vertex buffer
+        let vertices: Vec<_> = Vertex::cube([1.0, 0.0, 0.0]).collect();
+        let vertex_buffer_size = mem::size_of::<Vertex>() * vertices.len();
+
+        let vertex_buffer = vk_device
+            .create_buffer(
+                &vk::BufferCreateInfo::builder()
+                    .size(vertex_buffer_size as u64)
+                    .usage(vk::BufferUsageFlags::VERTEX_BUFFER)
+                    .sharing_mode(vk::SharingMode::EXCLUSIVE),
+                None,
+            )
+            .unwrap();
+
+        let vertex_buffer_mem_requirements =
+            vk_device.get_buffer_memory_requirements(vertex_buffer);
+        let memory_type_index = (0..vk_memory_properties.memory_type_count)
+            .into_iter()
+            .find(|i| {
+                (vertex_buffer_mem_requirements.memory_type_bits & (1 << i) != 0)
+                    && vk_memory_properties.memory_types[*i as usize]
+                        .property_flags
+                        .contains(
+                            vk::MemoryPropertyFlags::HOST_VISIBLE
+                                | vk::MemoryPropertyFlags::HOST_COHERENT,
+                        )
+            })
+            .unwrap();
+
+        let vertex_memory = vk_device
+            .allocate_memory(
+                &vk::MemoryAllocateInfo::builder()
+                    .allocation_size(vertex_buffer_mem_requirements.size)
+                    .memory_type_index(memory_type_index),
+                None,
+            )
+            .unwrap();
+
+        // Setup uniform buffers
+        let uniform_buffer_size = mem::size_of::<CameraTransform>() * 2;
+
+        let uniform_buffers: Vec<_> = (0..PIPELINE_DEPTH)
+            .map(|_| {
+                let uniform_buffer = vk_device
+                    .create_buffer(
+                        &vk::BufferCreateInfo::builder()
+                            .size(uniform_buffer_size as u64)
+                            .usage(vk::BufferUsageFlags::UNIFORM_BUFFER)
+                            .sharing_mode(vk::SharingMode::EXCLUSIVE),
+                        None,
+                    )
+                    .unwrap();
+                let uniform_buffer_mem_requirements =
+                    vk_device.get_buffer_memory_requirements(uniform_buffer);
+
+                let memory_type_index = (0..vk_memory_properties.memory_type_count)
+                    .into_iter()
+                    .find(|i| {
+                        (uniform_buffer_mem_requirements.memory_type_bits & (1 << i) != 0)
+                            && vk_memory_properties.memory_types[*i as usize]
+                                .property_flags
+                                .contains(
+                                    vk::MemoryPropertyFlags::HOST_VISIBLE
+                                        | vk::MemoryPropertyFlags::HOST_COHERENT,
+                                )
+                    })
+                    .unwrap();
+                let uniform_memory = vk_device
+                    .allocate_memory(
+                        &vk::MemoryAllocateInfo::builder()
+                            .allocation_size(uniform_buffer_mem_requirements.size)
+                            .memory_type_index(memory_type_index),
+                        None,
+                    )
+                    .unwrap();
+
+                vk_device
+                    .bind_buffer_memory(uniform_buffer, uniform_memory, 0)
+                    .unwrap();
+
+                let data_ptr = vk_device
+                    .map_memory(
+                        uniform_memory,
+                        0,
+                        uniform_buffer_mem_requirements.size,
+                        vk::MemoryMapFlags::empty(),
+                    )
+                    .unwrap() as *mut CameraTransform;
+                (
+                    uniform_buffer,
+                    uniform_memory,
+                    data_ptr,
+                    uniform_buffer_mem_requirements,
+                )
+            })
+            .collect();
+
+        let descriptor_pool = vk_device
+            .create_descriptor_pool(
+                &vk::DescriptorPoolCreateInfo::builder()
+                    .pool_sizes(&[vk::DescriptorPoolSize::builder()
+                        .ty(vk::DescriptorType::UNIFORM_BUFFER)
+                        .descriptor_count(PIPELINE_DEPTH as _)
+                        .build()])
+                    .max_sets(PIPELINE_DEPTH),
+                None,
+            )
+            .unwrap();
+
+        let descriptor_sets = vk_device
+            .allocate_descriptor_sets(
+                &vk::DescriptorSetAllocateInfo::builder()
+                    .descriptor_pool(descriptor_pool)
+                    .set_layouts(&[descriptor_layout; PIPELINE_DEPTH as _]),
+            )
+            .unwrap();
+
+        for (i, descriptor_set) in descriptor_sets.iter().enumerate() {
+            vk_device.update_descriptor_sets(
+                &[vk::WriteDescriptorSet::builder()
+                    .dst_set(*descriptor_set)
+                    .dst_binding(0)
+                    .dst_array_element(0)
+                    .descriptor_type(vk::DescriptorType::UNIFORM_BUFFER)
+                    .buffer_info(&[*vk::DescriptorBufferInfo::builder()
+                        .buffer(uniform_buffers[i].0)
+                        .offset(0)
+                        .range(uniform_buffers[i].3.size)])
+                    .build()],
+                &[],
+            )
+        }
+
+        // Copy vertex data into vertex buffer
+        {
+            vk_device
+                .bind_buffer_memory(vertex_buffer, vertex_memory, 0)
+                .unwrap();
+            let data_ptr = vk_device
+                .map_memory(
+                    vertex_memory,
+                    0,
+                    vertex_buffer_size as u64,
+                    vk::MemoryMapFlags::empty(),
+                )
+                .unwrap();
+            let mut align = ash::util::Align::new(
+                data_ptr,
+                vertex_buffer_mem_requirements.alignment,
+                vertex_buffer_mem_requirements.size,
+            );
+            align.copy_from_slice(&vertices);
+        }
 
         let cmd_pool = vk_device
             .create_command_pool(
@@ -507,6 +719,70 @@ fn main() {
                     width: views[0].recommended_image_rect_width,
                     height: views[0].recommended_image_rect_height,
                 };
+                let depth_image = vk_device
+                    .create_image(
+                        &vk::ImageCreateInfo::builder()
+                            .image_type(vk::ImageType::TYPE_2D)
+                            .extent(vk::Extent3D {
+                                width: resolution.width,
+                                height: resolution.height,
+                                depth: 1,
+                            })
+                            .mip_levels(1)
+                            .array_layers(VIEW_COUNT)
+                            .format(DEPTH_FORMAT)
+                            .initial_layout(vk::ImageLayout::UNDEFINED)
+                            .usage(vk::ImageUsageFlags::DEPTH_STENCIL_ATTACHMENT)
+                            .sharing_mode(vk::SharingMode::EXCLUSIVE)
+                            .samples(vk::SampleCountFlags::TYPE_1)
+                            .flags(vk::ImageCreateFlags::empty()),
+                        None,
+                    )
+                    .unwrap();
+
+                let depth_image_mem_requirements =
+                    vk_device.get_image_memory_requirements(depth_image);
+
+                let memory_type_index = (0..vk_memory_properties.memory_type_count)
+                    .into_iter()
+                    .find(|i| {
+                        (depth_image_mem_requirements.memory_type_bits & (1 << i) != 0)
+                            && vk_memory_properties.memory_types[*i as usize]
+                                .property_flags
+                                .contains(vk::MemoryPropertyFlags::DEVICE_LOCAL)
+                    })
+                    .unwrap();
+
+                let depth_image_memory = vk_device
+                    .allocate_memory(
+                        &vk::MemoryAllocateInfo::builder()
+                            .allocation_size(depth_image_mem_requirements.size)
+                            .memory_type_index(memory_type_index),
+                        None,
+                    )
+                    .unwrap();
+                vk_device
+                    .bind_image_memory(depth_image, depth_image_memory, 0)
+                    .unwrap();
+                // create image view
+                let depth_image_view = vk_device
+                    .create_image_view(
+                        &vk::ImageViewCreateInfo::builder()
+                            .image(depth_image)
+                            .view_type(vk::ImageViewType::TYPE_2D_ARRAY)
+                            .format(DEPTH_FORMAT)
+                            .subresource_range(
+                                vk::ImageSubresourceRange::builder()
+                                    .aspect_mask(vk::ImageAspectFlags::DEPTH)
+                                    .base_mip_level(0)
+                                    .level_count(1)
+                                    .base_array_layer(0)
+                                    .layer_count(VIEW_COUNT)
+                                    .build(),
+                            ),
+                        None,
+                    )
+                    .unwrap();
                 let handle = session
                     .create_swapchain(&xr::SwapchainCreateInfo {
                         create_flags: xr::SwapchainCreateFlags::EMPTY,
@@ -531,6 +807,7 @@ fn main() {
                 Swapchain {
                     handle,
                     resolution,
+                    depth: (depth_image, depth_image_memory, depth_image_view),
                     buffers: images
                         .into_iter()
                         .map(|color_image| {
@@ -557,7 +834,7 @@ fn main() {
                                         .render_pass(render_pass)
                                         .width(resolution.width)
                                         .height(resolution.height)
-                                        .attachments(&[color])
+                                        .attachments(&[color, depth_image_view])
                                         .layers(1), // Multiview handles addressing multiple layers
                                     None,
                                 )
@@ -599,11 +876,19 @@ fn main() {
                         offset: vk::Offset2D::default(),
                         extent: swapchain.resolution,
                     })
-                    .clear_values(&[vk::ClearValue {
-                        color: vk::ClearColorValue {
-                            float32: [0.0, 0.0, 0.0, 1.0],
+                    .clear_values(&[
+                        vk::ClearValue {
+                            color: vk::ClearColorValue {
+                                float32: [0.0, 0.0, 0.0, 1.0],
+                            },
                         },
-                    }]),
+                        vk::ClearValue {
+                            depth_stencil: vk::ClearDepthStencilValue {
+                                depth: 1.0,
+                                stencil: 0,
+                            },
+                        },
+                    ]),
                 vk::SubpassContents::INLINE,
             );
 
@@ -626,40 +911,52 @@ fn main() {
             // automatically broadcast operations to all views. Shaders can use `gl_ViewIndex` to
             // e.g. select the correct view matrix.
             vk_device.cmd_bind_pipeline(cmd, vk::PipelineBindPoint::GRAPHICS, pipeline);
-            vk_device.cmd_draw(cmd, 3, 1, 0, 0);
-
-            vk_device.cmd_end_render_pass(cmd);
-            vk_device.end_command_buffer(cmd).unwrap();
+            vk_device.cmd_bind_vertex_buffers(cmd, 0, &[vertex_buffer], &[0]);
+            vk_device.cmd_bind_descriptor_sets(
+                cmd,
+                vk::PipelineBindPoint::GRAPHICS,
+                pipeline_layout,
+                0,
+                &[descriptor_sets[frame]],
+                &[],
+            );
 
             session.sync_actions(&[(&action_set).into()]).unwrap();
 
+            let draw = |transform| {
+                vk_device.cmd_push_constants(
+                    cmd,
+                    pipeline_layout,
+                    vk::ShaderStageFlags::VERTEX,
+                    0,
+                    std::slice::from_raw_parts(
+                        &transform as *const _ as _,
+                        mem::size_of_val(&transform),
+                    ),
+                );
+                vk_device.cmd_draw(cmd, vertices.len() as u32, 1, 0, 0);
+            };
+
             // Find where our controllers are located in the Stage space
-            let right_location = right_space
-                .locate(&stage, xr_frame_state.predicted_display_time)
-                .unwrap();
-
-            let left_location = left_space
-                .locate(&stage, xr_frame_state.predicted_display_time)
-                .unwrap();
-
-            if left_action.is_active(&session, xr::Path::NULL).unwrap() {
-                print!(
-                    "Left Hand: ({:0<12},{:0<12},{:0<12}), ",
-                    left_location.pose.position.x,
-                    left_location.pose.position.y,
-                    left_location.pose.position.z
-                );
+            if let (Ok(right_location), Ok(true)) = (
+                right_space.locate(&stage, xr_frame_state.predicted_display_time),
+                right_action.is_active(&session, xr::Path::NULL),
+            ) {
+                draw(ModelTransform::pose(&right_location.pose));
             }
 
-            if right_action.is_active(&session, xr::Path::NULL).unwrap() {
-                print!(
-                    "Right Hand: ({:0<12},{:0<12},{:0<12})",
-                    right_location.pose.position.x,
-                    right_location.pose.position.y,
-                    right_location.pose.position.z
-                );
+            if let (Ok(left_location), Ok(true)) = (
+                left_space.locate(&stage, xr_frame_state.predicted_display_time),
+                left_action.is_active(&session, xr::Path::NULL),
+            ) {
+                draw(ModelTransform::pose(&left_location.pose));
             }
-            println!();
+
+            let origin_transform = ModelTransform::new();
+            draw(origin_transform);
+
+            vk_device.cmd_end_render_pass(cmd);
+            vk_device.end_command_buffer(cmd).unwrap();
 
             // Fetch the view transforms. To minimize latency, we intentionally do this *after*
             // recording commands to render the scene, i.e. at the last possible moment before
@@ -669,6 +966,13 @@ fn main() {
             let (_, views) = session
                 .locate_views(VIEW_TYPE, xr_frame_state.predicted_display_time, &stage)
                 .unwrap();
+
+            let transforms: Vec<_> = views.iter().map(|v| CameraTransform::new(v)).collect();
+
+            // Copy the view transforms to the GPU
+            uniform_buffers[frame]
+                .2
+                .copy_from_nonoverlapping(transforms.as_ptr(), transforms.len());
 
             // Submit commands to the GPU, then tell OpenXR we're done with our part.
             vk_device
@@ -758,11 +1062,16 @@ fn main() {
 }
 
 pub const COLOR_FORMAT: vk::Format = vk::Format::B8G8R8A8_SRGB;
+pub const DEPTH_FORMAT: vk::Format = vk::Format::D32_SFLOAT;
 pub const VIEW_COUNT: u32 = 2;
 const VIEW_TYPE: xr::ViewConfigurationType = xr::ViewConfigurationType::PRIMARY_STEREO;
 
+/// Maximum number of frames in flight
+const PIPELINE_DEPTH: u32 = 2;
+
 struct Swapchain {
     handle: xr::Swapchain<xr::Vulkan>,
+    depth: (vk::Image, vk::DeviceMemory, vk::ImageView),
     buffers: Vec<Framebuffer>,
     resolution: vk::Extent2D,
 }
@@ -772,5 +1081,99 @@ struct Framebuffer {
     color: vk::ImageView,
 }
 
-/// Maximum number of frames in flight
-const PIPELINE_DEPTH: u32 = 2;
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct Vertex {
+    pos: [f32; 3],
+    color: [f32; 3],
+}
+
+impl Vertex {
+    pub fn cube(color: [f32; 3]) -> impl Iterator<Item = Self> {
+        [1, 0, 3, 2, 6, 0, 4, 1, 5, 3, 7, 6, 5, 4]
+            .iter()
+            .map(move |i| Self {
+                pos: [(i & 1) as f32, ((i >> 1) & 1) as f32, ((i >> 2) & 1) as f32],
+                color: color.clone(),
+            })
+    }
+    fn get_binding_description() -> vk::VertexInputBindingDescription {
+        vk::VertexInputBindingDescription::builder()
+            .binding(0)
+            .stride(mem::size_of::<Self>() as u32)
+            .input_rate(vk::VertexInputRate::VERTEX)
+            .build()
+    }
+
+    fn get_attribute_descriptions() -> [vk::VertexInputAttributeDescription; 2] {
+        let position_desc = vk::VertexInputAttributeDescription::builder()
+            .binding(0)
+            .location(0)
+            .format(vk::Format::R32G32B32_SFLOAT)
+            .offset(0)
+            .build();
+        let color_desc = vk::VertexInputAttributeDescription::builder()
+            .binding(0)
+            .location(1)
+            .format(vk::Format::R32G32B32_SFLOAT)
+            .offset(mem::size_of::<[f32; 3]>() as u32)
+            .build();
+        [position_desc, color_desc]
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+#[repr(C)]
+struct ModelTransform {
+    model: Matrix4<f32>,
+}
+
+impl ModelTransform {
+    fn pose(p: &openxr::Posef) -> Self {
+        let pos = Vector3::from(mint::Vector3::from(p.position));
+        let orientation = Quaternion::from(mint::Quaternion::from(p.orientation));
+        Self {
+            model: Matrix4::from_translation(-pos)
+                * Matrix4::from(orientation)
+                * Matrix4::from_scale(0.1)
+                * Matrix4::from_translation(Vector3::new(-0.5, -0.5, -0.5)),
+        }
+    }
+    fn new() -> Self {
+        Self {
+            model: Matrix4::from_scale(-1.0),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+#[repr(C)]
+struct CameraTransform {
+    view_project: Matrix4<f32>,
+}
+
+impl CameraTransform {
+    fn new(v: &openxr::View) -> Self {
+        let orientation = Quaternion::from(mint::Quaternion::from(v.pose.orientation));
+        let basis = cgmath::Basis3::from_quaternion(&orientation);
+
+        let (dir, up) = (basis.as_ref().z, basis.as_ref().y);
+        let eye = Vector3::from(mint::Vector3::from(v.pose.position));
+        let view = Matrix4::look_to_rh(Point3::new(0.0, 0.0, 0.0) - eye, dir, up);
+
+        use cgmath::Rad;
+        let near = 0.01;
+        let project = cgmath::Perspective {
+            left: Rad(v.fov.angle_left).tan() * near,
+            right: Rad(v.fov.angle_right).tan() * near,
+            bottom: Rad(v.fov.angle_down).tan() * near,
+            top: Rad(v.fov.angle_up).tan() * near,
+            near,
+            far: 100.0,
+        };
+
+        Self {
+            view_project: Matrix4::from(project) * view,
+        }
+    }
+}
