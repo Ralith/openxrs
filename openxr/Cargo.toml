@@ -28,6 +28,13 @@ libloading = { version = "0.7", optional = true }
 [dev-dependencies]
 ash = "0.31"
 ctrlc = "3.1.5"
+cgmath = { version = "0.18", features = ["mint"] }
+# We can't have a dev dependency with the same name as a feature
+mint_dev = { package = "mint", version = "0.5" }
+
+[[example]]
+name = "vulkan"
+required-features = ["mint"]
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["profileapi"] }
