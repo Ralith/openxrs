@@ -1,7 +1,8 @@
 #[cfg(feature = "loaded")]
 use libloading::Library;
 use std::{
-    ffi::{CStr, CString},
+    borrow::Cow,
+    ffi::{c_void, CStr, CString},
     mem, ptr,
     sync::Arc,
 };
@@ -116,6 +117,8 @@ impl Entry {
         &self,
         app_info: &ApplicationInfo,
         required_extensions: &ExtensionSet,
+        other_extensions: Option<Vec<Cow<[u8]>>>,
+        next: Option<*const c_void>,
         layers: &[&str],
     ) -> Result<Instance> {
         assert!(
@@ -128,7 +131,12 @@ impl Entry {
             "engine names are limited to {} bytes",
             sys::MAX_ENGINE_NAME_SIZE
         );
-        let ext_names = required_extensions.names();
+        let mut ext_names = required_extensions.names();
+
+        if let Some(other_extensions) = other_extensions {
+            ext_names.extend(other_extensions);
+        }
+
         let ext_ptrs = ext_names
             .iter()
             .map(|x| x.as_ptr() as *const _)
@@ -143,7 +151,7 @@ impl Entry {
             .collect::<Vec<_>>();
         let mut info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
-            next: ptr::null(),
+            next: next.unwrap_or(ptr::null()),
             create_flags: Default::default(),
             application_info: sys::ApplicationInfo {
                 application_name: [0; sys::MAX_APPLICATION_NAME_SIZE],
