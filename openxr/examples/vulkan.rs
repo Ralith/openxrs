@@ -158,7 +158,7 @@ fn main() {
                         .queue_family_index(queue_family_index)
                         .queue_priorities(&[1.0])
                         .build()])
-                    .push_next(&mut vk::PhysicalDeviceVulkan11Features {
+                    .push_next(&mut vk::PhysicalDeviceMultiviewFeatures {
                         multiview: vk::TRUE,
                         ..Default::default()
                     }) as *const _ as *const _,
