@@ -25,10 +25,11 @@ The crate exposes a number of cargo features:
 - `loaded` allows access to a manually identified OpenXR
   implementation at run time. This allows for cases where a built-in
   Khronos loader, normally responsible for that task, cannot be used.
-- `linked` enables access to an OpenXR implementation linked in by the
-  application. As opposed to `static`, this is useful when the target
-  environment guarantees the presence of an OpenXR implementation or
-  loader at a specific location, making a built-in loader redundant.
+- `linked` attempts to link to an OpenXR loader in the build
+  environment. This is appropriate for target environments like
+  desktop Linux which guarantee the presence of an OpenXR
+  implementation or loader at a specific location, making a built-in
+  loader redundant.
 - `mint` exposes `From` impls for converting to and from
   [mint](https://github.com/kvark/mint) types where appropriate.
 
