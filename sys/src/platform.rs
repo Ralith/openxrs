@@ -3,7 +3,7 @@
 //! Cast to these from your bindings of choice.
 #![allow(non_camel_case_types)]
 
-use std::os::raw::{c_char, c_ulong, c_void};
+use std::os::raw::{c_char, c_uint, c_ulong, c_void};
 
 // Vulkan
 pub type VkInstance = *const c_void;
@@ -15,6 +15,10 @@ pub type VkInstanceCreateInfo = c_void;
 pub type VkDeviceCreateInfo = c_void;
 pub type VkAllocationCallbacks = c_void;
 pub type VkResult = i32;
+pub type VkSamplerMipmapMode = i32;
+pub type VkSamplerAddressMode = i32;
+pub type VkComponentSwizzle = i32;
+pub type VkFilter = i32;
 pub type VkGetInstanceProcAddr =
     unsafe extern "system" fn(VkInstance, *const c_char) -> Option<unsafe extern "system" fn()>;
 
@@ -63,5 +67,6 @@ pub use winapi::{
 pub type EGLConfig = *mut c_void;
 pub type EGLContext = *mut c_void;
 pub type EGLDisplay = *mut c_void;
+pub type EGLenum = c_uint;
 pub type PFNEGLGETPROCADDRESSPROC =
     unsafe extern "system" fn(*const c_char) -> Option<unsafe extern "system" fn()>;

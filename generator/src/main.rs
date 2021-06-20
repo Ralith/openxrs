@@ -72,7 +72,15 @@ impl Parser {
             commands: IndexMap::new(),
             cmd_aliases: Vec::new(),
             extensions: IndexMap::new(),
-            disabled_exts: HashSet::new(),
+            // TODO: Handle these extensions
+            disabled_exts: [
+                "XR_MSFT_scene_understanding",
+                "XR_MSFT_scene_understanding_serialization",
+            ]
+            .iter()
+            .copied()
+            .map(Into::into)
+            .collect(),
             api_version: None,
             base_headers: IndexMap::new(),
         }
@@ -1169,7 +1177,7 @@ impl Parser {
             use std::fmt;
             use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};
-            use libc::timespec;
+            use libc::{timespec, wchar_t};
 
             use crate::support::*;
             use crate::platform::*;
@@ -1200,7 +1208,7 @@ impl Parser {
 
             #(#ext_consts)*
 
-            #[cfg(feature = "prototypes")]
+            #[cfg(feature = "linked")]
             extern "system" {
                 #(#protos)*
             }
@@ -1234,6 +1242,9 @@ impl Parser {
         let mut ext_set_inits = Vec::new();
         for (tag_name, tag) in &self.extensions {
             for ext in &tag.extensions {
+                if self.disabled_exts.contains(&ext.name) {
+                    continue;
+                }
                 let (pfns, pfn_inits) = ext.commands.iter().map(|cmd| {
                     let pfn_ident = xr_command_name(cmd);
                     let camel_name = pfn_ident.to_string();
@@ -1335,6 +1346,12 @@ impl Parser {
             .structs
             .iter()
             .filter_map(|(name, s)| {
+                if s.extension
+                    .as_ref()
+                    .map_or(false, |ext| self.disabled_exts.contains(&*ext))
+                {
+                    return None;
+                }
                 if self.is_simple_struct(s) {
                     Some(&name[..])
                 } else {
@@ -1431,6 +1448,7 @@ impl Parser {
             use std::borrow::Cow;
             use std::mem::MaybeUninit;
             pub use sys::{#(#reexports),*};
+            pub use sys::platform::{EGLenum, VkFilter, VkSamplerMipmapMode, VkSamplerAddressMode, VkComponentSwizzle};
 
             use crate::*;
 
@@ -2143,6 +2161,7 @@ fn conditions(name: &str, ext: Option<&str>) -> TokenStream {
     if name.contains("win32")
         || name.contains("d3d")
         || ext == Some("XR_MSFT_holographic_window_attachment")
+        || ext == Some("XR_MSFT_perception_anchor_interop")
     {
         conditions.push(quote! { windows });
     }

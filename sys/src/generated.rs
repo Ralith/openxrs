@@ -7,11 +7,11 @@
 use crate::platform::*;
 use crate::support::*;
 use crate::*;
-use libc::timespec;
+use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 12u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 17u32);
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -29,6 +29,7 @@ pub const MAX_LOCALIZED_ACTION_SET_NAME_SIZE: usize = 128usize;
 pub const MAX_LOCALIZED_ACTION_NAME_SIZE: usize = 128usize;
 pub const MIN_COMPOSITION_LAYERS_SUPPORTED: usize = 16usize;
 pub const MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT: usize = 64usize;
+pub const MAX_AUDIO_DEVICE_STR_SIZE_OCULUS: usize = 128usize;
 #[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -150,7 +151,12 @@ impl StructureType {
     pub const CONTROLLER_MODEL_STATE_MSFT: StructureType = Self(1000055004i32);
     pub const VIEW_CONFIGURATION_VIEW_FOV_EPIC: StructureType = Self(1000059000i32);
     pub const HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT: StructureType = Self(1000063000i32);
+    pub const COMPOSITION_LAYER_REPROJECTION_INFO_MSFT: StructureType = Self(1000066000i32);
+    pub const COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT: StructureType =
+        Self(1000066001i32);
+    pub const ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB: StructureType = Self(1000070000i32);
     pub const INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE: StructureType = Self(1000079000i32);
+    pub const HAND_JOINTS_MOTION_RANGE_INFO_EXT: StructureType = Self(1000080000i32);
     pub const LOADER_INIT_INFO_ANDROID_KHR: StructureType = Self(1000089000i32);
     pub const VULKAN_INSTANCE_CREATE_INFO_KHR: StructureType = Self(1000090000i32);
     pub const VULKAN_DEVICE_CREATE_INFO_KHR: StructureType = Self(1000090001i32);
@@ -160,6 +166,37 @@ impl StructureType {
     pub const GRAPHICS_REQUIREMENTS_VULKAN2_KHR: StructureType =
         Self::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
     pub const COMPOSITION_LAYER_EQUIRECT2_KHR: StructureType = Self(1000091000i32);
+    pub const SCENE_OBSERVER_CREATE_INFO_MSFT: StructureType = Self(1000097000i32);
+    pub const SCENE_CREATE_INFO_MSFT: StructureType = Self(1000097001i32);
+    pub const NEW_SCENE_COMPUTE_INFO_MSFT: StructureType = Self(1000097002i32);
+    pub const VISUAL_MESH_COMPUTE_LOD_INFO_MSFT: StructureType = Self(1000097003i32);
+    pub const SCENE_COMPONENTS_MSFT: StructureType = Self(1000097004i32);
+    pub const SCENE_COMPONENTS_GET_INFO_MSFT: StructureType = Self(1000097005i32);
+    pub const SCENE_COMPONENT_LOCATIONS_MSFT: StructureType = Self(1000097006i32);
+    pub const SCENE_COMPONENTS_LOCATE_INFO_MSFT: StructureType = Self(1000097007i32);
+    pub const SCENE_OBJECTS_MSFT: StructureType = Self(1000097008i32);
+    pub const SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT: StructureType = Self(1000097009i32);
+    pub const SCENE_OBJECT_TYPES_FILTER_INFO_MSFT: StructureType = Self(1000097010i32);
+    pub const SCENE_PLANES_MSFT: StructureType = Self(1000097011i32);
+    pub const SCENE_PLANE_ALIGNMENT_FILTER_INFO_MSFT: StructureType = Self(1000097012i32);
+    pub const SCENE_MESHES_MSFT: StructureType = Self(1000097013i32);
+    pub const SCENE_MESH_BUFFERS_GET_INFO_MSFT: StructureType = Self(1000097014i32);
+    pub const SCENE_MESH_BUFFERS_MSFT: StructureType = Self(1000097015i32);
+    pub const SCENE_MESH_VERTEX_BUFFER_MSFT: StructureType = Self(1000097016i32);
+    pub const SCENE_MESH_INDICES_UINT32_MSFT: StructureType = Self(1000097017i32);
+    pub const SCENE_MESH_INDICES_UINT16_MSFT: StructureType = Self(1000097018i32);
+    pub const SERIALIZED_SCENE_FRAGMENT_DATA_GET_INFO_MSFT: StructureType = Self(1000098000i32);
+    pub const SCENE_DESERIALIZE_INFO_MSFT: StructureType = Self(1000098001i32);
+    pub const EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB: StructureType = Self(1000101000i32);
+    pub const SYSTEM_COLOR_SPACE_PROPERTIES_FB: StructureType = Self(1000108000i32);
+    pub const BINDING_MODIFICATIONS_KHR: StructureType = Self(1000120000i32);
+    pub const VIEW_LOCATE_FOVEATED_RENDERING_VARJO: StructureType = Self(1000121000i32);
+    pub const FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO: StructureType = Self(1000121001i32);
+    pub const SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO: StructureType = Self(1000121002i32);
+    pub const COMPOSITION_LAYER_DEPTH_TEST_VARJO: StructureType = Self(1000122000i32);
+    pub const SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB: StructureType = Self(1000161000i32);
+    pub const SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB: StructureType = Self(1000162000i32);
+    pub const SWAPCHAIN_STATE_SAMPLER_VULKAN_FB: StructureType = Self(1000163000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -336,9 +373,19 @@ impl fmt::Debug for StructureType {
             Self::CONTROLLER_MODEL_STATE_MSFT => Some("CONTROLLER_MODEL_STATE_MSFT"),
             Self::VIEW_CONFIGURATION_VIEW_FOV_EPIC => Some("VIEW_CONFIGURATION_VIEW_FOV_EPIC"),
             Self::HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT => Some("HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT"),
+            Self::COMPOSITION_LAYER_REPROJECTION_INFO_MSFT => {
+                Some("COMPOSITION_LAYER_REPROJECTION_INFO_MSFT")
+            }
+            Self::COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT => {
+                Some("COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT")
+            }
+            Self::ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB => {
+                Some("ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB")
+            }
             Self::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE => {
                 Some("INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE")
             }
+            Self::HAND_JOINTS_MOTION_RANGE_INFO_EXT => Some("HAND_JOINTS_MOTION_RANGE_INFO_EXT"),
             Self::LOADER_INIT_INFO_ANDROID_KHR => Some("LOADER_INIT_INFO_ANDROID_KHR"),
             Self::VULKAN_INSTANCE_CREATE_INFO_KHR => Some("VULKAN_INSTANCE_CREATE_INFO_KHR"),
             Self::VULKAN_DEVICE_CREATE_INFO_KHR => Some("VULKAN_DEVICE_CREATE_INFO_KHR"),
@@ -346,6 +393,57 @@ impl fmt::Debug for StructureType {
                 Some("VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR")
             }
             Self::COMPOSITION_LAYER_EQUIRECT2_KHR => Some("COMPOSITION_LAYER_EQUIRECT2_KHR"),
+            Self::SCENE_OBSERVER_CREATE_INFO_MSFT => Some("SCENE_OBSERVER_CREATE_INFO_MSFT"),
+            Self::SCENE_CREATE_INFO_MSFT => Some("SCENE_CREATE_INFO_MSFT"),
+            Self::NEW_SCENE_COMPUTE_INFO_MSFT => Some("NEW_SCENE_COMPUTE_INFO_MSFT"),
+            Self::VISUAL_MESH_COMPUTE_LOD_INFO_MSFT => Some("VISUAL_MESH_COMPUTE_LOD_INFO_MSFT"),
+            Self::SCENE_COMPONENTS_MSFT => Some("SCENE_COMPONENTS_MSFT"),
+            Self::SCENE_COMPONENTS_GET_INFO_MSFT => Some("SCENE_COMPONENTS_GET_INFO_MSFT"),
+            Self::SCENE_COMPONENT_LOCATIONS_MSFT => Some("SCENE_COMPONENT_LOCATIONS_MSFT"),
+            Self::SCENE_COMPONENTS_LOCATE_INFO_MSFT => Some("SCENE_COMPONENTS_LOCATE_INFO_MSFT"),
+            Self::SCENE_OBJECTS_MSFT => Some("SCENE_OBJECTS_MSFT"),
+            Self::SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT => {
+                Some("SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT")
+            }
+            Self::SCENE_OBJECT_TYPES_FILTER_INFO_MSFT => {
+                Some("SCENE_OBJECT_TYPES_FILTER_INFO_MSFT")
+            }
+            Self::SCENE_PLANES_MSFT => Some("SCENE_PLANES_MSFT"),
+            Self::SCENE_PLANE_ALIGNMENT_FILTER_INFO_MSFT => {
+                Some("SCENE_PLANE_ALIGNMENT_FILTER_INFO_MSFT")
+            }
+            Self::SCENE_MESHES_MSFT => Some("SCENE_MESHES_MSFT"),
+            Self::SCENE_MESH_BUFFERS_GET_INFO_MSFT => Some("SCENE_MESH_BUFFERS_GET_INFO_MSFT"),
+            Self::SCENE_MESH_BUFFERS_MSFT => Some("SCENE_MESH_BUFFERS_MSFT"),
+            Self::SCENE_MESH_VERTEX_BUFFER_MSFT => Some("SCENE_MESH_VERTEX_BUFFER_MSFT"),
+            Self::SCENE_MESH_INDICES_UINT32_MSFT => Some("SCENE_MESH_INDICES_UINT32_MSFT"),
+            Self::SCENE_MESH_INDICES_UINT16_MSFT => Some("SCENE_MESH_INDICES_UINT16_MSFT"),
+            Self::SERIALIZED_SCENE_FRAGMENT_DATA_GET_INFO_MSFT => {
+                Some("SERIALIZED_SCENE_FRAGMENT_DATA_GET_INFO_MSFT")
+            }
+            Self::SCENE_DESERIALIZE_INFO_MSFT => Some("SCENE_DESERIALIZE_INFO_MSFT"),
+            Self::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB => {
+                Some("EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB")
+            }
+            Self::SYSTEM_COLOR_SPACE_PROPERTIES_FB => Some("SYSTEM_COLOR_SPACE_PROPERTIES_FB"),
+            Self::BINDING_MODIFICATIONS_KHR => Some("BINDING_MODIFICATIONS_KHR"),
+            Self::VIEW_LOCATE_FOVEATED_RENDERING_VARJO => {
+                Some("VIEW_LOCATE_FOVEATED_RENDERING_VARJO")
+            }
+            Self::FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO => {
+                Some("FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO")
+            }
+            Self::SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO => {
+                Some("SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO")
+            }
+            Self::COMPOSITION_LAYER_DEPTH_TEST_VARJO => Some("COMPOSITION_LAYER_DEPTH_TEST_VARJO"),
+            Self::SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB => {
+                Some("SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB")
+            }
+            Self::SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB => {
+                Some("SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB")
+            }
+            Self::SWAPCHAIN_STATE_SAMPLER_VULKAN_FB => Some("SWAPCHAIN_STATE_SAMPLER_VULKAN_FB"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -464,6 +562,8 @@ impl Result {
     pub const ERROR_LOCALIZED_NAME_INVALID: Result = Self(-49i32);
     #[doc = "The xrGetGraphicsRequirements* call was not made before calling xrCreateSession."]
     pub const ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING: Result = Self(-50i32);
+    #[doc = "The loader was unable to find or load a runtime."]
+    pub const ERROR_RUNTIME_UNAVAILABLE: Result = Self(-51i32);
     #[doc = "xrSetAndroidApplicationThreadKHR failed as thread id is invalid."]
     pub const ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR: Result = Self(-1000003000i32);
     #[doc = "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority."]
@@ -475,6 +575,24 @@ impl Result {
         Self(-1000053000i32);
     #[doc = "The controller model key is invalid."]
     pub const ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT: Result = Self(-1000055000i32);
+    #[doc = "The reprojection mode is not supported."]
+    pub const ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT: Result = Self(-1000066000i32);
+    #[doc = "Compute new scene not completed."]
+    pub const ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT: Result = Self(-1000097000i32);
+    #[doc = "Scene component id invalid."]
+    pub const ERROR_SCENE_COMPONENT_ID_INVALID_MSFT: Result = Self(-1000097001i32);
+    #[doc = "Scene component type mismatch."]
+    pub const ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT: Result = Self(-1000097002i32);
+    #[doc = "Scene mesh buffer id invalid."]
+    pub const ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT: Result = Self(-1000097003i32);
+    #[doc = "Scene compute feature incompatible."]
+    pub const ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT: Result = Self(-1000097004i32);
+    #[doc = "Scene compute consistency mismatch."]
+    pub const ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT: Result = Self(-1000097005i32);
+    #[doc = "The display refresh rate is not supported by the platform."]
+    pub const ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB: Result = Self(-1000101000i32);
+    #[doc = "The color space is not supported by the runtime."]
+    pub const ERROR_COLOR_SPACE_UNSUPPORTED_FB: Result = Self(-1000108000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -545,6 +663,7 @@ impl fmt::Debug for Result {
             Self::ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => {
                 Some("ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING")
             }
+            Self::ERROR_RUNTIME_UNAVAILABLE => Some("ERROR_RUNTIME_UNAVAILABLE"),
             Self::ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => {
                 Some("ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR")
             }
@@ -560,6 +679,31 @@ impl fmt::Debug for Result {
             Self::ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => {
                 Some("ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT")
             }
+            Self::ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => {
+                Some("ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT")
+            }
+            Self::ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => {
+                Some("ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT")
+            }
+            Self::ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => {
+                Some("ERROR_SCENE_COMPONENT_ID_INVALID_MSFT")
+            }
+            Self::ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => {
+                Some("ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT")
+            }
+            Self::ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => {
+                Some("ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT")
+            }
+            Self::ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => {
+                Some("ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT")
+            }
+            Self::ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => {
+                Some("ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT")
+            }
+            Self::ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => {
+                Some("ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB")
+            }
+            Self::ERROR_COLOR_SPACE_UNSUPPORTED_FB => Some("ERROR_COLOR_SPACE_UNSUPPORTED_FB"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -567,7 +711,7 @@ impl fmt::Debug for Result {
 }
 impl fmt::Display for Result {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let reason = match * self { Self :: SUCCESS => Some ( "function successfully completed" ) , Self :: TIMEOUT_EXPIRED => Some ( "the specified timeout time occurred before the operation could complete" ) , Self :: SESSION_LOSS_PENDING => Some ( "the session will be lost soon" ) , Self :: EVENT_UNAVAILABLE => Some ( "no event was available" ) , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ( "the space's bounds are not known at the moment" ) , Self :: SESSION_NOT_FOCUSED => Some ( "the session is not in the focused state" ) , Self :: FRAME_DISCARDED => Some ( "a frame has been discarded from composition" ) , Self :: ERROR_VALIDATION_FAILURE => Some ( "the function usage was invalid in some way" ) , Self :: ERROR_RUNTIME_FAILURE => Some ( "the runtime failed to handle the function in an unexpected way that is not covered by another error result" ) , Self :: ERROR_OUT_OF_MEMORY => Some ( "a memory allocation has failed" ) , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ( "the runtime does not support the requested API version" ) , Self :: ERROR_INITIALIZATION_FAILED => Some ( "initialization of object could not be completed" ) , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ( "the requested function was not found or is otherwise unsupported" ) , Self :: ERROR_FEATURE_UNSUPPORTED => Some ( "the requested feature is not supported" ) , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ( "a requested extension is not supported" ) , Self :: ERROR_LIMIT_REACHED => Some ( "the runtime supports no more of the requested resource" ) , Self :: ERROR_SIZE_INSUFFICIENT => Some ( "the supplied size was smaller than required" ) , Self :: ERROR_HANDLE_INVALID => Some ( "a supplied object handle was invalid" ) , Self :: ERROR_INSTANCE_LOST => Some ( "the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SESSION_RUNNING => Some ( "the session is already running" ) , Self :: ERROR_SESSION_NOT_RUNNING => Some ( "the session is not yet running" ) , Self :: ERROR_SESSION_LOST => Some ( "the XrSession was lost. It will need to be destroyed and optionally recreated" ) , Self :: ERROR_SYSTEM_INVALID => Some ( "the provided XrSystemId was invalid" ) , Self :: ERROR_PATH_INVALID => Some ( "the provided XrPath was not valid" ) , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ( "the maximum number of supported semantic paths has been reached" ) , Self :: ERROR_PATH_FORMAT_INVALID => Some ( "the semantic path character format is invalid" ) , Self :: ERROR_PATH_UNSUPPORTED => Some ( "the semantic path is unsupported" ) , Self :: ERROR_LAYER_INVALID => Some ( "the layer was NULL or otherwise invalid" ) , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ( "the number of specified layers is greater than the supported number" ) , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ( "the image rect was negatively sized or otherwise invalid" ) , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ( "the image format is not supported by the runtime or platform" ) , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ( "the API used to retrieve an action's state does not match the action's type" ) , Self :: ERROR_SESSION_NOT_READY => Some ( "the session is not in the ready state" ) , Self :: ERROR_SESSION_NOT_STOPPING => Some ( "the session is not in the stopping state" ) , Self :: ERROR_TIME_INVALID => Some ( "the provided XrTime was zero, negative, or out of range" ) , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ( "the specified reference space is not supported by the runtime or system" ) , Self :: ERROR_FILE_ACCESS_ERROR => Some ( "the file could not be accessed" ) , Self :: ERROR_FILE_CONTENTS_INVALID => Some ( "the file's contents were invalid" ) , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ( "the specified form factor is not supported by the current runtime or platform" ) , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ( "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off" ) , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ( "a requested API layer is not present or could not be loaded" ) , Self :: ERROR_CALL_ORDER_INVALID => Some ( "the call was made without having made a previously required call" ) , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ( "the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements" ) , Self :: ERROR_POSE_INVALID => Some ( "the supplied pose was invalid with respect to the requirements" ) , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ( "the supplied index was outside the range of valid indices" ) , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ( "the specified view configuration type is not supported by the runtime or platform" ) , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ( "the specified environment blend mode is not supported by the runtime or platform" ) , Self :: ERROR_NAME_DUPLICATED => Some ( "the name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_NAME_INVALID => Some ( "the name provided was invalid" ) , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ( "a referenced action set is not attached to the session" ) , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ( "the session already has attached action sets" ) , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ( "the localized name provided was a duplicate of an already-existing resource" ) , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ( "the localized name provided was invalid" ) , Self :: ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some ( "the xrGetGraphicsRequirements* call was not made before calling xrCreateSession" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed as thread id is invalid" ) , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ( "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority" ) , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ( "spatial anchor could not be created at that location" ) , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ( "the secondary view configuration was not enabled when creating the session" ) , Self :: ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => Some ( "the controller model key is invalid" ) , _ => None , } ;
+        let reason = match * self { Self :: SUCCESS => Some ("function successfully completed") , Self :: TIMEOUT_EXPIRED => Some ("the specified timeout time occurred before the operation could complete") , Self :: SESSION_LOSS_PENDING => Some ("the session will be lost soon") , Self :: EVENT_UNAVAILABLE => Some ("no event was available") , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ("the space's bounds are not known at the moment") , Self :: SESSION_NOT_FOCUSED => Some ("the session is not in the focused state") , Self :: FRAME_DISCARDED => Some ("a frame has been discarded from composition") , Self :: ERROR_VALIDATION_FAILURE => Some ("the function usage was invalid in some way") , Self :: ERROR_RUNTIME_FAILURE => Some ("the runtime failed to handle the function in an unexpected way that is not covered by another error result") , Self :: ERROR_OUT_OF_MEMORY => Some ("a memory allocation has failed") , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ("the runtime does not support the requested API version") , Self :: ERROR_INITIALIZATION_FAILED => Some ("initialization of object could not be completed") , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ("the requested function was not found or is otherwise unsupported") , Self :: ERROR_FEATURE_UNSUPPORTED => Some ("the requested feature is not supported") , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ("a requested extension is not supported") , Self :: ERROR_LIMIT_REACHED => Some ("the runtime supports no more of the requested resource") , Self :: ERROR_SIZE_INSUFFICIENT => Some ("the supplied size was smaller than required") , Self :: ERROR_HANDLE_INVALID => Some ("a supplied object handle was invalid") , Self :: ERROR_INSTANCE_LOST => Some ("the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated") , Self :: ERROR_SESSION_RUNNING => Some ("the session is already running") , Self :: ERROR_SESSION_NOT_RUNNING => Some ("the session is not yet running") , Self :: ERROR_SESSION_LOST => Some ("the XrSession was lost. It will need to be destroyed and optionally recreated") , Self :: ERROR_SYSTEM_INVALID => Some ("the provided XrSystemId was invalid") , Self :: ERROR_PATH_INVALID => Some ("the provided XrPath was not valid") , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ("the maximum number of supported semantic paths has been reached") , Self :: ERROR_PATH_FORMAT_INVALID => Some ("the semantic path character format is invalid") , Self :: ERROR_PATH_UNSUPPORTED => Some ("the semantic path is unsupported") , Self :: ERROR_LAYER_INVALID => Some ("the layer was NULL or otherwise invalid") , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ("the number of specified layers is greater than the supported number") , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ("the image rect was negatively sized or otherwise invalid") , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ("the image format is not supported by the runtime or platform") , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ("the API used to retrieve an action's state does not match the action's type") , Self :: ERROR_SESSION_NOT_READY => Some ("the session is not in the ready state") , Self :: ERROR_SESSION_NOT_STOPPING => Some ("the session is not in the stopping state") , Self :: ERROR_TIME_INVALID => Some ("the provided XrTime was zero, negative, or out of range") , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ("the specified reference space is not supported by the runtime or system") , Self :: ERROR_FILE_ACCESS_ERROR => Some ("the file could not be accessed") , Self :: ERROR_FILE_CONTENTS_INVALID => Some ("the file's contents were invalid") , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ("the specified form factor is not supported by the current runtime or platform") , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ("the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off") , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ("a requested API layer is not present or could not be loaded") , Self :: ERROR_CALL_ORDER_INVALID => Some ("the call was made without having made a previously required call") , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ("the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements") , Self :: ERROR_POSE_INVALID => Some ("the supplied pose was invalid with respect to the requirements") , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ("the supplied index was outside the range of valid indices") , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ("the specified view configuration type is not supported by the runtime or platform") , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ("the specified environment blend mode is not supported by the runtime or platform") , Self :: ERROR_NAME_DUPLICATED => Some ("the name provided was a duplicate of an already-existing resource") , Self :: ERROR_NAME_INVALID => Some ("the name provided was invalid") , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ("a referenced action set is not attached to the session") , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ("the session already has attached action sets") , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ("the localized name provided was a duplicate of an already-existing resource") , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ("the localized name provided was invalid") , Self :: ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some ("the xrGetGraphicsRequirements* call was not made before calling xrCreateSession") , Self :: ERROR_RUNTIME_UNAVAILABLE => Some ("the loader was unable to find or load a runtime") , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ("xrSetAndroidApplicationThreadKHR failed as thread id is invalid") , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ("xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority") , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ("spatial anchor could not be created at that location") , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ("the secondary view configuration was not enabled when creating the session") , Self :: ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => Some ("the controller model key is invalid") , Self :: ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => Some ("the reprojection mode is not supported") , Self :: ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => Some ("compute new scene not completed") , Self :: ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => Some ("scene component id invalid") , Self :: ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => Some ("scene component type mismatch") , Self :: ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => Some ("scene mesh buffer id invalid") , Self :: ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => Some ("scene compute feature incompatible") , Self :: ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => Some ("scene compute consistency mismatch") , Self :: ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => Some ("the display refresh rate is not supported by the platform") , Self :: ERROR_COLOR_SPACE_UNSUPPORTED_FB => Some ("the color space is not supported by the runtime") , _ => None , } ;
         if let Some(reason) = reason {
             fmt.pad(reason)
         } else {
@@ -600,6 +744,10 @@ impl ObjectType {
     pub const SPATIAL_ANCHOR_MSFT: ObjectType = Self(1000039000i32);
     #[doc = "XrHandTrackerEXT"]
     pub const HAND_TRACKER_EXT: ObjectType = Self(1000051000i32);
+    #[doc = "XrSceneObserverMSFT"]
+    pub const SCENE_OBSERVER_MSFT: ObjectType = Self(1000097000i32);
+    #[doc = "XrSceneMSFT"]
+    pub const SCENE_MSFT: ObjectType = Self(1000097001i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -620,6 +768,8 @@ impl fmt::Debug for ObjectType {
             Self::DEBUG_UTILS_MESSENGER_EXT => Some("DEBUG_UTILS_MESSENGER_EXT"),
             Self::SPATIAL_ANCHOR_MSFT => Some("SPATIAL_ANCHOR_MSFT"),
             Self::HAND_TRACKER_EXT => Some("HAND_TRACKER_EXT"),
+            Self::SCENE_OBSERVER_MSFT => Some("SCENE_OBSERVER_MSFT"),
+            Self::SCENE_MSFT => Some("SCENE_MSFT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -721,6 +871,7 @@ impl ReferenceSpaceType {
     pub const LOCAL: ReferenceSpaceType = Self(2i32);
     pub const STAGE: ReferenceSpaceType = Self(3i32);
     pub const UNBOUNDED_MSFT: ReferenceSpaceType = Self(1000038000i32);
+    pub const COMBINED_EYE_VARJO: ReferenceSpaceType = Self(1000121000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -735,6 +886,7 @@ impl fmt::Debug for ReferenceSpaceType {
             Self::LOCAL => Some("LOCAL"),
             Self::STAGE => Some("STAGE"),
             Self::UNBOUNDED_MSFT => Some("UNBOUNDED_MSFT"),
+            Self::COMBINED_EYE_VARJO => Some("COMBINED_EYE_VARJO"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1146,6 +1298,30 @@ impl fmt::Debug for HandJointSetEXT {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrHandJointsMotionRangeEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointsMotionRangeEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct HandJointsMotionRangeEXT(i32);
+impl HandJointsMotionRangeEXT {
+    pub const UNOBSTRUCTED: HandJointsMotionRangeEXT = Self(1i32);
+    pub const CONFORMING_TO_CONTROLLER: HandJointsMotionRangeEXT = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for HandJointsMotionRangeEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNOBSTRUCTED => Some("UNOBSTRUCTED"),
+            Self::CONFORMING_TO_CONTROLLER => Some("CONFORMING_TO_CONTROLLER"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrHandPoseTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandPoseTypeMSFT)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -1165,6 +1341,274 @@ impl fmt::Debug for HandPoseTypeMSFT {
         let name = match *self {
             Self::TRACKED => Some("TRACKED"),
             Self::REFERENCE_OPEN_PALM => Some("REFERENCE_OPEN_PALM"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneObjectTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneObjectTypeMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SceneObjectTypeMSFT(i32);
+impl SceneObjectTypeMSFT {
+    pub const UNCATEGORIZED: SceneObjectTypeMSFT = Self(-1i32);
+    pub const BACKGROUND: SceneObjectTypeMSFT = Self(1i32);
+    pub const WALL: SceneObjectTypeMSFT = Self(2i32);
+    pub const FLOOR: SceneObjectTypeMSFT = Self(3i32);
+    pub const CEILING: SceneObjectTypeMSFT = Self(4i32);
+    pub const PLATFORM: SceneObjectTypeMSFT = Self(5i32);
+    pub const INFERRED: SceneObjectTypeMSFT = Self(6i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneObjectTypeMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNCATEGORIZED => Some("UNCATEGORIZED"),
+            Self::BACKGROUND => Some("BACKGROUND"),
+            Self::WALL => Some("WALL"),
+            Self::FLOOR => Some("FLOOR"),
+            Self::CEILING => Some("CEILING"),
+            Self::PLATFORM => Some("PLATFORM"),
+            Self::INFERRED => Some("INFERRED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrScenePlaneAlignmentTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrScenePlaneAlignmentTypeMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct ScenePlaneAlignmentTypeMSFT(i32);
+impl ScenePlaneAlignmentTypeMSFT {
+    pub const NON_ORTHOGONAL: ScenePlaneAlignmentTypeMSFT = Self(0i32);
+    pub const HORIZONTAL: ScenePlaneAlignmentTypeMSFT = Self(1i32);
+    pub const VERTICAL: ScenePlaneAlignmentTypeMSFT = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for ScenePlaneAlignmentTypeMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NON_ORTHOGONAL => Some("NON_ORTHOGONAL"),
+            Self::HORIZONTAL => Some("HORIZONTAL"),
+            Self::VERTICAL => Some("VERTICAL"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneComputeStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneComputeStateMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SceneComputeStateMSFT(i32);
+impl SceneComputeStateMSFT {
+    pub const NONE: SceneComputeStateMSFT = Self(0i32);
+    pub const UPDATING: SceneComputeStateMSFT = Self(1i32);
+    pub const COMPLETED: SceneComputeStateMSFT = Self(2i32);
+    pub const COMPLETED_WITH_ERROR: SceneComputeStateMSFT = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneComputeStateMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NONE => Some("NONE"),
+            Self::UPDATING => Some("UPDATING"),
+            Self::COMPLETED => Some("COMPLETED"),
+            Self::COMPLETED_WITH_ERROR => Some("COMPLETED_WITH_ERROR"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneComputeFeatureMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneComputeFeatureMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SceneComputeFeatureMSFT(i32);
+impl SceneComputeFeatureMSFT {
+    pub const PLANE: SceneComputeFeatureMSFT = Self(1i32);
+    pub const PLANE_MESH: SceneComputeFeatureMSFT = Self(2i32);
+    pub const VISUAL_MESH: SceneComputeFeatureMSFT = Self(3i32);
+    pub const COLLIDER_MESH: SceneComputeFeatureMSFT = Self(4i32);
+    pub const SERIALIZE_SCENE: SceneComputeFeatureMSFT = Self(1000098000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneComputeFeatureMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PLANE => Some("PLANE"),
+            Self::PLANE_MESH => Some("PLANE_MESH"),
+            Self::VISUAL_MESH => Some("VISUAL_MESH"),
+            Self::COLLIDER_MESH => Some("COLLIDER_MESH"),
+            Self::SERIALIZE_SCENE => Some("SERIALIZE_SCENE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneComputeConsistencyMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneComputeConsistencyMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SceneComputeConsistencyMSFT(i32);
+impl SceneComputeConsistencyMSFT {
+    pub const SNAPSHOT_COMPLETE: SceneComputeConsistencyMSFT = Self(1i32);
+    pub const SNAPSHOT_INCOMPLETE_FAST: SceneComputeConsistencyMSFT = Self(2i32);
+    pub const OCCLUSION_OPTIMIZED: SceneComputeConsistencyMSFT = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneComputeConsistencyMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::SNAPSHOT_COMPLETE => Some("SNAPSHOT_COMPLETE"),
+            Self::SNAPSHOT_INCOMPLETE_FAST => Some("SNAPSHOT_INCOMPLETE_FAST"),
+            Self::OCCLUSION_OPTIMIZED => Some("OCCLUSION_OPTIMIZED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneComponentTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneComponentTypeMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SceneComponentTypeMSFT(i32);
+impl SceneComponentTypeMSFT {
+    pub const INVALID: SceneComponentTypeMSFT = Self(-1i32);
+    pub const OBJECT: SceneComponentTypeMSFT = Self(1i32);
+    pub const PLANE: SceneComponentTypeMSFT = Self(2i32);
+    pub const VISUAL_MESH: SceneComponentTypeMSFT = Self(3i32);
+    pub const COLLIDER_MESH: SceneComponentTypeMSFT = Self(4i32);
+    pub const SERIALIZED_SCENE_FRAGMENT: SceneComponentTypeMSFT = Self(1000098000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneComponentTypeMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::INVALID => Some("INVALID"),
+            Self::OBJECT => Some("OBJECT"),
+            Self::PLANE => Some("PLANE"),
+            Self::VISUAL_MESH => Some("VISUAL_MESH"),
+            Self::COLLIDER_MESH => Some("COLLIDER_MESH"),
+            Self::SERIALIZED_SCENE_FRAGMENT => Some("SERIALIZED_SCENE_FRAGMENT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMeshComputeLodMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMeshComputeLodMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MeshComputeLodMSFT(i32);
+impl MeshComputeLodMSFT {
+    pub const COARSE: MeshComputeLodMSFT = Self(1i32);
+    pub const MEDIUM: MeshComputeLodMSFT = Self(2i32);
+    pub const FINE: MeshComputeLodMSFT = Self(3i32);
+    pub const UNLIMITED: MeshComputeLodMSFT = Self(4i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MeshComputeLodMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::COARSE => Some("COARSE"),
+            Self::MEDIUM => Some("MEDIUM"),
+            Self::FINE => Some("FINE"),
+            Self::UNLIMITED => Some("UNLIMITED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrColorSpaceFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrColorSpaceFB)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct ColorSpaceFB(i32);
+impl ColorSpaceFB {
+    pub const UNMANAGED: ColorSpaceFB = Self(0i32);
+    pub const REC2020: ColorSpaceFB = Self(1i32);
+    pub const REC709: ColorSpaceFB = Self(2i32);
+    pub const RIFT_CV1: ColorSpaceFB = Self(3i32);
+    pub const RIFT_S: ColorSpaceFB = Self(4i32);
+    pub const QUEST: ColorSpaceFB = Self(5i32);
+    pub const P3: ColorSpaceFB = Self(6i32);
+    pub const ADOBE_RGB: ColorSpaceFB = Self(7i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for ColorSpaceFB {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNMANAGED => Some("UNMANAGED"),
+            Self::REC2020 => Some("REC2020"),
+            Self::REC709 => Some("REC709"),
+            Self::RIFT_CV1 => Some("RIFT_CV1"),
+            Self::RIFT_S => Some("RIFT_S"),
+            Self::QUEST => Some("QUEST"),
+            Self::P3 => Some("P3"),
+            Self::ADOBE_RGB => Some("ADOBE_RGB"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrReprojectionModeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrReprojectionModeMSFT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct ReprojectionModeMSFT(i32);
+impl ReprojectionModeMSFT {
+    pub const DEPTH: ReprojectionModeMSFT = Self(1i32);
+    pub const PLANAR_FROM_DEPTH: ReprojectionModeMSFT = Self(2i32);
+    pub const PLANAR_MANUAL: ReprojectionModeMSFT = Self(3i32);
+    pub const ORIENTATION_ONLY: ReprojectionModeMSFT = Self(4i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for ReprojectionModeMSFT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DEPTH => Some("DEPTH"),
+            Self::PLANAR_FROM_DEPTH => Some("PLANAR_FROM_DEPTH"),
+            Self::PLANAR_MANUAL => Some("PLANAR_MANUAL"),
+            Self::ORIENTATION_ONLY => Some("ORIENTATION_ONLY"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1198,21 +1642,21 @@ bitmask!(SwapchainCreateFlags);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SwapchainUsageFlags(u64);
 impl SwapchainUsageFlags {
-    #[doc = "Specifies that the image can: be a color rendering target."]
+    #[doc = "Specifies that the image may: be a color rendering target."]
     pub const COLOR_ATTACHMENT: SwapchainUsageFlags = Self(1 << 0u64);
-    #[doc = "Specifies that the image can: be a depth/stencil rendering target."]
+    #[doc = "Specifies that the image may: be a depth/stencil rendering target."]
     pub const DEPTH_STENCIL_ATTACHMENT: SwapchainUsageFlags = Self(1 << 1u64);
-    #[doc = "Specifies that the image can: be used as data/compute."]
+    #[doc = "Specifies that the image may: be accessed out of order and that access may: be via atomic operations."]
     pub const UNORDERED_ACCESS: SwapchainUsageFlags = Self(1 << 2u64);
-    #[doc = "Specifies that the image can: be used as the source of a transfer command."]
+    #[doc = "Specifies that the image may: be used as the source of a transfer operation."]
     pub const TRANSFER_SRC: SwapchainUsageFlags = Self(1 << 3u64);
-    #[doc = "Specifies that the image can: be used as the destination of a transfer command."]
+    #[doc = "Specifies that the image may: be used as the destination of a transfer operation."]
     pub const TRANSFER_DST: SwapchainUsageFlags = Self(1 << 4u64);
-    #[doc = "Specifies that the image can: be sampled by a shader."]
+    #[doc = "Specifies that the image may: be sampled by a shader."]
     pub const SAMPLED: SwapchainUsageFlags = Self(1 << 5u64);
-    #[doc = "Specifies that the image can: be reinterpreted as another image format."]
+    #[doc = "Specifies that the image may: be reinterpreted as another image format."]
     pub const MUTABLE_FORMAT: SwapchainUsageFlags = Self(1 << 6u64);
-    #[doc = "Specifies that the image can: be used as a input attachment."]
+    #[doc = "Specifies that the image may: be used as a input attachment."]
     pub const INPUT_ATTACHMENT: SwapchainUsageFlags = Self(1 << 7u64);
 }
 bitmask!(SwapchainUsageFlags);
@@ -1249,9 +1693,9 @@ bitmask!(CompositionLayerFlags);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SpaceLocationFlags(u64);
 impl SpaceLocationFlags {
-    #[doc = "Indicates validity of orientation member"]
+    #[doc = "Indicates that the orientation member contains valid data"]
     pub const ORIENTATION_VALID: SpaceLocationFlags = Self(1 << 0u64);
-    #[doc = "Indicates validity of position member"]
+    #[doc = "Indicates that the position member contains valid data"]
     pub const POSITION_VALID: SpaceLocationFlags = Self(1 << 1u64);
     #[doc = "Indicates whether pose member contains an actively tracked orientation"]
     pub const ORIENTATION_TRACKED: SpaceLocationFlags = Self(1 << 2u64);
@@ -1264,9 +1708,9 @@ bitmask!(SpaceLocationFlags);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SpaceVelocityFlags(u64);
 impl SpaceVelocityFlags {
-    #[doc = "Indicates validity of linearVelocity member"]
+    #[doc = "Indicates that the linearVelocity member contains valid data"]
     pub const LINEAR_VALID: SpaceVelocityFlags = Self(1 << 0u64);
-    #[doc = "Indicates validity of angularVelocity member"]
+    #[doc = "Indicates that the angularVelocity member contains valid data"]
     pub const ANGULAR_VALID: SpaceVelocityFlags = Self(1 << 1u64);
 }
 bitmask!(SpaceVelocityFlags);
@@ -1330,7 +1774,7 @@ bitmask!(DebugUtilsMessageTypeFlagsEXT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct OverlayMainSessionFlagsEXTX(u64);
 impl OverlayMainSessionFlagsEXTX {
-    #[doc = "Indicates the main session enabled XR_KHR_extra_layer_info_depth"]
+    #[doc = "Indicates the main session enabled `XR_KHR_composition_layer_depth`"]
     pub const ENABLED_COMPOSITION_LAYER_INFO_DEPTH: OverlayMainSessionFlagsEXTX = Self(1 << 0u64);
 }
 bitmask!(OverlayMainSessionFlagsEXTX);
@@ -1338,11 +1782,19 @@ bitmask!(OverlayMainSessionFlagsEXTX);
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct OverlaySessionCreateFlagsEXTX(u64);
-impl OverlaySessionCreateFlagsEXTX {
-    #[doc = "Indicates the runtime does not need to attempt to lock the overlay session displayTime to the main session displayTime"]
-    pub const RELAXED_DISPLAY_TIME: OverlaySessionCreateFlagsEXTX = Self(1 << 0u64);
-}
+impl OverlaySessionCreateFlagsEXTX {}
 bitmask!(OverlaySessionCreateFlagsEXTX);
+#[doc = "See [XrAndroidSurfaceSwapchainFlagsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrAndroidSurfaceSwapchainFlagsFB)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct AndroidSurfaceSwapchainFlagsFB(u64);
+impl AndroidSurfaceSwapchainFlagsFB {
+    #[doc = "Create the underlying BufferQueue in synchronous mode"]
+    pub const SYNCHRONOUS: AndroidSurfaceSwapchainFlagsFB = Self(1 << 0u64);
+    #[doc = "Acquire most recent buffer whose presentation timestamp is not greater than display time of final composited frame"]
+    pub const USE_TIMESTAMPS: AndroidSurfaceSwapchainFlagsFB = Self(1 << 1u64);
+}
+bitmask!(AndroidSurfaceSwapchainFlagsFB);
 #[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -1388,6 +1840,16 @@ handle!(SpatialAnchorMSFT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct HandTrackerEXT(u64);
 handle!(HandTrackerEXT);
+#[doc = "See [XrSceneObserverMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneObserverMSFT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SceneObserverMSFT(u64);
+handle!(SceneObserverMSFT);
+#[doc = "See [XrSceneMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneMSFT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SceneMSFT(u64);
+handle!(SceneMSFT);
 #[repr(C)]
 #[derive(Copy, Clone, Default, PartialEq)]
 #[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector2f)"]
@@ -3017,6 +3479,18 @@ impl EventDataMainSessionVisibilityChangedEXTX {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrEventDataDisplayRefreshRateChangedFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataDisplayRefreshRateChangedFB) - defined by [XR_FB_display_refresh_rate](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_display_refresh_rate)"]
+pub struct EventDataDisplayRefreshRateChangedFB {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub from_display_refresh_rate: f32,
+    pub to_display_refresh_rate: f32,
+}
+impl EventDataDisplayRefreshRateChangedFB {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 #[doc = "See [XrViewConfigurationDepthRangeEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationDepthRangeEXT) - defined by [XR_EXT_view_configuration_depth_range](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_view_configuration_depth_range)"]
 pub struct ViewConfigurationDepthRangeEXT {
     pub ty: StructureType,
@@ -3068,6 +3542,25 @@ pub struct InteractionProfileAnalogThresholdVALVE {
 }
 impl InteractionProfileAnalogThresholdVALVE {
     pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrBindingModificationsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBindingModificationsKHR) - defined by [XR_KHR_binding_modification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_binding_modification)"]
+pub struct BindingModificationsKHR {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub binding_modification_count: u32,
+    pub binding_modifications: *const *const BindingModificationBaseHeaderKHR,
+}
+impl BindingModificationsKHR {
+    pub const TYPE: StructureType = StructureType::BINDING_MODIFICATIONS_KHR;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrBindingModificationBaseHeaderKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBindingModificationBaseHeaderKHR) - defined by [XR_KHR_binding_modification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_binding_modification)"]
+pub struct BindingModificationBaseHeaderKHR {
+    pub ty: StructureType,
+    pub next: *const c_void,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -3278,6 +3771,17 @@ impl HandJointVelocitiesEXT {
         }
         x
     }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrHandJointsMotionRangeInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointsMotionRangeInfoEXT) - defined by [XR_EXT_hand_joints_motion_range](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_joints_motion_range)"]
+pub struct HandJointsMotionRangeInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub hand_joints_motion_range: HandJointsMotionRangeEXT,
+}
+impl HandJointsMotionRangeInfoEXT {
+    pub const TYPE: StructureType = StructureType::HAND_JOINTS_MOTION_RANGE_INFO_EXT;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -3506,6 +4010,117 @@ impl HolographicWindowAttachmentMSFT {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+#[doc = "See [XrAndroidSurfaceSwapchainCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrAndroidSurfaceSwapchainCreateInfoFB) - defined by [XR_FB_android_surface_swapchain_create](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_android_surface_swapchain_create)"]
+#[cfg(target_os = "android")]
+pub struct AndroidSurfaceSwapchainCreateInfoFB {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub create_flags: AndroidSurfaceSwapchainFlagsFB,
+}
+#[cfg(target_os = "android")]
+impl AndroidSurfaceSwapchainCreateInfoFB {
+    pub const TYPE: StructureType = StructureType::ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainStateBaseHeaderFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateBaseHeaderFB) - defined by [XR_FB_swapchain_update_state](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state)"]
+pub struct SwapchainStateBaseHeaderFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainStateAndroidSurfaceDimensionsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateAndroidSurfaceDimensionsFB) - defined by [XR_FB_swapchain_update_state_android_surface](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state_android_surface)"]
+#[cfg(target_os = "android")]
+pub struct SwapchainStateAndroidSurfaceDimensionsFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub width: u32,
+    pub height: u32,
+}
+#[cfg(target_os = "android")]
+impl SwapchainStateAndroidSurfaceDimensionsFB {
+    pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainStateSamplerOpenGLESFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateSamplerOpenGLESFB) - defined by [XR_FB_swapchain_update_state_opengl_es](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state_opengl_es)"]
+pub struct SwapchainStateSamplerOpenGLESFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub min_filter: EGLenum,
+    pub mag_filter: EGLenum,
+    pub wrap_mode_s: EGLenum,
+    pub wrap_mode_t: EGLenum,
+    pub swizzle_red: EGLenum,
+    pub swizzle_green: EGLenum,
+    pub swizzle_blue: EGLenum,
+    pub swizzle_alpha: EGLenum,
+    pub max_anisotropy: f32,
+    pub border_color: Color4f,
+}
+impl SwapchainStateSamplerOpenGLESFB {
+    pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSwapchainStateSamplerVulkanFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateSamplerVulkanFB) - defined by [XR_FB_swapchain_update_state_vulkan](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state_vulkan)"]
+pub struct SwapchainStateSamplerVulkanFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub min_filter: VkFilter,
+    pub mag_filter: VkFilter,
+    pub mipmap_mode: VkSamplerMipmapMode,
+    pub wrap_mode_s: VkSamplerAddressMode,
+    pub wrap_mode_t: VkSamplerAddressMode,
+    pub swizzle_red: VkComponentSwizzle,
+    pub swizzle_green: VkComponentSwizzle,
+    pub swizzle_blue: VkComponentSwizzle,
+    pub swizzle_alpha: VkComponentSwizzle,
+    pub max_anisotropy: f32,
+    pub border_color: Color4f,
+}
+impl SwapchainStateSamplerVulkanFB {
+    pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_VULKAN_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 #[doc = "See [XrLoaderInitInfoBaseHeaderKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLoaderInitInfoBaseHeaderKHR) - defined by [XR_KHR_loader_init](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_loader_init)"]
 pub struct LoaderInitInfoBaseHeaderKHR {
     pub ty: StructureType,
@@ -3675,6 +4290,123 @@ impl ControllerModelStateMSFT {
         }
         x
     }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSystemColorSpacePropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemColorSpacePropertiesFB) - defined by [XR_FB_color_space](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)"]
+pub struct SystemColorSpacePropertiesFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub color_space: ColorSpaceFB,
+}
+impl SystemColorSpacePropertiesFB {
+    pub const TYPE: StructureType = StructureType::SYSTEM_COLOR_SPACE_PROPERTIES_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrCompositionLayerDepthTestVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerDepthTestVARJO) - defined by [XR_VARJO_composition_layer_depth_test](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_composition_layer_depth_test)"]
+pub struct CompositionLayerDepthTestVARJO {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub depth_test_range_near_z: f32,
+    pub depth_test_range_far_z: f32,
+}
+impl CompositionLayerDepthTestVARJO {
+    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_DEPTH_TEST_VARJO;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrViewLocateFoveatedRenderingVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewLocateFoveatedRenderingVARJO) - defined by [XR_VARJO_foveated_rendering](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_foveated_rendering)"]
+pub struct ViewLocateFoveatedRenderingVARJO {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub foveated_rendering_active: Bool32,
+}
+impl ViewLocateFoveatedRenderingVARJO {
+    pub const TYPE: StructureType = StructureType::VIEW_LOCATE_FOVEATED_RENDERING_VARJO;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrFoveatedViewConfigurationViewVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFoveatedViewConfigurationViewVARJO) - defined by [XR_VARJO_foveated_rendering](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_foveated_rendering)"]
+pub struct FoveatedViewConfigurationViewVARJO {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub foveated_rendering_active: Bool32,
+}
+impl FoveatedViewConfigurationViewVARJO {
+    pub const TYPE: StructureType = StructureType::FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrSystemFoveatedRenderingPropertiesVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemFoveatedRenderingPropertiesVARJO) - defined by [XR_VARJO_foveated_rendering](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_foveated_rendering)"]
+pub struct SystemFoveatedRenderingPropertiesVARJO {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_foveated_rendering: Bool32,
+}
+impl SystemFoveatedRenderingPropertiesVARJO {
+    pub const TYPE: StructureType = StructureType::SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrCompositionLayerReprojectionInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerReprojectionInfoMSFT) - defined by [XR_MSFT_composition_layer_reprojection](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_composition_layer_reprojection)"]
+pub struct CompositionLayerReprojectionInfoMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub reprojection_mode: ReprojectionModeMSFT,
+}
+impl CompositionLayerReprojectionInfoMSFT {
+    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_REPROJECTION_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrCompositionLayerReprojectionPlaneOverrideMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerReprojectionPlaneOverrideMSFT) - defined by [XR_MSFT_composition_layer_reprojection](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_composition_layer_reprojection)"]
+pub struct CompositionLayerReprojectionPlaneOverrideMSFT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub position: Vector3f,
+    pub normal: Vector3f,
+    pub velocity: Vector3f,
+}
+impl CompositionLayerReprojectionPlaneOverrideMSFT {
+    pub const TYPE: StructureType =
+        StructureType::COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT;
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
@@ -4269,6 +5001,71 @@ pub mod pfn {
         model_key: ControllerModelKeyMSFT,
         state: *mut ControllerModelStateMSFT,
     ) -> Result;
+    #[doc = "See [xrEnumerateDisplayRefreshRatesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateDisplayRefreshRatesFB) - defined by [XR_FB_display_refresh_rate](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_display_refresh_rate)"]
+    pub type EnumerateDisplayRefreshRatesFB = unsafe extern "system" fn(
+        session: Session,
+        display_refresh_rate_capacity_input: u32,
+        display_refresh_rate_count_output: *mut u32,
+        display_refresh_rates: *mut f32,
+    ) -> Result;
+    #[doc = "See [xrGetDisplayRefreshRateFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetDisplayRefreshRateFB) - defined by [XR_FB_display_refresh_rate](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_display_refresh_rate)"]
+    pub type GetDisplayRefreshRateFB =
+        unsafe extern "system" fn(session: Session, display_refresh_rate: *mut f32) -> Result;
+    #[doc = "See [xrRequestDisplayRefreshRateFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrRequestDisplayRefreshRateFB) - defined by [XR_FB_display_refresh_rate](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_display_refresh_rate)"]
+    pub type RequestDisplayRefreshRateFB =
+        unsafe extern "system" fn(session: Session, display_refresh_rate: f32) -> Result;
+    #[cfg(windows)]
+    #[doc = "See [xrCreateSpatialAnchorFromPerceptionAnchorMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSpatialAnchorFromPerceptionAnchorMSFT) - defined by [XR_MSFT_perception_anchor_interop](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_perception_anchor_interop)"]
+    pub type CreateSpatialAnchorFromPerceptionAnchorMSFT = unsafe extern "system" fn(
+        session: Session,
+        perception_anchor: *mut IUnknown,
+        anchor: *mut SpatialAnchorMSFT,
+    ) -> Result;
+    #[cfg(windows)]
+    #[doc = "See [xrTryGetPerceptionAnchorFromSpatialAnchorMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrTryGetPerceptionAnchorFromSpatialAnchorMSFT) - defined by [XR_MSFT_perception_anchor_interop](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_perception_anchor_interop)"]
+    pub type TryGetPerceptionAnchorFromSpatialAnchorMSFT = unsafe extern "system" fn(
+        session: Session,
+        anchor: SpatialAnchorMSFT,
+        perception_anchor: *mut *mut IUnknown,
+    ) -> Result;
+    #[doc = "See [xrUpdateSwapchainFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrUpdateSwapchainFB) - defined by [XR_FB_swapchain_update_state](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state)"]
+    pub type UpdateSwapchainFB = unsafe extern "system" fn(
+        swapchain: Swapchain,
+        state: *const SwapchainStateBaseHeaderFB,
+    ) -> Result;
+    #[doc = "See [xrGetSwapchainStateFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetSwapchainStateFB) - defined by [XR_FB_swapchain_update_state](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state)"]
+    pub type GetSwapchainStateFB = unsafe extern "system" fn(
+        swapchain: Swapchain,
+        state: *mut SwapchainStateBaseHeaderFB,
+    ) -> Result;
+    #[doc = "See [xrEnumerateColorSpacesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateColorSpacesFB) - defined by [XR_FB_color_space](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)"]
+    pub type EnumerateColorSpacesFB = unsafe extern "system" fn(
+        session: Session,
+        color_space_capacity_input: u32,
+        color_space_count_output: *mut u32,
+        color_spaces: *mut ColorSpaceFB,
+    ) -> Result;
+    #[doc = "See [xrSetColorSpaceFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetColorSpaceFB) - defined by [XR_FB_color_space](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)"]
+    pub type SetColorSpaceFB =
+        unsafe extern "system" fn(session: Session, colorspace: ColorSpaceFB) -> Result;
+    #[doc = "See [xrSetEnvironmentDepthEstimationVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetEnvironmentDepthEstimationVARJO) - defined by [XR_VARJO_environment_depth_estimation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_environment_depth_estimation)"]
+    pub type SetEnvironmentDepthEstimationVARJO =
+        unsafe extern "system" fn(session: Session, enabled: Bool32) -> Result;
+    #[doc = "See [xrEnumerateReprojectionModesMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateReprojectionModesMSFT) - defined by [XR_MSFT_composition_layer_reprojection](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_composition_layer_reprojection)"]
+    pub type EnumerateReprojectionModesMSFT = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        view_configuration_type: ViewConfigurationType,
+        mode_capacity_input: u32,
+        mode_count_output: *mut u32,
+        modes: *mut ReprojectionModeMSFT,
+    ) -> Result;
+    #[doc = "See [xrGetAudioOutputDeviceGuidOculus](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetAudioOutputDeviceGuidOculus) - defined by [XR_OCULUS_audio_device_guid](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_OCULUS_audio_device_guid)"]
+    pub type GetAudioOutputDeviceGuidOculus =
+        unsafe extern "system" fn(instance: Instance, buffer: *mut wchar_t) -> Result;
+    #[doc = "See [xrGetAudioInputDeviceGuidOculus](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetAudioInputDeviceGuidOculus) - defined by [XR_OCULUS_audio_device_guid](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_OCULUS_audio_device_guid)"]
+    pub type GetAudioInputDeviceGuidOculus =
+        unsafe extern "system" fn(instance: Instance, buffer: *mut wchar_t) -> Result;
     #[doc = "See [xrGetVulkanGraphicsRequirements2KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVulkanGraphicsRequirements2KHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanGraphicsRequirements2KHR = unsafe extern "system" fn(
         instance: Instance,
@@ -4278,34 +5075,61 @@ pub mod pfn {
 }
 pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 2u32;
 pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
-pub const EXT_performance_settings_SPEC_VERSION: u32 = 1u32;
+pub const EXT_performance_settings_SPEC_VERSION: u32 = 3u32;
 pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_EXT_performance_settings\0";
-pub const EXT_thermal_query_SPEC_VERSION: u32 = 1u32;
+pub const EXT_thermal_query_SPEC_VERSION: u32 = 2u32;
 pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &[u8] = b"XR_EXT_thermal_query\0";
-pub const EXT_debug_utils_SPEC_VERSION: u32 = 3u32;
+pub const EXT_debug_utils_SPEC_VERSION: u32 = 4u32;
 pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &[u8] = b"XR_EXT_debug_utils\0";
 pub const EXT_eye_gaze_interaction_SPEC_VERSION: u32 = 1u32;
 pub const EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_EXT_eye_gaze_interaction\0";
 pub const EXT_view_configuration_depth_range_SPEC_VERSION: u32 = 1u32;
 pub const EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_view_configuration_depth_range\0";
-pub const EXT_conformance_automation_SPEC_VERSION: u32 = 1u32;
+pub const EXT_conformance_automation_SPEC_VERSION: u32 = 3u32;
 pub const EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME: &[u8] = b"XR_EXT_conformance_automation\0";
-pub const EXT_hand_tracking_SPEC_VERSION: u32 = 2u32;
+pub const EXT_hand_tracking_SPEC_VERSION: u32 = 4u32;
 pub const EXT_HAND_TRACKING_EXTENSION_NAME: &[u8] = b"XR_EXT_hand_tracking\0";
 #[cfg(windows)]
 pub const EXT_win32_appcontainer_compatible_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
 pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_win32_appcontainer_compatible\0";
+pub const EXT_hand_joints_motion_range_SPEC_VERSION: u32 = 1u32;
+pub const EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME: &[u8] = b"XR_EXT_hand_joints_motion_range\0";
 pub const EXT_samsung_odyssey_controller_SPEC_VERSION: u32 = 1u32;
 pub const EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME: &[u8] =
     b"XR_EXT_samsung_odyssey_controller\0";
 pub const EXT_hp_mixed_reality_controller_SPEC_VERSION: u32 = 1u32;
 pub const EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME: &[u8] =
     b"XR_EXT_hp_mixed_reality_controller\0";
-pub const EXTX_overlay_SPEC_VERSION: u32 = 4u32;
+pub const EXTX_overlay_SPEC_VERSION: u32 = 5u32;
 pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
+#[cfg(target_os = "android")]
+pub const FB_android_surface_swapchain_create_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME: &[u8] =
+    b"XR_FB_android_surface_swapchain_create\0";
+pub const FB_swapchain_update_state_SPEC_VERSION: u32 = 3u32;
+pub const FB_SWAPCHAIN_UPDATE_STATE_EXTENSION_NAME: &[u8] = b"XR_FB_swapchain_update_state\0";
+pub const FB_display_refresh_rate_SPEC_VERSION: u32 = 1u32;
+pub const FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME: &[u8] = b"XR_FB_display_refresh_rate\0";
+pub const FB_color_space_SPEC_VERSION: u32 = 1u32;
+pub const FB_COLOR_SPACE_EXTENSION_NAME: &[u8] = b"XR_FB_color_space\0";
+#[cfg(target_os = "android")]
+pub const FB_swapchain_update_state_android_surface_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME: &[u8] =
+    b"XR_FB_swapchain_update_state_android_surface\0";
+pub const FB_swapchain_update_state_opengl_es_SPEC_VERSION: u32 = 1u32;
+pub const FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME: &[u8] =
+    b"XR_FB_swapchain_update_state_opengl_es\0";
+pub const FB_swapchain_update_state_vulkan_SPEC_VERSION: u32 = 1u32;
+pub const FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME: &[u8] =
+    b"XR_FB_swapchain_update_state_vulkan\0";
+pub const HTC_vive_cosmos_controller_interaction_SPEC_VERSION: u32 = 1u32;
+pub const HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
+    b"XR_HTC_vive_cosmos_controller_interaction\0";
 pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HUAWEI_controller_interaction\0";
@@ -4326,7 +5150,7 @@ pub const KHR_android_create_instance_SPEC_VERSION: u32 = 3u32;
 pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &[u8] = b"XR_KHR_android_create_instance\0";
 pub const KHR_composition_layer_depth_SPEC_VERSION: u32 = 5u32;
 pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &[u8] = b"XR_KHR_composition_layer_depth\0";
-pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 3u32;
+pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 4u32;
 pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &[u8] =
     b"XR_KHR_vulkan_swapchain_format_list\0";
 pub const KHR_composition_layer_cylinder_SPEC_VERSION: u32 = 4u32;
@@ -4339,7 +5163,7 @@ pub const KHR_opengl_enable_SPEC_VERSION: u32 = 9u32;
 pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_enable\0";
 pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 7u32;
 pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_es_enable\0";
-pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 7u32;
+pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 8u32;
 pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_vulkan_enable\0";
 #[cfg(windows)]
 pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 5u32;
@@ -4367,11 +5191,13 @@ pub const KHR_LOADER_INIT_EXTENSION_NAME: &[u8] = b"XR_KHR_loader_init\0";
 pub const KHR_loader_init_android_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const KHR_LOADER_INIT_ANDROID_EXTENSION_NAME: &[u8] = b"XR_KHR_loader_init_android\0";
-pub const KHR_vulkan_enable2_SPEC_VERSION: u32 = 1u32;
+pub const KHR_vulkan_enable2_SPEC_VERSION: u32 = 2u32;
 pub const KHR_VULKAN_ENABLE2_EXTENSION_NAME: &[u8] = b"XR_KHR_vulkan_enable2\0";
 pub const KHR_composition_layer_equirect2_SPEC_VERSION: u32 = 1u32;
 pub const KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME: &[u8] =
     b"XR_KHR_composition_layer_equirect2\0";
+pub const KHR_binding_modification_SPEC_VERSION: u32 = 1u32;
+pub const KHR_BINDING_MODIFICATION_EXTENSION_NAME: &[u8] = b"XR_KHR_binding_modification\0";
 pub const MND_headless_SPEC_VERSION: u32 = 2u32;
 pub const MND_HEADLESS_EXTENSION_NAME: &[u8] = b"XR_MND_headless\0";
 pub const MND_swapchain_usage_input_attachment_bit_SPEC_VERSION: u32 = 2u32;
@@ -4388,7 +5214,7 @@ pub const MSFT_spatial_graph_bridge_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_graph_bridge\0";
 pub const MSFT_hand_interaction_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_interaction\0";
-pub const MSFT_hand_tracking_mesh_SPEC_VERSION: u32 = 2u32;
+pub const MSFT_hand_tracking_mesh_SPEC_VERSION: u32 = 3u32;
 pub const MSFT_HAND_TRACKING_MESH_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_tracking_mesh\0";
 pub const MSFT_secondary_view_configuration_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME: &[u8] =
@@ -4398,20 +5224,43 @@ pub const MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME: &[u8] = b"XR_MSFT_first_per
 pub const MSFT_controller_model_SPEC_VERSION: u32 = 2u32;
 pub const MSFT_CONTROLLER_MODEL_EXTENSION_NAME: &[u8] = b"XR_MSFT_controller_model\0";
 #[cfg(windows)]
+pub const MSFT_perception_anchor_interop_SPEC_VERSION: u32 = 1u32;
+#[cfg(windows)]
+pub const MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME: &[u8] =
+    b"XR_MSFT_perception_anchor_interop\0";
+#[cfg(windows)]
 pub const MSFT_holographic_window_attachment_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
 pub const MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME: &[u8] =
     b"XR_MSFT_holographic_window_attachment\0";
+pub const MSFT_composition_layer_reprojection_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME: &[u8] =
+    b"XR_MSFT_composition_layer_reprojection\0";
+pub const MSFT_scene_understanding_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME: &[u8] = b"XR_MSFT_scene_understanding\0";
+pub const MSFT_scene_understanding_serialization_SPEC_VERSION: u32 = 1u32;
+pub const MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME: &[u8] =
+    b"XR_MSFT_scene_understanding_serialization\0";
 #[cfg(target_os = "android")]
 pub const OCULUS_android_session_state_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME: &[u8] =
     b"XR_OCULUS_android_session_state_enable\0";
+pub const OCULUS_audio_device_guid_SPEC_VERSION: u32 = 1u32;
+pub const OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME: &[u8] = b"XR_OCULUS_audio_device_guid\0";
 pub const VALVE_analog_threshold_SPEC_VERSION: u32 = 1u32;
 pub const VALVE_ANALOG_THRESHOLD_EXTENSION_NAME: &[u8] = b"XR_VALVE_analog_threshold\0";
 pub const VARJO_quad_views_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &[u8] = b"XR_VARJO_quad_views\0";
-#[cfg(feature = "prototypes")]
+pub const VARJO_foveated_rendering_SPEC_VERSION: u32 = 1u32;
+pub const VARJO_FOVEATED_RENDERING_EXTENSION_NAME: &[u8] = b"XR_VARJO_foveated_rendering\0";
+pub const VARJO_composition_layer_depth_test_SPEC_VERSION: u32 = 1u32;
+pub const VARJO_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME: &[u8] =
+    b"XR_VARJO_composition_layer_depth_test\0";
+pub const VARJO_environment_depth_estimation_SPEC_VERSION: u32 = 1u32;
+pub const VARJO_ENVIRONMENT_DEPTH_ESTIMATION_EXTENSION_NAME: &[u8] =
+    b"XR_VARJO_environment_depth_estimation\0";
+#[cfg(feature = "linked")]
 extern "system" {
     #[link_name = "xrGetInstanceProcAddr"]
     pub fn get_instance_proc_addr(
