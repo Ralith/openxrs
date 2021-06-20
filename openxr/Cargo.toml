@@ -16,7 +16,7 @@ maintenance = { status = "experimental" }
 [features]
 static = ["sys/static", "linked"]
 loaded = ["libloading"]
-linked = ["sys/prototypes"]
+linked = ["sys/linked"]
 mint = ["sys/mint"]
 default = ["loaded"]
 

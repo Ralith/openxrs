@@ -1,9 +1,9 @@
 use openxr as xr;
 
 fn main() {
-    #[cfg(feature = "static")]
+    #[cfg(feature = "linked")]
     let entry = xr::Entry::linked();
-    #[cfg(not(feature = "static"))]
+    #[cfg(not(feature = "linked"))]
     let entry = xr::Entry::load()
         .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
 
