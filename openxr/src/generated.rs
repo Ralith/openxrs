@@ -3,16 +3,22 @@
 use crate::*;
 use std::borrow::Cow;
 use std::mem::MaybeUninit;
+pub use sys::platform::{
+    EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
+};
 pub use sys::{
-    ActionType, AndroidThreadTypeKHR, Color4f, CompositionLayerFlags,
-    DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
-    Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, HandEXT, HandJointEXT,
-    HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT, HandMeshVertexMSFT,
-    HandPoseTypeMSFT, InputSourceLocalizedNameFlags, InstanceCreateFlags, ObjectType, Offset2Df,
-    Offset2Di, OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX, PerfSettingsDomainEXT,
+    ActionType, AndroidSurfaceSwapchainFlagsFB, AndroidThreadTypeKHR, Color4f, ColorSpaceFB,
+    CompositionLayerFlags, DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT,
+    EnvironmentBlendMode, Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, HandEXT,
+    HandJointEXT, HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT,
+    HandJointsMotionRangeEXT, HandMeshVertexMSFT, HandPoseTypeMSFT, InputSourceLocalizedNameFlags,
+    InstanceCreateFlags, MeshComputeLodMSFT, ObjectType, Offset2Df, Offset2Di,
+    OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX, PerfSettingsDomainEXT,
     PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
-    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, SessionCreateFlags, SessionState,
-    SpaceLocationFlags, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
+    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, ReprojectionModeMSFT,
+    SceneComponentTypeMSFT, SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT,
+    SceneComputeStateMSFT, SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT, SessionCreateFlags,
+    SessionState, SpaceLocationFlags, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
     SwapchainCreateFlags, SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f,
     Vector4f, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
     VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR,
@@ -31,9 +37,20 @@ pub struct ExtensionSet {
     pub ext_hand_tracking: bool,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: bool,
+    pub ext_hand_joints_motion_range: bool,
     pub ext_samsung_odyssey_controller: bool,
     pub ext_hp_mixed_reality_controller: bool,
     pub extx_overlay: bool,
+    #[cfg(target_os = "android")]
+    pub fb_android_surface_swapchain_create: bool,
+    pub fb_swapchain_update_state: bool,
+    pub fb_display_refresh_rate: bool,
+    pub fb_color_space: bool,
+    #[cfg(target_os = "android")]
+    pub fb_swapchain_update_state_android_surface: bool,
+    pub fb_swapchain_update_state_opengl_es: bool,
+    pub fb_swapchain_update_state_vulkan: bool,
+    pub htc_vive_cosmos_controller_interaction: bool,
     pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: bool,
@@ -63,6 +80,7 @@ pub struct ExtensionSet {
     pub khr_loader_init_android: bool,
     pub khr_vulkan_enable2: bool,
     pub khr_composition_layer_equirect2: bool,
+    pub khr_binding_modification: bool,
     pub mnd_headless: bool,
     pub mnd_swapchain_usage_input_attachment_bit: bool,
     pub mndx_egl_enable: bool,
@@ -75,11 +93,18 @@ pub struct ExtensionSet {
     pub msft_first_person_observer: bool,
     pub msft_controller_model: bool,
     #[cfg(windows)]
+    pub msft_perception_anchor_interop: bool,
+    #[cfg(windows)]
     pub msft_holographic_window_attachment: bool,
+    pub msft_composition_layer_reprojection: bool,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
+    pub oculus_audio_device_guid: bool,
     pub valve_analog_threshold: bool,
     pub varjo_quad_views: bool,
+    pub varjo_foveated_rendering: bool,
+    pub varjo_composition_layer_depth_test: bool,
+    pub varjo_environment_depth_estimation: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<String>,
 }
@@ -116,6 +141,9 @@ impl ExtensionSet {
                 raw::Win32AppcontainerCompatibleEXT::NAME => {
                     out.ext_win32_appcontainer_compatible = true;
                 }
+                raw::HandJointsMotionRangeEXT::NAME => {
+                    out.ext_hand_joints_motion_range = true;
+                }
                 raw::SamsungOdysseyControllerEXT::NAME => {
                     out.ext_samsung_odyssey_controller = true;
                 }
@@ -124,6 +152,32 @@ impl ExtensionSet {
                 }
                 raw::OverlayEXTX::NAME => {
                     out.extx_overlay = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::AndroidSurfaceSwapchainCreateFB::NAME => {
+                    out.fb_android_surface_swapchain_create = true;
+                }
+                raw::SwapchainUpdateStateFB::NAME => {
+                    out.fb_swapchain_update_state = true;
+                }
+                raw::DisplayRefreshRateFB::NAME => {
+                    out.fb_display_refresh_rate = true;
+                }
+                raw::ColorSpaceFB::NAME => {
+                    out.fb_color_space = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::SwapchainUpdateStateAndroidSurfaceFB::NAME => {
+                    out.fb_swapchain_update_state_android_surface = true;
+                }
+                raw::SwapchainUpdateStateOpenglEsFB::NAME => {
+                    out.fb_swapchain_update_state_opengl_es = true;
+                }
+                raw::SwapchainUpdateStateVulkanFB::NAME => {
+                    out.fb_swapchain_update_state_vulkan = true;
+                }
+                raw::ViveCosmosControllerInteractionHTC::NAME => {
+                    out.htc_vive_cosmos_controller_interaction = true;
                 }
                 raw::ControllerInteractionHUAWEI::NAME => {
                     out.huawei_controller_interaction = true;
@@ -198,6 +252,9 @@ impl ExtensionSet {
                 raw::CompositionLayerEquirect2KHR::NAME => {
                     out.khr_composition_layer_equirect2 = true;
                 }
+                raw::BindingModificationKHR::NAME => {
+                    out.khr_binding_modification = true;
+                }
                 raw::HeadlessMND::NAME => {
                     out.mnd_headless = true;
                 }
@@ -232,18 +289,37 @@ impl ExtensionSet {
                     out.msft_controller_model = true;
                 }
                 #[cfg(windows)]
+                raw::PerceptionAnchorInteropMSFT::NAME => {
+                    out.msft_perception_anchor_interop = true;
+                }
+                #[cfg(windows)]
                 raw::HolographicWindowAttachmentMSFT::NAME => {
                     out.msft_holographic_window_attachment = true;
+                }
+                raw::CompositionLayerReprojectionMSFT::NAME => {
+                    out.msft_composition_layer_reprojection = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::AndroidSessionStateEnableOCULUS::NAME => {
                     out.oculus_android_session_state_enable = true;
+                }
+                raw::AudioDeviceGuidOCULUS::NAME => {
+                    out.oculus_audio_device_guid = true;
                 }
                 raw::AnalogThresholdVALVE::NAME => {
                     out.valve_analog_threshold = true;
                 }
                 raw::QuadViewsVARJO::NAME => {
                     out.varjo_quad_views = true;
+                }
+                raw::FoveatedRenderingVARJO::NAME => {
+                    out.varjo_foveated_rendering = true;
+                }
+                raw::CompositionLayerDepthTestVARJO::NAME => {
+                    out.varjo_composition_layer_depth_test = true;
+                }
+                raw::EnvironmentDepthEstimationVARJO::NAME => {
+                    out.varjo_environment_depth_estimation = true;
                 }
                 bytes => {
                     if let Ok(name) = std::str::from_utf8(bytes) {
@@ -303,6 +379,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.ext_hand_joints_motion_range {
+                out.push(raw::HandJointsMotionRangeEXT::NAME.into());
+            }
+        }
+        {
             if self.ext_samsung_odyssey_controller {
                 out.push(raw::SamsungOdysseyControllerEXT::NAME.into());
             }
@@ -315,6 +396,48 @@ impl ExtensionSet {
         {
             if self.extx_overlay {
                 out.push(raw::OverlayEXTX::NAME.into());
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.fb_android_surface_swapchain_create {
+                out.push(raw::AndroidSurfaceSwapchainCreateFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_swapchain_update_state {
+                out.push(raw::SwapchainUpdateStateFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_display_refresh_rate {
+                out.push(raw::DisplayRefreshRateFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_color_space {
+                out.push(raw::ColorSpaceFB::NAME.into());
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.fb_swapchain_update_state_android_surface {
+                out.push(raw::SwapchainUpdateStateAndroidSurfaceFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_swapchain_update_state_opengl_es {
+                out.push(raw::SwapchainUpdateStateOpenglEsFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_swapchain_update_state_vulkan {
+                out.push(raw::SwapchainUpdateStateVulkanFB::NAME.into());
+            }
+        }
+        {
+            if self.htc_vive_cosmos_controller_interaction {
+                out.push(raw::ViveCosmosControllerInteractionHTC::NAME.into());
             }
         }
         {
@@ -435,6 +558,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.khr_binding_modification {
+                out.push(raw::BindingModificationKHR::NAME.into());
+            }
+        }
+        {
             if self.mnd_headless {
                 out.push(raw::HeadlessMND::NAME.into());
             }
@@ -491,14 +619,30 @@ impl ExtensionSet {
         }
         #[cfg(windows)]
         {
+            if self.msft_perception_anchor_interop {
+                out.push(raw::PerceptionAnchorInteropMSFT::NAME.into());
+            }
+        }
+        #[cfg(windows)]
+        {
             if self.msft_holographic_window_attachment {
                 out.push(raw::HolographicWindowAttachmentMSFT::NAME.into());
+            }
+        }
+        {
+            if self.msft_composition_layer_reprojection {
+                out.push(raw::CompositionLayerReprojectionMSFT::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.oculus_android_session_state_enable {
                 out.push(raw::AndroidSessionStateEnableOCULUS::NAME.into());
+            }
+        }
+        {
+            if self.oculus_audio_device_guid {
+                out.push(raw::AudioDeviceGuidOCULUS::NAME.into());
             }
         }
         {
@@ -509,6 +653,21 @@ impl ExtensionSet {
         {
             if self.varjo_quad_views {
                 out.push(raw::QuadViewsVARJO::NAME.into());
+            }
+        }
+        {
+            if self.varjo_foveated_rendering {
+                out.push(raw::FoveatedRenderingVARJO::NAME.into());
+            }
+        }
+        {
+            if self.varjo_composition_layer_depth_test {
+                out.push(raw::CompositionLayerDepthTestVARJO::NAME.into());
+            }
+        }
+        {
+            if self.varjo_environment_depth_estimation {
+                out.push(raw::EnvironmentDepthEstimationVARJO::NAME.into());
             }
         }
         for name in &self.other {
@@ -533,9 +692,21 @@ pub struct InstanceExtensions {
     pub ext_hand_tracking: Option<raw::HandTrackingEXT>,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: Option<raw::Win32AppcontainerCompatibleEXT>,
+    pub ext_hand_joints_motion_range: Option<raw::HandJointsMotionRangeEXT>,
     pub ext_samsung_odyssey_controller: Option<raw::SamsungOdysseyControllerEXT>,
     pub ext_hp_mixed_reality_controller: Option<raw::HpMixedRealityControllerEXT>,
     pub extx_overlay: Option<raw::OverlayEXTX>,
+    #[cfg(target_os = "android")]
+    pub fb_android_surface_swapchain_create: Option<raw::AndroidSurfaceSwapchainCreateFB>,
+    pub fb_swapchain_update_state: Option<raw::SwapchainUpdateStateFB>,
+    pub fb_display_refresh_rate: Option<raw::DisplayRefreshRateFB>,
+    pub fb_color_space: Option<raw::ColorSpaceFB>,
+    #[cfg(target_os = "android")]
+    pub fb_swapchain_update_state_android_surface:
+        Option<raw::SwapchainUpdateStateAndroidSurfaceFB>,
+    pub fb_swapchain_update_state_opengl_es: Option<raw::SwapchainUpdateStateOpenglEsFB>,
+    pub fb_swapchain_update_state_vulkan: Option<raw::SwapchainUpdateStateVulkanFB>,
+    pub htc_vive_cosmos_controller_interaction: Option<raw::ViveCosmosControllerInteractionHTC>,
     pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
@@ -566,6 +737,7 @@ pub struct InstanceExtensions {
     pub khr_loader_init_android: Option<raw::LoaderInitAndroidKHR>,
     pub khr_vulkan_enable2: Option<raw::VulkanEnable2KHR>,
     pub khr_composition_layer_equirect2: Option<raw::CompositionLayerEquirect2KHR>,
+    pub khr_binding_modification: Option<raw::BindingModificationKHR>,
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub mnd_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitMND>,
     pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
@@ -578,11 +750,18 @@ pub struct InstanceExtensions {
     pub msft_first_person_observer: Option<raw::FirstPersonObserverMSFT>,
     pub msft_controller_model: Option<raw::ControllerModelMSFT>,
     #[cfg(windows)]
+    pub msft_perception_anchor_interop: Option<raw::PerceptionAnchorInteropMSFT>,
+    #[cfg(windows)]
     pub msft_holographic_window_attachment: Option<raw::HolographicWindowAttachmentMSFT>,
+    pub msft_composition_layer_reprojection: Option<raw::CompositionLayerReprojectionMSFT>,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
+    pub oculus_audio_device_guid: Option<raw::AudioDeviceGuidOCULUS>,
     pub valve_analog_threshold: Option<raw::AnalogThresholdVALVE>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
+    pub varjo_foveated_rendering: Option<raw::FoveatedRenderingVARJO>,
+    pub varjo_composition_layer_depth_test: Option<raw::CompositionLayerDepthTestVARJO>,
+    pub varjo_environment_depth_estimation: Option<raw::EnvironmentDepthEstimationVARJO>,
 }
 impl InstanceExtensions {
     #[doc = r" Load extension function pointer tables"]
@@ -642,6 +821,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            ext_hand_joints_motion_range: if required.ext_hand_joints_motion_range {
+                Some(raw::HandJointsMotionRangeEXT {})
+            } else {
+                None
+            },
             ext_samsung_odyssey_controller: if required.ext_samsung_odyssey_controller {
                 Some(raw::SamsungOdysseyControllerEXT {})
             } else {
@@ -654,6 +838,52 @@ impl InstanceExtensions {
             },
             extx_overlay: if required.extx_overlay {
                 Some(raw::OverlayEXTX {})
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            fb_android_surface_swapchain_create: if required.fb_android_surface_swapchain_create {
+                Some(raw::AndroidSurfaceSwapchainCreateFB {})
+            } else {
+                None
+            },
+            fb_swapchain_update_state: if required.fb_swapchain_update_state {
+                Some(raw::SwapchainUpdateStateFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_display_refresh_rate: if required.fb_display_refresh_rate {
+                Some(raw::DisplayRefreshRateFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_color_space: if required.fb_color_space {
+                Some(raw::ColorSpaceFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_os = "android")]
+            fb_swapchain_update_state_android_surface: if required
+                .fb_swapchain_update_state_android_surface
+            {
+                Some(raw::SwapchainUpdateStateAndroidSurfaceFB {})
+            } else {
+                None
+            },
+            fb_swapchain_update_state_opengl_es: if required.fb_swapchain_update_state_opengl_es {
+                Some(raw::SwapchainUpdateStateOpenglEsFB {})
+            } else {
+                None
+            },
+            fb_swapchain_update_state_vulkan: if required.fb_swapchain_update_state_vulkan {
+                Some(raw::SwapchainUpdateStateVulkanFB {})
+            } else {
+                None
+            },
+            htc_vive_cosmos_controller_interaction: if required
+                .htc_vive_cosmos_controller_interaction
+            {
+                Some(raw::ViveCosmosControllerInteractionHTC {})
             } else {
                 None
             },
@@ -780,6 +1010,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            khr_binding_modification: if required.khr_binding_modification {
+                Some(raw::BindingModificationKHR {})
+            } else {
+                None
+            },
             mnd_headless: if required.mnd_headless {
                 Some(raw::HeadlessMND {})
             } else {
@@ -838,14 +1073,32 @@ impl InstanceExtensions {
                 None
             },
             #[cfg(windows)]
+            msft_perception_anchor_interop: if required.msft_perception_anchor_interop {
+                Some(raw::PerceptionAnchorInteropMSFT::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(windows)]
             msft_holographic_window_attachment: if required.msft_holographic_window_attachment {
                 Some(raw::HolographicWindowAttachmentMSFT {})
+            } else {
+                None
+            },
+            msft_composition_layer_reprojection: if required.msft_composition_layer_reprojection {
+                Some(raw::CompositionLayerReprojectionMSFT::load(
+                    entry, instance,
+                )?)
             } else {
                 None
             },
             #[cfg(target_os = "android")]
             oculus_android_session_state_enable: if required.oculus_android_session_state_enable {
                 Some(raw::AndroidSessionStateEnableOCULUS {})
+            } else {
+                None
+            },
+            oculus_audio_device_guid: if required.oculus_audio_device_guid {
+                Some(raw::AudioDeviceGuidOCULUS::load(entry, instance)?)
             } else {
                 None
             },
@@ -856,6 +1109,21 @@ impl InstanceExtensions {
             },
             varjo_quad_views: if required.varjo_quad_views {
                 Some(raw::QuadViewsVARJO {})
+            } else {
+                None
+            },
+            varjo_foveated_rendering: if required.varjo_foveated_rendering {
+                Some(raw::FoveatedRenderingVARJO {})
+            } else {
+                None
+            },
+            varjo_composition_layer_depth_test: if required.varjo_composition_layer_depth_test {
+                Some(raw::CompositionLayerDepthTestVARJO {})
+            } else {
+                None
+            },
+            varjo_environment_depth_estimation: if required.varjo_environment_depth_estimation {
+                Some(raw::EnvironmentDepthEstimationVARJO::load(entry, instance)?)
             } else {
                 None
             },
@@ -873,6 +1141,7 @@ pub enum Event<'a> {
     VisibilityMaskChangedKHR(VisibilityMaskChangedKHR<'a>),
     InteractionProfileChanged(InteractionProfileChanged<'a>),
     MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX<'a>),
+    DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -919,6 +1188,10 @@ impl<'a> Event<'a> {
                 Event::MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX::new(
                     typed,
                 ))
+            }
+            sys::StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB => {
+                let typed = &*(raw as *const sys::EventDataDisplayRefreshRateChangedFB);
+                Event::DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB::new(typed))
             }
             _ => {
                 return None;
@@ -1068,6 +1341,22 @@ impl<'a> MainSessionVisibilityChangedEXTX<'a> {
     #[inline]
     pub fn flags(self) -> OverlayMainSessionFlagsEXTX {
         (self.0).flags
+    }
+}
+#[derive(Copy, Clone)]
+pub struct DisplayRefreshRateChangedFB<'a>(&'a sys::EventDataDisplayRefreshRateChangedFB);
+impl<'a> DisplayRefreshRateChangedFB<'a> {
+    #[inline]
+    pub fn new(inner: &'a sys::EventDataDisplayRefreshRateChangedFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn from_display_refresh_rate(self) -> f32 {
+        (self.0).from_display_refresh_rate
+    }
+    #[inline]
+    pub fn to_display_refresh_rate(self) -> f32 {
+        (self.0).to_display_refresh_rate
     }
 }
 pub mod raw {
@@ -1571,6 +1860,12 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct HandJointsMotionRangeEXT {}
+    impl HandJointsMotionRangeEXT {
+        pub const VERSION: u32 = sys::EXT_hand_joints_motion_range_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct SamsungOdysseyControllerEXT {}
     impl SamsungOdysseyControllerEXT {
         pub const VERSION: u32 = sys::EXT_samsung_odyssey_controller_SPEC_VERSION;
@@ -1587,6 +1882,124 @@ pub mod raw {
     impl OverlayEXTX {
         pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXTX_OVERLAY_EXTENSION_NAME;
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct AndroidSurfaceSwapchainCreateFB {}
+    #[cfg(target_os = "android")]
+    impl AndroidSurfaceSwapchainCreateFB {
+        pub const VERSION: u32 = sys::FB_android_surface_swapchain_create_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct SwapchainUpdateStateFB {
+        pub update_swapchain: pfn::UpdateSwapchainFB,
+        pub get_swapchain_state: pfn::GetSwapchainStateFB,
+    }
+    impl SwapchainUpdateStateFB {
+        pub const VERSION: u32 = sys::FB_swapchain_update_state_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SWAPCHAIN_UPDATE_STATE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                update_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrUpdateSwapchainFB\0"),
+                )?),
+                get_swapchain_state: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSwapchainStateFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct DisplayRefreshRateFB {
+        pub enumerate_display_refresh_rates: pfn::EnumerateDisplayRefreshRatesFB,
+        pub get_display_refresh_rate: pfn::GetDisplayRefreshRateFB,
+        pub request_display_refresh_rate: pfn::RequestDisplayRefreshRateFB,
+    }
+    impl DisplayRefreshRateFB {
+        pub const VERSION: u32 = sys::FB_display_refresh_rate_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enumerate_display_refresh_rates: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateDisplayRefreshRatesFB\0"),
+                )?),
+                get_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetDisplayRefreshRateFB\0"),
+                )?),
+                request_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrRequestDisplayRefreshRateFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct ColorSpaceFB {
+        pub enumerate_color_spaces: pfn::EnumerateColorSpacesFB,
+        pub set_color_space: pfn::SetColorSpaceFB,
+    }
+    impl ColorSpaceFB {
+        pub const VERSION: u32 = sys::FB_color_space_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_COLOR_SPACE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enumerate_color_spaces: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateColorSpacesFB\0"),
+                )?),
+                set_color_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetColorSpaceFB\0"),
+                )?),
+            })
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct SwapchainUpdateStateAndroidSurfaceFB {}
+    #[cfg(target_os = "android")]
+    impl SwapchainUpdateStateAndroidSurfaceFB {
+        pub const VERSION: u32 = sys::FB_swapchain_update_state_android_surface_SPEC_VERSION;
+        pub const NAME: &'static [u8] =
+            sys::FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct SwapchainUpdateStateOpenglEsFB {}
+    impl SwapchainUpdateStateOpenglEsFB {
+        pub const VERSION: u32 = sys::FB_swapchain_update_state_opengl_es_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct SwapchainUpdateStateVulkanFB {}
+    impl SwapchainUpdateStateVulkanFB {
+        pub const VERSION: u32 = sys::FB_swapchain_update_state_vulkan_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViveCosmosControllerInteractionHTC {}
+    impl ViveCosmosControllerInteractionHTC {
+        pub const VERSION: u32 = sys::HTC_vive_cosmos_controller_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ControllerInteractionHUAWEI {}
@@ -1964,6 +2377,12 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct BindingModificationKHR {}
+    impl BindingModificationKHR {
+        pub const VERSION: u32 = sys::KHR_binding_modification_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_BINDING_MODIFICATION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct HeadlessMND {}
     impl HeadlessMND {
         pub const VERSION: u32 = sys::MND_headless_SPEC_VERSION;
@@ -2122,11 +2541,70 @@ pub mod raw {
     }
     #[cfg(windows)]
     #[derive(Copy, Clone)]
+    pub struct PerceptionAnchorInteropMSFT {
+        pub create_spatial_anchor_from_perception_anchor:
+            pfn::CreateSpatialAnchorFromPerceptionAnchorMSFT,
+        pub try_get_perception_anchor_from_spatial_anchor:
+            pfn::TryGetPerceptionAnchorFromSpatialAnchorMSFT,
+    }
+    #[cfg(windows)]
+    impl PerceptionAnchorInteropMSFT {
+        pub const VERSION: u32 = sys::MSFT_perception_anchor_interop_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_spatial_anchor_from_perception_anchor: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrCreateSpatialAnchorFromPerceptionAnchorMSFT\0",
+                        ),
+                    )?,
+                ),
+                try_get_perception_anchor_from_spatial_anchor: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrTryGetPerceptionAnchorFromSpatialAnchorMSFT\0",
+                        ),
+                    )?,
+                ),
+            })
+        }
+    }
+    #[cfg(windows)]
+    #[derive(Copy, Clone)]
     pub struct HolographicWindowAttachmentMSFT {}
     #[cfg(windows)]
     impl HolographicWindowAttachmentMSFT {
         pub const VERSION: u32 = sys::MSFT_holographic_window_attachment_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerReprojectionMSFT {
+        pub enumerate_reprojection_modes: pfn::EnumerateReprojectionModesMSFT,
+    }
+    impl CompositionLayerReprojectionMSFT {
+        pub const VERSION: u32 = sys::MSFT_composition_layer_reprojection_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enumerate_reprojection_modes: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReprojectionModesMSFT\0"),
+                )?),
+            })
+        }
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -2135,6 +2613,32 @@ pub mod raw {
     impl AndroidSessionStateEnableOCULUS {
         pub const VERSION: u32 = sys::OCULUS_android_session_state_enable_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct AudioDeviceGuidOCULUS {
+        pub get_audio_output_device_guid: pfn::GetAudioOutputDeviceGuidOculus,
+        pub get_audio_input_device_guid: pfn::GetAudioInputDeviceGuidOculus,
+    }
+    impl AudioDeviceGuidOCULUS {
+        pub const VERSION: u32 = sys::OCULUS_audio_device_guid_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_audio_output_device_guid: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetAudioOutputDeviceGuidOculus\0"),
+                )?),
+                get_audio_input_device_guid: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetAudioInputDeviceGuidOculus\0"),
+                )?),
+            })
+        }
     }
     #[derive(Copy, Clone)]
     pub struct AnalogThresholdVALVE {}
@@ -2147,6 +2651,39 @@ pub mod raw {
     impl QuadViewsVARJO {
         pub const VERSION: u32 = sys::VARJO_quad_views_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::VARJO_QUAD_VIEWS_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct FoveatedRenderingVARJO {}
+    impl FoveatedRenderingVARJO {
+        pub const VERSION: u32 = sys::VARJO_foveated_rendering_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VARJO_FOVEATED_RENDERING_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerDepthTestVARJO {}
+    impl CompositionLayerDepthTestVARJO {
+        pub const VERSION: u32 = sys::VARJO_composition_layer_depth_test_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VARJO_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct EnvironmentDepthEstimationVARJO {
+        pub set_environment_depth_estimation: pfn::SetEnvironmentDepthEstimationVARJO,
+    }
+    impl EnvironmentDepthEstimationVARJO {
+        pub const VERSION: u32 = sys::VARJO_environment_depth_estimation_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VARJO_ENVIRONMENT_DEPTH_ESTIMATION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                set_environment_depth_estimation: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetEnvironmentDepthEstimationVARJO\0"),
+                )?),
+            })
+        }
     }
 }
 #[allow(unused)]
@@ -2973,6 +3510,283 @@ pub(crate) mod builder {
         }
     }
     impl<'a> Default for HapticVibration<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[repr(transparent)]
+    pub struct SwapchainStateBase<'a> {
+        _inner: sys::SwapchainStateBaseHeaderFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SwapchainStateAndroidSurfaceDimensionsFB<'a> {
+        inner: sys::SwapchainStateAndroidSurfaceDimensionsFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[cfg(target_os = "android")]
+    impl<'a> SwapchainStateAndroidSurfaceDimensionsFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SwapchainStateAndroidSurfaceDimensionsFB {
+                    ty: sys::StructureType::SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::SwapchainStateAndroidSurfaceDimensionsFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SwapchainStateAndroidSurfaceDimensionsFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SwapchainStateAndroidSurfaceDimensionsFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn width(mut self, value: u32) -> Self {
+            self.inner.width = value;
+            self
+        }
+        #[inline]
+        pub fn height(mut self, value: u32) -> Self {
+            self.inner.height = value;
+            self
+        }
+    }
+    #[cfg(target_os = "android")]
+    impl<'a> Deref for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
+        type Target = SwapchainStateBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    #[cfg(target_os = "android")]
+    impl<'a> Default for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SwapchainStateSamplerOpenGLESFB<'a> {
+        inner: sys::SwapchainStateSamplerOpenGLESFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> SwapchainStateSamplerOpenGLESFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SwapchainStateSamplerOpenGLESFB {
+                    ty: sys::StructureType::SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::SwapchainStateSamplerOpenGLESFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SwapchainStateSamplerOpenGLESFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SwapchainStateSamplerOpenGLESFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn min_filter(mut self, value: EGLenum) -> Self {
+            self.inner.min_filter = value;
+            self
+        }
+        #[inline]
+        pub fn mag_filter(mut self, value: EGLenum) -> Self {
+            self.inner.mag_filter = value;
+            self
+        }
+        #[inline]
+        pub fn wrap_mode_s(mut self, value: EGLenum) -> Self {
+            self.inner.wrap_mode_s = value;
+            self
+        }
+        #[inline]
+        pub fn wrap_mode_t(mut self, value: EGLenum) -> Self {
+            self.inner.wrap_mode_t = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_red(mut self, value: EGLenum) -> Self {
+            self.inner.swizzle_red = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_green(mut self, value: EGLenum) -> Self {
+            self.inner.swizzle_green = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_blue(mut self, value: EGLenum) -> Self {
+            self.inner.swizzle_blue = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_alpha(mut self, value: EGLenum) -> Self {
+            self.inner.swizzle_alpha = value;
+            self
+        }
+        #[inline]
+        pub fn max_anisotropy(mut self, value: f32) -> Self {
+            self.inner.max_anisotropy = value;
+            self
+        }
+        #[inline]
+        pub fn border_color(mut self, value: Color4f) -> Self {
+            self.inner.border_color = value;
+            self
+        }
+    }
+    impl<'a> Deref for SwapchainStateSamplerOpenGLESFB<'a> {
+        type Target = SwapchainStateBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for SwapchainStateSamplerOpenGLESFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SwapchainStateSamplerVulkanFB<'a> {
+        inner: sys::SwapchainStateSamplerVulkanFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> SwapchainStateSamplerVulkanFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SwapchainStateSamplerVulkanFB {
+                    ty: sys::StructureType::SWAPCHAIN_STATE_SAMPLER_VULKAN_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::SwapchainStateSamplerVulkanFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SwapchainStateSamplerVulkanFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SwapchainStateSamplerVulkanFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn min_filter(mut self, value: VkFilter) -> Self {
+            self.inner.min_filter = value;
+            self
+        }
+        #[inline]
+        pub fn mag_filter(mut self, value: VkFilter) -> Self {
+            self.inner.mag_filter = value;
+            self
+        }
+        #[inline]
+        pub fn mipmap_mode(mut self, value: VkSamplerMipmapMode) -> Self {
+            self.inner.mipmap_mode = value;
+            self
+        }
+        #[inline]
+        pub fn wrap_mode_s(mut self, value: VkSamplerAddressMode) -> Self {
+            self.inner.wrap_mode_s = value;
+            self
+        }
+        #[inline]
+        pub fn wrap_mode_t(mut self, value: VkSamplerAddressMode) -> Self {
+            self.inner.wrap_mode_t = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_red(mut self, value: VkComponentSwizzle) -> Self {
+            self.inner.swizzle_red = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_green(mut self, value: VkComponentSwizzle) -> Self {
+            self.inner.swizzle_green = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_blue(mut self, value: VkComponentSwizzle) -> Self {
+            self.inner.swizzle_blue = value;
+            self
+        }
+        #[inline]
+        pub fn swizzle_alpha(mut self, value: VkComponentSwizzle) -> Self {
+            self.inner.swizzle_alpha = value;
+            self
+        }
+        #[inline]
+        pub fn max_anisotropy(mut self, value: f32) -> Self {
+            self.inner.max_anisotropy = value;
+            self
+        }
+        #[inline]
+        pub fn border_color(mut self, value: Color4f) -> Self {
+            self.inner.border_color = value;
+            self
+        }
+    }
+    impl<'a> Deref for SwapchainStateSamplerVulkanFB<'a> {
+        type Target = SwapchainStateBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for SwapchainStateSamplerVulkanFB<'a> {
         fn default() -> Self {
             Self::new()
         }
