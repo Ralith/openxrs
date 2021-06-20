@@ -642,6 +642,7 @@ fn main() {
                 .locate(&stage, xr_frame_state.predicted_display_time)
                 .unwrap();
 
+            let mut printed = false;
             if left_action.is_active(&session, xr::Path::NULL).unwrap() {
                 print!(
                     "Left Hand: ({:0<12},{:0<12},{:0<12}), ",
@@ -649,6 +650,7 @@ fn main() {
                     left_location.pose.position.y,
                     left_location.pose.position.z
                 );
+                printed = true;
             }
 
             if right_action.is_active(&session, xr::Path::NULL).unwrap() {
@@ -658,8 +660,11 @@ fn main() {
                     right_location.pose.position.y,
                     right_location.pose.position.z
                 );
+                printed = true;
             }
-            println!();
+            if printed {
+                println!();
+            }
 
             // Fetch the view transforms. To minimize latency, we intentionally do this *after*
             // recording commands to render the scene, i.e. at the last possible moment before
