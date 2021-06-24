@@ -15,7 +15,7 @@ impl Space {
     ///
     /// `handle` must be a valid reference space handle associated with `session`.
     #[inline]
-    pub unsafe fn reference_from_raw<G: Graphics>(session: Session<G>, handle: sys::Space) -> Self {
+    pub unsafe fn reference_from_raw<G>(session: Session<G>, handle: sys::Space) -> Self {
         Self {
             session: session.inner,
             _action_guard: None,
@@ -29,7 +29,7 @@ impl Space {
     ///
     /// `handle` must be a valid action space handle for `action` and associated with `session`.
     #[inline]
-    pub unsafe fn action_from_raw<G: Graphics>(
+    pub unsafe fn action_from_raw<G>(
         action: Action<Posef>,
         session: Session<G>,
         handle: sys::Space,

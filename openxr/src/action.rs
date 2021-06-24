@@ -41,7 +41,7 @@ impl<T: ActionTy> Action<T> {
 
     /// Input sources currently bound to this action
     #[inline]
-    pub fn bound_sources<G: Graphics>(&self, session: &Session<G>) -> Result<Vec<Path>> {
+    pub fn bound_sources<G>(&self, session: &Session<G>) -> Result<Vec<Path>> {
         let info = sys::BoundSourcesForActionEnumerateInfo {
             ty: sys::BoundSourcesForActionEnumerateInfo::TYPE,
             next: ptr::null(),
@@ -70,18 +70,14 @@ impl<T: ActionTy> Clone for Action<T> {
 
 impl<T: ActionInput> Action<T> {
     /// Retrieve the current state
-    pub fn state<G: Graphics>(
-        &self,
-        session: &Session<G>,
-        subaction_path: Path,
-    ) -> Result<ActionState<T>> {
+    pub fn state<G>(&self, session: &Session<G>, subaction_path: Path) -> Result<ActionState<T>> {
         T::get(self, session, subaction_path)
     }
 }
 
 impl Action<Posef> {
     /// Creates a `Space` relative to this action
-    pub fn create_space<G: Graphics>(
+    pub fn create_space<G>(
         &self,
         session: Session<G>,
         subaction_path: Path,
@@ -105,11 +101,7 @@ impl Action<Posef> {
         }
     }
 
-    pub fn is_active<G: Graphics>(
-        &self,
-        session: &Session<G>,
-        subaction_path: Path,
-    ) -> Result<bool> {
+    pub fn is_active<G>(&self, session: &Session<G>, subaction_path: Path) -> Result<bool> {
         let info = sys::ActionStateGetInfo {
             ty: sys::ActionStateGetInfo::TYPE,
             next: ptr::null(),
@@ -130,7 +122,7 @@ impl Action<Posef> {
 }
 
 impl Action<Haptic> {
-    pub fn apply_feedback<G: Graphics>(
+    pub fn apply_feedback<G>(
         &self,
         session: &Session<G>,
         subaction_path: Path,
@@ -152,11 +144,7 @@ impl Action<Haptic> {
         Ok(())
     }
 
-    pub fn stop_feedback<G: Graphics>(
-        &self,
-        session: &Session<G>,
-        subaction_path: Path,
-    ) -> Result<()> {
+    pub fn stop_feedback<G>(&self, session: &Session<G>, subaction_path: Path) -> Result<()> {
         let info = sys::HapticActionInfo {
             ty: sys::HapticActionInfo::TYPE,
             next: ptr::null(),
@@ -185,7 +173,7 @@ pub struct ActionState<T: ActionInput> {
 
 pub trait ActionInput: ActionTy {
     #[doc(hidden)]
-    fn get<G: Graphics>(
+    fn get<G>(
         action: &Action<Self>,
         session: &Session<G>,
         subaction_path: Path,
@@ -197,7 +185,7 @@ impl ActionTy for bool {
 }
 
 impl ActionInput for bool {
-    fn get<G: Graphics>(
+    fn get<G>(
         action: &Action<Self>,
         session: &Session<G>,
         subaction_path: Path,
@@ -231,7 +219,7 @@ impl ActionTy for f32 {
 }
 
 impl ActionInput for f32 {
-    fn get<G: Graphics>(
+    fn get<G>(
         action: &Action<Self>,
         session: &Session<G>,
         subaction_path: Path,
@@ -265,7 +253,7 @@ impl ActionTy for Vector2f {
 }
 
 impl ActionInput for Vector2f {
-    fn get<G: Graphics>(
+    fn get<G>(
         action: &Action<Self>,
         session: &Session<G>,
         subaction_path: Path,

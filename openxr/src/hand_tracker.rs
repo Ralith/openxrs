@@ -26,14 +26,14 @@ impl HandTracker {
     ///
     /// `handle` must be a valid hand tracker handle associated with `session`.
     #[inline]
-    pub unsafe fn from_raw<G: Graphics>(session: &Session<G>, handle: sys::HandTrackerEXT) -> Self {
+    pub unsafe fn from_raw<G>(session: &Session<G>, handle: sys::HandTrackerEXT) -> Self {
         Self {
             handle,
             session: session.inner.clone(),
         }
     }
 
-    pub(crate) fn create<G: Graphics>(session: &Session<G>, hand: Hand) -> Result<Self> {
+    pub(crate) fn create<G>(session: &Session<G>, hand: Hand) -> Result<Self> {
         let fp = session.inner.instance.exts().ext_hand_tracking.as_ref();
         let fp = if let Some(fp) = fp {
             fp
