@@ -326,13 +326,6 @@ impl<G> Session<G> {
         self.inner.instance.fp()
     }
 
-    pub(crate) fn clone(&self) -> Self {
-        Self {
-            inner: self.inner.clone(),
-            _marker: PhantomData,
-        }
-    }
-
     /// Convert into a graphics API agnostic session
     ///
     /// Useful for applications which support multiple graphics APIs, but don't want `G` parameters
