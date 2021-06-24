@@ -5,7 +5,7 @@ use crate::*;
 
 /// A rendering session using a particular graphics API `G`
 ///
-/// Convertible into an API-agnostic session using `into_any_graphics`.
+/// Convertible into an API-agnostic session using [`Session::into_any_graphics`].
 pub struct Session<G> {
     pub(crate) inner: Arc<SessionInner>,
     _marker: PhantomData<G>,
@@ -330,7 +330,7 @@ impl<G> Session<G> {
     ///
     /// Useful for applications which support multiple graphics APIs, but don't want `G` parameters
     /// everywhere.
-    pub fn into_any_grapics(self) -> Session<AnyGraphics> {
+    pub fn into_any_graphics(self) -> Session<AnyGraphics> {
         Session {
             inner: self.inner,
             _marker: PhantomData,
