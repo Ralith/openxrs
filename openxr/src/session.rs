@@ -4,34 +4,14 @@ use std::{marker::PhantomData, ptr, sync::Arc};
 use crate::*;
 
 /// A rendering session using a particular graphics API `G`
-pub struct Session<G: Graphics> {
+///
+/// Convertible into an API-agnostic session using `into_any_graphics`.
+pub struct Session<G> {
     pub(crate) inner: Arc<SessionInner>,
     _marker: PhantomData<G>,
 }
 
-impl<G: Graphics> Session<G> {
-    /// Take ownership of an existing session handle
-    ///
-    /// # Safety
-    ///
-    /// `handle` must be a valid session handle associated with `instance` which is not currently
-    /// inside a frame and was created for graphics API `G`.
-    #[inline]
-    pub unsafe fn from_raw(
-        instance: Instance,
-        handle: sys::Session,
-    ) -> (Self, FrameWaiter, FrameStream<G>) {
-        let session = Self {
-            inner: Arc::new(SessionInner { instance, handle }),
-            _marker: PhantomData,
-        };
-        (
-            session.clone(),
-            FrameWaiter::new(session.clone()),
-            FrameStream::new(session),
-        )
-    }
-
+impl<G> Session<G> {
     /// Access the raw session handle
     #[inline]
     pub fn as_raw(&self) -> sys::Session {
@@ -147,40 +127,6 @@ impl<G: Graphics> Session<G> {
                 &mut out,
             ))?;
             Ok(Space::reference_from_raw(self.clone(), out))
-        }
-    }
-
-    /// Enumerate texture formats supported by the current session
-    ///
-    /// The type of formats returned is dependent on the graphics API for which the session was
-    /// created.
-    #[inline]
-    pub fn enumerate_swapchain_formats(&self) -> Result<Vec<G::Format>> {
-        let raw = get_arr(|capacity, count, buf| unsafe {
-            (self.fp().enumerate_swapchain_formats)(self.as_raw(), capacity, count, buf)
-        })?;
-        Ok(raw.into_iter().map(G::raise_format).collect())
-    }
-
-    #[inline]
-    pub fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
-        let mut out = sys::Swapchain::NULL;
-        let info = sys::SwapchainCreateInfo {
-            ty: sys::SwapchainCreateInfo::TYPE,
-            next: ptr::null(),
-            create_flags: info.create_flags,
-            usage_flags: info.usage_flags,
-            format: G::lower_format(info.format),
-            sample_count: info.sample_count,
-            width: info.width,
-            height: info.height,
-            face_count: info.face_count,
-            array_size: info.array_size,
-            mip_count: info.mip_count,
-        };
-        unsafe {
-            cvt((self.fp().create_swapchain)(self.as_raw(), &info, &mut out))?;
-            Ok(Swapchain::from_raw(self.clone(), out))
         }
     }
 
@@ -386,6 +332,75 @@ impl<G: Graphics> Session<G> {
             _marker: PhantomData,
         }
     }
+
+    /// Convert into a graphics API agnostic session
+    ///
+    /// Useful for applications which support multiple graphics APIs, but don't want `G` parameters
+    /// everywhere.
+    pub fn into_any_grapics(self) -> Session<AnyGraphics> {
+        Session {
+            inner: self.inner,
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<G: Graphics> Session<G> {
+    /// Take ownership of an existing session handle
+    ///
+    /// # Safety
+    ///
+    /// `handle` must be a valid session handle associated with `instance` which is not currently
+    /// inside a frame and was created for graphics API `G`.
+    #[inline]
+    pub unsafe fn from_raw(
+        instance: Instance,
+        handle: sys::Session,
+    ) -> (Self, FrameWaiter, FrameStream<G>) {
+        let session = Self {
+            inner: Arc::new(SessionInner { instance, handle }),
+            _marker: PhantomData,
+        };
+        (
+            session.clone(),
+            FrameWaiter::new(session.clone()),
+            FrameStream::new(session),
+        )
+    }
+
+    /// Enumerate texture formats supported by the current session
+    ///
+    /// The type of formats returned is dependent on the graphics API for which the session was
+    /// created.
+    #[inline]
+    pub fn enumerate_swapchain_formats(&self) -> Result<Vec<G::Format>> {
+        let raw = get_arr(|capacity, count, buf| unsafe {
+            (self.fp().enumerate_swapchain_formats)(self.as_raw(), capacity, count, buf)
+        })?;
+        Ok(raw.into_iter().map(G::raise_format).collect())
+    }
+
+    #[inline]
+    pub fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
+        let mut out = sys::Swapchain::NULL;
+        let info = sys::SwapchainCreateInfo {
+            ty: sys::SwapchainCreateInfo::TYPE,
+            next: ptr::null(),
+            create_flags: info.create_flags,
+            usage_flags: info.usage_flags,
+            format: G::lower_format(info.format),
+            sample_count: info.sample_count,
+            width: info.width,
+            height: info.height,
+            face_count: info.face_count,
+            array_size: info.array_size,
+            mip_count: info.mip_count,
+        };
+        unsafe {
+            cvt((self.fp().create_swapchain)(self.as_raw(), &info, &mut out))?;
+            Ok(Swapchain::from_raw(self.clone(), out))
+        }
+    }
 }
 
 /// Mesh obtained from `Session::get_visibility_mask`
@@ -395,7 +410,7 @@ pub struct VisibilityMask {
     pub indices: Vec<u32>,
 }
 
-impl<G: Graphics> Clone for Session<G> {
+impl<G> Clone for Session<G> {
     fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
@@ -416,6 +431,9 @@ impl Drop for SessionInner {
         }
     }
 }
+
+/// Type parameter for graphics API agnostic [`Session`]s
+pub enum AnyGraphics {}
 
 #[derive(Debug, Copy, Clone)]
 pub struct SwapchainCreateInfo<G: Graphics> {
@@ -473,7 +491,7 @@ pub struct FrameWaiter {
 }
 
 impl FrameWaiter {
-    fn new<G: Graphics>(session: Session<G>) -> Self {
+    fn new<G>(session: Session<G>) -> Self {
         Self {
             session: session.inner,
         }
