@@ -27,11 +27,12 @@ impl Graphics for Vulkan {
     fn requirements(instance: &Instance, system: SystemId) -> Result<Requirements> {
         let out = unsafe {
             let mut x = sys::GraphicsRequirementsVulkanKHR::out(ptr::null_mut());
-            cvt((instance.vulkan().get_vulkan_graphics_requirements2)(
-                instance.as_raw(),
-                system,
-                x.as_mut_ptr(),
-            ))?;
+            let fp = if instance.exts().khr_vulkan_enable2.is_some() {
+                instance.vulkan().get_vulkan_graphics_requirements2
+            } else {
+                instance.vulkan_legacy().get_vulkan_graphics_requirements
+            };
+            cvt(fp(instance.as_raw(), system, x.as_mut_ptr()))?;
             x.assume_init()
         };
         Ok(Requirements {
