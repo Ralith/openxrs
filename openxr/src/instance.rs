@@ -225,11 +225,48 @@ impl Instance {
         Ok(Ok(instance))
     }
 
+    /// Identify the Vulkan instance extensions required by a system
+    ///
+    /// Returns a space-delimited list of Vulkan instance extension names.
+    ///
+    /// **Note:** This method requires `khr_vulkan_enable` extension. Applications should use
+    /// `khr_vulkan_enable2` instead, if possible.
+    #[inline]
+    pub fn vulkan_instance_extensions(&self, system: SystemId) -> Result<String> {
+        get_str(|input, output, buf| unsafe {
+            (self.vulkan_legacy().get_vulkan_instance_extensions)(
+                self.as_raw(),
+                system,
+                input,
+                output,
+                buf,
+            )
+        })
+    }
+
+    /// Identify the Vulkan device extensions required by a system
+    ///
+    /// Returns a space-delimited list of Vulkan device extension names.
+    ///
+    /// **Note:** This method requires `khr_vulkan_enable` extension. Applications should use
+    /// `khr_vulkan_enable2` instead, if possible.
+    #[inline]
+    pub fn vulkan_device_extensions(&self, system: SystemId) -> Result<String> {
+        get_str(|input, output, buf| unsafe {
+            (self.vulkan_legacy().get_vulkan_device_extensions)(
+                self.as_raw(),
+                system,
+                input,
+                output,
+                buf,
+            )
+        })
+    }
+
     /// Get a suitable [`VkPhysicalDevice`] for use with a particular `system`
     ///
-    /// Call [`Instance::create_vulkan_instance()`] first to get a suitable `VkInstance`.
-    ///
-    /// Requires KHR_vulkan_enable2.
+    /// When using 'khr_vulkan_enable2`, call [`Instance::create_vulkan_instance()`] first to get a
+    /// suitable `VkInstance`.
     #[inline]
     pub fn vulkan_graphics_device(
         &self,
@@ -238,16 +275,25 @@ impl Instance {
     ) -> Result<VkPhysicalDevice> {
         let mut out = ptr::null();
         unsafe {
-            cvt((self.vulkan().get_vulkan_graphics_device2)(
-                self.as_raw(),
-                &sys::VulkanGraphicsDeviceGetInfoKHR {
-                    ty: sys::VulkanGraphicsDeviceGetInfoKHR::TYPE,
-                    next: ptr::null(),
-                    system_id: system,
+            if self.exts().khr_vulkan_enable2.is_some() {
+                cvt((self.vulkan().get_vulkan_graphics_device2)(
+                    self.as_raw(),
+                    &sys::VulkanGraphicsDeviceGetInfoKHR {
+                        ty: sys::VulkanGraphicsDeviceGetInfoKHR::TYPE,
+                        next: ptr::null(),
+                        system_id: system,
+                        vulkan_instance,
+                    },
+                    &mut out,
+                ))?;
+            } else {
+                cvt((self.vulkan_legacy().get_vulkan_graphics_device)(
+                    self.as_raw(),
+                    system,
                     vulkan_instance,
-                },
-                &mut out,
-            ))?;
+                    &mut out,
+                ))?;
+            }
         }
         Ok(out)
     }
@@ -571,6 +617,12 @@ impl Instance {
             .khr_vulkan_enable2
             .as_ref()
             .expect("KHR_vulkan_enable2 not loaded")
+    }
+    pub(crate) fn vulkan_legacy(&self) -> &raw::VulkanEnableKHR {
+        self.exts()
+            .khr_vulkan_enable
+            .as_ref()
+            .expect("KHR_vulkan_enable not loaded")
     }
     pub(crate) fn opengl(&self) -> &raw::OpenglEnableKHR {
         self.exts()
