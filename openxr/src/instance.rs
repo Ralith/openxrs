@@ -229,10 +229,10 @@ impl Instance {
     ///
     /// Returns a space-delimited list of Vulkan instance extension names.
     ///
-    /// **Note:** This method requires `khr_vulkan_enable` extension. Applications should use
+    /// **Note:** This method requires the `khr_vulkan_enable` extension. Applications should use
     /// `khr_vulkan_enable2` instead, if possible.
     #[inline]
-    pub fn vulkan_instance_extensions(&self, system: SystemId) -> Result<String> {
+    pub fn vulkan_legacy_instance_extensions(&self, system: SystemId) -> Result<String> {
         get_str(|input, output, buf| unsafe {
             (self.vulkan_legacy().get_vulkan_instance_extensions)(
                 self.as_raw(),
@@ -248,10 +248,10 @@ impl Instance {
     ///
     /// Returns a space-delimited list of Vulkan device extension names.
     ///
-    /// **Note:** This method requires `khr_vulkan_enable` extension. Applications should use
+    /// **Note:** This method requires the `khr_vulkan_enable` extension. Applications should use
     /// `khr_vulkan_enable2` instead, if possible.
     #[inline]
-    pub fn vulkan_device_extensions(&self, system: SystemId) -> Result<String> {
+    pub fn vulkan_legacy_device_extensions(&self, system: SystemId) -> Result<String> {
         get_str(|input, output, buf| unsafe {
             (self.vulkan_legacy().get_vulkan_device_extensions)(
                 self.as_raw(),
