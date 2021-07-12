@@ -32,5 +32,40 @@ ctrlc = "3.1.5"
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["profileapi"] }
 
+[target.'cfg(target_os = "android")'.dependencies]
+ndk-glue = "0.3"
+
 [package.metadata.docs.rs]
 features = ["linked", "loaded", "mint"]
+
+[[example]]
+name = "vulkan"
+
+[[example]]
+name = "vulkan-android"
+path = "examples/vulkan.rs"
+crate-type = ["cdylib"]
+
+# The following manifest metadata is used by cargo-apk to configure the example Android app for the Oculus Quest 1 and Quest 2.
+# It does not affect the openxr crate.
+[package.metadata.android]
+build_targets = ["aarch64-linux-android"]
+runtime_libs = "examples/libs"
+
+[package.metadata.android.sdk]
+min_sdk_version = 21
+target_sdk_version = 30
+
+[package.metadata.android.application.activity]
+theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen"
+config_changes = "density|keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode"
+launch_mode = "singleTask"
+orientation = "landscape"
+resizeable_activity = "false"
+
+[[package.metadata.android.application.activity.intent_filter]]
+actions = ["android.intent.action.MAIN"]
+categories = [
+    "com.oculus.intent.category.VR",
+    "android.intent.category.LAUNCHER",
+]

@@ -6,6 +6,7 @@
 //! largely decouple its Vulkan and OpenXR components and handle errors gracefully.
 
 use std::{
+    ffi::{CStr, CString},
     io::Cursor,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -22,7 +23,8 @@ use ash::{
 use openxr as xr;
 
 #[allow(clippy::field_reassign_with_default)] // False positive, might be fixed 1.51
-fn main() {
+#[cfg_attr(target_os = "android", ndk_glue::main)]
+pub fn main() {
     // Handle interrupts gracefully
     let running = Arc::new(AtomicBool::new(true));
     let r = running.clone();
@@ -37,6 +39,9 @@ fn main() {
     let entry = xr::Entry::load()
         .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
 
+    #[cfg(target_os = "android")]
+    entry.initialize_android_loader().unwrap();
+
     // OpenXR will fail to initialize if we ask for an extension that OpenXR can't provide! So we
     // need to check all our extensions before initializing OpenXR with them. Note that even if the
     // extension is present, it's still possible you may not be able to use it. For example: the
@@ -47,11 +52,19 @@ fn main() {
     // If a required extension isn't present, you want to ditch out here! It's possible something
     // like your rendering API might not be provided by the active runtime. APIs like OpenGL don't
     // have universal support.
-    assert!(available_extensions.khr_vulkan_enable2);
+    assert!(available_extensions.khr_vulkan_enable || available_extensions.khr_vulkan_enable2);
 
     // Initialize OpenXR with the extensions we've found!
     let mut enabled_extensions = xr::ExtensionSet::default();
-    enabled_extensions.khr_vulkan_enable2 = true;
+    if available_extensions.khr_vulkan_enable2 {
+        enabled_extensions.khr_vulkan_enable2 = true;
+    } else {
+        enabled_extensions.khr_vulkan_enable = true;
+    }
+    #[cfg(target_os = "android")]
+    {
+        enabled_extensions.khr_android_create_instance = true;
+    }
     let xr_instance = entry
         .create_instance(
             &xr::ApplicationInfo {
@@ -90,6 +103,7 @@ fn main() {
     let reqs = xr_instance
         .graphics_requirements::<xr::Vulkan>(system)
         .unwrap();
+
     if vk_target_version_xr < reqs.min_api_version_supported
         || vk_target_version_xr.major() > reqs.max_api_version_supported.major()
     {
@@ -108,20 +122,46 @@ fn main() {
         .api_version(vk_target_version);
 
     unsafe {
-        let vk_instance = xr_instance
-            .create_vulkan_instance(
-                system,
-                std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
-                &vk::InstanceCreateInfo::builder().application_info(&vk_app_info) as *const _
-                    as *const _,
+        let vk_instance = if enabled_extensions.khr_vulkan_enable2 {
+            let vk_instance = xr_instance
+                .create_vulkan_instance(
+                    system,
+                    std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
+                    &vk::InstanceCreateInfo::builder().application_info(&vk_app_info) as *const _
+                        as *const _,
+                )
+                .expect("XR error creating Vulkan instance")
+                .map_err(vk::Result::from_raw)
+                .expect("Vulkan error creating Vulkan instance");
+            ash::Instance::load(
+                vk_entry.static_fn(),
+                vk::Instance::from_raw(vk_instance as _),
             )
-            .expect("XR error creating Vulkan instance")
-            .map_err(vk::Result::from_raw)
-            .expect("Vulkan error creating Vulkan instance");
-        let vk_instance = ash::Instance::load(
-            vk_entry.static_fn(),
-            vk::Instance::from_raw(vk_instance as _),
-        );
+        } else {
+            let vk_instance_exts = xr_instance
+                .vulkan_legacy_instance_extensions(system)
+                .unwrap()
+                .split(' ')
+                .map(|x| CString::new(x).unwrap())
+                .collect::<Vec<_>>();
+            println!(
+                "Required Vulkan instance extensions: {:?}",
+                vk_instance_exts
+            );
+            let vk_instance_ext_ptrs = vk_instance_exts
+                .iter()
+                .map(|x| x.as_ptr())
+                .collect::<Vec<_>>();
+
+            vk_entry
+                .create_instance(
+                    &vk::InstanceCreateInfo::builder()
+                        .application_info(&vk_app_info)
+                        .enabled_extension_names(&vk_instance_ext_ptrs),
+                    None,
+                )
+                .expect("Vulkan error creating Vulkan instance")
+        };
 
         let vk_physical_device = vk::PhysicalDevice::from_raw(
             xr_instance
@@ -148,26 +188,72 @@ fn main() {
             })
             .expect("Vulkan device has no graphics queue");
 
-        let vk_device = xr_instance
-            .create_vulkan_device(
-                system,
-                std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
-                vk_physical_device.as_raw() as _,
-                &vk::DeviceCreateInfo::builder()
-                    .queue_create_infos(&[vk::DeviceQueueCreateInfo::builder()
-                        .queue_family_index(queue_family_index)
-                        .queue_priorities(&[1.0])
-                        .build()])
-                    .push_next(&mut vk::PhysicalDeviceMultiviewFeatures {
-                        multiview: vk::TRUE,
-                        ..Default::default()
-                    }) as *const _ as *const _,
-            )
-            .expect("XR error creating Vulkan device")
-            .map_err(vk::Result::from_raw)
-            .expect("Vulkan error creating Vulkan device");
-        let vk_device =
-            ash::Device::load(vk_instance.fp_v1_0(), vk::Device::from_raw(vk_device as _));
+        let vk_device = if enabled_extensions.khr_vulkan_enable2 {
+            let vk_device = xr_instance
+                .create_vulkan_device(
+                    system,
+                    std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
+                    vk_physical_device.as_raw() as _,
+                    &vk::DeviceCreateInfo::builder()
+                        .queue_create_infos(&[vk::DeviceQueueCreateInfo::builder()
+                            .queue_family_index(queue_family_index)
+                            .queue_priorities(&[1.0])
+                            .build()])
+                        .push_next(&mut vk::PhysicalDeviceMultiviewFeatures {
+                            multiview: vk::TRUE,
+                            ..Default::default()
+                        }) as *const _ as *const _,
+                )
+                .expect("XR error creating Vulkan device")
+                .map_err(vk::Result::from_raw)
+                .expect("Vulkan error creating Vulkan device");
+
+            ash::Device::load(vk_instance.fp_v1_0(), vk::Device::from_raw(vk_device as _))
+        } else {
+            let vk_device_exts = xr_instance
+                .vulkan_legacy_device_extensions(system)
+                .unwrap()
+                .split(' ')
+                .map(|x| CString::new(x).unwrap())
+                .collect::<Vec<_>>();
+            println!("Required Vulkan device extensions: {:?}", vk_device_exts);
+            let vk_device_ext_ptrs = vk_device_exts
+                .iter()
+                .map(|x| x.as_ptr())
+                .collect::<Vec<_>>();
+
+            // Check that we have the required Vulkan device extensions.
+            let device_extensions = vk_instance
+                .enumerate_device_extension_properties(vk_physical_device)
+                .unwrap();
+            for ext in &vk_device_exts {
+                if !device_extensions.iter().any(|inst_ext| {
+                    CStr::from_ptr(inst_ext.extension_name.as_ptr()) == ext.as_c_str()
+                }) {
+                    panic!(
+                        "OpenXR runtime requires missing Vulkan device extension {:?}",
+                        ext
+                    );
+                }
+            }
+
+            vk_instance
+                .create_device(
+                    vk_physical_device,
+                    &vk::DeviceCreateInfo::builder()
+                        .queue_create_infos(&[vk::DeviceQueueCreateInfo::builder()
+                            .queue_family_index(queue_family_index)
+                            .queue_priorities(&[1.0])
+                            .build()])
+                        .enabled_extension_names(&vk_device_ext_ptrs)
+                        .push_next(&mut vk::PhysicalDeviceVulkan11Features {
+                            multiview: vk::TRUE,
+                            ..Default::default()
+                        }),
+                    None,
+                )
+                .expect("Vulkan error creating Vulkan device")
+        };
 
         let queue = vk_device.get_device_queue(queue_family_index, 0);
 
@@ -762,7 +848,7 @@ fn main() {
     println!("exiting cleanly");
 }
 
-pub const COLOR_FORMAT: vk::Format = vk::Format::B8G8R8A8_SRGB;
+pub const COLOR_FORMAT: vk::Format = vk::Format::R8G8B8A8_SRGB;
 pub const VIEW_COUNT: u32 = 2;
 const VIEW_TYPE: xr::ViewConfigurationType = xr::ViewConfigurationType::PRIMARY_STEREO;
 
