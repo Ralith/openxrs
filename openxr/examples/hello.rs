@@ -1,11 +1,15 @@
 use openxr as xr;
 
+#[cfg_attr(target_os = "android", ndk_glue::main)]
 fn main() {
     #[cfg(feature = "linked")]
     let entry = xr::Entry::linked();
     #[cfg(not(feature = "linked"))]
     let entry = xr::Entry::load()
         .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature");
+
+    #[cfg(target_os = "android")]
+    entry.initialize_android_loader();
 
     let extensions = entry.enumerate_extensions().unwrap();
     println!("supported extensions: {:#?}", extensions);
