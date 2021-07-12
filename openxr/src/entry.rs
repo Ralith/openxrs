@@ -108,7 +108,31 @@ impl Entry {
         Ok(f.unwrap())
     }
 
-    /// Create an OpenXR instance with certain extensions enabled
+    /// Initialize Android loader. This must be called before `create_instance()`.
+    #[cfg(target_os = "android")]
+    pub fn initialize_android_loader(&self) -> Result<()> {
+        let loader_init = unsafe { raw::LoaderInitKHR::load(self, sys::Instance::NULL)? };
+
+        let native_activity = ndk_glue::native_activity();
+
+        let loader_info = sys::LoaderInitInfoAndroidKHR {
+            ty: sys::LoaderInitInfoAndroidKHR::TYPE,
+            next: ptr::null(),
+            application_vm: native_activity.vm() as _,
+            application_context: native_activity.activity() as _,
+        };
+
+        unsafe {
+            cvt((loader_init.initialize_loader)(
+                &loader_info as *const _ as _,
+            ))?;
+        }
+
+        Ok(())
+    }
+
+    /// Create an OpenXR instance with certain extensions enabled. Android support can be enabled by
+    /// setting `khr_android_create_instance` to `true`.
     ///
     /// Most applications will want to enable at least one graphics API extension
     /// (e.g. `khr_vulkan_enable2`) so that a `Session` can be created for rendering.
@@ -141,9 +165,30 @@ impl Entry {
             .iter()
             .map(|x| x.as_ptr() as *const _)
             .collect::<Vec<_>>();
+
+        #[cfg(not(target_os = "android"))]
+        let next = ptr::null();
+        #[cfg(target_os = "android")]
+        let android_info = {
+            let native_activity = ndk_glue::native_activity();
+
+            sys::InstanceCreateInfoAndroidKHR {
+                ty: sys::InstanceCreateInfoAndroidKHR::TYPE,
+                next: ptr::null(),
+                application_vm: native_activity.vm() as _,
+                application_activity: native_activity.activity() as _,
+            }
+        };
+        #[cfg(target_os = "android")]
+        let next = if required_extensions.khr_android_create_instance {
+            &android_info as *const _ as _
+        } else {
+            ptr::null()
+        };
+
         let mut info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
-            next: ptr::null(),
+            next,
             create_flags: Default::default(),
             application_info: sys::ApplicationInfo {
                 application_name: [0; sys::MAX_APPLICATION_NAME_SIZE],
