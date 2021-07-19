@@ -368,7 +368,26 @@ impl Instance {
         info: &G::SessionCreateInfo,
     ) -> Result<(Session<G>, FrameWaiter, FrameStream<G>)> {
         let handle = G::create_session(self, system, info)?;
-        Ok(Session::from_raw(self.clone(), handle))
+        Ok(Session::from_raw(self.clone(), handle, Box::new(())))
+    }
+
+    /// Refer to [`Instance::create_session()`]. The extra `drop_guard` argument is dropped after
+    /// the session is destroyed and this can be used to ensure safety.
+    ///
+    /// # Safety
+    ///
+    /// The requirements documented by the graphics API extension must be respected. Among other
+    /// requirements, `info` must contain valid handles, and certain operations must be externally
+    /// synchronized.
+    #[inline]
+    pub unsafe fn create_session_with_guard<G: Graphics>(
+        &self,
+        system: SystemId,
+        info: &G::SessionCreateInfo,
+        drop_guard: DropGuard,
+    ) -> Result<(Session<G>, FrameWaiter, FrameStream<G>)> {
+        let handle = G::create_session(self, system, info)?;
+        Ok(Session::from_raw(self.clone(), handle, drop_guard))
     }
 
     /// Get the next event, if available
