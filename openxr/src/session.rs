@@ -3,6 +3,8 @@ use std::{marker::PhantomData, ptr, sync::Arc};
 
 use crate::*;
 
+pub(crate) type DropGuard = Box<dyn std::any::Any + Send + Sync>;
+
 /// A rendering session using a particular graphics API `G`
 ///
 /// Convertible into an API-agnostic session using [`Session::into_any_graphics`].
@@ -382,9 +384,14 @@ impl<G: Graphics> Session<G> {
     pub unsafe fn from_raw(
         instance: Instance,
         handle: sys::Session,
+        drop_guard: DropGuard,
     ) -> (Self, FrameWaiter, FrameStream<G>) {
         let session = Self {
-            inner: Arc::new(SessionInner { instance, handle }),
+            inner: Arc::new(SessionInner {
+                instance,
+                handle,
+                _drop_guard: drop_guard,
+            }),
             _marker: PhantomData,
         };
         (
@@ -448,6 +455,7 @@ impl<G> Clone for Session<G> {
 pub(crate) struct SessionInner {
     pub(crate) instance: Instance,
     pub(crate) handle: sys::Session,
+    pub(crate) _drop_guard: DropGuard,
 }
 
 impl Drop for SessionInner {
