@@ -26,7 +26,7 @@ libc = "0.2.50"
 libloading = { version = "0.7", optional = true }
 
 [dev-dependencies]
-ash = "0.31"
+ash = "0.33"
 ctrlc = "3.1.5"
 
 [target.'cfg(windows)'.dependencies]
