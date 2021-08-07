@@ -204,12 +204,9 @@ impl Entry {
         };
         place_cstr(
             &mut info.application_info.application_name,
-            &app_info.application_name,
+            app_info.application_name,
         );
-        place_cstr(
-            &mut info.application_info.engine_name,
-            &app_info.engine_name,
-        );
+        place_cstr(&mut info.application_info.engine_name, app_info.engine_name);
         unsafe {
             let mut handle = sys::Instance::NULL;
             cvt((self.fp().create_instance)(&info, &mut handle))?;

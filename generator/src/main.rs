@@ -876,11 +876,11 @@ impl Parser {
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
             let values = e.values.iter().map(|v| {
-                let value_name = xr_enum_value_name(&name, &v.name);
+                let value_name = xr_enum_value_name(name, &v.name);
                 let value = match v.value {
                     ConstantValue::Literal(x) => quote! {Self(#x)},
                     ConstantValue::Alias(ref x) => {
-                        let ident = xr_enum_value_name(&name, x);
+                        let ident = xr_enum_value_name(name, x);
                         quote! { Self::#ident }
                     }
                 };
@@ -904,7 +904,7 @@ impl Parser {
                     // Skip unreachable cases
                     return None;
                 }
-                let ident = xr_enum_value_name(&name, &v.name);
+                let ident = xr_enum_value_name(name, &v.name);
                 let name = ident.to_string();
                 Some(quote! {
                     Self::#ident => Some(#name)
@@ -912,7 +912,7 @@ impl Parser {
             });
             let result_extras = if name == "XrResult" {
                 let cases = e.values.iter().map(|v| {
-                    let ident = xr_enum_value_name(&name, &v.name);
+                    let ident = xr_enum_value_name(name, &v.name);
                     let reason = v.comment.as_ref().map_or_else(
                         || ident.to_string(),
                         |x| {
@@ -978,11 +978,11 @@ impl Parser {
                 format!("See {}", self.doc_link(name))
             };
             let values = bitmask.values.iter().map(|v| {
-                let value_name = xr_bitmask_value_name(&name, &v.name);
+                let value_name = xr_bitmask_value_name(name, &v.name);
                 let value = match v.value {
                     ConstantValue::Literal(x) => quote! {Self(1 << #x)},
                     ConstantValue::Alias(ref x) => {
-                        let ident = xr_enum_value_name(&name, x);
+                        let ident = xr_enum_value_name(name, x);
                         quote! { Self::#ident }
                     }
                 };
@@ -1022,10 +1022,10 @@ impl Parser {
         });
 
         let structs = self.structs.iter().map(|(name, s)| {
-            let ident = xr_ty_name(&name);
+            let ident = xr_ty_name(name);
             let members = s.members.iter().map(|m| {
                 let ident = xr_var_name(&m.name);
-                let ty = xr_var_ty(&m);
+                let ty = xr_var_ty(m);
                 quote! {
                     pub #ident: #ty,
                 }
@@ -1043,7 +1043,7 @@ impl Parser {
             } else {
                 format!("See {}", self.doc_link(name))
             };
-            let conditions = conditions(&name, s.extension.as_ref().map(|x| &x[..]));
+            let conditions = conditions(name, s.extension.as_ref().map(|x| &x[..]));
             let ty = if let Some(ref ty) = s.ty {
                 let conditions2 = conditions.clone();
                 let ty = xr_enum_value_name("XrStructureType", ty);
@@ -1101,10 +1101,10 @@ impl Parser {
 
         let (pfns, protos) = commands
             .map(|(name, command)| {
-                let ident = xr_command_name(&name);
+                let ident = xr_command_name(name);
                 let params = command.params.iter().map(|param| {
                     let ident = xr_var_name(&param.name);
-                    let ty = xr_arg_ty(&param);
+                    let ty = xr_arg_ty(param);
                     quote! {
                         #ident: #ty
                     }
@@ -1122,7 +1122,7 @@ impl Parser {
                 } else {
                     format!("See {}", self.doc_link(name))
                 };
-                let conditions = conditions(&name, command.extension.as_ref().map(|x| &x[..]));
+                let conditions = conditions(name, command.extension.as_ref().map(|x| &x[..]));
                 let conditions2 = conditions.clone();
                 let params2 = params.clone();
                 let pfn_def = quote! {
@@ -1222,7 +1222,7 @@ impl Parser {
             if command.extension.is_some() {
                 return (quote! {}, quote! {});
             }
-            let pfn_ident = xr_command_name(&name);
+            let pfn_ident = xr_command_name(name);
             let field_ident = Ident::new(&pfn_ident.to_string().to_snake_case(), Span::call_site());
             let field = quote! {
                 pub #field_ident: pfn::#pfn_ident,
@@ -1379,7 +1379,7 @@ impl Parser {
                 && !name.ends_with("BaseHeader")
                 && !name.ends_with("Buffer")
         }) {
-            let raw_ident = xr_ty_name(&raw_name);
+            let raw_ident = xr_ty_name(raw_name);
             let name = &raw_name["XrEventData".len()..];
             let ident = Ident::new(name, Span::call_site());
             event_cases.push(if evt.members.len() <= 2 {
@@ -1611,7 +1611,7 @@ impl Parser {
         let builders = children.iter().map(|name| {
             let ident = xr_ty_name(name);
             let s = self.structs.get(name).unwrap();
-            let conds = conditions(&name, s.extension.as_ref().map(|x| &x[..]));
+            let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
             let inits = self.generate_builder_inits(s);
             let setters = self.generate_setters(meta, simple, s);
             quote! {
@@ -1722,7 +1722,7 @@ impl Parser {
                 ),
                 x if self.handles.contains(x) => {
                     assert!(m.len.is_none());
-                    let ty = xr_var_ty(&m);
+                    let ty = xr_var_ty(m);
                     (
                         quote! { &'a #ty #type_args },
                         quote! { self.inner.#ident = value.as_raw(); },
@@ -1759,13 +1759,13 @@ impl Parser {
                             quote! { self.inner.#ident = value as *const _ as _; },
                         )
                     } else if self.structs.contains_key(&m.ty) && !simple.contains(&m.ty[..]) {
-                        let ty = xr_var_ty(&m);
+                        let ty = xr_var_ty(m);
                         (
                             quote! { #ty #type_args },
                             quote! { self.inner.#ident = value.inner; },
                         )
                     } else {
-                        (xr_var_ty(&m), quote! { self.inner.#ident = value; })
+                        (xr_var_ty(m), quote! { self.inner.#ident = value; })
                     }
                 }
             };
@@ -1807,7 +1807,7 @@ impl Parser {
         let ident = xr_ty_name(name);
         let (type_params, type_args, marker, marker_init) = meta.get(name).unwrap().type_params();
         let inits = self.generate_builder_inits(s);
-        let conds = conditions(&name, s.extension.as_ref().map(|x| &x[..]));
+        let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
         let conds2 = conds.clone();
         quote! {
             #[derive(Copy, Clone)]
@@ -1881,10 +1881,10 @@ impl Parser {
             let (ty, value) = if m.ty == "XrBool32" {
                 (quote! { bool }, quote! { (self.0).#ident.into() })
             } else if self.handles.contains(&m.ty) {
-                let ty = xr_var_ty(&m);
+                let ty = xr_var_ty(m);
                 (quote! { sys::#ty }, quote! { (self.0).#ident })
             } else {
-                (xr_var_ty(&m), quote! { (self.0).#ident })
+                (xr_var_ty(m), quote! { (self.0).#ident })
             };
             Some(quote! {
                 #[inline]
@@ -2126,7 +2126,7 @@ fn xr_var_ty(member: &Member) -> TokenStream {
             "void" => "c_void",
             x => x,
         };
-        let ident = Ident::new(&ty, Span::call_site());
+        let ident = Ident::new(ty, Span::call_site());
         quote! { #ident }
     };
     let mut ty = if let Some(ref len) = member.static_array_len {
