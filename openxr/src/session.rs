@@ -320,6 +320,39 @@ impl<G> Session<G> {
         HandTracker::create(self, hand)
     }
 
+    /// Enumerate the list of supported color spaces for [`set_color_space`]
+    ///
+    /// Requires [`XR_FB_color_space`](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)
+    pub fn enumerate_color_spaces(&self) -> Result<Vec<sys::ColorSpaceFB>> {
+        let ext = self
+            .inner
+            .instance
+            .exts()
+            .fb_color_space
+            .as_ref()
+            .expect("FB_color_space not loaded");
+        get_arr(|cap, count, buf| unsafe {
+            (ext.enumerate_color_spaces)(self.as_raw(), cap, count, buf)
+        })
+    }
+
+    /// Specify the color space used in the final rendered frame
+    ///
+    /// Requires [`XR_FB_color_space`](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)    
+    pub fn set_color_space(&self, color_space: sys::ColorSpaceFB) -> Result<()> {
+        let ext = self
+            .inner
+            .instance
+            .exts()
+            .fb_color_space
+            .as_ref()
+            .expect("FB_color_space not loaded");
+        unsafe {
+            cvt((ext.set_color_space)(self.as_raw(), color_space))?;
+        }
+        Ok(())
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
