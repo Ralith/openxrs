@@ -33,7 +33,7 @@ ctrlc = "3.1.5"
 winapi = { version = "0.3", features = ["profileapi"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
-ndk-glue = "0.3"
+ndk-glue = "0.4"
 
 [package.metadata.docs.rs]
 features = ["linked", "loaded", "mint"]
