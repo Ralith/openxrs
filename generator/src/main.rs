@@ -1076,10 +1076,12 @@ impl Parser {
                 quote! {}
             };
             let meta = self.compute_meta(name, s);
-            let derives = if meta.has_pointer || meta.has_array {
+            let derives = if (meta.has_pointer || meta.has_array) && meta.has_unprintable {
                 quote! { #[derive(Copy, Clone)] }
+            } else if meta.has_pointer || meta.has_array {
+                quote! { #[derive(Copy, Clone, Debug)] }
             } else {
-                quote! { #[derive(Copy, Clone, Default, PartialEq)] }
+                quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
             };
             quote! {
                 #[repr(C)]
@@ -1576,6 +1578,7 @@ impl Parser {
     fn compute_meta(&self, name: &str, s: &Struct) -> StructMeta {
         let mut out = StructMeta::default();
         for member in &s.members {
+            out.has_unprintable |= member.ty.starts_with("PFN") || member.ty == "LUID";
             out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
             out.has_array |= member.static_array_len.is_some();
@@ -1926,6 +1929,7 @@ impl Parser {
 
 #[derive(Debug, Copy, Clone, Default)]
 struct StructMeta {
+    has_unprintable: bool,
     has_pointer: bool,
     has_array: bool,
     has_graphics: bool,
