@@ -1971,7 +1971,9 @@ impl StructMeta {
 
 impl std::ops::BitOrAssign for StructMeta {
     fn bitor_assign(&mut self, rhs: Self) {
+        self.has_unprintable |= rhs.has_unprintable;
         self.has_pointer |= rhs.has_pointer;
+        self.has_array |= rhs.has_array;
         self.has_graphics |= rhs.has_graphics;
     }
 }
