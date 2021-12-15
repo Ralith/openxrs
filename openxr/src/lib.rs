@@ -31,6 +31,8 @@ mod hand_tracker;
 pub use hand_tracker::*;
 mod secondary_view;
 pub use secondary_view::*;
+mod foveation_profile_fb;
+pub use foveation_profile_fb::*;
 
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
