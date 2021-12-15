@@ -4259,12 +4259,12 @@ pub(crate) mod builder {
             self
         }
         #[inline]
-        pub fn on_haptic(mut self, value: &'a HapticBaseHeader<'a>) -> Self {
+        pub fn on_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
             self.inner.on_haptic = value as *const _ as _;
             self
         }
         #[inline]
-        pub fn off_haptic(mut self, value: &'a HapticBaseHeader<'a>) -> Self {
+        pub fn off_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
             self.inner.off_haptic = value as *const _ as _;
             self
         }

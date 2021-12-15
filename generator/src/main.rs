@@ -1606,12 +1606,7 @@ impl Parser {
         children: &[String],
     ) -> TokenStream {
         let sys_ident = xr_ty_name(base_name);
-        let base_header_pos = base_name.find("BaseHeader").unwrap();
-        assert!(base_name.starts_with("Xr"));
-        let base_ident = Ident::new(
-            &base_name[2..base_header_pos + "Base".len()],
-            Span::call_site(),
-        );
+        let base_ident = base_header_ty(base_name);
         let mut base_meta = StructMeta::default();
         for name in children {
             base_meta |= *meta.get(&name[..]).unwrap();
@@ -1738,6 +1733,13 @@ impl Parser {
                     (
                         quote! { &'a #ty #type_args },
                         quote! { self.inner.#ident = value.as_raw(); },
+                    )
+                }
+                x if self.base_headers.contains_key(x) => {
+                    let ty = base_header_ty(x);
+                    (
+                        quote! { &'a #ty #type_args },
+                        quote! { self.inner.#ident = value as *const _ as _; },
                     )
                 }
                 _ => {
@@ -2222,4 +2224,15 @@ fn tidy_comment(s: &str) -> Option<String> {
 
     let s = strip_macros.replace_all(s, "$1");
     Some(strip_links.replace_all(&s, "$1").into())
+}
+
+fn base_header_ty(base_name: &str) -> Ident {
+    let base_header_pos = base_name.find("BaseHeader").unwrap();
+    assert!(base_name.starts_with("Xr"));
+    let base_ident = Ident::new(
+        &base_name[2..base_header_pos + "Base".len()],
+        Span::call_site(),
+    );
+
+    base_ident
 }
