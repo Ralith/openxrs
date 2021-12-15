@@ -1910,6 +1910,15 @@ impl Parser {
             } else if self.handles.contains(&m.ty) {
                 let ty = xr_var_ty(m);
                 (quote! { sys::#ty }, quote! { (self.0).#ident })
+            } else if m.ty == "XrViveTrackerPathsHTCX" {
+                (
+                    quote! {
+                        ViveTrackerPathsHTCX
+                    },
+                    quote! {
+                        (self.0).#ident.into()
+                    },
+                )
             } else {
                 (xr_var_ty(m), quote! { (self.0).#ident })
             };

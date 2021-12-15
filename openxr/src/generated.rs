@@ -1640,8 +1640,8 @@ impl<'a> ViveTrackerConnectedHTCX<'a> {
         Self(inner)
     }
     #[inline]
-    pub fn paths(self) -> *mut ViveTrackerPathsHTCX {
-        (self.0).paths
+    pub fn paths(self) -> ViveTrackerPathsHTCX {
+        (self.0).paths.into()
     }
 }
 #[derive(Copy, Clone)]
