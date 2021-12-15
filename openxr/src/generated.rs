@@ -4239,7 +4239,7 @@ pub(crate) mod builder {
             &self.inner
         }
         #[inline]
-        pub fn action(mut self, value: &'a Action) -> Self {
+        pub fn action<ATY: ActionTy>(mut self, value: &'a Action<ATY>) -> Self {
             self.inner.action = value.as_raw();
             self
         }
