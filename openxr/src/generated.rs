@@ -7,21 +7,25 @@ pub use sys::platform::{
     EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
 };
 pub use sys::{
-    ActionType, AndroidSurfaceSwapchainFlagsFB, AndroidThreadTypeKHR, Color4f, ColorSpaceFB,
-    CompositionLayerFlags, DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT,
-    EnvironmentBlendMode, Extent2Df, Extent2Di, EyeVisibility, FormFactor, Fovf, HandEXT,
-    HandJointEXT, HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT,
-    HandJointsMotionRangeEXT, HandMeshVertexMSFT, HandPoseTypeMSFT, InputSourceLocalizedNameFlags,
-    InstanceCreateFlags, MeshComputeLodMSFT, ObjectType, Offset2Df, Offset2Di,
-    OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX, PerfSettingsDomainEXT,
+    ActionType, AndroidSurfaceSwapchainFlagsFB, AndroidThreadTypeKHR, BlendFactorFB, Color4f,
+    ColorSpaceFB, CompositionLayerFlags, CompositionLayerImageLayoutFlagsFB,
+    CompositionLayerSecureContentFlagsFB, CompositionLayerSpaceWarpInfoFlagsFB,
+    DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
+    Extent2Df, Extent2Di, EyeVisibility, FormFactor, FoveationDynamicFB, FoveationLevelFB, Fovf,
+    HandEXT, HandJointEXT, HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT,
+    HandJointsMotionRangeEXT, HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB,
+    InputSourceLocalizedNameFlags, InstanceCreateFlags, MeshComputeLodMSFT, ObjectType, Offset2Df,
+    Offset2Di, OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX, PassthroughFlagsFB,
+    PassthroughLayerPurposeFB, PassthroughStateChangedFlagsFB, PerfSettingsDomainEXT,
     PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
     Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, ReprojectionModeMSFT,
     SceneComponentTypeMSFT, SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT,
     SceneComputeStateMSFT, SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT, SessionCreateFlags,
     SessionState, SpaceLocationFlags, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
-    SwapchainCreateFlags, SwapchainUsageFlags, SystemGraphicsProperties, Vector2f, Vector3f,
-    Vector4f, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
-    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR,
+    SwapchainCreateFlags, SwapchainCreateFoveationFlagsFB, SwapchainStateFoveationFlagsFB,
+    SwapchainUsageFlags, SystemGraphicsProperties, TriangleMeshFlagsFB, Vector2f, Vector3f,
+    Vector4f, Vector4sFB, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
+    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR, WindingOrderFB,
 };
 #[doc = r" A subset of known extensions"]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
@@ -41,16 +45,29 @@ pub struct ExtensionSet {
     pub ext_samsung_odyssey_controller: bool,
     pub ext_hp_mixed_reality_controller: bool,
     pub extx_overlay: bool,
+    pub fb_composition_layer_image_layout: bool,
+    pub fb_composition_layer_alpha_blend: bool,
     #[cfg(target_os = "android")]
     pub fb_android_surface_swapchain_create: bool,
     pub fb_swapchain_update_state: bool,
+    pub fb_composition_layer_secure_content: bool,
     pub fb_display_refresh_rate: bool,
     pub fb_color_space: bool,
+    pub fb_hand_tracking_mesh: bool,
+    pub fb_hand_tracking_aim: bool,
+    pub fb_hand_tracking_capsules: bool,
+    pub fb_foveation: bool,
+    pub fb_foveation_configuration: bool,
+    pub fb_triangle_mesh: bool,
+    pub fb_passthrough: bool,
+    pub fb_foveation_vulkan: bool,
     #[cfg(target_os = "android")]
     pub fb_swapchain_update_state_android_surface: bool,
     pub fb_swapchain_update_state_opengl_es: bool,
     pub fb_swapchain_update_state_vulkan: bool,
+    pub fb_space_warp: bool,
     pub htc_vive_cosmos_controller_interaction: bool,
+    pub htcx_vive_tracker_interaction: bool,
     pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: bool,
@@ -81,6 +98,7 @@ pub struct ExtensionSet {
     pub khr_vulkan_enable2: bool,
     pub khr_composition_layer_equirect2: bool,
     pub khr_binding_modification: bool,
+    pub khr_swapchain_usage_input_attachment_bit: bool,
     pub mnd_headless: bool,
     pub mnd_swapchain_usage_input_attachment_bit: bool,
     pub mndx_egl_enable: bool,
@@ -97,6 +115,7 @@ pub struct ExtensionSet {
     #[cfg(windows)]
     pub msft_holographic_window_attachment: bool,
     pub msft_composition_layer_reprojection: bool,
+    pub msft_spatial_anchor_persistence: bool,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
     pub oculus_audio_device_guid: bool,
@@ -105,6 +124,7 @@ pub struct ExtensionSet {
     pub varjo_foveated_rendering: bool,
     pub varjo_composition_layer_depth_test: bool,
     pub varjo_environment_depth_estimation: bool,
+    pub varjo_marker_tracking: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<String>,
 }
@@ -153,6 +173,12 @@ impl ExtensionSet {
                 raw::OverlayEXTX::NAME => {
                     out.extx_overlay = true;
                 }
+                raw::CompositionLayerImageLayoutFB::NAME => {
+                    out.fb_composition_layer_image_layout = true;
+                }
+                raw::CompositionLayerAlphaBlendFB::NAME => {
+                    out.fb_composition_layer_alpha_blend = true;
+                }
                 #[cfg(target_os = "android")]
                 raw::AndroidSurfaceSwapchainCreateFB::NAME => {
                     out.fb_android_surface_swapchain_create = true;
@@ -160,11 +186,38 @@ impl ExtensionSet {
                 raw::SwapchainUpdateStateFB::NAME => {
                     out.fb_swapchain_update_state = true;
                 }
+                raw::CompositionLayerSecureContentFB::NAME => {
+                    out.fb_composition_layer_secure_content = true;
+                }
                 raw::DisplayRefreshRateFB::NAME => {
                     out.fb_display_refresh_rate = true;
                 }
                 raw::ColorSpaceFB::NAME => {
                     out.fb_color_space = true;
+                }
+                raw::HandTrackingMeshFB::NAME => {
+                    out.fb_hand_tracking_mesh = true;
+                }
+                raw::HandTrackingAimFB::NAME => {
+                    out.fb_hand_tracking_aim = true;
+                }
+                raw::HandTrackingCapsulesFB::NAME => {
+                    out.fb_hand_tracking_capsules = true;
+                }
+                raw::FoveationFB::NAME => {
+                    out.fb_foveation = true;
+                }
+                raw::FoveationConfigurationFB::NAME => {
+                    out.fb_foveation_configuration = true;
+                }
+                raw::TriangleMeshFB::NAME => {
+                    out.fb_triangle_mesh = true;
+                }
+                raw::PassthroughFB::NAME => {
+                    out.fb_passthrough = true;
+                }
+                raw::FoveationVulkanFB::NAME => {
+                    out.fb_foveation_vulkan = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::SwapchainUpdateStateAndroidSurfaceFB::NAME => {
@@ -176,8 +229,14 @@ impl ExtensionSet {
                 raw::SwapchainUpdateStateVulkanFB::NAME => {
                     out.fb_swapchain_update_state_vulkan = true;
                 }
+                raw::SpaceWarpFB::NAME => {
+                    out.fb_space_warp = true;
+                }
                 raw::ViveCosmosControllerInteractionHTC::NAME => {
                     out.htc_vive_cosmos_controller_interaction = true;
+                }
+                raw::ViveTrackerInteractionHTCX::NAME => {
+                    out.htcx_vive_tracker_interaction = true;
                 }
                 raw::ControllerInteractionHUAWEI::NAME => {
                     out.huawei_controller_interaction = true;
@@ -255,6 +314,9 @@ impl ExtensionSet {
                 raw::BindingModificationKHR::NAME => {
                     out.khr_binding_modification = true;
                 }
+                raw::SwapchainUsageInputAttachmentBitKHR::NAME => {
+                    out.khr_swapchain_usage_input_attachment_bit = true;
+                }
                 raw::HeadlessMND::NAME => {
                     out.mnd_headless = true;
                 }
@@ -299,6 +361,9 @@ impl ExtensionSet {
                 raw::CompositionLayerReprojectionMSFT::NAME => {
                     out.msft_composition_layer_reprojection = true;
                 }
+                raw::SpatialAnchorPersistenceMSFT::NAME => {
+                    out.msft_spatial_anchor_persistence = true;
+                }
                 #[cfg(target_os = "android")]
                 raw::AndroidSessionStateEnableOCULUS::NAME => {
                     out.oculus_android_session_state_enable = true;
@@ -320,6 +385,9 @@ impl ExtensionSet {
                 }
                 raw::EnvironmentDepthEstimationVARJO::NAME => {
                     out.varjo_environment_depth_estimation = true;
+                }
+                raw::MarkerTrackingVARJO::NAME => {
+                    out.varjo_marker_tracking = true;
                 }
                 bytes => {
                     if let Ok(name) = std::str::from_utf8(bytes) {
@@ -398,6 +466,16 @@ impl ExtensionSet {
                 out.push(raw::OverlayEXTX::NAME.into());
             }
         }
+        {
+            if self.fb_composition_layer_image_layout {
+                out.push(raw::CompositionLayerImageLayoutFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_composition_layer_alpha_blend {
+                out.push(raw::CompositionLayerAlphaBlendFB::NAME.into());
+            }
+        }
         #[cfg(target_os = "android")]
         {
             if self.fb_android_surface_swapchain_create {
@@ -410,6 +488,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_composition_layer_secure_content {
+                out.push(raw::CompositionLayerSecureContentFB::NAME.into());
+            }
+        }
+        {
             if self.fb_display_refresh_rate {
                 out.push(raw::DisplayRefreshRateFB::NAME.into());
             }
@@ -417,6 +500,46 @@ impl ExtensionSet {
         {
             if self.fb_color_space {
                 out.push(raw::ColorSpaceFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_hand_tracking_mesh {
+                out.push(raw::HandTrackingMeshFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_hand_tracking_aim {
+                out.push(raw::HandTrackingAimFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_hand_tracking_capsules {
+                out.push(raw::HandTrackingCapsulesFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_foveation {
+                out.push(raw::FoveationFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_foveation_configuration {
+                out.push(raw::FoveationConfigurationFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_triangle_mesh {
+                out.push(raw::TriangleMeshFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_passthrough {
+                out.push(raw::PassthroughFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_foveation_vulkan {
+                out.push(raw::FoveationVulkanFB::NAME.into());
             }
         }
         #[cfg(target_os = "android")]
@@ -436,8 +559,18 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_space_warp {
+                out.push(raw::SpaceWarpFB::NAME.into());
+            }
+        }
+        {
             if self.htc_vive_cosmos_controller_interaction {
                 out.push(raw::ViveCosmosControllerInteractionHTC::NAME.into());
+            }
+        }
+        {
+            if self.htcx_vive_tracker_interaction {
+                out.push(raw::ViveTrackerInteractionHTCX::NAME.into());
             }
         }
         {
@@ -563,6 +696,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.khr_swapchain_usage_input_attachment_bit {
+                out.push(raw::SwapchainUsageInputAttachmentBitKHR::NAME.into());
+            }
+        }
+        {
             if self.mnd_headless {
                 out.push(raw::HeadlessMND::NAME.into());
             }
@@ -634,6 +772,11 @@ impl ExtensionSet {
                 out.push(raw::CompositionLayerReprojectionMSFT::NAME.into());
             }
         }
+        {
+            if self.msft_spatial_anchor_persistence {
+                out.push(raw::SpatialAnchorPersistenceMSFT::NAME.into());
+            }
+        }
         #[cfg(target_os = "android")]
         {
             if self.oculus_android_session_state_enable {
@@ -670,6 +813,11 @@ impl ExtensionSet {
                 out.push(raw::EnvironmentDepthEstimationVARJO::NAME.into());
             }
         }
+        {
+            if self.varjo_marker_tracking {
+                out.push(raw::MarkerTrackingVARJO::NAME.into());
+            }
+        }
         for name in &self.other {
             let mut bytes = Vec::with_capacity(name.len() + 1);
             bytes.extend_from_slice(name.as_bytes());
@@ -696,17 +844,30 @@ pub struct InstanceExtensions {
     pub ext_samsung_odyssey_controller: Option<raw::SamsungOdysseyControllerEXT>,
     pub ext_hp_mixed_reality_controller: Option<raw::HpMixedRealityControllerEXT>,
     pub extx_overlay: Option<raw::OverlayEXTX>,
+    pub fb_composition_layer_image_layout: Option<raw::CompositionLayerImageLayoutFB>,
+    pub fb_composition_layer_alpha_blend: Option<raw::CompositionLayerAlphaBlendFB>,
     #[cfg(target_os = "android")]
     pub fb_android_surface_swapchain_create: Option<raw::AndroidSurfaceSwapchainCreateFB>,
     pub fb_swapchain_update_state: Option<raw::SwapchainUpdateStateFB>,
+    pub fb_composition_layer_secure_content: Option<raw::CompositionLayerSecureContentFB>,
     pub fb_display_refresh_rate: Option<raw::DisplayRefreshRateFB>,
     pub fb_color_space: Option<raw::ColorSpaceFB>,
+    pub fb_hand_tracking_mesh: Option<raw::HandTrackingMeshFB>,
+    pub fb_hand_tracking_aim: Option<raw::HandTrackingAimFB>,
+    pub fb_hand_tracking_capsules: Option<raw::HandTrackingCapsulesFB>,
+    pub fb_foveation: Option<raw::FoveationFB>,
+    pub fb_foveation_configuration: Option<raw::FoveationConfigurationFB>,
+    pub fb_triangle_mesh: Option<raw::TriangleMeshFB>,
+    pub fb_passthrough: Option<raw::PassthroughFB>,
+    pub fb_foveation_vulkan: Option<raw::FoveationVulkanFB>,
     #[cfg(target_os = "android")]
     pub fb_swapchain_update_state_android_surface:
         Option<raw::SwapchainUpdateStateAndroidSurfaceFB>,
     pub fb_swapchain_update_state_opengl_es: Option<raw::SwapchainUpdateStateOpenglEsFB>,
     pub fb_swapchain_update_state_vulkan: Option<raw::SwapchainUpdateStateVulkanFB>,
+    pub fb_space_warp: Option<raw::SpaceWarpFB>,
     pub htc_vive_cosmos_controller_interaction: Option<raw::ViveCosmosControllerInteractionHTC>,
+    pub htcx_vive_tracker_interaction: Option<raw::ViveTrackerInteractionHTCX>,
     pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
@@ -738,6 +899,7 @@ pub struct InstanceExtensions {
     pub khr_vulkan_enable2: Option<raw::VulkanEnable2KHR>,
     pub khr_composition_layer_equirect2: Option<raw::CompositionLayerEquirect2KHR>,
     pub khr_binding_modification: Option<raw::BindingModificationKHR>,
+    pub khr_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitKHR>,
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub mnd_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitMND>,
     pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
@@ -754,6 +916,7 @@ pub struct InstanceExtensions {
     #[cfg(windows)]
     pub msft_holographic_window_attachment: Option<raw::HolographicWindowAttachmentMSFT>,
     pub msft_composition_layer_reprojection: Option<raw::CompositionLayerReprojectionMSFT>,
+    pub msft_spatial_anchor_persistence: Option<raw::SpatialAnchorPersistenceMSFT>,
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
     pub oculus_audio_device_guid: Option<raw::AudioDeviceGuidOCULUS>,
@@ -762,6 +925,7 @@ pub struct InstanceExtensions {
     pub varjo_foveated_rendering: Option<raw::FoveatedRenderingVARJO>,
     pub varjo_composition_layer_depth_test: Option<raw::CompositionLayerDepthTestVARJO>,
     pub varjo_environment_depth_estimation: Option<raw::EnvironmentDepthEstimationVARJO>,
+    pub varjo_marker_tracking: Option<raw::MarkerTrackingVARJO>,
 }
 impl InstanceExtensions {
     #[doc = r" Load extension function pointer tables"]
@@ -841,6 +1005,16 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            fb_composition_layer_image_layout: if required.fb_composition_layer_image_layout {
+                Some(raw::CompositionLayerImageLayoutFB {})
+            } else {
+                None
+            },
+            fb_composition_layer_alpha_blend: if required.fb_composition_layer_alpha_blend {
+                Some(raw::CompositionLayerAlphaBlendFB {})
+            } else {
+                None
+            },
             #[cfg(target_os = "android")]
             fb_android_surface_swapchain_create: if required.fb_android_surface_swapchain_create {
                 Some(raw::AndroidSurfaceSwapchainCreateFB {})
@@ -852,6 +1026,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            fb_composition_layer_secure_content: if required.fb_composition_layer_secure_content {
+                Some(raw::CompositionLayerSecureContentFB {})
+            } else {
+                None
+            },
             fb_display_refresh_rate: if required.fb_display_refresh_rate {
                 Some(raw::DisplayRefreshRateFB::load(entry, instance)?)
             } else {
@@ -859,6 +1038,46 @@ impl InstanceExtensions {
             },
             fb_color_space: if required.fb_color_space {
                 Some(raw::ColorSpaceFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_hand_tracking_mesh: if required.fb_hand_tracking_mesh {
+                Some(raw::HandTrackingMeshFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_hand_tracking_aim: if required.fb_hand_tracking_aim {
+                Some(raw::HandTrackingAimFB {})
+            } else {
+                None
+            },
+            fb_hand_tracking_capsules: if required.fb_hand_tracking_capsules {
+                Some(raw::HandTrackingCapsulesFB {})
+            } else {
+                None
+            },
+            fb_foveation: if required.fb_foveation {
+                Some(raw::FoveationFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_foveation_configuration: if required.fb_foveation_configuration {
+                Some(raw::FoveationConfigurationFB {})
+            } else {
+                None
+            },
+            fb_triangle_mesh: if required.fb_triangle_mesh {
+                Some(raw::TriangleMeshFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_passthrough: if required.fb_passthrough {
+                Some(raw::PassthroughFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_foveation_vulkan: if required.fb_foveation_vulkan {
+                Some(raw::FoveationVulkanFB {})
             } else {
                 None
             },
@@ -880,10 +1099,20 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            fb_space_warp: if required.fb_space_warp {
+                Some(raw::SpaceWarpFB {})
+            } else {
+                None
+            },
             htc_vive_cosmos_controller_interaction: if required
                 .htc_vive_cosmos_controller_interaction
             {
                 Some(raw::ViveCosmosControllerInteractionHTC {})
+            } else {
+                None
+            },
+            htcx_vive_tracker_interaction: if required.htcx_vive_tracker_interaction {
+                Some(raw::ViveTrackerInteractionHTCX::load(entry, instance)?)
             } else {
                 None
             },
@@ -1015,6 +1244,13 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            khr_swapchain_usage_input_attachment_bit: if required
+                .khr_swapchain_usage_input_attachment_bit
+            {
+                Some(raw::SwapchainUsageInputAttachmentBitKHR {})
+            } else {
+                None
+            },
             mnd_headless: if required.mnd_headless {
                 Some(raw::HeadlessMND {})
             } else {
@@ -1091,6 +1327,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            msft_spatial_anchor_persistence: if required.msft_spatial_anchor_persistence {
+                Some(raw::SpatialAnchorPersistenceMSFT::load(entry, instance)?)
+            } else {
+                None
+            },
             #[cfg(target_os = "android")]
             oculus_android_session_state_enable: if required.oculus_android_session_state_enable {
                 Some(raw::AndroidSessionStateEnableOCULUS {})
@@ -1127,6 +1368,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            varjo_marker_tracking: if required.varjo_marker_tracking {
+                Some(raw::MarkerTrackingVARJO::load(entry, instance)?)
+            } else {
+                None
+            },
         })
     }
 }
@@ -1142,6 +1388,9 @@ pub enum Event<'a> {
     InteractionProfileChanged(InteractionProfileChanged<'a>),
     MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX<'a>),
     DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB<'a>),
+    PassthroughStateChangedFB(PassthroughStateChangedFB<'a>),
+    ViveTrackerConnectedHTCX(ViveTrackerConnectedHTCX<'a>),
+    MarkerTrackingUpdateVARJO(MarkerTrackingUpdateVARJO<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -1192,6 +1441,18 @@ impl<'a> Event<'a> {
             sys::StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB => {
                 let typed = &*(raw as *const sys::EventDataDisplayRefreshRateChangedFB);
                 Event::DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB => {
+                let typed = &*(raw as *const sys::EventDataPassthroughStateChangedFB);
+                Event::PassthroughStateChangedFB(PassthroughStateChangedFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX => {
+                let typed = &*(raw as *const sys::EventDataViveTrackerConnectedHTCX);
+                Event::ViveTrackerConnectedHTCX(ViveTrackerConnectedHTCX::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO => {
+                let typed = &*(raw as *const sys::EventDataMarkerTrackingUpdateVARJO);
+                Event::MarkerTrackingUpdateVARJO(MarkerTrackingUpdateVARJO::new(typed))
             }
             _ => {
                 return None;
@@ -1357,6 +1618,54 @@ impl<'a> DisplayRefreshRateChangedFB<'a> {
     #[inline]
     pub fn to_display_refresh_rate(self) -> f32 {
         (self.0).to_display_refresh_rate
+    }
+}
+#[derive(Copy, Clone)]
+pub struct PassthroughStateChangedFB<'a>(&'a sys::EventDataPassthroughStateChangedFB);
+impl<'a> PassthroughStateChangedFB<'a> {
+    #[inline]
+    pub fn new(inner: &'a sys::EventDataPassthroughStateChangedFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn flags(self) -> PassthroughStateChangedFlagsFB {
+        (self.0).flags
+    }
+}
+#[derive(Copy, Clone)]
+pub struct ViveTrackerConnectedHTCX<'a>(&'a sys::EventDataViveTrackerConnectedHTCX);
+impl<'a> ViveTrackerConnectedHTCX<'a> {
+    #[inline]
+    pub fn new(inner: &'a sys::EventDataViveTrackerConnectedHTCX) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn paths(self) -> *mut ViveTrackerPathsHTCX {
+        (self.0).paths
+    }
+}
+#[derive(Copy, Clone)]
+pub struct MarkerTrackingUpdateVARJO<'a>(&'a sys::EventDataMarkerTrackingUpdateVARJO);
+impl<'a> MarkerTrackingUpdateVARJO<'a> {
+    #[inline]
+    pub fn new(inner: &'a sys::EventDataMarkerTrackingUpdateVARJO) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn marker_id(self) -> u64 {
+        (self.0).marker_id
+    }
+    #[inline]
+    pub fn is_active(self) -> bool {
+        (self.0).is_active.into()
+    }
+    #[inline]
+    pub fn is_predicted(self) -> bool {
+        (self.0).is_predicted.into()
+    }
+    #[inline]
+    pub fn time(self) -> Time {
+        (self.0).time
     }
 }
 pub mod raw {
@@ -1883,6 +2192,18 @@ pub mod raw {
         pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXTX_OVERLAY_EXTENSION_NAME;
     }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerImageLayoutFB {}
+    impl CompositionLayerImageLayoutFB {
+        pub const VERSION: u32 = sys::FB_composition_layer_image_layout_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerAlphaBlendFB {}
+    impl CompositionLayerAlphaBlendFB {
+        pub const VERSION: u32 = sys::FB_composition_layer_alpha_blend_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME;
+    }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct AndroidSurfaceSwapchainCreateFB {}
@@ -1916,6 +2237,12 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerSecureContentFB {}
+    impl CompositionLayerSecureContentFB {
+        pub const VERSION: u32 = sys::FB_composition_layer_secure_content_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_SECURE_CONTENT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct DisplayRefreshRateFB {
@@ -1974,6 +2301,217 @@ pub mod raw {
             })
         }
     }
+    #[derive(Copy, Clone)]
+    pub struct HandTrackingMeshFB {
+        pub get_hand_mesh: pfn::GetHandMeshFB,
+    }
+    impl HandTrackingMeshFB {
+        pub const VERSION: u32 = sys::FB_hand_tracking_mesh_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_HAND_TRACKING_MESH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetHandMeshFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct HandTrackingAimFB {}
+    impl HandTrackingAimFB {
+        pub const VERSION: u32 = sys::FB_hand_tracking_aim_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_HAND_TRACKING_AIM_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct HandTrackingCapsulesFB {}
+    impl HandTrackingCapsulesFB {
+        pub const VERSION: u32 = sys::FB_hand_tracking_capsules_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct FoveationFB {
+        pub create_foveation_profile: pfn::CreateFoveationProfileFB,
+        pub destroy_foveation_profile: pfn::DestroyFoveationProfileFB,
+    }
+    impl FoveationFB {
+        pub const VERSION: u32 = sys::FB_foveation_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_FOVEATION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateFoveationProfileFB\0"),
+                )?),
+                destroy_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyFoveationProfileFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct FoveationConfigurationFB {}
+    impl FoveationConfigurationFB {
+        pub const VERSION: u32 = sys::FB_foveation_configuration_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_FOVEATION_CONFIGURATION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct TriangleMeshFB {
+        pub create_triangle_mesh: pfn::CreateTriangleMeshFB,
+        pub destroy_triangle_mesh: pfn::DestroyTriangleMeshFB,
+        pub triangle_mesh_get_vertex_buffer: pfn::TriangleMeshGetVertexBufferFB,
+        pub triangle_mesh_get_index_buffer: pfn::TriangleMeshGetIndexBufferFB,
+        pub triangle_mesh_begin_update: pfn::TriangleMeshBeginUpdateFB,
+        pub triangle_mesh_end_update: pfn::TriangleMeshEndUpdateFB,
+        pub triangle_mesh_begin_vertex_buffer_update: pfn::TriangleMeshBeginVertexBufferUpdateFB,
+        pub triangle_mesh_end_vertex_buffer_update: pfn::TriangleMeshEndVertexBufferUpdateFB,
+    }
+    impl TriangleMeshFB {
+        pub const VERSION: u32 = sys::FB_triangle_mesh_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_TRIANGLE_MESH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateTriangleMeshFB\0"),
+                )?),
+                destroy_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyTriangleMeshFB\0"),
+                )?),
+                triangle_mesh_get_vertex_buffer: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetVertexBufferFB\0"),
+                )?),
+                triangle_mesh_get_index_buffer: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetIndexBufferFB\0"),
+                )?),
+                triangle_mesh_begin_update: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshBeginUpdateFB\0"),
+                )?),
+                triangle_mesh_end_update: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshEndUpdateFB\0"),
+                )?),
+                triangle_mesh_begin_vertex_buffer_update: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrTriangleMeshBeginVertexBufferUpdateFB\0",
+                        ),
+                    )?,
+                ),
+                triangle_mesh_end_vertex_buffer_update: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrTriangleMeshEndVertexBufferUpdateFB\0",
+                        ),
+                    )?,
+                ),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct PassthroughFB {
+        pub create_passthrough: pfn::CreatePassthroughFB,
+        pub destroy_passthrough: pfn::DestroyPassthroughFB,
+        pub passthrough_start: pfn::PassthroughStartFB,
+        pub passthrough_pause: pfn::PassthroughPauseFB,
+        pub create_passthrough_layer: pfn::CreatePassthroughLayerFB,
+        pub destroy_passthrough_layer: pfn::DestroyPassthroughLayerFB,
+        pub passthrough_layer_pause: pfn::PassthroughLayerPauseFB,
+        pub passthrough_layer_resume: pfn::PassthroughLayerResumeFB,
+        pub passthrough_layer_set_style: pfn::PassthroughLayerSetStyleFB,
+        pub create_geometry_instance: pfn::CreateGeometryInstanceFB,
+        pub destroy_geometry_instance: pfn::DestroyGeometryInstanceFB,
+        pub geometry_instance_set_transform: pfn::GeometryInstanceSetTransformFB,
+    }
+    impl PassthroughFB {
+        pub const VERSION: u32 = sys::FB_passthrough_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_PASSTHROUGH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughFB\0"),
+                )?),
+                destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughFB\0"),
+                )?),
+                passthrough_start: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughStartFB\0"),
+                )?),
+                passthrough_pause: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughPauseFB\0"),
+                )?),
+                create_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughLayerFB\0"),
+                )?),
+                destroy_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughLayerFB\0"),
+                )?),
+                passthrough_layer_pause: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerPauseFB\0"),
+                )?),
+                passthrough_layer_resume: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerResumeFB\0"),
+                )?),
+                passthrough_layer_set_style: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerSetStyleFB\0"),
+                )?),
+                create_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateGeometryInstanceFB\0"),
+                )?),
+                destroy_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyGeometryInstanceFB\0"),
+                )?),
+                geometry_instance_set_transform: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGeometryInstanceSetTransformFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct FoveationVulkanFB {}
+    impl FoveationVulkanFB {
+        pub const VERSION: u32 = sys::FB_foveation_vulkan_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_FOVEATION_VULKAN_EXTENSION_NAME;
+    }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct SwapchainUpdateStateAndroidSurfaceFB {}
@@ -1996,10 +2534,37 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct SpaceWarpFB {}
+    impl SpaceWarpFB {
+        pub const VERSION: u32 = sys::FB_space_warp_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SPACE_WARP_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct ViveCosmosControllerInteractionHTC {}
     impl ViveCosmosControllerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_cosmos_controller_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViveTrackerInteractionHTCX {
+        pub enumerate_vive_tracker_paths: pfn::EnumerateViveTrackerPathsHTCX,
+    }
+    impl ViveTrackerInteractionHTCX {
+        pub const VERSION: u32 = sys::HTCX_vive_tracker_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enumerate_vive_tracker_paths: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViveTrackerPathsHTCX\0"),
+                )?),
+            })
+        }
     }
     #[derive(Copy, Clone)]
     pub struct ControllerInteractionHUAWEI {}
@@ -2383,6 +2948,13 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::KHR_BINDING_MODIFICATION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct SwapchainUsageInputAttachmentBitKHR {}
+    impl SwapchainUsageInputAttachmentBitKHR {
+        pub const VERSION: u32 = sys::KHR_swapchain_usage_input_attachment_bit_SPEC_VERSION;
+        pub const NAME: &'static [u8] =
+            sys::KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct HeadlessMND {}
     impl HeadlessMND {
         pub const VERSION: u32 = sys::MND_headless_SPEC_VERSION;
@@ -2606,6 +3178,74 @@ pub mod raw {
             })
         }
     }
+    #[derive(Copy, Clone)]
+    pub struct SpatialAnchorPersistenceMSFT {
+        pub create_spatial_anchor_store_connection: pfn::CreateSpatialAnchorStoreConnectionMSFT,
+        pub destroy_spatial_anchor_store_connection: pfn::DestroySpatialAnchorStoreConnectionMSFT,
+        pub persist_spatial_anchor: pfn::PersistSpatialAnchorMSFT,
+        pub enumerate_persisted_spatial_anchor_names: pfn::EnumeratePersistedSpatialAnchorNamesMSFT,
+        pub create_spatial_anchor_from_persisted_name:
+            pfn::CreateSpatialAnchorFromPersistedNameMSFT,
+        pub unpersist_spatial_anchor: pfn::UnpersistSpatialAnchorMSFT,
+        pub clear_spatial_anchor_store: pfn::ClearSpatialAnchorStoreMSFT,
+    }
+    impl SpatialAnchorPersistenceMSFT {
+        pub const VERSION: u32 = sys::MSFT_spatial_anchor_persistence_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_spatial_anchor_store_connection: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrCreateSpatialAnchorStoreConnectionMSFT\0",
+                        ),
+                    )?,
+                ),
+                destroy_spatial_anchor_store_connection: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrDestroySpatialAnchorStoreConnectionMSFT\0",
+                        ),
+                    )?,
+                ),
+                persist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPersistSpatialAnchorMSFT\0"),
+                )?),
+                enumerate_persisted_spatial_anchor_names: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrEnumeratePersistedSpatialAnchorNamesMSFT\0",
+                        ),
+                    )?,
+                ),
+                create_spatial_anchor_from_persisted_name: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrCreateSpatialAnchorFromPersistedNameMSFT\0",
+                        ),
+                    )?,
+                ),
+                unpersist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrUnpersistSpatialAnchorMSFT\0"),
+                )?),
+                clear_spatial_anchor_store: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrClearSpatialAnchorStoreMSFT\0"),
+                )?),
+            })
+        }
+    }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct AndroidSessionStateEnableOCULUS {}
@@ -2681,6 +3321,47 @@ pub mod raw {
                 set_environment_depth_estimation: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrSetEnvironmentDepthEstimationVARJO\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct MarkerTrackingVARJO {
+        pub set_marker_tracking: pfn::SetMarkerTrackingVARJO,
+        pub set_marker_tracking_timeout: pfn::SetMarkerTrackingTimeoutVARJO,
+        pub set_marker_tracking_prediction: pfn::SetMarkerTrackingPredictionVARJO,
+        pub get_marker_size: pfn::GetMarkerSizeVARJO,
+        pub create_marker_space: pfn::CreateMarkerSpaceVARJO,
+    }
+    impl MarkerTrackingVARJO {
+        pub const VERSION: u32 = sys::VARJO_marker_tracking_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VARJO_MARKER_TRACKING_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                set_marker_tracking: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingVARJO\0"),
+                )?),
+                set_marker_tracking_timeout: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingTimeoutVARJO\0"),
+                )?),
+                set_marker_tracking_prediction: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingPredictionVARJO\0"),
+                )?),
+                get_marker_size: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerSizeVARJO\0"),
+                )?),
+                create_marker_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceVARJO\0"),
                 )?),
             })
         }
@@ -3515,6 +4196,92 @@ pub(crate) mod builder {
         }
     }
     #[repr(transparent)]
+    pub struct BindingModificationBase<'a> {
+        _inner: sys::BindingModificationBaseHeaderKHR,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct InteractionProfileAnalogThresholdVALVE<'a> {
+        inner: sys::InteractionProfileAnalogThresholdVALVE,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> InteractionProfileAnalogThresholdVALVE<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::InteractionProfileAnalogThresholdVALVE {
+                    ty: sys::StructureType::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::InteractionProfileAnalogThresholdVALVE) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::InteractionProfileAnalogThresholdVALVE {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::InteractionProfileAnalogThresholdVALVE {
+            &self.inner
+        }
+        #[inline]
+        pub fn action(mut self, value: &'a Action) -> Self {
+            self.inner.action = value.as_raw();
+            self
+        }
+        #[inline]
+        pub fn binding(mut self, value: Path) -> Self {
+            self.inner.binding = value;
+            self
+        }
+        #[inline]
+        pub fn on_threshold(mut self, value: f32) -> Self {
+            self.inner.on_threshold = value;
+            self
+        }
+        #[inline]
+        pub fn off_threshold(mut self, value: f32) -> Self {
+            self.inner.off_threshold = value;
+            self
+        }
+        #[inline]
+        pub fn on_haptic(mut self, value: &'a HapticBaseHeader<'a>) -> Self {
+            self.inner.on_haptic = value as *const _ as _;
+            self
+        }
+        #[inline]
+        pub fn off_haptic(mut self, value: &'a HapticBaseHeader<'a>) -> Self {
+            self.inner.off_haptic = value as *const _ as _;
+            self
+        }
+    }
+    impl<'a> Deref for InteractionProfileAnalogThresholdVALVE<'a> {
+        type Target = BindingModificationBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for InteractionProfileAnalogThresholdVALVE<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[repr(transparent)]
     pub struct SwapchainStateBase<'a> {
         _inner: sys::SwapchainStateBaseHeaderFB,
         _marker: PhantomData<&'a ()>,
@@ -3787,6 +4554,67 @@ pub(crate) mod builder {
         }
     }
     impl<'a> Default for SwapchainStateSamplerVulkanFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SwapchainStateFoveationFB<'a> {
+        inner: sys::SwapchainStateFoveationFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> SwapchainStateFoveationFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SwapchainStateFoveationFB {
+                    ty: sys::StructureType::SWAPCHAIN_STATE_FOVEATION_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::SwapchainStateFoveationFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SwapchainStateFoveationFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SwapchainStateFoveationFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn flags(mut self, value: SwapchainStateFoveationFlagsFB) -> Self {
+            self.inner.flags = value;
+            self
+        }
+        #[inline]
+        pub fn profile(mut self, value: &'a FoveationProfileFB) -> Self {
+            self.inner.profile = value.as_raw();
+            self
+        }
+    }
+    impl<'a> Deref for SwapchainStateFoveationFB<'a> {
+        type Target = SwapchainStateBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for SwapchainStateFoveationFB<'a> {
         fn default() -> Self {
             Self::new()
         }

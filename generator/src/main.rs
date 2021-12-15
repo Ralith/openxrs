@@ -2138,7 +2138,9 @@ fn xr_var_ty(member: &Member) -> TokenStream {
         if let Ok(len) = len.parse::<usize>() {
             quote! { [#ty; #len] }
         } else {
-            assert!(len.starts_with("XR_MAX_"));
+            assert!(
+                len.starts_with("XR_MAX_") || len.ends_with("_COUNT") || len.ends_with("_SIZE_FB")
+            );
             let len = Ident::new(&len[3..], Span::call_site());
             quote! { [#ty; #len] }
         }
