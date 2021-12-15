@@ -1958,8 +1958,6 @@ impl SwapchainUsageFlags {
     pub const MUTABLE_FORMAT: SwapchainUsageFlags = Self(1 << 6u64);
     #[doc = "Specifies that the image may: be used as a input attachment."]
     pub const INPUT_ATTACHMENT: SwapchainUsageFlags = Self(1 << 7u64);
-    #[doc = "Specifies that the image may: be used as a input attachment."]
-    pub const INPUT_ATTACHMENT: SwapchainUsageFlags = Self::ATTACHMENT_BIT_MND;
 }
 bitmask!(SwapchainUsageFlags);
 #[doc = "See [XrViewStateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewStateFlagBits)"]

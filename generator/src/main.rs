@@ -981,6 +981,14 @@ impl Parser {
                 let value = match v.value {
                     ConstantValue::Literal(x) => quote! {Self(1 << #x)},
                     ConstantValue::Alias(ref x) => {
+                        // avoids collision between XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_{MND,KHR}
+                        if bitmask
+                            .values
+                            .iter()
+                            .any(|v| value_name == xr_bitmask_value_name(name, &v.name))
+                        {
+                            return quote! {};
+                        }
                         let ident = xr_enum_value_name(name, x);
                         quote! { Self::#ident }
                     }
