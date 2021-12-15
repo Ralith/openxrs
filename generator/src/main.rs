@@ -918,8 +918,7 @@ impl Parser {
                         |x| {
                             let mut reason = x.to_string();
                             reason.get_mut(0..1).unwrap().make_ascii_lowercase();
-                            assert!(reason.ends_with('.'));
-                            reason.truncate(reason.len() - 1);
+                            reason = reason.trim_end_matches(".").to_string();
                             reason
                         },
                     );
