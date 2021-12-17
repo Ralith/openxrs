@@ -507,7 +507,7 @@ impl Parser {
                     self.finish_element();
                 }
                 Characters(ch) => {
-                    if define_ty.is_some() {
+                    if define_ty.is_some() || define_name.is_some() {
                         define_val = Some(ch);
                     }
                 }
@@ -520,6 +520,14 @@ impl Parser {
                 _ => {}
             }
         }
+        match (&define_name, &define_val) {
+            (Some(name), Some(val)) => {
+                if let Ok(val) = val.parse::<usize>() {
+                    self.api_constants.push((name.into(), val))
+                }
+            }
+            _ => {}
+        };
         if define_name.as_ref().map(|x| &x[..]) == Some("XR_CURRENT_API_VERSION") {
             let version = define_val.unwrap();
             assert!(version.starts_with('('));
@@ -1182,7 +1190,7 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
-            #![allow(non_upper_case_globals, clippy::unreadable_literal, clippy::identity_op)]
+            #![allow(non_upper_case_globals, clippy::unreadable_literal, clippy::identity_op, unused)]
             use std::fmt;
             use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};

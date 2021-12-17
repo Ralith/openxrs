@@ -2,7 +2,8 @@
 #![allow(
     non_upper_case_globals,
     clippy::unreadable_literal,
-    clippy::identity_op
+    clippy::identity_op,
+    unused
 )]
 use crate::platform::*;
 use crate::support::*;
@@ -12,6 +13,12 @@ use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
 pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 20u32);
+pub const NULL_PATH: usize = 0usize;
+pub const NULL_SYSTEM_ID: usize = 0usize;
+pub const NO_DURATION: usize = 0usize;
+pub const FREQUENCY_UNSPECIFIED: usize = 0usize;
+pub const HAND_JOINT_COUNT_EXT: usize = 26usize;
+pub const NULL_CONTROLLER_MODEL_KEY_MSFT: usize = 0usize;
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
