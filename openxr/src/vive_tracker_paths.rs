@@ -5,9 +5,8 @@ pub struct ViveTrackerPathsHTCX {
     pub role: Option<Path>,
 }
 
-impl From<*mut sys::ViveTrackerPathsHTCX> for ViveTrackerPathsHTCX {
-    fn from(paths: *mut sys::ViveTrackerPathsHTCX) -> Self {
-        let paths = unsafe { *paths };
+impl From<&sys::ViveTrackerPathsHTCX> for ViveTrackerPathsHTCX {
+    fn from(paths: &sys::ViveTrackerPathsHTCX) -> Self {
         Self {
             persistent: paths.persistent_path,
             role: if paths.role_path.into_raw() == sys::NULL_PATH as u64 {

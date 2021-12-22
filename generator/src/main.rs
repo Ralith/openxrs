@@ -1916,7 +1916,7 @@ impl Parser {
                         ViveTrackerPathsHTCX
                     },
                     quote! {
-                        (self.0).#ident.into()
+                        unsafe { (self.0).#ident.as_ref() }.unwrap().into()
                     },
                 )
             } else {
@@ -1930,13 +1930,18 @@ impl Parser {
             })
         });
 
+        let sys_raw_ident_str = format!("[sys::{}]", raw_ident);
         quote! {
             #[derive(Copy, Clone)]
             pub struct #ident<'a>(&'a sys::#raw_ident);
 
             impl<'a> #ident<'a> {
                 #[inline]
-                pub fn new(inner: &'a sys::#raw_ident) -> Self {
+                /// # Safety
+                /// `inner` must be valid event data according to the OpenXR spec. Refer to
+                #[doc = #sys_raw_ident_str]
+                /// for more information.
+                pub unsafe fn new(inner: &'a sys::#raw_ident) -> Self {
                     Self(inner)
                 }
 

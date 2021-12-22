@@ -1464,7 +1464,11 @@ impl<'a> Event<'a> {
 pub struct EventsLost<'a>(&'a sys::EventDataEventsLost);
 impl<'a> EventsLost<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataEventsLost) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataEventsLost]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataEventsLost) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1476,7 +1480,11 @@ impl<'a> EventsLost<'a> {
 pub struct InstanceLossPending<'a>(&'a sys::EventDataInstanceLossPending);
 impl<'a> InstanceLossPending<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataInstanceLossPending) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataInstanceLossPending]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataInstanceLossPending) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1488,7 +1496,11 @@ impl<'a> InstanceLossPending<'a> {
 pub struct SessionStateChanged<'a>(&'a sys::EventDataSessionStateChanged);
 impl<'a> SessionStateChanged<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataSessionStateChanged) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataSessionStateChanged]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataSessionStateChanged) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1508,7 +1520,11 @@ impl<'a> SessionStateChanged<'a> {
 pub struct ReferenceSpaceChangePending<'a>(&'a sys::EventDataReferenceSpaceChangePending);
 impl<'a> ReferenceSpaceChangePending<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataReferenceSpaceChangePending) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataReferenceSpaceChangePending]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataReferenceSpaceChangePending) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1536,7 +1552,11 @@ impl<'a> ReferenceSpaceChangePending<'a> {
 pub struct PerfSettingsEXT<'a>(&'a sys::EventDataPerfSettingsEXT);
 impl<'a> PerfSettingsEXT<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataPerfSettingsEXT) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataPerfSettingsEXT]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataPerfSettingsEXT) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1560,7 +1580,11 @@ impl<'a> PerfSettingsEXT<'a> {
 pub struct VisibilityMaskChangedKHR<'a>(&'a sys::EventDataVisibilityMaskChangedKHR);
 impl<'a> VisibilityMaskChangedKHR<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataVisibilityMaskChangedKHR) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataVisibilityMaskChangedKHR]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataVisibilityMaskChangedKHR) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1580,7 +1604,11 @@ impl<'a> VisibilityMaskChangedKHR<'a> {
 pub struct InteractionProfileChanged<'a>(&'a sys::EventDataInteractionProfileChanged);
 impl<'a> InteractionProfileChanged<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataInteractionProfileChanged) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataInteractionProfileChanged]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataInteractionProfileChanged) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1592,7 +1620,11 @@ impl<'a> InteractionProfileChanged<'a> {
 pub struct MainSessionVisibilityChangedEXTX<'a>(&'a sys::EventDataMainSessionVisibilityChangedEXTX);
 impl<'a> MainSessionVisibilityChangedEXTX<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataMainSessionVisibilityChangedEXTX) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataMainSessionVisibilityChangedEXTX]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataMainSessionVisibilityChangedEXTX) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1608,7 +1640,11 @@ impl<'a> MainSessionVisibilityChangedEXTX<'a> {
 pub struct DisplayRefreshRateChangedFB<'a>(&'a sys::EventDataDisplayRefreshRateChangedFB);
 impl<'a> DisplayRefreshRateChangedFB<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataDisplayRefreshRateChangedFB) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataDisplayRefreshRateChangedFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataDisplayRefreshRateChangedFB) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1624,7 +1660,11 @@ impl<'a> DisplayRefreshRateChangedFB<'a> {
 pub struct PassthroughStateChangedFB<'a>(&'a sys::EventDataPassthroughStateChangedFB);
 impl<'a> PassthroughStateChangedFB<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataPassthroughStateChangedFB) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataPassthroughStateChangedFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataPassthroughStateChangedFB) -> Self {
         Self(inner)
     }
     #[inline]
@@ -1636,19 +1676,27 @@ impl<'a> PassthroughStateChangedFB<'a> {
 pub struct ViveTrackerConnectedHTCX<'a>(&'a sys::EventDataViveTrackerConnectedHTCX);
 impl<'a> ViveTrackerConnectedHTCX<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataViveTrackerConnectedHTCX) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataViveTrackerConnectedHTCX]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataViveTrackerConnectedHTCX) -> Self {
         Self(inner)
     }
     #[inline]
     pub fn paths(self) -> ViveTrackerPathsHTCX {
-        (self.0).paths.into()
+        unsafe { (self.0).paths.as_ref() }.unwrap().into()
     }
 }
 #[derive(Copy, Clone)]
 pub struct MarkerTrackingUpdateVARJO<'a>(&'a sys::EventDataMarkerTrackingUpdateVARJO);
 impl<'a> MarkerTrackingUpdateVARJO<'a> {
     #[inline]
-    pub fn new(inner: &'a sys::EventDataMarkerTrackingUpdateVARJO) -> Self {
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataMarkerTrackingUpdateVARJO]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataMarkerTrackingUpdateVARJO) -> Self {
         Self(inner)
     }
     #[inline]
