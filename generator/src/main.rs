@@ -1916,7 +1916,7 @@ impl Parser {
                         ViveTrackerPathsHTCX
                     },
                     quote! {
-                        unsafe { (self.0).#ident.as_ref() }.unwrap().into()
+                        (*unsafe { self.0.#ident.as_ref() }.unwrap()).into()
                     },
                 )
             } else {

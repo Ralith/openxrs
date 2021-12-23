@@ -1685,7 +1685,7 @@ impl<'a> ViveTrackerConnectedHTCX<'a> {
     }
     #[inline]
     pub fn paths(self) -> ViveTrackerPathsHTCX {
-        unsafe { (self.0).paths.as_ref() }.unwrap().into()
+        (*unsafe { self.0.paths.as_ref() }.unwrap()).into()
     }
 }
 #[derive(Copy, Clone)]
