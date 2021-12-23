@@ -507,7 +507,7 @@ impl Parser {
                     self.finish_element();
                 }
                 Characters(ch) => {
-                    if define_ty.is_some() {
+                    if define_ty.is_some() || define_name.is_some() {
                         define_val = Some(ch);
                     }
                 }
@@ -518,6 +518,11 @@ impl Parser {
                     eprintln!("unexpected end element in define type: {}", name);
                 }
                 _ => {}
+            }
+        }
+        if let (Some(name), Some(val)) = (&define_name, &define_val) {
+            if let Ok(val) = val.parse::<usize>() {
+                self.api_constants.push((name.into(), val))
             }
         }
         if define_name.as_ref().map(|x| &x[..]) == Some("XR_CURRENT_API_VERSION") {
@@ -918,8 +923,7 @@ impl Parser {
                         |x| {
                             let mut reason = x.to_string();
                             reason.get_mut(0..1).unwrap().make_ascii_lowercase();
-                            assert!(reason.ends_with('.'));
-                            reason.truncate(reason.len() - 1);
+                            reason = reason.trim_end_matches('.').to_string();
                             reason
                         },
                     );
@@ -982,6 +986,14 @@ impl Parser {
                 let value = match v.value {
                     ConstantValue::Literal(x) => quote! {Self(1 << #x)},
                     ConstantValue::Alias(ref x) => {
+                        // avoids collision between XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_{MND,KHR}
+                        if bitmask
+                            .values
+                            .iter()
+                            .any(|v| value_name == xr_bitmask_value_name(name, &v.name))
+                        {
+                            return quote! {};
+                        }
                         let ident = xr_enum_value_name(name, x);
                         quote! { Self::#ident }
                     }
@@ -1175,7 +1187,7 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
-            #![allow(non_upper_case_globals, clippy::unreadable_literal, clippy::identity_op)]
+            #![allow(non_upper_case_globals, clippy::unreadable_literal, clippy::identity_op, unused)]
             use std::fmt;
             use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};
@@ -1599,12 +1611,7 @@ impl Parser {
         children: &[String],
     ) -> TokenStream {
         let sys_ident = xr_ty_name(base_name);
-        let base_header_pos = base_name.find("BaseHeader").unwrap();
-        assert!(base_name.starts_with("Xr"));
-        let base_ident = Ident::new(
-            &base_name[2..base_header_pos + "Base".len()],
-            Span::call_site(),
-        );
+        let base_ident = base_header_ty(base_name);
         let mut base_meta = StructMeta::default();
         for name in children {
             base_meta |= *meta.get(&name[..]).unwrap();
@@ -1715,6 +1722,8 @@ impl Parser {
                 type_args
             } else if m.ty == "XrSwapchain" || m.ty == "XrSession" {
                 quote! { <G> }
+            } else if m.ty == "XrAction" {
+                quote! { <ATY> }
             } else {
                 quote! {}
             };
@@ -1729,6 +1738,13 @@ impl Parser {
                     (
                         quote! { &'a #ty #type_args },
                         quote! { self.inner.#ident = value.as_raw(); },
+                    )
+                }
+                x if self.base_headers.contains_key(x) => {
+                    let ty = base_header_ty(x);
+                    (
+                        quote! { &'a #ty #type_args },
+                        quote! { self.inner.#ident = value as *const _ as _; },
                     )
                 }
                 _ => {
@@ -1772,9 +1788,14 @@ impl Parser {
                     }
                 }
             };
+
+            let fn_type_params = match &m.ty[..] {
+                "XrAction" => quote! { <ATY: ActionTy> },
+                _ => quote! {},
+            };
             Some(quote! {
                 #[inline]
-                pub fn #ident(mut self, value: #ty) -> Self {
+                pub fn #ident#fn_type_params(mut self, value: #ty) -> Self {
                     #init
                     self
                 }
@@ -1886,6 +1907,15 @@ impl Parser {
             } else if self.handles.contains(&m.ty) {
                 let ty = xr_var_ty(m);
                 (quote! { sys::#ty }, quote! { (self.0).#ident })
+            } else if m.ty == "XrViveTrackerPathsHTCX" {
+                (
+                    quote! {
+                        ViveTrackerPathsHTCX
+                    },
+                    quote! {
+                        (*unsafe { self.0.#ident.as_ref() }.unwrap()).into()
+                    },
+                )
             } else {
                 (xr_var_ty(m), quote! { (self.0).#ident })
             };
@@ -1897,13 +1927,18 @@ impl Parser {
             })
         });
 
+        let sys_raw_ident_str = format!("[sys::{}]", raw_ident);
         quote! {
             #[derive(Copy, Clone)]
             pub struct #ident<'a>(&'a sys::#raw_ident);
 
             impl<'a> #ident<'a> {
                 #[inline]
-                pub fn new(inner: &'a sys::#raw_ident) -> Self {
+                /// # Safety
+                /// `inner` must be valid event data according to the OpenXR spec. Refer to
+                #[doc = #sys_raw_ident_str]
+                /// for more information.
+                pub unsafe fn new(inner: &'a sys::#raw_ident) -> Self {
                     Self(inner)
                 }
 
@@ -2139,7 +2174,9 @@ fn xr_var_ty(member: &Member) -> TokenStream {
         if let Ok(len) = len.parse::<usize>() {
             quote! { [#ty; #len] }
         } else {
-            assert!(len.starts_with("XR_MAX_"));
+            assert!(
+                len.starts_with("XR_MAX_") || len.ends_with("_COUNT") || len.ends_with("_SIZE_FB")
+            );
             let len = Ident::new(&len[3..], Span::call_site());
             quote! { [#ty; #len] }
         }
@@ -2206,4 +2243,13 @@ fn tidy_comment(s: &str) -> Option<String> {
 
     let s = strip_macros.replace_all(s, "$1");
     Some(strip_links.replace_all(&s, "$1").into())
+}
+
+fn base_header_ty(base_name: &str) -> Ident {
+    let base_header_pos = base_name.find("BaseHeader").unwrap();
+    assert!(base_name.starts_with("Xr"));
+    Ident::new(
+        &base_name[2..base_header_pos + "Base".len()],
+        Span::call_site(),
+    )
 }
