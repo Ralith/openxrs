@@ -520,14 +520,11 @@ impl Parser {
                 _ => {}
             }
         }
-        match (&define_name, &define_val) {
-            (Some(name), Some(val)) => {
-                if let Ok(val) = val.parse::<usize>() {
-                    self.api_constants.push((name.into(), val))
-                }
+        if let (Some(name), Some(val)) = (&define_name, &define_val) {
+            if let Ok(val) = val.parse::<usize>() {
+                self.api_constants.push((name.into(), val))
             }
-            _ => {}
-        };
+        }
         if define_name.as_ref().map(|x| &x[..]) == Some("XR_CURRENT_API_VERSION") {
             let version = define_val.unwrap();
             assert!(version.starts_with('('));
@@ -926,7 +923,7 @@ impl Parser {
                         |x| {
                             let mut reason = x.to_string();
                             reason.get_mut(0..1).unwrap().make_ascii_lowercase();
-                            reason = reason.trim_end_matches(".").to_string();
+                            reason = reason.trim_end_matches('.').to_string();
                             reason
                         },
                     );
@@ -2251,10 +2248,8 @@ fn tidy_comment(s: &str) -> Option<String> {
 fn base_header_ty(base_name: &str) -> Ident {
     let base_header_pos = base_name.find("BaseHeader").unwrap();
     assert!(base_name.starts_with("Xr"));
-    let base_ident = Ident::new(
+    Ident::new(
         &base_name[2..base_header_pos + "Base".len()],
         Span::call_site(),
-    );
-
-    base_ident
+    )
 }
