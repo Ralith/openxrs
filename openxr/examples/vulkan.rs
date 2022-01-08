@@ -17,7 +17,6 @@ use std::{
 
 use ash::{
     util::read_spv,
-    version::{DeviceV1_0, EntryV1_0, InstanceV1_0},
     vk::{self, Handle},
 };
 use openxr as xr;
@@ -97,7 +96,7 @@ pub fn main() {
     // OpenXR wants to ensure apps are using the correct graphics card and Vulkan features and
     // extensions, so the instance and device MUST be set up before Instance::create_session.
 
-    let vk_target_version = vk::make_version(1, 1, 0); // Vulkan 1.1 guarantees multiview support
+    let vk_target_version = vk::make_api_version(0, 1, 1, 0); // Vulkan 1.1 guarantees multiview support
     let vk_target_version_xr = xr::Version::new(1, 1, 0);
 
     let reqs = xr_instance
@@ -114,14 +113,14 @@ pub fn main() {
         );
     }
 
-    let vk_entry = ash::Entry::new().unwrap();
-
-    let vk_app_info = vk::ApplicationInfo::builder()
-        .application_version(0)
-        .engine_version(0)
-        .api_version(vk_target_version);
-
     unsafe {
+        let vk_entry = ash::Entry::load().unwrap();
+
+        let vk_app_info = vk::ApplicationInfo::builder()
+            .application_version(0)
+            .engine_version(0)
+            .api_version(vk_target_version);
+
         let vk_instance = if enabled_extensions.khr_vulkan_enable2 {
             let vk_instance = xr_instance
                 .create_vulkan_instance(
