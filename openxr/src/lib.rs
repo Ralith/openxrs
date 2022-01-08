@@ -1,6 +1,7 @@
 //! To get started, construct an `Entry` object.
 
-#![allow(clippy::transmute_ptr_to_ptr)]
+// deref_addrof false positive: https://github.com/rust-lang/rust-clippy/issues/8247
+#![allow(clippy::transmute_ptr_to_ptr, clippy::deref_addrof)]
 use std::os::raw::c_char;
 
 pub use sys::{

@@ -83,7 +83,7 @@ impl Space {
         // This assert allows this function to be safe.
         assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
                    "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
-        let out = unsafe {
+        unsafe {
             let mut x = sys::SpaceLocation::out(ptr::null_mut());
             cvt((self.fp().locate_space)(
                 self.as_raw(),
@@ -91,12 +91,8 @@ impl Space {
                 time,
                 x.as_mut_ptr(),
             ))?;
-            x.assume_init()
-        };
-        Ok(SpaceLocation {
-            location_flags: out.location_flags,
-            pose: out.pose,
-        })
+            Ok(SpaceLocation::new(&x))
+        }
     }
 
     /// Determine the location and velocity of a space relative to a base space at a specified time,
@@ -106,7 +102,7 @@ impl Space {
         // This assert allows this function to be safe.
         assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
                    "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
-        let (location, velocity) = unsafe {
+        unsafe {
             let mut velocity = sys::SpaceVelocity::out(ptr::null_mut());
             let mut location = sys::SpaceLocation::out(&mut velocity as *mut _ as _);
             cvt((self.fp().locate_space)(
@@ -115,19 +111,8 @@ impl Space {
                 time,
                 location.as_mut_ptr(),
             ))?;
-            (location.assume_init(), velocity.assume_init())
-        };
-        Ok((
-            SpaceLocation {
-                location_flags: location.location_flags,
-                pose: location.pose,
-            },
-            SpaceVelocity {
-                velocity_flags: velocity.velocity_flags,
-                linear_velocity: velocity.linear_velocity,
-                angular_velocity: velocity.angular_velocity,
-            },
-        ))
+            Ok((SpaceLocation::new(&location), SpaceVelocity::new(&velocity)))
+        }
     }
 
     /// Determine the locations of the joints of a hand tracker relative to this space at a
@@ -240,9 +225,45 @@ pub struct SpaceLocation {
     pub pose: Posef,
 }
 
+impl SpaceLocation {
+    unsafe fn new(raw: &MaybeUninit<sys::SpaceLocation>) -> Self {
+        // Applications *must* not read invalid parts of a poses, i.e. they may be uninitialized
+        let ptr = raw.as_ptr();
+        let flags = *ptr::addr_of!((*ptr).location_flags);
+        Self {
+            location_flags: flags,
+            pose: Posef {
+                orientation: flags
+                    .contains(sys::SpaceLocationFlags::ORIENTATION_VALID)
+                    .then(|| *ptr::addr_of!((*ptr).pose.orientation))
+                    .unwrap_or_default(),
+                position: flags
+                    .contains(sys::SpaceLocationFlags::POSITION_VALID)
+                    .then(|| *ptr::addr_of!((*ptr).pose.position))
+                    .unwrap_or_default(),
+            },
+        }
+    }
+}
+
 #[derive(Copy, Clone, Default, PartialEq)]
 pub struct SpaceVelocity {
-    pub velocity_flags: SpaceVelocityFlags,
-    pub linear_velocity: Vector3f,
-    pub angular_velocity: Vector3f,
+    pub linear_velocity: Option<Vector3f>,
+    pub angular_velocity: Option<Vector3f>,
+}
+
+impl SpaceVelocity {
+    unsafe fn new(raw: &MaybeUninit<sys::SpaceVelocity>) -> Self {
+        // Applications *must* not read invalid parts of a poses, i.e. they may be uninitialized
+        let ptr = raw.as_ptr();
+        let flags = *ptr::addr_of!((*ptr).velocity_flags);
+        Self {
+            linear_velocity: flags
+                .contains(sys::SpaceVelocityFlags::LINEAR_VALID)
+                .then(|| *ptr::addr_of!((*ptr).linear_velocity)),
+            angular_velocity: flags
+                .contains(sys::SpaceVelocityFlags::ANGULAR_VALID)
+                .then(|| *ptr::addr_of!((*ptr).angular_velocity)),
+        }
+    }
 }

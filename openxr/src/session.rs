@@ -167,13 +167,7 @@ impl<G> Session<G> {
         Ok((
             flags,
             raw.into_iter()
-                .map(|x| {
-                    let x = unsafe { x.assume_init() };
-                    View {
-                        pose: x.pose,
-                        fov: x.fov,
-                    }
-                })
+                .map(|x| unsafe { View::new(flags, &x) })
                 .collect(),
         ))
     }
@@ -486,6 +480,26 @@ pub struct SwapchainCreateInfo<G: Graphics> {
 pub struct View {
     pub pose: Posef,
     pub fov: Fovf,
+}
+
+impl View {
+    unsafe fn new(flags: ViewStateFlags, raw: &MaybeUninit<sys::View>) -> Self {
+        // Applications *must* not read invalid parts of a poses, i.e. they may be uninitialized
+        let ptr = raw.as_ptr();
+        Self {
+            pose: Posef {
+                orientation: flags
+                    .contains(sys::ViewStateFlags::ORIENTATION_VALID)
+                    .then(|| *ptr::addr_of!((*ptr).pose.orientation))
+                    .unwrap_or_default(),
+                position: flags
+                    .contains(sys::ViewStateFlags::POSITION_VALID)
+                    .then(|| *ptr::addr_of!((*ptr).pose.position))
+                    .unwrap_or_default(),
+            },
+            fov: *ptr::addr_of!((*ptr).fov),
+        }
+    }
 }
 
 #[repr(transparent)]
