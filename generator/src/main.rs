@@ -9,7 +9,7 @@ use std::{
     rc::Rc,
 };
 
-use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
+use heck::{ToShoutySnakeCase, ToSnakeCase, ToUpperCamelCase};
 use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
@@ -1285,7 +1285,7 @@ impl Parser {
                     Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
                 let ext_name = split_ext_tag(&ext.name).1;
                 let ty_ident = Ident::new(
-                    &format!("{}{}", ext_name.to_camel_case(), tag_name),
+                    &format!("{}{}", ext_name.to_upper_camel_case(), tag_name),
                     Span::call_site(),
                 );
                 let conds = conditions(&ext.name, Some(&ext.name));
