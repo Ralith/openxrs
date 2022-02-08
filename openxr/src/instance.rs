@@ -686,7 +686,7 @@ pub struct InstanceProperties {
     pub runtime_name: String,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct SystemProperties {
     pub system_id: SystemId,
     pub vendor_id: u32,
