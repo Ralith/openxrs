@@ -92,7 +92,7 @@ impl Graphics for Vulkan {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Requirements {
     pub min_api_version_supported: Version,
     pub max_api_version_supported: Version,
