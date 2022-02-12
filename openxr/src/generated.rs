@@ -10,15 +10,17 @@ pub use sys::{
     ActionType, AndroidSurfaceSwapchainFlagsFB, AndroidThreadTypeKHR, BlendFactorFB, Color4f,
     ColorSpaceFB, CompositionLayerFlags, CompositionLayerImageLayoutFlagsFB,
     CompositionLayerSecureContentFlagsFB, CompositionLayerSpaceWarpInfoFlagsFB,
-    DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, EnvironmentBlendMode,
-    Extent2Df, Extent2Di, EyeVisibility, FormFactor, FoveationDynamicFB, FoveationLevelFB, Fovf,
+    DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT,
+    DigitalLensControlFlagsALMALENCE, EnvironmentBlendMode, Extent2Df, Extent2Di, EyeExpressionHTC,
+    EyeVisibility, FacialTrackingTypeHTC, FormFactor, FoveationDynamicFB, FoveationLevelFB, Fovf,
     HandEXT, HandJointEXT, HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT,
     HandJointsMotionRangeEXT, HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB,
-    InputSourceLocalizedNameFlags, InstanceCreateFlags, MeshComputeLodMSFT, ObjectType, Offset2Df,
+    InputSourceLocalizedNameFlags, InstanceCreateFlags, KeyboardTrackingFlagsFB,
+    KeyboardTrackingQueryFlagsFB, LipExpressionHTC, MeshComputeLodMSFT, ObjectType, Offset2Df,
     Offset2Di, OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX, PassthroughFlagsFB,
     PassthroughLayerPurposeFB, PassthroughStateChangedFlagsFB, PerfSettingsDomainEXT,
     PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
-    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, ReprojectionModeMSFT,
+    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, RenderModelFlagsFB, ReprojectionModeMSFT,
     SceneComponentTypeMSFT, SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT,
     SceneComputeStateMSFT, SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT, SessionCreateFlags,
     SessionState, SpaceLocationFlags, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
@@ -31,6 +33,7 @@ pub use sys::{
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
 #[non_exhaustive]
 pub struct ExtensionSet {
+    pub almalence_digital_lens_control: bool,
     pub epic_view_configuration_fov: bool,
     pub ext_performance_settings: bool,
     pub ext_thermal_query: bool,
@@ -44,6 +47,7 @@ pub struct ExtensionSet {
     pub ext_hand_joints_motion_range: bool,
     pub ext_samsung_odyssey_controller: bool,
     pub ext_hp_mixed_reality_controller: bool,
+    pub ext_uuid: bool,
     pub extx_overlay: bool,
     pub fb_composition_layer_image_layout: bool,
     pub fb_composition_layer_alpha_blend: bool,
@@ -58,15 +62,20 @@ pub struct ExtensionSet {
     pub fb_hand_tracking_capsules: bool,
     pub fb_foveation: bool,
     pub fb_foveation_configuration: bool,
+    pub fb_keyboard_tracking: bool,
     pub fb_triangle_mesh: bool,
     pub fb_passthrough: bool,
+    pub fb_render_model: bool,
     pub fb_foveation_vulkan: bool,
     #[cfg(target_os = "android")]
     pub fb_swapchain_update_state_android_surface: bool,
     pub fb_swapchain_update_state_opengl_es: bool,
     pub fb_swapchain_update_state_vulkan: bool,
     pub fb_space_warp: bool,
+    pub fb_passthrough_keyboard_hands: bool,
     pub htc_vive_cosmos_controller_interaction: bool,
+    pub htc_facial_tracking: bool,
+    pub htc_vive_focus3_controller_interaction: bool,
     pub htcx_vive_tracker_interaction: bool,
     pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
@@ -133,6 +142,9 @@ impl ExtensionSet {
         let mut out = Self::default();
         for ext in properties {
             match crate::fixed_str_bytes(&ext.extension_name) {
+                raw::DigitalLensControlALMALENCE::NAME => {
+                    out.almalence_digital_lens_control = true;
+                }
                 raw::ViewConfigurationFovEPIC::NAME => {
                     out.epic_view_configuration_fov = true;
                 }
@@ -169,6 +181,9 @@ impl ExtensionSet {
                 }
                 raw::HpMixedRealityControllerEXT::NAME => {
                     out.ext_hp_mixed_reality_controller = true;
+                }
+                raw::UuidEXT::NAME => {
+                    out.ext_uuid = true;
                 }
                 raw::OverlayEXTX::NAME => {
                     out.extx_overlay = true;
@@ -210,11 +225,17 @@ impl ExtensionSet {
                 raw::FoveationConfigurationFB::NAME => {
                     out.fb_foveation_configuration = true;
                 }
+                raw::KeyboardTrackingFB::NAME => {
+                    out.fb_keyboard_tracking = true;
+                }
                 raw::TriangleMeshFB::NAME => {
                     out.fb_triangle_mesh = true;
                 }
                 raw::PassthroughFB::NAME => {
                     out.fb_passthrough = true;
+                }
+                raw::RenderModelFB::NAME => {
+                    out.fb_render_model = true;
                 }
                 raw::FoveationVulkanFB::NAME => {
                     out.fb_foveation_vulkan = true;
@@ -232,8 +253,17 @@ impl ExtensionSet {
                 raw::SpaceWarpFB::NAME => {
                     out.fb_space_warp = true;
                 }
+                raw::PassthroughKeyboardHandsFB::NAME => {
+                    out.fb_passthrough_keyboard_hands = true;
+                }
                 raw::ViveCosmosControllerInteractionHTC::NAME => {
                     out.htc_vive_cosmos_controller_interaction = true;
+                }
+                raw::FacialTrackingHTC::NAME => {
+                    out.htc_facial_tracking = true;
+                }
+                raw::ViveFocus3ControllerInteractionHTC::NAME => {
+                    out.htc_vive_focus3_controller_interaction = true;
                 }
                 raw::ViveTrackerInteractionHTCX::NAME => {
                     out.htcx_vive_tracker_interaction = true;
@@ -401,6 +431,11 @@ impl ExtensionSet {
     pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
         let mut out = Vec::new();
         {
+            if self.almalence_digital_lens_control {
+                out.push(raw::DigitalLensControlALMALENCE::NAME.into());
+            }
+        }
+        {
             if self.epic_view_configuration_fov {
                 out.push(raw::ViewConfigurationFovEPIC::NAME.into());
             }
@@ -459,6 +494,11 @@ impl ExtensionSet {
         {
             if self.ext_hp_mixed_reality_controller {
                 out.push(raw::HpMixedRealityControllerEXT::NAME.into());
+            }
+        }
+        {
+            if self.ext_uuid {
+                out.push(raw::UuidEXT::NAME.into());
             }
         }
         {
@@ -528,6 +568,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_keyboard_tracking {
+                out.push(raw::KeyboardTrackingFB::NAME.into());
+            }
+        }
+        {
             if self.fb_triangle_mesh {
                 out.push(raw::TriangleMeshFB::NAME.into());
             }
@@ -535,6 +580,11 @@ impl ExtensionSet {
         {
             if self.fb_passthrough {
                 out.push(raw::PassthroughFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_render_model {
+                out.push(raw::RenderModelFB::NAME.into());
             }
         }
         {
@@ -564,8 +614,23 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_passthrough_keyboard_hands {
+                out.push(raw::PassthroughKeyboardHandsFB::NAME.into());
+            }
+        }
+        {
             if self.htc_vive_cosmos_controller_interaction {
                 out.push(raw::ViveCosmosControllerInteractionHTC::NAME.into());
+            }
+        }
+        {
+            if self.htc_facial_tracking {
+                out.push(raw::FacialTrackingHTC::NAME.into());
+            }
+        }
+        {
+            if self.htc_vive_focus3_controller_interaction {
+                out.push(raw::ViveFocus3ControllerInteractionHTC::NAME.into());
             }
         }
         {
@@ -830,6 +895,7 @@ impl ExtensionSet {
 #[doc = r" Extensions used internally by the bindings"]
 #[derive(Default, Copy, Clone)]
 pub struct InstanceExtensions {
+    pub almalence_digital_lens_control: Option<raw::DigitalLensControlALMALENCE>,
     pub epic_view_configuration_fov: Option<raw::ViewConfigurationFovEPIC>,
     pub ext_performance_settings: Option<raw::PerformanceSettingsEXT>,
     pub ext_thermal_query: Option<raw::ThermalQueryEXT>,
@@ -843,6 +909,7 @@ pub struct InstanceExtensions {
     pub ext_hand_joints_motion_range: Option<raw::HandJointsMotionRangeEXT>,
     pub ext_samsung_odyssey_controller: Option<raw::SamsungOdysseyControllerEXT>,
     pub ext_hp_mixed_reality_controller: Option<raw::HpMixedRealityControllerEXT>,
+    pub ext_uuid: Option<raw::UuidEXT>,
     pub extx_overlay: Option<raw::OverlayEXTX>,
     pub fb_composition_layer_image_layout: Option<raw::CompositionLayerImageLayoutFB>,
     pub fb_composition_layer_alpha_blend: Option<raw::CompositionLayerAlphaBlendFB>,
@@ -857,8 +924,10 @@ pub struct InstanceExtensions {
     pub fb_hand_tracking_capsules: Option<raw::HandTrackingCapsulesFB>,
     pub fb_foveation: Option<raw::FoveationFB>,
     pub fb_foveation_configuration: Option<raw::FoveationConfigurationFB>,
+    pub fb_keyboard_tracking: Option<raw::KeyboardTrackingFB>,
     pub fb_triangle_mesh: Option<raw::TriangleMeshFB>,
     pub fb_passthrough: Option<raw::PassthroughFB>,
+    pub fb_render_model: Option<raw::RenderModelFB>,
     pub fb_foveation_vulkan: Option<raw::FoveationVulkanFB>,
     #[cfg(target_os = "android")]
     pub fb_swapchain_update_state_android_surface:
@@ -866,7 +935,10 @@ pub struct InstanceExtensions {
     pub fb_swapchain_update_state_opengl_es: Option<raw::SwapchainUpdateStateOpenglEsFB>,
     pub fb_swapchain_update_state_vulkan: Option<raw::SwapchainUpdateStateVulkanFB>,
     pub fb_space_warp: Option<raw::SpaceWarpFB>,
+    pub fb_passthrough_keyboard_hands: Option<raw::PassthroughKeyboardHandsFB>,
     pub htc_vive_cosmos_controller_interaction: Option<raw::ViveCosmosControllerInteractionHTC>,
+    pub htc_facial_tracking: Option<raw::FacialTrackingHTC>,
+    pub htc_vive_focus3_controller_interaction: Option<raw::ViveFocus3ControllerInteractionHTC>,
     pub htcx_vive_tracker_interaction: Option<raw::ViveTrackerInteractionHTCX>,
     pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
@@ -939,6 +1011,11 @@ impl InstanceExtensions {
         required: &ExtensionSet,
     ) -> Result<Self> {
         Ok(Self {
+            almalence_digital_lens_control: if required.almalence_digital_lens_control {
+                Some(raw::DigitalLensControlALMALENCE::load(entry, instance)?)
+            } else {
+                None
+            },
             epic_view_configuration_fov: if required.epic_view_configuration_fov {
                 Some(raw::ViewConfigurationFovEPIC {})
             } else {
@@ -997,6 +1074,11 @@ impl InstanceExtensions {
             },
             ext_hp_mixed_reality_controller: if required.ext_hp_mixed_reality_controller {
                 Some(raw::HpMixedRealityControllerEXT {})
+            } else {
+                None
+            },
+            ext_uuid: if required.ext_uuid {
+                Some(raw::UuidEXT {})
             } else {
                 None
             },
@@ -1066,6 +1148,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            fb_keyboard_tracking: if required.fb_keyboard_tracking {
+                Some(raw::KeyboardTrackingFB::load(entry, instance)?)
+            } else {
+                None
+            },
             fb_triangle_mesh: if required.fb_triangle_mesh {
                 Some(raw::TriangleMeshFB::load(entry, instance)?)
             } else {
@@ -1073,6 +1160,11 @@ impl InstanceExtensions {
             },
             fb_passthrough: if required.fb_passthrough {
                 Some(raw::PassthroughFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_render_model: if required.fb_render_model {
+                Some(raw::RenderModelFB::load(entry, instance)?)
             } else {
                 None
             },
@@ -1104,10 +1196,27 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            fb_passthrough_keyboard_hands: if required.fb_passthrough_keyboard_hands {
+                Some(raw::PassthroughKeyboardHandsFB::load(entry, instance)?)
+            } else {
+                None
+            },
             htc_vive_cosmos_controller_interaction: if required
                 .htc_vive_cosmos_controller_interaction
             {
                 Some(raw::ViveCosmosControllerInteractionHTC {})
+            } else {
+                None
+            },
+            htc_facial_tracking: if required.htc_facial_tracking {
+                Some(raw::FacialTrackingHTC::load(entry, instance)?)
+            } else {
+                None
+            },
+            htc_vive_focus3_controller_interaction: if required
+                .htc_vive_focus3_controller_interaction
+            {
+                Some(raw::ViveFocus3ControllerInteractionHTC {})
             } else {
                 None
             },
@@ -2018,6 +2127,27 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct DigitalLensControlALMALENCE {
+        pub set_digital_lens_control: pfn::SetDigitalLensControlALMALENCE,
+    }
+    impl DigitalLensControlALMALENCE {
+        pub const VERSION: u32 = sys::ALMALENCE_digital_lens_control_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                set_digital_lens_control: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetDigitalLensControlALMALENCE\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct ViewConfigurationFovEPIC {}
     impl ViewConfigurationFovEPIC {
         pub const VERSION: u32 = sys::EPIC_view_configuration_fov_SPEC_VERSION;
@@ -2235,6 +2365,12 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct UuidEXT {}
+    impl UuidEXT {
+        pub const VERSION: u32 = sys::EXT_uuid_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_UUID_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct OverlayEXTX {}
     impl OverlayEXTX {
         pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
@@ -2415,6 +2551,32 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::FB_FOVEATION_CONFIGURATION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct KeyboardTrackingFB {
+        pub query_system_tracked_keyboard: pfn::QuerySystemTrackedKeyboardFB,
+        pub create_keyboard_space: pfn::CreateKeyboardSpaceFB,
+    }
+    impl KeyboardTrackingFB {
+        pub const VERSION: u32 = sys::FB_keyboard_tracking_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_KEYBOARD_TRACKING_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                query_system_tracked_keyboard: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrQuerySystemTrackedKeyboardFB\0"),
+                )?),
+                create_keyboard_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateKeyboardSpaceFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct TriangleMeshFB {
         pub create_triangle_mesh: pfn::CreateTriangleMeshFB,
         pub destroy_triangle_mesh: pfn::DestroyTriangleMeshFB,
@@ -2555,6 +2717,37 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct RenderModelFB {
+        pub enumerate_render_model_paths: pfn::EnumerateRenderModelPathsFB,
+        pub get_render_model_properties: pfn::GetRenderModelPropertiesFB,
+        pub load_render_model: pfn::LoadRenderModelFB,
+    }
+    impl RenderModelFB {
+        pub const VERSION: u32 = sys::FB_render_model_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_RENDER_MODEL_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enumerate_render_model_paths: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateRenderModelPathsFB\0"),
+                )?),
+                get_render_model_properties: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetRenderModelPropertiesFB\0"),
+                )?),
+                load_render_model: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrLoadRenderModelFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct FoveationVulkanFB {}
     impl FoveationVulkanFB {
         pub const VERSION: u32 = sys::FB_foveation_vulkan_SPEC_VERSION;
@@ -2588,10 +2781,73 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::FB_SPACE_WARP_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct PassthroughKeyboardHandsFB {
+        pub passthrough_layer_set_keyboard_hands_intensity:
+            pfn::PassthroughLayerSetKeyboardHandsIntensityFB,
+    }
+    impl PassthroughKeyboardHandsFB {
+        pub const VERSION: u32 = sys::FB_passthrough_keyboard_hands_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_PASSTHROUGH_KEYBOARD_HANDS_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                passthrough_layer_set_keyboard_hands_intensity: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrPassthroughLayerSetKeyboardHandsIntensityFB\0",
+                        ),
+                    )?,
+                ),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct ViveCosmosControllerInteractionHTC {}
     impl ViveCosmosControllerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_cosmos_controller_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct FacialTrackingHTC {
+        pub create_facial_tracker: pfn::CreateFacialTrackerHTC,
+        pub destroy_facial_tracker: pfn::DestroyFacialTrackerHTC,
+        pub get_facial_expressions: pfn::GetFacialExpressionsHTC,
+    }
+    impl FacialTrackingHTC {
+        pub const VERSION: u32 = sys::HTC_facial_tracking_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTC_FACIAL_TRACKING_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateFacialTrackerHTC\0"),
+                )?),
+                destroy_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyFacialTrackerHTC\0"),
+                )?),
+                get_facial_expressions: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetFacialExpressionsHTC\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViveFocus3ControllerInteractionHTC {}
+    impl ViveFocus3ControllerInteractionHTC {
+        pub const VERSION: u32 = sys::HTC_vive_focus3_controller_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ViveTrackerInteractionHTCX {

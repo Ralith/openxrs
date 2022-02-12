@@ -47,6 +47,8 @@ struct Parser {
     structs: IndexMap<String, Struct>,
     struct_aliases: Vec<(String, String)>,
     api_constants: Vec<(String, usize)>,
+    // TODO: Bind output generation to look at api_aliases.
+    api_aliases: Vec<(String, String)>,
     commands: IndexMap<String, Command>,
     cmd_aliases: Vec<(String, String)>,
     extensions: IndexMap<String, Tag>,
@@ -69,6 +71,7 @@ impl Parser {
             structs: IndexMap::new(),
             struct_aliases: Vec::new(),
             api_constants: Vec::new(),
+            api_aliases: Vec::new(),
             commands: IndexMap::new(),
             cmd_aliases: Vec::new(),
             extensions: IndexMap::new(),
@@ -267,6 +270,8 @@ impl Parser {
                                 } else {
                                     eprintln!("extension to unrecognized type {}", extends);
                                 }
+                            } else if let Some(alias) = attr(&attributes, "alias") {
+                                self.api_aliases.push((name.into(), alias.into()));
                             } else if name.ends_with("SPEC_VERSION") {
                                 let value = attr(&attributes, "value").unwrap();
                                 ext_version = Some(value.parse().unwrap());
@@ -274,7 +279,11 @@ impl Parser {
                                 let value = attr(&attributes, "value").unwrap();
                                 assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
                             } else {
-                                let value = attr(&attributes, "value").unwrap();
+                                let value = attr(&attributes, "value");
+                                if let None = value {
+                                    println!("{:#?}\n{:#?}", name, attributes);
+                                }
+                                let value = value.unwrap();
                                 self.api_constants
                                     .push((name.into(), value.parse().unwrap()));
                             }
@@ -878,6 +887,14 @@ impl Parser {
             }
         });
 
+        let consts_aliases = self.api_aliases.iter().map(|(name, value)| {
+            let alias_ident = Ident::new(&name[3..], Span::call_site());
+            let og_ident = Ident::new(&value[3..], Span::call_site());
+            quote! {
+                pub const #alias_ident: usize = #og_ident;
+            }
+        });
+
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
             let values = e.values.iter().map(|v| {
@@ -1200,6 +1217,7 @@ impl Parser {
             pub const CURRENT_API_VERSION: Version = Version::new(#major, #minor, #patch);
 
             #(#consts)*
+            #(#consts_aliases)*
             #(#enums)*
             #(#bitmasks)*
             #(#handles)*
@@ -2175,7 +2193,10 @@ fn xr_var_ty(member: &Member) -> TokenStream {
             quote! { [#ty; #len] }
         } else {
             assert!(
-                len.starts_with("XR_MAX_") || len.ends_with("_COUNT") || len.ends_with("_SIZE_FB")
+                len.starts_with("XR_MAX_")
+                    || len.starts_with("XR_UUID")
+                    || len.ends_with("_COUNT")
+                    || len.ends_with("_SIZE_FB")
             );
             let len = Ident::new(&len[3..], Span::call_site());
             quote! { [#ty; #len] }
