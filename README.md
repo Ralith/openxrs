@@ -46,4 +46,4 @@ bitmasks are strongly typed, and many types have helpful `Debug`
 impls. This crate is almost entirely generated from the Khronos XML
 registry.
 
-The bindings are based off OpenXR SDK v1.0.22.
+The bindings are based off of OpenXR SDK v1.0.22.
