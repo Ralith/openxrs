@@ -227,7 +227,7 @@ pub struct SpaceLocation {
 
 impl SpaceLocation {
     unsafe fn new(raw: &MaybeUninit<sys::SpaceLocation>) -> Self {
-        // Applications *must* not read invalid parts of a poses, i.e. they may be uninitialized
+        // Applications *must* not read invalid parts of a pose, i.e. they may be uninitialized
         let ptr = raw.as_ptr();
         let flags = *ptr::addr_of!((*ptr).location_flags);
         Self {
@@ -254,7 +254,7 @@ pub struct SpaceVelocity {
 
 impl SpaceVelocity {
     unsafe fn new(raw: &MaybeUninit<sys::SpaceVelocity>) -> Self {
-        // Applications *must* not read invalid parts of a poses, i.e. they may be uninitialized
+        // Applications *must* not read invalid velocities, i.e. they may be uninitialized
         let ptr = raw.as_ptr();
         let flags = *ptr::addr_of!((*ptr).velocity_flags);
         Self {
