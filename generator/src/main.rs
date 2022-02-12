@@ -278,11 +278,7 @@ impl Parser {
                                 let value = attr(&attributes, "value").unwrap();
                                 assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
                             } else {
-                                let value = attr(&attributes, "value");
-                                if let None = value {
-                                    println!("{:#?}\n{:#?}", name, attributes);
-                                }
-                                let value = value.unwrap();
+                                let value = attr(&attributes, "value").unwrap();
                                 self.api_constants
                                     .push((name.into(), value.parse().unwrap()));
                             }
