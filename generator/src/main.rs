@@ -47,7 +47,6 @@ struct Parser {
     structs: IndexMap<String, Struct>,
     struct_aliases: Vec<(String, String)>,
     api_constants: Vec<(String, usize)>,
-    // TODO: Bind output generation to look at api_aliases.
     api_aliases: Vec<(String, String)>,
     commands: IndexMap<String, Command>,
     cmd_aliases: Vec<(String, String)>,
