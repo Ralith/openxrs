@@ -248,8 +248,9 @@ impl SpaceLocation {
 
 #[derive(Copy, Clone, Default, PartialEq)]
 pub struct SpaceVelocity {
-    pub linear_velocity: Option<Vector3f>,
-    pub angular_velocity: Option<Vector3f>,
+    pub velocity_flags: SpaceVelocityFlags,
+    pub linear_velocity: Vector3f,
+    pub angular_velocity: Vector3f,
 }
 
 impl SpaceVelocity {
@@ -258,12 +259,15 @@ impl SpaceVelocity {
         let ptr = raw.as_ptr();
         let flags = *ptr::addr_of!((*ptr).velocity_flags);
         Self {
+            velocity_flags: flags,
             linear_velocity: flags
                 .contains(sys::SpaceVelocityFlags::LINEAR_VALID)
-                .then(|| *ptr::addr_of!((*ptr).linear_velocity)),
+                .then(|| *ptr::addr_of!((*ptr).linear_velocity))
+                .unwrap_or_default(),
             angular_velocity: flags
                 .contains(sys::SpaceVelocityFlags::ANGULAR_VALID)
-                .then(|| *ptr::addr_of!((*ptr).angular_velocity)),
+                .then(|| *ptr::addr_of!((*ptr).angular_velocity))
+                .unwrap_or_default(),
         }
     }
 }
