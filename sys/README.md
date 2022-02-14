@@ -4,9 +4,7 @@
 
 If you can, clone the repo using `git clone --recurse-submodules`. 
 
-If you already cloned the repo without, you must run (from anywhere in the repo):
-1. `git submodules init`.
-2. `git submodules update`.
+If you already cloned the repo without, you must run (from anywhere in the repo): `git submodules update --init`.
 
 ## Updating the OpenXR SDK
 
@@ -18,4 +16,4 @@ If you already cloned the repo without, you must run (from anywhere in the repo)
   at `openxrs/sys/OpenXR-SDK`).
 2. `cd generator; cargo run --bin generator` to regenerate the `sys` crate.
 3. `cd ..` to go back to the `openxrs` repo root`.
-3. `cargo build && cargo test && cargo fmt` to find any issues that need fixing.
+3. `cargo fmt && cargo build && cargo test` to find any issues that need fixing.
