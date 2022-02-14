@@ -113,13 +113,13 @@ impl Entry {
     pub fn initialize_android_loader(&self) -> Result<()> {
         let loader_init = unsafe { raw::LoaderInitKHR::load(self, sys::Instance::NULL)? };
 
-        let native_activity = ndk_glue::native_activity();
+        let context = ndk_context::android_context();
 
         let loader_info = sys::LoaderInitInfoAndroidKHR {
             ty: sys::LoaderInitInfoAndroidKHR::TYPE,
             next: ptr::null(),
-            application_vm: native_activity.vm() as _,
-            application_context: native_activity.activity() as _,
+            application_vm: context.vm(),
+            application_context: context.context(),
         };
 
         unsafe {
@@ -170,13 +170,13 @@ impl Entry {
         let next = ptr::null();
         #[cfg(target_os = "android")]
         let android_info = {
-            let native_activity = ndk_glue::native_activity();
+            let context = ndk_context::android_context();
 
             sys::InstanceCreateInfoAndroidKHR {
                 ty: sys::InstanceCreateInfoAndroidKHR::TYPE,
                 next: ptr::null(),
-                application_vm: native_activity.vm() as _,
-                application_activity: native_activity.activity() as _,
+                application_vm: context.vm(),
+                application_activity: context.context(),
             }
         };
         #[cfg(target_os = "android")]
