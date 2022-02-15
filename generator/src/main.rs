@@ -882,16 +882,6 @@ impl Parser {
             }
         });
 
-        /*
-        let consts_aliases = self.api_aliases.iter().map(|(name, value)| {
-            let alias_ident = Ident::new(&name[3..], Span::call_site());
-            let og_ident = Ident::new(&value[3..], Span::call_site());
-            quote! {
-                pub const #alias_ident: usize = #og_ident;
-            }
-        });
-        */
-
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
             let values = e.values.iter().map(|v| {
