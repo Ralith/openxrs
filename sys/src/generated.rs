@@ -47,8 +47,6 @@ pub const MAX_RENDER_MODEL_NAME_SIZE_FB: usize = 64usize;
 pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_MSFT: usize = 256usize;
 pub const MAX_AUDIO_DEVICE_STR_SIZE_OCULUS: usize = 128usize;
 pub const UUID_SIZE_EXT: usize = 16usize;
-pub const FB_HAND_TRACKING_CAPSULE_POINT_COUNT: usize = HAND_TRACKING_CAPSULE_POINT_COUNT_FB;
-pub const FB_HAND_TRACKING_CAPSULE_COUNT: usize = HAND_TRACKING_CAPSULE_COUNT_FB;
 #[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -5301,7 +5299,7 @@ impl HandTrackingAimStateFB {
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandCapsuleFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandCapsuleFB) - defined by [XR_FB_hand_tracking_capsules](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_hand_tracking_capsules)"]
 pub struct HandCapsuleFB {
-    pub points: [Vector3f; FB_HAND_TRACKING_CAPSULE_POINT_COUNT],
+    pub points: [Vector3f; HAND_TRACKING_CAPSULE_POINT_COUNT_FB],
     pub radius: f32,
     pub joint: HandJointEXT,
 }
@@ -5311,7 +5309,7 @@ pub struct HandCapsuleFB {
 pub struct HandTrackingCapsulesStateFB {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub capsules: [HandCapsuleFB; FB_HAND_TRACKING_CAPSULE_COUNT],
+    pub capsules: [HandCapsuleFB; HAND_TRACKING_CAPSULE_COUNT_FB],
 }
 impl HandTrackingCapsulesStateFB {
     pub const TYPE: StructureType = StructureType::HAND_TRACKING_CAPSULES_STATE_FB;

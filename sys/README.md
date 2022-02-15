@@ -4,7 +4,7 @@
 
 If you can, clone the repo using `git clone --recurse-submodules`. 
 
-If you already cloned the repo without, you must run (from anywhere in the repo): `git submodules update --init`.
+If you already cloned the repo without, you must run (from anywhere in the repo): `git submodule update --init`.
 
 ## Updating the OpenXR SDK
 
