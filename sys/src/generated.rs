@@ -12,13 +12,16 @@ use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 20u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 22u32);
 pub const NULL_PATH: usize = 0usize;
 pub const NULL_SYSTEM_ID: usize = 0usize;
 pub const NO_DURATION: usize = 0usize;
 pub const FREQUENCY_UNSPECIFIED: usize = 0usize;
 pub const HAND_JOINT_COUNT_EXT: usize = 26usize;
 pub const NULL_CONTROLLER_MODEL_KEY_MSFT: usize = 0usize;
+pub const NULL_RENDER_MODEL_KEY_FB: usize = 0usize;
+pub const FACIAL_EXPRESSION_EYE_COUNT_HTC: usize = 14usize;
+pub const FACIAL_EXPRESSION_LIP_COUNT_HTC: usize = 37usize;
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -36,11 +39,14 @@ pub const MAX_LOCALIZED_ACTION_SET_NAME_SIZE: usize = 128usize;
 pub const MAX_LOCALIZED_ACTION_NAME_SIZE: usize = 128usize;
 pub const MIN_COMPOSITION_LAYERS_SUPPORTED: usize = 16usize;
 pub const MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT: usize = 64usize;
-pub const FB_HAND_TRACKING_CAPSULE_POINT_COUNT: usize = 2usize;
-pub const FB_HAND_TRACKING_CAPSULE_COUNT: usize = 19usize;
+pub const HAND_TRACKING_CAPSULE_POINT_COUNT_FB: usize = 2usize;
+pub const HAND_TRACKING_CAPSULE_COUNT_FB: usize = 19usize;
+pub const MAX_KEYBOARD_TRACKING_NAME_SIZE_FB: usize = 128usize;
 pub const PASSTHROUGH_COLOR_MAP_MONO_SIZE_FB: usize = 256usize;
+pub const MAX_RENDER_MODEL_NAME_SIZE_FB: usize = 64usize;
 pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_MSFT: usize = 256usize;
 pub const MAX_AUDIO_DEVICE_STR_SIZE_OCULUS: usize = 128usize;
+pub const UUID_SIZE_EXT: usize = 16usize;
 #[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -204,6 +210,9 @@ impl StructureType {
     pub const EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB: StructureType = Self(1000101000i32);
     pub const VIVE_TRACKER_PATHS_HTCX: StructureType = Self(1000103000i32);
     pub const EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX: StructureType = Self(1000103001i32);
+    pub const SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC: StructureType = Self(1000104000i32);
+    pub const FACIAL_TRACKER_CREATE_INFO_HTC: StructureType = Self(1000104001i32);
+    pub const FACIAL_EXPRESSIONS_HTC: StructureType = Self(1000104002i32);
     pub const SYSTEM_COLOR_SPACE_PROPERTIES_FB: StructureType = Self(1000108000i32);
     pub const HAND_TRACKING_MESH_FB: StructureType = Self(1000110001i32);
     pub const HAND_TRACKING_SCALE_FB: StructureType = Self(1000110003i32);
@@ -213,6 +222,9 @@ impl StructureType {
     pub const SWAPCHAIN_CREATE_INFO_FOVEATION_FB: StructureType = Self(1000114001i32);
     pub const SWAPCHAIN_STATE_FOVEATION_FB: StructureType = Self(1000114002i32);
     pub const FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB: StructureType = Self(1000115000i32);
+    pub const KEYBOARD_SPACE_CREATE_INFO_FB: StructureType = Self(1000116009i32);
+    pub const KEYBOARD_TRACKING_QUERY_FB: StructureType = Self(1000116004i32);
+    pub const SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB: StructureType = Self(1000116002i32);
     pub const TRIANGLE_MESH_CREATE_INFO_FB: StructureType = Self(1000117001i32);
     pub const SYSTEM_PASSTHROUGH_PROPERTIES_FB: StructureType = Self(1000118000i32);
     pub const PASSTHROUGH_CREATE_INFO_FB: StructureType = Self(1000118001i32);
@@ -224,6 +236,11 @@ impl StructureType {
     pub const PASSTHROUGH_COLOR_MAP_MONO_TO_RGBA_FB: StructureType = Self(1000118021i32);
     pub const PASSTHROUGH_COLOR_MAP_MONO_TO_MONO_FB: StructureType = Self(1000118022i32);
     pub const EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB: StructureType = Self(1000118030i32);
+    pub const RENDER_MODEL_PATH_INFO_FB: StructureType = Self(1000119000i32);
+    pub const RENDER_MODEL_PROPERTIES_FB: StructureType = Self(1000119001i32);
+    pub const RENDER_MODEL_BUFFER_FB: StructureType = Self(1000119002i32);
+    pub const RENDER_MODEL_LOAD_INFO_FB: StructureType = Self(1000119003i32);
+    pub const SYSTEM_RENDER_MODEL_PROPERTIES_FB: StructureType = Self(1000119004i32);
     pub const BINDING_MODIFICATIONS_KHR: StructureType = Self(1000120000i32);
     pub const VIEW_LOCATE_FOVEATED_RENDERING_VARJO: StructureType = Self(1000121000i32);
     pub const FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO: StructureType = Self(1000121001i32);
@@ -241,6 +258,8 @@ impl StructureType {
     pub const SWAPCHAIN_STATE_SAMPLER_VULKAN_FB: StructureType = Self(1000163000i32);
     pub const COMPOSITION_LAYER_SPACE_WARP_INFO_FB: StructureType = Self(1000171000i32);
     pub const SYSTEM_SPACE_WARP_PROPERTIES_FB: StructureType = Self(1000171001i32);
+    pub const DIGITAL_LENS_CONTROL_ALMALENCE: StructureType = Self(1000196000i32);
+    pub const PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB: StructureType = Self(1000203002i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -478,6 +497,11 @@ impl fmt::Debug for StructureType {
             Self::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX => {
                 Some("EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX")
             }
+            Self::SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC => {
+                Some("SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC")
+            }
+            Self::FACIAL_TRACKER_CREATE_INFO_HTC => Some("FACIAL_TRACKER_CREATE_INFO_HTC"),
+            Self::FACIAL_EXPRESSIONS_HTC => Some("FACIAL_EXPRESSIONS_HTC"),
             Self::SYSTEM_COLOR_SPACE_PROPERTIES_FB => Some("SYSTEM_COLOR_SPACE_PROPERTIES_FB"),
             Self::HAND_TRACKING_MESH_FB => Some("HAND_TRACKING_MESH_FB"),
             Self::HAND_TRACKING_SCALE_FB => Some("HAND_TRACKING_SCALE_FB"),
@@ -488,6 +512,11 @@ impl fmt::Debug for StructureType {
             Self::SWAPCHAIN_STATE_FOVEATION_FB => Some("SWAPCHAIN_STATE_FOVEATION_FB"),
             Self::FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB => {
                 Some("FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB")
+            }
+            Self::KEYBOARD_SPACE_CREATE_INFO_FB => Some("KEYBOARD_SPACE_CREATE_INFO_FB"),
+            Self::KEYBOARD_TRACKING_QUERY_FB => Some("KEYBOARD_TRACKING_QUERY_FB"),
+            Self::SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB => {
+                Some("SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB")
             }
             Self::TRIANGLE_MESH_CREATE_INFO_FB => Some("TRIANGLE_MESH_CREATE_INFO_FB"),
             Self::SYSTEM_PASSTHROUGH_PROPERTIES_FB => Some("SYSTEM_PASSTHROUGH_PROPERTIES_FB"),
@@ -506,6 +535,11 @@ impl fmt::Debug for StructureType {
             Self::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB => {
                 Some("EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB")
             }
+            Self::RENDER_MODEL_PATH_INFO_FB => Some("RENDER_MODEL_PATH_INFO_FB"),
+            Self::RENDER_MODEL_PROPERTIES_FB => Some("RENDER_MODEL_PROPERTIES_FB"),
+            Self::RENDER_MODEL_BUFFER_FB => Some("RENDER_MODEL_BUFFER_FB"),
+            Self::RENDER_MODEL_LOAD_INFO_FB => Some("RENDER_MODEL_LOAD_INFO_FB"),
+            Self::SYSTEM_RENDER_MODEL_PROPERTIES_FB => Some("SYSTEM_RENDER_MODEL_PROPERTIES_FB"),
             Self::BINDING_MODIFICATIONS_KHR => Some("BINDING_MODIFICATIONS_KHR"),
             Self::VIEW_LOCATE_FOVEATED_RENDERING_VARJO => {
                 Some("VIEW_LOCATE_FOVEATED_RENDERING_VARJO")
@@ -544,6 +578,10 @@ impl fmt::Debug for StructureType {
                 Some("COMPOSITION_LAYER_SPACE_WARP_INFO_FB")
             }
             Self::SYSTEM_SPACE_WARP_PROPERTIES_FB => Some("SYSTEM_SPACE_WARP_PROPERTIES_FB"),
+            Self::DIGITAL_LENS_CONTROL_ALMALENCE => Some("DIGITAL_LENS_CONTROL_ALMALENCE"),
+            Self::PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB => {
+                Some("PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB")
+            }
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -705,6 +743,10 @@ impl Result {
     pub const ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB: Result = Self(-1000118004i32);
     #[doc = "Unknown Passthrough error (no further details provided)."]
     pub const ERROR_UNKNOWN_PASSTHROUGH_FB: Result = Self(-1000118050i32);
+    #[doc = "The model key is invalid."]
+    pub const ERROR_RENDER_MODEL_KEY_INVALID_FB: Result = Self(-1000119000i32);
+    #[doc = "The model is unavailable."]
+    pub const RENDER_MODEL_UNAVAILABLE_FB: Result = Self(1000119020i32);
     #[doc = "Marker tracking is disabled or the specified marker is not currently tracked."]
     pub const ERROR_MARKER_NOT_TRACKED_VARJO: Result = Self(-1000124000i32);
     #[doc = "The specified marker ID is not valid."]
@@ -838,6 +880,8 @@ impl fmt::Debug for Result {
                 Some("ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB")
             }
             Self::ERROR_UNKNOWN_PASSTHROUGH_FB => Some("ERROR_UNKNOWN_PASSTHROUGH_FB"),
+            Self::ERROR_RENDER_MODEL_KEY_INVALID_FB => Some("ERROR_RENDER_MODEL_KEY_INVALID_FB"),
+            Self::RENDER_MODEL_UNAVAILABLE_FB => Some("RENDER_MODEL_UNAVAILABLE_FB"),
             Self::ERROR_MARKER_NOT_TRACKED_VARJO => Some("ERROR_MARKER_NOT_TRACKED_VARJO"),
             Self::ERROR_MARKER_ID_INVALID_VARJO => Some("ERROR_MARKER_ID_INVALID_VARJO"),
             Self::ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => {
@@ -853,7 +897,7 @@ impl fmt::Debug for Result {
 }
 impl fmt::Display for Result {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let reason = match * self { Self :: SUCCESS => Some ("function successfully completed") , Self :: TIMEOUT_EXPIRED => Some ("the specified timeout time occurred before the operation could complete") , Self :: SESSION_LOSS_PENDING => Some ("the session will be lost soon") , Self :: EVENT_UNAVAILABLE => Some ("no event was available") , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ("the space's bounds are not known at the moment") , Self :: SESSION_NOT_FOCUSED => Some ("the session is not in the focused state") , Self :: FRAME_DISCARDED => Some ("a frame has been discarded from composition") , Self :: ERROR_VALIDATION_FAILURE => Some ("the function usage was invalid in some way") , Self :: ERROR_RUNTIME_FAILURE => Some ("the runtime failed to handle the function in an unexpected way that is not covered by another error result") , Self :: ERROR_OUT_OF_MEMORY => Some ("a memory allocation has failed") , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ("the runtime does not support the requested API version") , Self :: ERROR_INITIALIZATION_FAILED => Some ("initialization of object could not be completed") , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ("the requested function was not found or is otherwise unsupported") , Self :: ERROR_FEATURE_UNSUPPORTED => Some ("the requested feature is not supported") , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ("a requested extension is not supported") , Self :: ERROR_LIMIT_REACHED => Some ("the runtime supports no more of the requested resource") , Self :: ERROR_SIZE_INSUFFICIENT => Some ("the supplied size was smaller than required") , Self :: ERROR_HANDLE_INVALID => Some ("a supplied object handle was invalid") , Self :: ERROR_INSTANCE_LOST => Some ("the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated") , Self :: ERROR_SESSION_RUNNING => Some ("the session is already running") , Self :: ERROR_SESSION_NOT_RUNNING => Some ("the session is not yet running") , Self :: ERROR_SESSION_LOST => Some ("the XrSession was lost. It will need to be destroyed and optionally recreated") , Self :: ERROR_SYSTEM_INVALID => Some ("the provided XrSystemId was invalid") , Self :: ERROR_PATH_INVALID => Some ("the provided XrPath was not valid") , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ("the maximum number of supported semantic paths has been reached") , Self :: ERROR_PATH_FORMAT_INVALID => Some ("the semantic path character format is invalid") , Self :: ERROR_PATH_UNSUPPORTED => Some ("the semantic path is unsupported") , Self :: ERROR_LAYER_INVALID => Some ("the layer was NULL or otherwise invalid") , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ("the number of specified layers is greater than the supported number") , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ("the image rect was negatively sized or otherwise invalid") , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ("the image format is not supported by the runtime or platform") , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ("the API used to retrieve an action's state does not match the action's type") , Self :: ERROR_SESSION_NOT_READY => Some ("the session is not in the ready state") , Self :: ERROR_SESSION_NOT_STOPPING => Some ("the session is not in the stopping state") , Self :: ERROR_TIME_INVALID => Some ("the provided XrTime was zero, negative, or out of range") , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ("the specified reference space is not supported by the runtime or system") , Self :: ERROR_FILE_ACCESS_ERROR => Some ("the file could not be accessed") , Self :: ERROR_FILE_CONTENTS_INVALID => Some ("the file's contents were invalid") , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ("the specified form factor is not supported by the current runtime or platform") , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ("the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off") , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ("a requested API layer is not present or could not be loaded") , Self :: ERROR_CALL_ORDER_INVALID => Some ("the call was made without having made a previously required call") , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ("the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements") , Self :: ERROR_POSE_INVALID => Some ("the supplied pose was invalid with respect to the requirements") , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ("the supplied index was outside the range of valid indices") , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ("the specified view configuration type is not supported by the runtime or platform") , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ("the specified environment blend mode is not supported by the runtime or platform") , Self :: ERROR_NAME_DUPLICATED => Some ("the name provided was a duplicate of an already-existing resource") , Self :: ERROR_NAME_INVALID => Some ("the name provided was invalid") , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ("a referenced action set is not attached to the session") , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ("the session already has attached action sets") , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ("the localized name provided was a duplicate of an already-existing resource") , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ("the localized name provided was invalid") , Self :: ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some ("the xrGetGraphicsRequirements* call was not made before calling xrCreateSession") , Self :: ERROR_RUNTIME_UNAVAILABLE => Some ("the loader was unable to find or load a runtime") , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ("xrSetAndroidApplicationThreadKHR failed as thread id is invalid") , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ("xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority") , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ("spatial anchor could not be created at that location") , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ("the secondary view configuration was not enabled when creating the session") , Self :: ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => Some ("the controller model key is invalid") , Self :: ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => Some ("the reprojection mode is not supported") , Self :: ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => Some ("compute new scene not completed") , Self :: ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => Some ("scene component id invalid") , Self :: ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => Some ("scene component type mismatch") , Self :: ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => Some ("scene mesh buffer id invalid") , Self :: ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => Some ("scene compute feature incompatible") , Self :: ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => Some ("scene compute consistency mismatch") , Self :: ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => Some ("the display refresh rate is not supported by the platform") , Self :: ERROR_COLOR_SPACE_UNSUPPORTED_FB => Some ("the color space is not supported by the runtime") , Self :: ERROR_UNEXPECTED_STATE_PASSTHROUGH_FB => Some ("the object state is unexpected for the issued command") , Self :: ERROR_FEATURE_ALREADY_CREATED_PASSTHROUGH_FB => Some ("trying to create an MR feature when one was already created and only one instance is allowed") , Self :: ERROR_FEATURE_REQUIRED_PASSTHROUGH_FB => Some ("requested functionality requires a feature to be created first") , Self :: ERROR_NOT_PERMITTED_PASSTHROUGH_FB => Some ("requested functionality is not permitted - application is not allowed to perform the requested operation") , Self :: ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB => Some ("there weren't sufficient resources available to perform an operation") , Self :: ERROR_UNKNOWN_PASSTHROUGH_FB => Some ("unknown Passthrough error (no further details provided)") , Self :: ERROR_MARKER_NOT_TRACKED_VARJO => Some ("marker tracking is disabled or the specified marker is not currently tracked") , Self :: ERROR_MARKER_ID_INVALID_VARJO => Some ("the specified marker ID is not valid") , Self :: ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => Some ("a spatial anchor was not found associated with the spatial anchor name provided") , Self :: ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT => Some ("the spatial anchor name provided was not valid") , _ => None , } ;
+        let reason = match * self { Self :: SUCCESS => Some ("function successfully completed") , Self :: TIMEOUT_EXPIRED => Some ("the specified timeout time occurred before the operation could complete") , Self :: SESSION_LOSS_PENDING => Some ("the session will be lost soon") , Self :: EVENT_UNAVAILABLE => Some ("no event was available") , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ("the space's bounds are not known at the moment") , Self :: SESSION_NOT_FOCUSED => Some ("the session is not in the focused state") , Self :: FRAME_DISCARDED => Some ("a frame has been discarded from composition") , Self :: ERROR_VALIDATION_FAILURE => Some ("the function usage was invalid in some way") , Self :: ERROR_RUNTIME_FAILURE => Some ("the runtime failed to handle the function in an unexpected way that is not covered by another error result") , Self :: ERROR_OUT_OF_MEMORY => Some ("a memory allocation has failed") , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ("the runtime does not support the requested API version") , Self :: ERROR_INITIALIZATION_FAILED => Some ("initialization of object could not be completed") , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ("the requested function was not found or is otherwise unsupported") , Self :: ERROR_FEATURE_UNSUPPORTED => Some ("the requested feature is not supported") , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ("a requested extension is not supported") , Self :: ERROR_LIMIT_REACHED => Some ("the runtime supports no more of the requested resource") , Self :: ERROR_SIZE_INSUFFICIENT => Some ("the supplied size was smaller than required") , Self :: ERROR_HANDLE_INVALID => Some ("a supplied object handle was invalid") , Self :: ERROR_INSTANCE_LOST => Some ("the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated") , Self :: ERROR_SESSION_RUNNING => Some ("the session is already running") , Self :: ERROR_SESSION_NOT_RUNNING => Some ("the session is not yet running") , Self :: ERROR_SESSION_LOST => Some ("the XrSession was lost. It will need to be destroyed and optionally recreated") , Self :: ERROR_SYSTEM_INVALID => Some ("the provided XrSystemId was invalid") , Self :: ERROR_PATH_INVALID => Some ("the provided XrPath was not valid") , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ("the maximum number of supported semantic paths has been reached") , Self :: ERROR_PATH_FORMAT_INVALID => Some ("the semantic path character format is invalid") , Self :: ERROR_PATH_UNSUPPORTED => Some ("the semantic path is unsupported") , Self :: ERROR_LAYER_INVALID => Some ("the layer was NULL or otherwise invalid") , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ("the number of specified layers is greater than the supported number") , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ("the image rect was negatively sized or otherwise invalid") , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ("the image format is not supported by the runtime or platform") , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ("the API used to retrieve an action's state does not match the action's type") , Self :: ERROR_SESSION_NOT_READY => Some ("the session is not in the ready state") , Self :: ERROR_SESSION_NOT_STOPPING => Some ("the session is not in the stopping state") , Self :: ERROR_TIME_INVALID => Some ("the provided XrTime was zero, negative, or out of range") , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ("the specified reference space is not supported by the runtime or system") , Self :: ERROR_FILE_ACCESS_ERROR => Some ("the file could not be accessed") , Self :: ERROR_FILE_CONTENTS_INVALID => Some ("the file's contents were invalid") , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ("the specified form factor is not supported by the current runtime or platform") , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ("the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off") , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ("a requested API layer is not present or could not be loaded") , Self :: ERROR_CALL_ORDER_INVALID => Some ("the call was made without having made a previously required call") , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ("the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements") , Self :: ERROR_POSE_INVALID => Some ("the supplied pose was invalid with respect to the requirements") , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ("the supplied index was outside the range of valid indices") , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ("the specified view configuration type is not supported by the runtime or platform") , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ("the specified environment blend mode is not supported by the runtime or platform") , Self :: ERROR_NAME_DUPLICATED => Some ("the name provided was a duplicate of an already-existing resource") , Self :: ERROR_NAME_INVALID => Some ("the name provided was invalid") , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ("a referenced action set is not attached to the session") , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ("the session already has attached action sets") , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ("the localized name provided was a duplicate of an already-existing resource") , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ("the localized name provided was invalid") , Self :: ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some ("the xrGetGraphicsRequirements* call was not made before calling xrCreateSession") , Self :: ERROR_RUNTIME_UNAVAILABLE => Some ("the loader was unable to find or load a runtime") , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ("xrSetAndroidApplicationThreadKHR failed as thread id is invalid") , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ("xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority") , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ("spatial anchor could not be created at that location") , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ("the secondary view configuration was not enabled when creating the session") , Self :: ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => Some ("the controller model key is invalid") , Self :: ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => Some ("the reprojection mode is not supported") , Self :: ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => Some ("compute new scene not completed") , Self :: ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => Some ("scene component id invalid") , Self :: ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => Some ("scene component type mismatch") , Self :: ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => Some ("scene mesh buffer id invalid") , Self :: ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => Some ("scene compute feature incompatible") , Self :: ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => Some ("scene compute consistency mismatch") , Self :: ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => Some ("the display refresh rate is not supported by the platform") , Self :: ERROR_COLOR_SPACE_UNSUPPORTED_FB => Some ("the color space is not supported by the runtime") , Self :: ERROR_UNEXPECTED_STATE_PASSTHROUGH_FB => Some ("the object state is unexpected for the issued command") , Self :: ERROR_FEATURE_ALREADY_CREATED_PASSTHROUGH_FB => Some ("trying to create an MR feature when one was already created and only one instance is allowed") , Self :: ERROR_FEATURE_REQUIRED_PASSTHROUGH_FB => Some ("requested functionality requires a feature to be created first") , Self :: ERROR_NOT_PERMITTED_PASSTHROUGH_FB => Some ("requested functionality is not permitted - application is not allowed to perform the requested operation") , Self :: ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB => Some ("there weren't sufficient resources available to perform an operation") , Self :: ERROR_UNKNOWN_PASSTHROUGH_FB => Some ("unknown Passthrough error (no further details provided)") , Self :: ERROR_RENDER_MODEL_KEY_INVALID_FB => Some ("the model key is invalid") , Self :: RENDER_MODEL_UNAVAILABLE_FB => Some ("the model is unavailable") , Self :: ERROR_MARKER_NOT_TRACKED_VARJO => Some ("marker tracking is disabled or the specified marker is not currently tracked") , Self :: ERROR_MARKER_ID_INVALID_VARJO => Some ("the specified marker ID is not valid") , Self :: ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => Some ("a spatial anchor was not found associated with the spatial anchor name provided") , Self :: ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT => Some ("the spatial anchor name provided was not valid") , _ => None , } ;
         if let Some(reason) = reason {
             fmt.pad(reason)
         } else {
@@ -890,6 +934,8 @@ impl ObjectType {
     pub const SCENE_OBSERVER_MSFT: ObjectType = Self(1000097000i32);
     #[doc = "XrSceneMSFT"]
     pub const SCENE_MSFT: ObjectType = Self(1000097001i32);
+    #[doc = "XrFacialTrackerHTC"]
+    pub const FACIAL_TRACKER_HTC: ObjectType = Self(1000104000i32);
     #[doc = "XrFoveationProfileFB"]
     pub const FOVEATION_PROFILE_FB: ObjectType = Self(1000114000i32);
     #[doc = "XrTriangleMeshFB"]
@@ -924,6 +970,7 @@ impl fmt::Debug for ObjectType {
             Self::HAND_TRACKER_EXT => Some("HAND_TRACKER_EXT"),
             Self::SCENE_OBSERVER_MSFT => Some("SCENE_OBSERVER_MSFT"),
             Self::SCENE_MSFT => Some("SCENE_MSFT"),
+            Self::FACIAL_TRACKER_HTC => Some("FACIAL_TRACKER_HTC"),
             Self::FOVEATION_PROFILE_FB => Some("FOVEATION_PROFILE_FB"),
             Self::TRIANGLE_MESH_FB => Some("TRIANGLE_MESH_FB"),
             Self::PASSTHROUGH_FB => Some("PASSTHROUGH_FB"),
@@ -1412,6 +1459,8 @@ impl PassthroughLayerPurposeFB {
     pub const RECONSTRUCTION: PassthroughLayerPurposeFB = Self(0i32);
     #[doc = "Projected passthrough (using a custom surface)"]
     pub const PROJECTED: PassthroughLayerPurposeFB = Self(1i32);
+    #[doc = "Passthrough layer purpose for keyboard hands presence."]
+    pub const TRACKED_KEYBOARD_HANDS: PassthroughLayerPurposeFB = Self(1000203001i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -1424,6 +1473,7 @@ impl fmt::Debug for PassthroughLayerPurposeFB {
         let name = match *self {
             Self::RECONSTRUCTION => Some("RECONSTRUCTION"),
             Self::PROJECTED => Some("PROJECTED"),
+            Self::TRACKED_KEYBOARD_HANDS => Some("TRACKED_KEYBOARD_HANDS"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1921,6 +1971,174 @@ impl fmt::Debug for ReprojectionModeMSFT {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrFacialTrackingTypeHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFacialTrackingTypeHTC)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct FacialTrackingTypeHTC(i32);
+impl FacialTrackingTypeHTC {
+    #[doc = "Specifies this handle will observe eye expressions, with values indexed by XrEyeExpressionHTC whose count is XR_FACIAL_EXPRESSION_EYE_COUNT_HTC."]
+    pub const EYE_DEFAULT: FacialTrackingTypeHTC = Self(1i32);
+    #[doc = "Specifies this handle will observe lip expressions, with values indexed by XrLipExpressionHTC whose count is XR_FACIAL_EXPRESSION_LIP_COUNT_HTC."]
+    pub const LIP_DEFAULT: FacialTrackingTypeHTC = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FacialTrackingTypeHTC {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::EYE_DEFAULT => Some("EYE_DEFAULT"),
+            Self::LIP_DEFAULT => Some("LIP_DEFAULT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrEyeExpressionHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEyeExpressionHTC)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct EyeExpressionHTC(i32);
+impl EyeExpressionHTC {
+    pub const LEFT_BLINK: EyeExpressionHTC = Self(0i32);
+    pub const LEFT_WIDE: EyeExpressionHTC = Self(1i32);
+    pub const RIGHT_BLINK: EyeExpressionHTC = Self(2i32);
+    pub const RIGHT_WIDE: EyeExpressionHTC = Self(3i32);
+    pub const LEFT_SQUEEZE: EyeExpressionHTC = Self(4i32);
+    pub const RIGHT_SQUEEZE: EyeExpressionHTC = Self(5i32);
+    pub const LEFT_DOWN: EyeExpressionHTC = Self(6i32);
+    pub const RIGHT_DOWN: EyeExpressionHTC = Self(7i32);
+    pub const LEFT_OUT: EyeExpressionHTC = Self(8i32);
+    pub const RIGHT_IN: EyeExpressionHTC = Self(9i32);
+    pub const LEFT_IN: EyeExpressionHTC = Self(10i32);
+    pub const RIGHT_OUT: EyeExpressionHTC = Self(11i32);
+    pub const LEFT_UP: EyeExpressionHTC = Self(12i32);
+    pub const RIGHT_UP: EyeExpressionHTC = Self(13i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for EyeExpressionHTC {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LEFT_BLINK => Some("LEFT_BLINK"),
+            Self::LEFT_WIDE => Some("LEFT_WIDE"),
+            Self::RIGHT_BLINK => Some("RIGHT_BLINK"),
+            Self::RIGHT_WIDE => Some("RIGHT_WIDE"),
+            Self::LEFT_SQUEEZE => Some("LEFT_SQUEEZE"),
+            Self::RIGHT_SQUEEZE => Some("RIGHT_SQUEEZE"),
+            Self::LEFT_DOWN => Some("LEFT_DOWN"),
+            Self::RIGHT_DOWN => Some("RIGHT_DOWN"),
+            Self::LEFT_OUT => Some("LEFT_OUT"),
+            Self::RIGHT_IN => Some("RIGHT_IN"),
+            Self::LEFT_IN => Some("LEFT_IN"),
+            Self::RIGHT_OUT => Some("RIGHT_OUT"),
+            Self::LEFT_UP => Some("LEFT_UP"),
+            Self::RIGHT_UP => Some("RIGHT_UP"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrLipExpressionHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLipExpressionHTC)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct LipExpressionHTC(i32);
+impl LipExpressionHTC {
+    pub const JAW_RIGHT: LipExpressionHTC = Self(0i32);
+    pub const JAW_LEFT: LipExpressionHTC = Self(1i32);
+    pub const JAW_FORWARD: LipExpressionHTC = Self(2i32);
+    pub const JAW_OPEN: LipExpressionHTC = Self(3i32);
+    pub const MOUTH_APE_SHAPE: LipExpressionHTC = Self(4i32);
+    pub const MOUTH_UPPER_RIGHT: LipExpressionHTC = Self(5i32);
+    pub const MOUTH_UPPER_LEFT: LipExpressionHTC = Self(6i32);
+    pub const MOUTH_LOWER_RIGHT: LipExpressionHTC = Self(7i32);
+    pub const MOUTH_LOWER_LEFT: LipExpressionHTC = Self(8i32);
+    pub const MOUTH_UPPER_OVERTURN: LipExpressionHTC = Self(9i32);
+    pub const MOUTH_LOWER_OVERTURN: LipExpressionHTC = Self(10i32);
+    pub const MOUTH_POUT: LipExpressionHTC = Self(11i32);
+    pub const MOUTH_SMILE_RIGHT: LipExpressionHTC = Self(12i32);
+    pub const MOUTH_SMILE_LEFT: LipExpressionHTC = Self(13i32);
+    pub const MOUTH_SAD_RIGHT: LipExpressionHTC = Self(14i32);
+    pub const MOUTH_SAD_LEFT: LipExpressionHTC = Self(15i32);
+    pub const CHEEK_PUFF_RIGHT: LipExpressionHTC = Self(16i32);
+    pub const CHEEK_PUFF_LEFT: LipExpressionHTC = Self(17i32);
+    pub const CHEEK_SUCK: LipExpressionHTC = Self(18i32);
+    pub const MOUTH_UPPER_UPRIGHT: LipExpressionHTC = Self(19i32);
+    pub const MOUTH_UPPER_UPLEFT: LipExpressionHTC = Self(20i32);
+    pub const MOUTH_LOWER_DOWNRIGHT: LipExpressionHTC = Self(21i32);
+    pub const MOUTH_LOWER_DOWNLEFT: LipExpressionHTC = Self(22i32);
+    pub const MOUTH_UPPER_INSIDE: LipExpressionHTC = Self(23i32);
+    pub const MOUTH_LOWER_INSIDE: LipExpressionHTC = Self(24i32);
+    pub const MOUTH_LOWER_OVERLAY: LipExpressionHTC = Self(25i32);
+    pub const TONGUE_LONGSTEP1: LipExpressionHTC = Self(26i32);
+    pub const TONGUE_LEFT: LipExpressionHTC = Self(27i32);
+    pub const TONGUE_RIGHT: LipExpressionHTC = Self(28i32);
+    pub const TONGUE_UP: LipExpressionHTC = Self(29i32);
+    pub const TONGUE_DOWN: LipExpressionHTC = Self(30i32);
+    pub const TONGUE_ROLL: LipExpressionHTC = Self(31i32);
+    pub const TONGUE_LONGSTEP2: LipExpressionHTC = Self(32i32);
+    pub const TONGUE_UPRIGHT_MORPH: LipExpressionHTC = Self(33i32);
+    pub const TONGUE_UPLEFT_MORPH: LipExpressionHTC = Self(34i32);
+    pub const TONGUE_DOWNRIGHT_MORPH: LipExpressionHTC = Self(35i32);
+    pub const TONGUE_DOWNLEFT_MORPH: LipExpressionHTC = Self(36i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for LipExpressionHTC {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::JAW_RIGHT => Some("JAW_RIGHT"),
+            Self::JAW_LEFT => Some("JAW_LEFT"),
+            Self::JAW_FORWARD => Some("JAW_FORWARD"),
+            Self::JAW_OPEN => Some("JAW_OPEN"),
+            Self::MOUTH_APE_SHAPE => Some("MOUTH_APE_SHAPE"),
+            Self::MOUTH_UPPER_RIGHT => Some("MOUTH_UPPER_RIGHT"),
+            Self::MOUTH_UPPER_LEFT => Some("MOUTH_UPPER_LEFT"),
+            Self::MOUTH_LOWER_RIGHT => Some("MOUTH_LOWER_RIGHT"),
+            Self::MOUTH_LOWER_LEFT => Some("MOUTH_LOWER_LEFT"),
+            Self::MOUTH_UPPER_OVERTURN => Some("MOUTH_UPPER_OVERTURN"),
+            Self::MOUTH_LOWER_OVERTURN => Some("MOUTH_LOWER_OVERTURN"),
+            Self::MOUTH_POUT => Some("MOUTH_POUT"),
+            Self::MOUTH_SMILE_RIGHT => Some("MOUTH_SMILE_RIGHT"),
+            Self::MOUTH_SMILE_LEFT => Some("MOUTH_SMILE_LEFT"),
+            Self::MOUTH_SAD_RIGHT => Some("MOUTH_SAD_RIGHT"),
+            Self::MOUTH_SAD_LEFT => Some("MOUTH_SAD_LEFT"),
+            Self::CHEEK_PUFF_RIGHT => Some("CHEEK_PUFF_RIGHT"),
+            Self::CHEEK_PUFF_LEFT => Some("CHEEK_PUFF_LEFT"),
+            Self::CHEEK_SUCK => Some("CHEEK_SUCK"),
+            Self::MOUTH_UPPER_UPRIGHT => Some("MOUTH_UPPER_UPRIGHT"),
+            Self::MOUTH_UPPER_UPLEFT => Some("MOUTH_UPPER_UPLEFT"),
+            Self::MOUTH_LOWER_DOWNRIGHT => Some("MOUTH_LOWER_DOWNRIGHT"),
+            Self::MOUTH_LOWER_DOWNLEFT => Some("MOUTH_LOWER_DOWNLEFT"),
+            Self::MOUTH_UPPER_INSIDE => Some("MOUTH_UPPER_INSIDE"),
+            Self::MOUTH_LOWER_INSIDE => Some("MOUTH_LOWER_INSIDE"),
+            Self::MOUTH_LOWER_OVERLAY => Some("MOUTH_LOWER_OVERLAY"),
+            Self::TONGUE_LONGSTEP1 => Some("TONGUE_LONGSTEP1"),
+            Self::TONGUE_LEFT => Some("TONGUE_LEFT"),
+            Self::TONGUE_RIGHT => Some("TONGUE_RIGHT"),
+            Self::TONGUE_UP => Some("TONGUE_UP"),
+            Self::TONGUE_DOWN => Some("TONGUE_DOWN"),
+            Self::TONGUE_ROLL => Some("TONGUE_ROLL"),
+            Self::TONGUE_LONGSTEP2 => Some("TONGUE_LONGSTEP2"),
+            Self::TONGUE_UPRIGHT_MORPH => Some("TONGUE_UPRIGHT_MORPH"),
+            Self::TONGUE_UPLEFT_MORPH => Some("TONGUE_UPLEFT_MORPH"),
+            Self::TONGUE_DOWNRIGHT_MORPH => Some("TONGUE_DOWNRIGHT_MORPH"),
+            Self::TONGUE_DOWNLEFT_MORPH => Some("TONGUE_DOWNLEFT_MORPH"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrInstanceCreateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceCreateFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -2197,12 +2415,53 @@ impl HandTrackingAimFlagsFB {
     pub const MENU_PRESSED: HandTrackingAimFlagsFB = Self(1 << 8u64);
 }
 bitmask!(HandTrackingAimFlagsFB);
+#[doc = "See [XrKeyboardTrackingFlagsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrKeyboardTrackingFlagsFB)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct KeyboardTrackingFlagsFB(u64);
+impl KeyboardTrackingFlagsFB {
+    #[doc = "indicates that the system has a physically tracked keyboard to report.  If not set then no other bits should be considered to be valid or meaningful.  If set either XR_KEYBOARD_TRACKING_LOCAL_BIT_FB or XR_KEYBOARD_TRACKING_REMOTE_BIT_FB must also be set."]
+    pub const EXISTS: KeyboardTrackingFlagsFB = Self(1 << 0u64);
+    #[doc = "indicates that the physically tracked keyboard is intended to be used in a local pairing with the system.  Mutally exclusive with XR_KEYBOARD_TRACKING_REMOTE_BIT_FB."]
+    pub const LOCAL: KeyboardTrackingFlagsFB = Self(1 << 1u64);
+    #[doc = "indicates that the physically tracked keyboard is intended to be used while paired to a separate remote computing device. Mutally exclusive with XR_KEYBOARD_TRACKING_LOCAL_BIT_FB."]
+    pub const REMOTE: KeyboardTrackingFlagsFB = Self(1 << 2u64);
+    #[doc = "indicates that the physically tracked keyboard is actively connected to the headset and capable of sending key data"]
+    pub const CONNECTED: KeyboardTrackingFlagsFB = Self(1 << 3u64);
+}
+bitmask!(KeyboardTrackingFlagsFB);
+#[doc = "See [XrKeyboardTrackingQueryFlagsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrKeyboardTrackingQueryFlagsFB)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct KeyboardTrackingQueryFlagsFB(u64);
+impl KeyboardTrackingQueryFlagsFB {
+    #[doc = "indicates the query is for the physically tracked keyboard that is intended to be used in a local pairing with the System. Mutally exclusive with XR_KEYBOARD_TRACKING_QUERY_REMOTE_BIT_FB."]
+    pub const LOCAL: KeyboardTrackingQueryFlagsFB = Self(1 << 1u64);
+    #[doc = "indicates the query is for the physically tracked keyboard that may be connected to a separate remote computing device. Mutally exclusive with XR_KEYBOARD_TRACKING_QUERY_LOCAL_BIT_FB."]
+    pub const REMOTE: KeyboardTrackingQueryFlagsFB = Self(1 << 2u64);
+}
+bitmask!(KeyboardTrackingQueryFlagsFB);
 #[doc = "See [XrCompositionLayerSpaceWarpInfoFlagsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerSpaceWarpInfoFlagsFB)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct CompositionLayerSpaceWarpInfoFlagsFB(u64);
 impl CompositionLayerSpaceWarpInfoFlagsFB {}
 bitmask!(CompositionLayerSpaceWarpInfoFlagsFB);
+#[doc = "See [XrRenderModelFlagsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelFlagsFB)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct RenderModelFlagsFB(u64);
+impl RenderModelFlagsFB {}
+bitmask!(RenderModelFlagsFB);
+#[doc = "See [XrDigitalLensControlFlagsALMALENCE](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDigitalLensControlFlagsALMALENCE)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct DigitalLensControlFlagsALMALENCE(u64);
+impl DigitalLensControlFlagsALMALENCE {
+    #[doc = "disables Digital Lens processing of render textures"]
+    pub const PROCESSING_DISABLE: DigitalLensControlFlagsALMALENCE = Self(1 << 0u64);
+}
+bitmask!(DigitalLensControlFlagsALMALENCE);
 #[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -2288,6 +2547,11 @@ handle!(SceneMSFT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SpatialAnchorStoreConnectionMSFT(u64);
 handle!(SpatialAnchorStoreConnectionMSFT);
+#[doc = "See [XrFacialTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFacialTrackerHTC)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct FacialTrackerHTC(u64);
+handle!(FacialTrackerHTC);
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector2f)"]
@@ -5035,7 +5299,7 @@ impl HandTrackingAimStateFB {
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandCapsuleFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandCapsuleFB) - defined by [XR_FB_hand_tracking_capsules](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_hand_tracking_capsules)"]
 pub struct HandCapsuleFB {
-    pub points: [Vector3f; FB_HAND_TRACKING_CAPSULE_POINT_COUNT],
+    pub points: [Vector3f; HAND_TRACKING_CAPSULE_POINT_COUNT_FB],
     pub radius: f32,
     pub joint: HandJointEXT,
 }
@@ -5045,10 +5309,209 @@ pub struct HandCapsuleFB {
 pub struct HandTrackingCapsulesStateFB {
     pub ty: StructureType,
     pub next: *mut c_void,
-    pub capsules: [HandCapsuleFB; FB_HAND_TRACKING_CAPSULE_COUNT],
+    pub capsules: [HandCapsuleFB; HAND_TRACKING_CAPSULE_COUNT_FB],
 }
 impl HandTrackingCapsulesStateFB {
     pub const TYPE: StructureType = StructureType::HAND_TRACKING_CAPSULES_STATE_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelPathInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelPathInfoFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+pub struct RenderModelPathInfoFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub path: Path,
+}
+impl RenderModelPathInfoFB {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_PATH_INFO_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelPropertiesFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+pub struct RenderModelPropertiesFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub vendor_id: u32,
+    pub model_name: [c_char; MAX_RENDER_MODEL_NAME_SIZE_FB],
+    pub model_key: RenderModelKeyFB,
+    pub model_version: u32,
+    pub flags: RenderModelFlagsFB,
+}
+impl RenderModelPropertiesFB {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_PROPERTIES_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelBufferFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelBufferFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+pub struct RenderModelBufferFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub buffer_capacity_input: u32,
+    pub buffer_count_output: u32,
+    pub buffer: *mut u8,
+}
+impl RenderModelBufferFB {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_BUFFER_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelLoadInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelLoadInfoFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+pub struct RenderModelLoadInfoFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub model_key: RenderModelKeyFB,
+}
+impl RenderModelLoadInfoFB {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_LOAD_INFO_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemRenderModelPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemRenderModelPropertiesFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+pub struct SystemRenderModelPropertiesFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_render_model_loading: Bool32,
+}
+impl SystemRenderModelPropertiesFB {
+    pub const TYPE: StructureType = StructureType::SYSTEM_RENDER_MODEL_PROPERTIES_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemKeyboardTrackingPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemKeyboardTrackingPropertiesFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
+pub struct SystemKeyboardTrackingPropertiesFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_keyboard_tracking: Bool32,
+}
+impl SystemKeyboardTrackingPropertiesFB {
+    pub const TYPE: StructureType = StructureType::SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrKeyboardTrackingDescriptionFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrKeyboardTrackingDescriptionFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
+pub struct KeyboardTrackingDescriptionFB {
+    pub tracked_keyboard_id: u64,
+    pub size: Vector3f,
+    pub flags: KeyboardTrackingFlagsFB,
+    pub name: [c_char; MAX_KEYBOARD_TRACKING_NAME_SIZE_FB],
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrKeyboardSpaceCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrKeyboardSpaceCreateInfoFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
+pub struct KeyboardSpaceCreateInfoFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tracked_keyboard_id: u64,
+}
+impl KeyboardSpaceCreateInfoFB {
+    pub const TYPE: StructureType = StructureType::KEYBOARD_SPACE_CREATE_INFO_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrKeyboardTrackingQueryFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrKeyboardTrackingQueryFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
+pub struct KeyboardTrackingQueryFB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub flags: KeyboardTrackingQueryFlagsFB,
+}
+impl KeyboardTrackingQueryFB {
+    pub const TYPE: StructureType = StructureType::KEYBOARD_TRACKING_QUERY_FB;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5296,6 +5759,18 @@ impl EventDataPassthroughStateChangedFB {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPassthroughKeyboardHandsIntensityFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughKeyboardHandsIntensityFB) - defined by [XR_FB_passthrough_keyboard_hands](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough_keyboard_hands)"]
+pub struct PassthroughKeyboardHandsIntensityFB {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub left_hand_intensity: f32,
+    pub right_hand_intensity: f32,
+}
+impl PassthroughKeyboardHandsIntensityFB {
+    pub const TYPE: StructureType = StructureType::PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorPersistenceNameMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorPersistenceNameMSFT) - defined by [XR_MSFT_spatial_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor_persistence)"]
 pub struct SpatialAnchorPersistenceNameMSFT {
     pub name: [c_char; MAX_SPATIAL_ANCHOR_NAME_SIZE_MSFT],
@@ -5324,6 +5799,55 @@ pub struct SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
 impl SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
     pub const TYPE: StructureType =
         StructureType::SPATIAL_ANCHOR_FROM_PERSISTED_ANCHOR_CREATE_INFO_MSFT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFacialTrackerCreateInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFacialTrackerCreateInfoHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
+pub struct FacialTrackerCreateInfoHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub facial_tracking_type: FacialTrackingTypeHTC,
+}
+impl FacialTrackerCreateInfoHTC {
+    pub const TYPE: StructureType = StructureType::FACIAL_TRACKER_CREATE_INFO_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemFacialTrackingPropertiesHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemFacialTrackingPropertiesHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
+pub struct SystemFacialTrackingPropertiesHTC {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub support_eye_facial_tracking: Bool32,
+    pub support_lip_facial_tracking: Bool32,
+}
+impl SystemFacialTrackingPropertiesHTC {
+    pub const TYPE: StructureType = StructureType::SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFacialExpressionsHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFacialExpressionsHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
+pub struct FacialExpressionsHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub is_active: Bool32,
+    pub sample_time: Time,
+    pub expression_count: u32,
+    pub expression_weightings: *mut f32,
+}
+impl FacialExpressionsHTC {
+    pub const TYPE: StructureType = StructureType::FACIAL_EXPRESSIONS_HTC;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5450,6 +5974,23 @@ pub struct MarkerSpaceCreateInfoVARJO {
 }
 impl MarkerSpaceCreateInfoVARJO {
     pub const TYPE: StructureType = StructureType::MARKER_SPACE_CREATE_INFO_VARJO;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrUuidEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrUuidEXT) - defined by [XR_EXT_uuid](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_uuid)"]
+pub struct UuidEXT {
+    pub data: [u8; UUID_SIZE_EXT],
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrDigitalLensControlALMALENCE](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDigitalLensControlALMALENCE)"]
+pub struct DigitalLensControlALMALENCE {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub flags: DigitalLensControlFlagsALMALENCE,
+}
+impl DigitalLensControlALMALENCE {
+    pub const TYPE: StructureType = StructureType::DIGITAL_LENS_CONTROL_ALMALENCE;
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
@@ -6105,6 +6646,37 @@ pub mod pfn {
         hand_tracker: HandTrackerEXT,
         mesh: *mut HandTrackingMeshFB,
     ) -> Result;
+    #[doc = "See [xrEnumerateRenderModelPathsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateRenderModelPathsFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+    pub type EnumerateRenderModelPathsFB = unsafe extern "system" fn(
+        session: Session,
+        path_capacity_input: u32,
+        path_count_output: *mut u32,
+        paths: *mut RenderModelPathInfoFB,
+    ) -> Result;
+    #[doc = "See [xrGetRenderModelPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetRenderModelPropertiesFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+    pub type GetRenderModelPropertiesFB = unsafe extern "system" fn(
+        session: Session,
+        path: Path,
+        properties: *mut RenderModelPropertiesFB,
+    ) -> Result;
+    #[doc = "See [xrLoadRenderModelFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrLoadRenderModelFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
+    pub type LoadRenderModelFB = unsafe extern "system" fn(
+        session: Session,
+        info: *const RenderModelLoadInfoFB,
+        buffer: *mut RenderModelBufferFB,
+    ) -> Result;
+    #[doc = "See [xrQuerySystemTrackedKeyboardFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrQuerySystemTrackedKeyboardFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
+    pub type QuerySystemTrackedKeyboardFB = unsafe extern "system" fn(
+        session: Session,
+        query_info: *const KeyboardTrackingQueryFB,
+        keyboard: *mut KeyboardTrackingDescriptionFB,
+    ) -> Result;
+    #[doc = "See [xrCreateKeyboardSpaceFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateKeyboardSpaceFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
+    pub type CreateKeyboardSpaceFB = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const KeyboardSpaceCreateInfoFB,
+        keyboard_space: *mut Space,
+    ) -> Result;
     #[doc = "See [xrSetEnvironmentDepthEstimationVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetEnvironmentDepthEstimationVARJO) - defined by [XR_VARJO_environment_depth_estimation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_environment_depth_estimation)"]
     pub type SetEnvironmentDepthEstimationVARJO =
         unsafe extern "system" fn(session: Session, enabled: Bool32) -> Result;
@@ -6199,6 +6771,11 @@ pub mod pfn {
         instance: GeometryInstanceFB,
         transformation: *const GeometryInstanceTransformFB,
     ) -> Result;
+    #[doc = "See [xrPassthroughLayerSetKeyboardHandsIntensityFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrPassthroughLayerSetKeyboardHandsIntensityFB) - defined by [XR_FB_passthrough_keyboard_hands](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough_keyboard_hands)"]
+    pub type PassthroughLayerSetKeyboardHandsIntensityFB = unsafe extern "system" fn(
+        layer: PassthroughLayerFB,
+        intensity: *const PassthroughKeyboardHandsIntensityFB,
+    ) -> Result;
     #[doc = "See [xrCreateSpatialAnchorStoreConnectionMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSpatialAnchorStoreConnectionMSFT) - defined by [XR_MSFT_spatial_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor_persistence)"]
     pub type CreateSpatialAnchorStoreConnectionMSFT = unsafe extern "system" fn(
         session: Session,
@@ -6233,6 +6810,20 @@ pub mod pfn {
     #[doc = "See [xrClearSpatialAnchorStoreMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrClearSpatialAnchorStoreMSFT) - defined by [XR_MSFT_spatial_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor_persistence)"]
     pub type ClearSpatialAnchorStoreMSFT =
         unsafe extern "system" fn(spatial_anchor_store: SpatialAnchorStoreConnectionMSFT) -> Result;
+    #[doc = "See [xrCreateFacialTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateFacialTrackerHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
+    pub type CreateFacialTrackerHTC = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const FacialTrackerCreateInfoHTC,
+        facial_tracker: *mut FacialTrackerHTC,
+    ) -> Result;
+    #[doc = "See [xrDestroyFacialTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyFacialTrackerHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
+    pub type DestroyFacialTrackerHTC =
+        unsafe extern "system" fn(facial_tracker: FacialTrackerHTC) -> Result;
+    #[doc = "See [xrGetFacialExpressionsHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetFacialExpressionsHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
+    pub type GetFacialExpressionsHTC = unsafe extern "system" fn(
+        facial_tracker: FacialTrackerHTC,
+        facial_expressions: *mut FacialExpressionsHTC,
+    ) -> Result;
     #[doc = "See [xrEnumerateViveTrackerPathsHTCX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateViveTrackerPathsHTCX) - defined by [XR_HTCX_vive_tracker_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTCX_vive_tracker_interaction)"]
     pub type EnumerateViveTrackerPathsHTCX = unsafe extern "system" fn(
         instance: Instance,
@@ -6258,6 +6849,11 @@ pub mod pfn {
         create_info: *const MarkerSpaceCreateInfoVARJO,
         space: *mut Space,
     ) -> Result;
+    #[doc = "See [xrSetDigitalLensControlALMALENCE](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSetDigitalLensControlALMALENCE) - defined by [XR_ALMALENCE_digital_lens_control](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ALMALENCE_digital_lens_control)"]
+    pub type SetDigitalLensControlALMALENCE = unsafe extern "system" fn(
+        session: Session,
+        digital_lens_control: *const DigitalLensControlALMALENCE,
+    ) -> Result;
     #[doc = "See [xrGetVulkanGraphicsRequirements2KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVulkanGraphicsRequirements2KHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanGraphicsRequirements2KHR = unsafe extern "system" fn(
         instance: Instance,
@@ -6265,6 +6861,9 @@ pub mod pfn {
         graphics_requirements: *mut GraphicsRequirementsVulkanKHR,
     ) -> Result;
 }
+pub const ALMALENCE_digital_lens_control_SPEC_VERSION: u32 = 1u32;
+pub const ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME: &[u8] =
+    b"XR_ALMALENCE_digital_lens_control\0";
 pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 2u32;
 pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 3u32;
@@ -6295,6 +6894,8 @@ pub const EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME: &[u8] =
 pub const EXT_hp_mixed_reality_controller_SPEC_VERSION: u32 = 1u32;
 pub const EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME: &[u8] =
     b"XR_EXT_hp_mixed_reality_controller\0";
+pub const EXT_uuid_SPEC_VERSION: u32 = 1u32;
+pub const EXT_UUID_EXTENSION_NAME: &[u8] = b"XR_EXT_uuid\0";
 pub const EXTX_overlay_SPEC_VERSION: u32 = 5u32;
 pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
 pub const FB_composition_layer_image_layout_SPEC_VERSION: u32 = 1u32;
@@ -6321,16 +6922,20 @@ pub const FB_hand_tracking_mesh_SPEC_VERSION: u32 = 1u32;
 pub const FB_HAND_TRACKING_MESH_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_mesh\0";
 pub const FB_hand_tracking_aim_SPEC_VERSION: u32 = 1u32;
 pub const FB_HAND_TRACKING_AIM_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_aim\0";
-pub const FB_hand_tracking_capsules_SPEC_VERSION: u32 = 1u32;
+pub const FB_hand_tracking_capsules_SPEC_VERSION: u32 = 2u32;
 pub const FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_capsules\0";
 pub const FB_foveation_SPEC_VERSION: u32 = 1u32;
 pub const FB_FOVEATION_EXTENSION_NAME: &[u8] = b"XR_FB_foveation\0";
 pub const FB_foveation_configuration_SPEC_VERSION: u32 = 1u32;
 pub const FB_FOVEATION_CONFIGURATION_EXTENSION_NAME: &[u8] = b"XR_FB_foveation_configuration\0";
+pub const FB_keyboard_tracking_SPEC_VERSION: u32 = 1u32;
+pub const FB_KEYBOARD_TRACKING_EXTENSION_NAME: &[u8] = b"XR_FB_keyboard_tracking\0";
 pub const FB_triangle_mesh_SPEC_VERSION: u32 = 1u32;
 pub const FB_TRIANGLE_MESH_EXTENSION_NAME: &[u8] = b"XR_FB_triangle_mesh\0";
 pub const FB_passthrough_SPEC_VERSION: u32 = 1u32;
 pub const FB_PASSTHROUGH_EXTENSION_NAME: &[u8] = b"XR_FB_passthrough\0";
+pub const FB_render_model_SPEC_VERSION: u32 = 1u32;
+pub const FB_RENDER_MODEL_EXTENSION_NAME: &[u8] = b"XR_FB_render_model\0";
 pub const FB_foveation_vulkan_SPEC_VERSION: u32 = 1u32;
 pub const FB_FOVEATION_VULKAN_EXTENSION_NAME: &[u8] = b"XR_FB_foveation_vulkan\0";
 #[cfg(target_os = "android")]
@@ -6346,9 +6951,17 @@ pub const FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME: &[u8] =
     b"XR_FB_swapchain_update_state_vulkan\0";
 pub const FB_space_warp_SPEC_VERSION: u32 = 1u32;
 pub const FB_SPACE_WARP_EXTENSION_NAME: &[u8] = b"XR_FB_space_warp\0";
+pub const FB_passthrough_keyboard_hands_SPEC_VERSION: u32 = 1u32;
+pub const FB_PASSTHROUGH_KEYBOARD_HANDS_EXTENSION_NAME: &[u8] =
+    b"XR_FB_passthrough_keyboard_hands\0";
 pub const HTC_vive_cosmos_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HTC_vive_cosmos_controller_interaction\0";
+pub const HTC_facial_tracking_SPEC_VERSION: u32 = 1u32;
+pub const HTC_FACIAL_TRACKING_EXTENSION_NAME: &[u8] = b"XR_HTC_facial_tracking\0";
+pub const HTC_vive_focus3_controller_interaction_SPEC_VERSION: u32 = 1u32;
+pub const HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
+    b"XR_HTC_vive_focus3_controller_interaction\0";
 pub const HTCX_vive_tracker_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HTCX_vive_tracker_interaction\0";
@@ -6439,7 +7052,7 @@ pub const MSFT_spatial_graph_bridge_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_graph_bridge\0";
 pub const MSFT_hand_interaction_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_interaction\0";
-pub const MSFT_hand_tracking_mesh_SPEC_VERSION: u32 = 3u32;
+pub const MSFT_hand_tracking_mesh_SPEC_VERSION: u32 = 4u32;
 pub const MSFT_HAND_TRACKING_MESH_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_tracking_mesh\0";
 pub const MSFT_secondary_view_configuration_SPEC_VERSION: u32 = 1u32;
 pub const MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME: &[u8] =

@@ -133,6 +133,11 @@ impl ControllerModelKeyMSFT {
 }
 
 wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    RenderModelKeyFB(u64)
+}
+
+wrapper! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Version(u64)
 }

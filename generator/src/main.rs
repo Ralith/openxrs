@@ -47,6 +47,7 @@ struct Parser {
     structs: IndexMap<String, Struct>,
     struct_aliases: Vec<(String, String)>,
     api_constants: Vec<(String, usize)>,
+    api_aliases: Vec<(String, String)>,
     commands: IndexMap<String, Command>,
     cmd_aliases: Vec<(String, String)>,
     extensions: IndexMap<String, Tag>,
@@ -69,6 +70,7 @@ impl Parser {
             structs: IndexMap::new(),
             struct_aliases: Vec::new(),
             api_constants: Vec::new(),
+            api_aliases: Vec::new(),
             commands: IndexMap::new(),
             cmd_aliases: Vec::new(),
             extensions: IndexMap::new(),
@@ -267,6 +269,8 @@ impl Parser {
                                 } else {
                                     eprintln!("extension to unrecognized type {}", extends);
                                 }
+                            } else if let Some(alias) = attr(&attributes, "alias") {
+                                self.api_aliases.push((name.into(), alias.into()));
                             } else if name.ends_with("SPEC_VERSION") {
                                 let value = attr(&attributes, "value").unwrap();
                                 ext_version = Some(value.parse().unwrap());
@@ -1037,7 +1041,7 @@ impl Parser {
             let ident = xr_ty_name(name);
             let members = s.members.iter().map(|m| {
                 let ident = xr_var_name(&m.name);
-                let ty = xr_var_ty(m);
+                let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                 quote! {
                     pub #ident: #ty,
                 }
@@ -1118,7 +1122,7 @@ impl Parser {
                 let ident = xr_command_name(name);
                 let params = command.params.iter().map(|param| {
                     let ident = xr_var_name(&param.name);
-                    let ty = xr_arg_ty(param);
+                    let ty = xr_arg_ty(self.api_aliases.as_ref(), param);
                     quote! {
                         #ident: #ty
                     }
@@ -1734,7 +1738,7 @@ impl Parser {
                 ),
                 x if self.handles.contains(x) => {
                     assert!(m.len.is_none());
-                    let ty = xr_var_ty(m);
+                    let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                     (
                         quote! { &'a #ty #type_args },
                         quote! { self.inner.#ident = value.as_raw(); },
@@ -1760,7 +1764,7 @@ impl Parser {
                         let mut inner = m.clone();
                         inner.ptr_depth -= 1;
                         assert_eq!(inner.ptr_depth, 0, "nested arrays are unimplemented");
-                        let ty = xr_var_ty(&inner);
+                        let ty = xr_var_ty(self.api_aliases.as_ref(), &inner);
                         let len = xr_var_name(&len[0]);
                         (
                             quote! { &'a [#ty #type_args] },
@@ -1772,19 +1776,22 @@ impl Parser {
                     } else if m.ptr_depth != 0 {
                         let mut inner = m.clone();
                         inner.ptr_depth -= 1;
-                        let ty = xr_var_ty(&inner);
+                        let ty = xr_var_ty(self.api_aliases.as_ref(), &inner);
                         (
                             quote! { &'a #ty #type_args },
                             quote! { self.inner.#ident = value as *const _ as _; },
                         )
                     } else if self.structs.contains_key(&m.ty) && !simple.contains(&m.ty[..]) {
-                        let ty = xr_var_ty(m);
+                        let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                         (
                             quote! { #ty #type_args },
                             quote! { self.inner.#ident = value.inner; },
                         )
                     } else {
-                        (xr_var_ty(m), quote! { self.inner.#ident = value; })
+                        (
+                            xr_var_ty(self.api_aliases.as_ref(), m),
+                            quote! { self.inner.#ident = value; },
+                        )
                     }
                 }
             };
@@ -1905,7 +1912,7 @@ impl Parser {
             let (ty, value) = if m.ty == "XrBool32" {
                 (quote! { bool }, quote! { (self.0).#ident.into() })
             } else if self.handles.contains(&m.ty) {
-                let ty = xr_var_ty(m);
+                let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                 (quote! { sys::#ty }, quote! { (self.0).#ident })
             } else if m.ty == "XrViveTrackerPathsHTCX" {
                 (
@@ -1917,7 +1924,10 @@ impl Parser {
                     },
                 )
             } else {
-                (xr_var_ty(m), quote! { (self.0).#ident })
+                (
+                    xr_var_ty(self.api_aliases.as_ref(), m),
+                    quote! { (self.0).#ident },
+                )
             };
             Some(quote! {
                 #[inline]
@@ -2125,18 +2135,18 @@ fn xr_var_name(raw: &str) -> Ident {
     Ident::new(&raw.to_snake_case(), Span::call_site())
 }
 
-fn xr_arg_ty(member: &Member) -> TokenStream {
+fn xr_arg_ty(api_aliases: &[(String, String)], member: &Member) -> TokenStream {
     if member.static_array_len.is_some() {
         let mut clone = member.clone();
         clone.static_array_len = None;
         clone.ptr_depth += 1;
-        xr_var_ty(&clone)
+        xr_var_ty(api_aliases, &clone)
     } else {
-        xr_var_ty(member)
+        xr_var_ty(api_aliases, member)
     }
 }
 
-fn xr_var_ty(member: &Member) -> TokenStream {
+fn xr_var_ty(api_aliases: &[(String, String)], member: &Member) -> TokenStream {
     let ty = if member.ty.starts_with("Xr") {
         let ident = xr_ty_name(&member.ty);
         quote! { #ident }
@@ -2171,12 +2181,17 @@ fn xr_var_ty(member: &Member) -> TokenStream {
         quote! { #ident }
     };
     let mut ty = if let Some(ref len) = member.static_array_len {
+        // If the len is a constant, we see if it is an aliased constant. Since we do not emit
+        // aliased constant declarations, we must replace the alias with the original constant name
+        // that we do emit.
+        let len = match api_aliases.iter().find(|(alias, _)| alias == len) {
+            Some((_, og)) => og,
+            _ => len,
+        };
         if let Ok(len) = len.parse::<usize>() {
             quote! { [#ty; #len] }
         } else {
-            assert!(
-                len.starts_with("XR_MAX_") || len.ends_with("_COUNT") || len.ends_with("_SIZE_FB")
-            );
+            assert!(len.starts_with("XR_"));
             let len = Ident::new(&len[3..], Span::call_site());
             quote! { [#ty; #len] }
         }
