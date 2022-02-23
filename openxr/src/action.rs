@@ -109,7 +109,7 @@ impl Action<Posef> {
             subaction_path,
         };
         let out = unsafe {
-            let mut out = sys::ActionStatePose::out(ptr::null_mut());
+            let mut out = sys::ActionStatePose::base_out(ptr::null_mut());
             cvt((self.fp().get_action_state_pose)(
                 session.as_raw(),
                 &info,
@@ -197,7 +197,7 @@ impl ActionInput for bool {
             subaction_path,
         };
         unsafe {
-            let mut out = sys::ActionStateBoolean::out(ptr::null_mut());
+            let mut out = sys::ActionStateBoolean::base_out(ptr::null_mut());
             cvt((action.fp().get_action_state_boolean)(
                 session.as_raw(),
                 &info,
@@ -231,7 +231,7 @@ impl ActionInput for f32 {
             subaction_path,
         };
         unsafe {
-            let mut out = sys::ActionStateFloat::out(ptr::null_mut());
+            let mut out = sys::ActionStateFloat::base_out(ptr::null_mut());
             cvt((action.fp().get_action_state_float)(
                 session.as_raw(),
                 &info,
@@ -265,7 +265,7 @@ impl ActionInput for Vector2f {
             subaction_path,
         };
         unsafe {
-            let mut out = sys::ActionStateVector2f::out(ptr::null_mut());
+            let mut out = sys::ActionStateVector2f::base_out(ptr::null_mut());
             cvt((action.fp().get_action_state_vector2f)(
                 session.as_raw(),
                 &info,

@@ -547,7 +547,7 @@ impl Parser {
         let struct_name = attr(attrs, "name").unwrap();
         let mut members = Vec::new();
         let mut ty = None;
-        let mut mut_next = false;
+        let mut next = None;
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
@@ -558,8 +558,8 @@ impl Parser {
                         let m = self.parse_var("member", &attributes);
                         if m.name == "type" && m.ty == "XrStructureType" {
                             ty = attr(&attributes, "values").map(|x| x.into());
-                        } else if m.name == "next" && !m.is_const {
-                            mut_next = true;
+                        } else if m.name == "next" {
+                            next = Some(m.is_const);
                         }
                         members.push(m);
                     }
@@ -594,7 +594,7 @@ impl Parser {
                     members,
                     ty,
                     extension: None,
-                    mut_next,
+                    next,
                 },
             );
         }
@@ -1037,6 +1037,50 @@ impl Parser {
             }
         });
 
+        let traits = quote! {
+            pub trait XrType {
+                const TYPE: StructureType;
+            }
+
+            /// # Safety
+            ///
+            /// Implementers must ensure that T is indeed an XR In Structure. Failing do do so may
+            /// cause UB, as this trait assumes T is at least as large as BaseInStructure.
+            pub unsafe trait XrInType: XrType {
+                #[inline]
+                /// Construct a partially-initialized value suitable for passing to OpenXR
+                fn base_in(next: *const BaseInStructure) -> MaybeUninit<Self> where Self: Sized {
+                    let mut x = MaybeUninit::<Self>::uninit();
+                    unsafe {
+                        (x.as_mut_ptr() as *mut BaseInStructure).write(BaseInStructure {
+                            ty: Self::TYPE,
+                            next,
+                        });
+                    }
+                    x
+                }
+            }
+
+            /// # Safety
+            ///
+            /// Implementers must ensure that T is indeed an XR Out Structure. Failing do do so may
+            /// cause UB, as this trait assumes T is at least as large as BaseOutStructure.
+            pub unsafe trait XrOutType: XrType {
+                /// Construct a partially-initialized value suitable for passing to OpenXR
+                #[inline]
+                fn base_out(next: *mut BaseOutStructure) -> MaybeUninit<Self> where Self: Sized {
+                    let mut x = MaybeUninit::<Self>::uninit();
+                    unsafe {
+                        (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                            ty: Self::TYPE,
+                            next,
+                        });
+                    }
+                    x
+                }
+            }
+        };
+
         let structs = self.structs.iter().map(|(name, s)| {
             let ident = xr_ty_name(name);
             let members = s.members.iter().map(|m| {
@@ -1060,37 +1104,33 @@ impl Parser {
                 format!("See {}", self.doc_link(name))
             };
             let conditions = conditions(name, s.extension.as_ref().map(|x| &x[..]));
-            let ty = if let Some(ref ty) = s.ty {
-                let conditions2 = conditions.clone();
-                let ty = xr_enum_value_name("XrStructureType", ty);
-                let out = if s.mut_next {
-                    quote! {
-                        /// Construct a partially-initialized value suitable for passing to OpenXR
-                        #[inline]
-                        pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-                            let mut x = MaybeUninit::<Self>::uninit();
-                            unsafe {
-                                (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                                    ty: Self::TYPE,
-                                    next,
-                                });
-                            }
-                            x
-                        }
-                    }
-                } else {
-                    quote! {}
+
+            let impls = if let Some(ref ty) = s.ty {
+                let in_out = match s.next {
+                    Some(false) => quote! {
+                        #conditions
+                        unsafe impl XrOutType for #ident { }
+                    },
+                    Some(true) => quote! {
+                        #conditions
+                        unsafe impl XrInType for #ident { }
+                    },
+                    None => quote! {},
                 };
+
+                let ty = xr_enum_value_name("XrStructureType", ty);
                 quote! {
-                    #conditions2
-                    impl #ident {
-                        pub const TYPE: StructureType = StructureType::#ty;
-                        #out
+                    #conditions
+                    impl XrType for #ident {
+                        const TYPE: StructureType = StructureType::#ty;
                     }
+
+                    #in_out
                 }
             } else {
                 quote! {}
             };
+
             let meta = self.compute_meta(name, s);
             let derives = if (meta.has_pointer || meta.has_array) && meta.has_unprintable {
                 quote! { #[derive(Copy, Clone)] }
@@ -1107,7 +1147,7 @@ impl Parser {
                 pub struct #ident {
                     #(#members)*
                 }
-                #ty
+                #impls
             }
         });
 
@@ -1207,6 +1247,7 @@ impl Parser {
             #(#enums)*
             #(#bitmasks)*
             #(#handles)*
+            #traits
             #(#structs)*
 
             /// Function pointer prototypes
@@ -2064,7 +2105,7 @@ struct Struct {
     members: Vec<Member>,
     extension: Option<Rc<str>>,
     ty: Option<String>,
-    mut_next: bool,
+    next: Option<bool>, // some if it exists, true if it is const
 }
 
 #[derive(Debug, Clone)]

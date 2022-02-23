@@ -26,7 +26,7 @@ impl Graphics for Vulkan {
 
     fn requirements(instance: &Instance, system: SystemId) -> Result<Requirements> {
         let out = unsafe {
-            let mut x = sys::GraphicsRequirementsVulkanKHR::out(ptr::null_mut());
+            let mut x = sys::GraphicsRequirementsVulkanKHR::base_out(ptr::null_mut());
             let fp = if instance.exts().khr_vulkan_enable2.is_some() {
                 instance.vulkan().get_vulkan_graphics_requirements2
             } else {

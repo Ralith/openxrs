@@ -26,7 +26,7 @@ impl Graphics for OpenGL {
 
     fn requirements(inst: &Instance, system: SystemId) -> Result<Requirements> {
         let out = unsafe {
-            let mut x = sys::GraphicsRequirementsOpenGLKHR::out(ptr::null_mut());
+            let mut x = sys::GraphicsRequirementsOpenGLKHR::base_out(ptr::null_mut());
             cvt((inst.opengl().get_open_gl_graphics_requirements)(
                 inst.as_raw(),
                 system,

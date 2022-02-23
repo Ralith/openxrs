@@ -2552,6 +2552,51 @@ handle!(SpatialAnchorStoreConnectionMSFT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct FacialTrackerHTC(u64);
 handle!(FacialTrackerHTC);
+pub trait XrType {
+    const TYPE: StructureType;
+}
+#[doc = r" # Safety"]
+#[doc = r""]
+#[doc = r" Implementers must ensure that T is indeed an XR In Structure. Failing do do so may"]
+#[doc = r" cause UB, as this trait assumes T is at least as large as BaseInStructure."]
+pub unsafe trait XrInType: XrType {
+    #[inline]
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    fn base_in(next: *const BaseInStructure) -> MaybeUninit<Self>
+    where
+        Self: Sized,
+    {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseInStructure).write(BaseInStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[doc = r" # Safety"]
+#[doc = r""]
+#[doc = r" Implementers must ensure that T is indeed an XR Out Structure. Failing do do so may"]
+#[doc = r" cause UB, as this trait assumes T is at least as large as BaseOutStructure."]
+pub unsafe trait XrOutType: XrType {
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    fn base_out(next: *mut BaseOutStructure) -> MaybeUninit<Self>
+    where
+        Self: Sized,
+    {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector2f)"]
@@ -2668,21 +2713,10 @@ pub struct ApiLayerProperties {
     pub layer_version: u32,
     pub description: [c_char; MAX_API_LAYER_DESCRIPTION_SIZE],
 }
-impl ApiLayerProperties {
-    pub const TYPE: StructureType = StructureType::API_LAYER_PROPERTIES;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ApiLayerProperties {
+    const TYPE: StructureType = StructureType::API_LAYER_PROPERTIES;
 }
+unsafe impl XrOutType for ApiLayerProperties {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrExtensionProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExtensionProperties)"]
@@ -2692,21 +2726,10 @@ pub struct ExtensionProperties {
     pub extension_name: [c_char; MAX_EXTENSION_NAME_SIZE],
     pub extension_version: u32,
 }
-impl ExtensionProperties {
-    pub const TYPE: StructureType = StructureType::EXTENSION_PROPERTIES;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ExtensionProperties {
+    const TYPE: StructureType = StructureType::EXTENSION_PROPERTIES;
 }
+unsafe impl XrOutType for ExtensionProperties {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrApplicationInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApplicationInfo)"]
@@ -2730,9 +2753,10 @@ pub struct InstanceCreateInfo {
     pub enabled_extension_count: u32,
     pub enabled_extension_names: *const *const c_char,
 }
-impl InstanceCreateInfo {
-    pub const TYPE: StructureType = StructureType::INSTANCE_CREATE_INFO;
+impl XrType for InstanceCreateInfo {
+    const TYPE: StructureType = StructureType::INSTANCE_CREATE_INFO;
 }
+unsafe impl XrInType for InstanceCreateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrInstanceProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceProperties)"]
@@ -2742,21 +2766,10 @@ pub struct InstanceProperties {
     pub runtime_version: Version,
     pub runtime_name: [c_char; MAX_RUNTIME_NAME_SIZE],
 }
-impl InstanceProperties {
-    pub const TYPE: StructureType = StructureType::INSTANCE_PROPERTIES;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for InstanceProperties {
+    const TYPE: StructureType = StructureType::INSTANCE_PROPERTIES;
 }
+unsafe impl XrOutType for InstanceProperties {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemGetInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemGetInfo)"]
@@ -2765,9 +2778,10 @@ pub struct SystemGetInfo {
     pub next: *const c_void,
     pub form_factor: FormFactor,
 }
-impl SystemGetInfo {
-    pub const TYPE: StructureType = StructureType::SYSTEM_GET_INFO;
+impl XrType for SystemGetInfo {
+    const TYPE: StructureType = StructureType::SYSTEM_GET_INFO;
 }
+unsafe impl XrInType for SystemGetInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemProperties)"]
@@ -2780,21 +2794,10 @@ pub struct SystemProperties {
     pub graphics_properties: SystemGraphicsProperties,
     pub tracking_properties: SystemTrackingProperties,
 }
-impl SystemProperties {
-    pub const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemProperties {
+    const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES;
 }
+unsafe impl XrOutType for SystemProperties {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrSystemGraphicsProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemGraphicsProperties)"]
@@ -2821,9 +2824,11 @@ pub struct GraphicsBindingOpenGLWin32KHR {
     pub h_glrc: HGLRC,
 }
 #[cfg(windows)]
-impl GraphicsBindingOpenGLWin32KHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WIN32_KHR;
+impl XrType for GraphicsBindingOpenGLWin32KHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WIN32_KHR;
 }
+#[cfg(windows)]
+unsafe impl XrInType for GraphicsBindingOpenGLWin32KHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsBindingOpenGLXlibKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLXlibKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
@@ -2836,9 +2841,10 @@ pub struct GraphicsBindingOpenGLXlibKHR {
     pub glx_drawable: GLXDrawable,
     pub glx_context: GLXContext,
 }
-impl GraphicsBindingOpenGLXlibKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XLIB_KHR;
+impl XrType for GraphicsBindingOpenGLXlibKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XLIB_KHR;
 }
+unsafe impl XrInType for GraphicsBindingOpenGLXlibKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsBindingOpenGLXcbKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLXcbKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
@@ -2852,9 +2858,10 @@ pub struct GraphicsBindingOpenGLXcbKHR {
     pub glx_drawable: xcb_glx_drawable_t,
     pub glx_context: xcb_glx_context_t,
 }
-impl GraphicsBindingOpenGLXcbKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XCB_KHR;
+impl XrType for GraphicsBindingOpenGLXcbKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XCB_KHR;
 }
+unsafe impl XrInType for GraphicsBindingOpenGLXcbKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsBindingOpenGLWaylandKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLWaylandKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
@@ -2863,9 +2870,10 @@ pub struct GraphicsBindingOpenGLWaylandKHR {
     pub next: *const c_void,
     pub display: *mut wl_display,
 }
-impl GraphicsBindingOpenGLWaylandKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WAYLAND_KHR;
+impl XrType for GraphicsBindingOpenGLWaylandKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WAYLAND_KHR;
 }
+unsafe impl XrInType for GraphicsBindingOpenGLWaylandKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsBindingD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
@@ -2876,9 +2884,11 @@ pub struct GraphicsBindingD3D11KHR {
     pub device: *mut ID3D11Device,
 }
 #[cfg(windows)]
-impl GraphicsBindingD3D11KHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D11_KHR;
+impl XrType for GraphicsBindingD3D11KHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D11_KHR;
 }
+#[cfg(windows)]
+unsafe impl XrInType for GraphicsBindingD3D11KHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsBindingD3D12KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingD3D12KHR) - defined by [XR_KHR_D3D12_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable)"]
@@ -2890,9 +2900,11 @@ pub struct GraphicsBindingD3D12KHR {
     pub queue: *mut ID3D12CommandQueue,
 }
 #[cfg(windows)]
-impl GraphicsBindingD3D12KHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D12_KHR;
+impl XrType for GraphicsBindingD3D12KHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D12_KHR;
 }
+#[cfg(windows)]
+unsafe impl XrInType for GraphicsBindingD3D12KHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsBindingOpenGLESAndroidKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingOpenGLESAndroidKHR) - defined by [XR_KHR_opengl_es_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_es_enable)"]
@@ -2905,9 +2917,11 @@ pub struct GraphicsBindingOpenGLESAndroidKHR {
     pub context: EGLContext,
 }
 #[cfg(target_os = "android")]
-impl GraphicsBindingOpenGLESAndroidKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR;
+impl XrType for GraphicsBindingOpenGLESAndroidKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR;
 }
+#[cfg(target_os = "android")]
+unsafe impl XrInType for GraphicsBindingOpenGLESAndroidKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsBindingVulkanKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingVulkanKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
@@ -2920,9 +2934,10 @@ pub struct GraphicsBindingVulkanKHR {
     pub queue_family_index: u32,
     pub queue_index: u32,
 }
-impl GraphicsBindingVulkanKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_VULKAN_KHR;
+impl XrType for GraphicsBindingVulkanKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_VULKAN_KHR;
 }
+unsafe impl XrInType for GraphicsBindingVulkanKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSessionCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionCreateInfo)"]
@@ -2932,9 +2947,10 @@ pub struct SessionCreateInfo {
     pub create_flags: SessionCreateFlags,
     pub system_id: SystemId,
 }
-impl SessionCreateInfo {
-    pub const TYPE: StructureType = StructureType::SESSION_CREATE_INFO;
+impl XrType for SessionCreateInfo {
+    const TYPE: StructureType = StructureType::SESSION_CREATE_INFO;
 }
+unsafe impl XrInType for SessionCreateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSessionBeginInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionBeginInfo)"]
@@ -2943,9 +2959,10 @@ pub struct SessionBeginInfo {
     pub next: *const c_void,
     pub primary_view_configuration_type: ViewConfigurationType,
 }
-impl SessionBeginInfo {
-    pub const TYPE: StructureType = StructureType::SESSION_BEGIN_INFO;
+impl XrType for SessionBeginInfo {
+    const TYPE: StructureType = StructureType::SESSION_BEGIN_INFO;
 }
+unsafe impl XrInType for SessionBeginInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainCreateInfo)"]
@@ -2962,9 +2979,10 @@ pub struct SwapchainCreateInfo {
     pub array_size: u32,
     pub mip_count: u32,
 }
-impl SwapchainCreateInfo {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_CREATE_INFO;
+impl XrType for SwapchainCreateInfo {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_CREATE_INFO;
 }
+unsafe impl XrInType for SwapchainCreateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageBaseHeader](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageBaseHeader)"]
@@ -2980,21 +2998,10 @@ pub struct SwapchainImageOpenGLKHR {
     pub next: *mut c_void,
     pub image: u32,
 }
-impl SwapchainImageOpenGLKHR {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainImageOpenGLKHR {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_KHR;
 }
+unsafe impl XrOutType for SwapchainImageOpenGLKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageOpenGLESKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageOpenGLESKHR) - defined by [XR_KHR_opengl_es_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_es_enable)"]
@@ -3003,21 +3010,10 @@ pub struct SwapchainImageOpenGLESKHR {
     pub next: *mut c_void,
     pub image: u32,
 }
-impl SwapchainImageOpenGLESKHR {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainImageOpenGLESKHR {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
 }
+unsafe impl XrOutType for SwapchainImageOpenGLESKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageVulkanKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageVulkanKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
@@ -3026,21 +3022,10 @@ pub struct SwapchainImageVulkanKHR {
     pub next: *mut c_void,
     pub image: VkImage,
 }
-impl SwapchainImageVulkanKHR {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_VULKAN_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainImageVulkanKHR {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_VULKAN_KHR;
 }
+unsafe impl XrOutType for SwapchainImageVulkanKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
@@ -3051,21 +3036,11 @@ pub struct SwapchainImageD3D11KHR {
     pub texture: *mut ID3D11Texture2D,
 }
 #[cfg(windows)]
-impl SwapchainImageD3D11KHR {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D11_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainImageD3D11KHR {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D11_KHR;
 }
+#[cfg(windows)]
+unsafe impl XrOutType for SwapchainImageD3D11KHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageD3D12KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageD3D12KHR) - defined by [XR_KHR_D3D12_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable)"]
@@ -3076,21 +3051,11 @@ pub struct SwapchainImageD3D12KHR {
     pub texture: *mut ID3D12Resource,
 }
 #[cfg(windows)]
-impl SwapchainImageD3D12KHR {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D12_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainImageD3D12KHR {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D12_KHR;
 }
+#[cfg(windows)]
+unsafe impl XrOutType for SwapchainImageD3D12KHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageAcquireInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageAcquireInfo)"]
@@ -3098,9 +3063,10 @@ pub struct SwapchainImageAcquireInfo {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-impl SwapchainImageAcquireInfo {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_ACQUIRE_INFO;
+impl XrType for SwapchainImageAcquireInfo {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_ACQUIRE_INFO;
 }
+unsafe impl XrInType for SwapchainImageAcquireInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageWaitInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageWaitInfo)"]
@@ -3109,9 +3075,10 @@ pub struct SwapchainImageWaitInfo {
     pub next: *const c_void,
     pub timeout: Duration,
 }
-impl SwapchainImageWaitInfo {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_WAIT_INFO;
+impl XrType for SwapchainImageWaitInfo {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_WAIT_INFO;
 }
+unsafe impl XrInType for SwapchainImageWaitInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageReleaseInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageReleaseInfo)"]
@@ -3119,9 +3086,10 @@ pub struct SwapchainImageReleaseInfo {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-impl SwapchainImageReleaseInfo {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_RELEASE_INFO;
+impl XrType for SwapchainImageReleaseInfo {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_RELEASE_INFO;
 }
+unsafe impl XrInType for SwapchainImageReleaseInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrReferenceSpaceCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrReferenceSpaceCreateInfo)"]
@@ -3131,9 +3099,10 @@ pub struct ReferenceSpaceCreateInfo {
     pub reference_space_type: ReferenceSpaceType,
     pub pose_in_reference_space: Posef,
 }
-impl ReferenceSpaceCreateInfo {
-    pub const TYPE: StructureType = StructureType::REFERENCE_SPACE_CREATE_INFO;
+impl XrType for ReferenceSpaceCreateInfo {
+    const TYPE: StructureType = StructureType::REFERENCE_SPACE_CREATE_INFO;
 }
+unsafe impl XrInType for ReferenceSpaceCreateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionSpaceCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSpaceCreateInfo)"]
@@ -3144,9 +3113,10 @@ pub struct ActionSpaceCreateInfo {
     pub subaction_path: Path,
     pub pose_in_action_space: Posef,
 }
-impl ActionSpaceCreateInfo {
-    pub const TYPE: StructureType = StructureType::ACTION_SPACE_CREATE_INFO;
+impl XrType for ActionSpaceCreateInfo {
+    const TYPE: StructureType = StructureType::ACTION_SPACE_CREATE_INFO;
 }
+unsafe impl XrInType for ActionSpaceCreateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpaceLocation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceLocation)"]
@@ -3156,21 +3126,10 @@ pub struct SpaceLocation {
     pub location_flags: SpaceLocationFlags,
     pub pose: Posef,
 }
-impl SpaceLocation {
-    pub const TYPE: StructureType = StructureType::SPACE_LOCATION;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SpaceLocation {
+    const TYPE: StructureType = StructureType::SPACE_LOCATION;
 }
+unsafe impl XrOutType for SpaceLocation {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpaceVelocity](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceVelocity)"]
@@ -3181,21 +3140,10 @@ pub struct SpaceVelocity {
     pub linear_velocity: Vector3f,
     pub angular_velocity: Vector3f,
 }
-impl SpaceVelocity {
-    pub const TYPE: StructureType = StructureType::SPACE_VELOCITY;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SpaceVelocity {
+    const TYPE: StructureType = StructureType::SPACE_VELOCITY;
 }
+unsafe impl XrOutType for SpaceVelocity {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrFovf](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFovf)"]
@@ -3214,21 +3162,10 @@ pub struct View {
     pub pose: Posef,
     pub fov: Fovf,
 }
-impl View {
-    pub const TYPE: StructureType = StructureType::VIEW;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for View {
+    const TYPE: StructureType = StructureType::VIEW;
 }
+unsafe impl XrOutType for View {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViewLocateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewLocateInfo)"]
@@ -3239,9 +3176,10 @@ pub struct ViewLocateInfo {
     pub display_time: Time,
     pub space: Space,
 }
-impl ViewLocateInfo {
-    pub const TYPE: StructureType = StructureType::VIEW_LOCATE_INFO;
+impl XrType for ViewLocateInfo {
+    const TYPE: StructureType = StructureType::VIEW_LOCATE_INFO;
 }
+unsafe impl XrInType for ViewLocateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViewState](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewState)"]
@@ -3250,21 +3188,10 @@ pub struct ViewState {
     pub next: *mut c_void,
     pub view_state_flags: ViewStateFlags,
 }
-impl ViewState {
-    pub const TYPE: StructureType = StructureType::VIEW_STATE;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ViewState {
+    const TYPE: StructureType = StructureType::VIEW_STATE;
 }
+unsafe impl XrOutType for ViewState {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViewConfigurationView](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationView)"]
@@ -3278,21 +3205,10 @@ pub struct ViewConfigurationView {
     pub recommended_swapchain_sample_count: u32,
     pub max_swapchain_sample_count: u32,
 }
-impl ViewConfigurationView {
-    pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ViewConfigurationView {
+    const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW;
 }
+unsafe impl XrOutType for ViewConfigurationView {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainSubImage](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainSubImage)"]
@@ -3320,9 +3236,10 @@ pub struct CompositionLayerProjectionView {
     pub fov: Fovf,
     pub sub_image: SwapchainSubImage,
 }
-impl CompositionLayerProjectionView {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PROJECTION_VIEW;
+impl XrType for CompositionLayerProjectionView {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PROJECTION_VIEW;
 }
+unsafe impl XrInType for CompositionLayerProjectionView {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerProjection](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerProjection)"]
@@ -3334,9 +3251,10 @@ pub struct CompositionLayerProjection {
     pub view_count: u32,
     pub views: *const CompositionLayerProjectionView,
 }
-impl CompositionLayerProjection {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PROJECTION;
+impl XrType for CompositionLayerProjection {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PROJECTION;
 }
+unsafe impl XrInType for CompositionLayerProjection {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerQuad](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerQuad)"]
@@ -3350,9 +3268,10 @@ pub struct CompositionLayerQuad {
     pub pose: Posef,
     pub size: Extent2Df,
 }
-impl CompositionLayerQuad {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_QUAD;
+impl XrType for CompositionLayerQuad {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_QUAD;
 }
+unsafe impl XrInType for CompositionLayerQuad {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerCylinderKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerCylinderKHR) - defined by [XR_KHR_composition_layer_cylinder](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_cylinder)"]
@@ -3368,9 +3287,10 @@ pub struct CompositionLayerCylinderKHR {
     pub central_angle: f32,
     pub aspect_ratio: f32,
 }
-impl CompositionLayerCylinderKHR {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_CYLINDER_KHR;
+impl XrType for CompositionLayerCylinderKHR {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_CYLINDER_KHR;
 }
+unsafe impl XrInType for CompositionLayerCylinderKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerCubeKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerCubeKHR) - defined by [XR_KHR_composition_layer_cube](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_cube)"]
@@ -3384,9 +3304,10 @@ pub struct CompositionLayerCubeKHR {
     pub image_array_index: u32,
     pub orientation: Quaternionf,
 }
-impl CompositionLayerCubeKHR {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_CUBE_KHR;
+impl XrType for CompositionLayerCubeKHR {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_CUBE_KHR;
 }
+unsafe impl XrInType for CompositionLayerCubeKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerEquirectKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerEquirectKHR) - defined by [XR_KHR_composition_layer_equirect](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_equirect)"]
@@ -3402,9 +3323,10 @@ pub struct CompositionLayerEquirectKHR {
     pub scale: Vector2f,
     pub bias: Vector2f,
 }
-impl CompositionLayerEquirectKHR {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_EQUIRECT_KHR;
+impl XrType for CompositionLayerEquirectKHR {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_EQUIRECT_KHR;
 }
+unsafe impl XrInType for CompositionLayerEquirectKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerDepthInfoKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerDepthInfoKHR) - defined by [XR_KHR_composition_layer_depth](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_depth)"]
@@ -3417,9 +3339,10 @@ pub struct CompositionLayerDepthInfoKHR {
     pub near_z: f32,
     pub far_z: f32,
 }
-impl CompositionLayerDepthInfoKHR {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_DEPTH_INFO_KHR;
+impl XrType for CompositionLayerDepthInfoKHR {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_DEPTH_INFO_KHR;
 }
+unsafe impl XrInType for CompositionLayerDepthInfoKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFrameBeginInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameBeginInfo)"]
@@ -3427,9 +3350,10 @@ pub struct FrameBeginInfo {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-impl FrameBeginInfo {
-    pub const TYPE: StructureType = StructureType::FRAME_BEGIN_INFO;
+impl XrType for FrameBeginInfo {
+    const TYPE: StructureType = StructureType::FRAME_BEGIN_INFO;
 }
+unsafe impl XrInType for FrameBeginInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFrameEndInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameEndInfo)"]
@@ -3441,9 +3365,10 @@ pub struct FrameEndInfo {
     pub layer_count: u32,
     pub layers: *const *const CompositionLayerBaseHeader,
 }
-impl FrameEndInfo {
-    pub const TYPE: StructureType = StructureType::FRAME_END_INFO;
+impl XrType for FrameEndInfo {
+    const TYPE: StructureType = StructureType::FRAME_END_INFO;
 }
+unsafe impl XrInType for FrameEndInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFrameWaitInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameWaitInfo)"]
@@ -3451,9 +3376,10 @@ pub struct FrameWaitInfo {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-impl FrameWaitInfo {
-    pub const TYPE: StructureType = StructureType::FRAME_WAIT_INFO;
+impl XrType for FrameWaitInfo {
+    const TYPE: StructureType = StructureType::FRAME_WAIT_INFO;
 }
+unsafe impl XrInType for FrameWaitInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFrameState](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFrameState)"]
@@ -3464,21 +3390,10 @@ pub struct FrameState {
     pub predicted_display_period: Duration,
     pub should_render: Bool32,
 }
-impl FrameState {
-    pub const TYPE: StructureType = StructureType::FRAME_STATE;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for FrameState {
+    const TYPE: StructureType = StructureType::FRAME_STATE;
 }
+unsafe impl XrOutType for FrameState {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHapticBaseHeader](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHapticBaseHeader)"]
@@ -3496,9 +3411,10 @@ pub struct HapticVibration {
     pub frequency: f32,
     pub amplitude: f32,
 }
-impl HapticVibration {
-    pub const TYPE: StructureType = StructureType::HAPTIC_VIBRATION;
+impl XrType for HapticVibration {
+    const TYPE: StructureType = StructureType::HAPTIC_VIBRATION;
 }
+unsafe impl XrInType for HapticVibration {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataBaseHeader](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataBaseHeader)"]
@@ -3514,9 +3430,10 @@ pub struct EventDataBuffer {
     pub next: *const c_void,
     pub varying: [u8; 4000usize],
 }
-impl EventDataBuffer {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_BUFFER;
+impl XrType for EventDataBuffer {
+    const TYPE: StructureType = StructureType::EVENT_DATA_BUFFER;
 }
+unsafe impl XrInType for EventDataBuffer {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataEventsLost](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataEventsLost)"]
@@ -3525,9 +3442,10 @@ pub struct EventDataEventsLost {
     pub next: *const c_void,
     pub lost_event_count: u32,
 }
-impl EventDataEventsLost {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_EVENTS_LOST;
+impl XrType for EventDataEventsLost {
+    const TYPE: StructureType = StructureType::EVENT_DATA_EVENTS_LOST;
 }
+unsafe impl XrInType for EventDataEventsLost {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataInstanceLossPending](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataInstanceLossPending)"]
@@ -3536,9 +3454,10 @@ pub struct EventDataInstanceLossPending {
     pub next: *const c_void,
     pub loss_time: Time,
 }
-impl EventDataInstanceLossPending {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING;
+impl XrType for EventDataInstanceLossPending {
+    const TYPE: StructureType = StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING;
 }
+unsafe impl XrInType for EventDataInstanceLossPending {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataSessionStateChanged](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataSessionStateChanged)"]
@@ -3549,9 +3468,10 @@ pub struct EventDataSessionStateChanged {
     pub state: SessionState,
     pub time: Time,
 }
-impl EventDataSessionStateChanged {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_SESSION_STATE_CHANGED;
+impl XrType for EventDataSessionStateChanged {
+    const TYPE: StructureType = StructureType::EVENT_DATA_SESSION_STATE_CHANGED;
 }
+unsafe impl XrInType for EventDataSessionStateChanged {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataReferenceSpaceChangePending](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataReferenceSpaceChangePending)"]
@@ -3564,9 +3484,10 @@ pub struct EventDataReferenceSpaceChangePending {
     pub pose_valid: Bool32,
     pub pose_in_previous_space: Posef,
 }
-impl EventDataReferenceSpaceChangePending {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING;
+impl XrType for EventDataReferenceSpaceChangePending {
+    const TYPE: StructureType = StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING;
 }
+unsafe impl XrInType for EventDataReferenceSpaceChangePending {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataPerfSettingsEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataPerfSettingsEXT) - defined by [XR_EXT_performance_settings](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_performance_settings)"]
@@ -3578,9 +3499,10 @@ pub struct EventDataPerfSettingsEXT {
     pub from_level: PerfSettingsNotificationLevelEXT,
     pub to_level: PerfSettingsNotificationLevelEXT,
 }
-impl EventDataPerfSettingsEXT {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_PERF_SETTINGS_EXT;
+impl XrType for EventDataPerfSettingsEXT {
+    const TYPE: StructureType = StructureType::EVENT_DATA_PERF_SETTINGS_EXT;
 }
+unsafe impl XrInType for EventDataPerfSettingsEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataVisibilityMaskChangedKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataVisibilityMaskChangedKHR) - defined by [XR_KHR_visibility_mask](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_visibility_mask)"]
@@ -3591,9 +3513,10 @@ pub struct EventDataVisibilityMaskChangedKHR {
     pub view_configuration_type: ViewConfigurationType,
     pub view_index: u32,
 }
-impl EventDataVisibilityMaskChangedKHR {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR;
+impl XrType for EventDataVisibilityMaskChangedKHR {
+    const TYPE: StructureType = StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR;
 }
+unsafe impl XrInType for EventDataVisibilityMaskChangedKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViewConfigurationProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationProperties)"]
@@ -3603,21 +3526,10 @@ pub struct ViewConfigurationProperties {
     pub view_configuration_type: ViewConfigurationType,
     pub fov_mutable: Bool32,
 }
-impl ViewConfigurationProperties {
-    pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_PROPERTIES;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ViewConfigurationProperties {
+    const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_PROPERTIES;
 }
+unsafe impl XrOutType for ViewConfigurationProperties {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionStateBoolean](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateBoolean)"]
@@ -3629,21 +3541,10 @@ pub struct ActionStateBoolean {
     pub last_change_time: Time,
     pub is_active: Bool32,
 }
-impl ActionStateBoolean {
-    pub const TYPE: StructureType = StructureType::ACTION_STATE_BOOLEAN;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ActionStateBoolean {
+    const TYPE: StructureType = StructureType::ACTION_STATE_BOOLEAN;
 }
+unsafe impl XrOutType for ActionStateBoolean {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionStateFloat](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateFloat)"]
@@ -3655,21 +3556,10 @@ pub struct ActionStateFloat {
     pub last_change_time: Time,
     pub is_active: Bool32,
 }
-impl ActionStateFloat {
-    pub const TYPE: StructureType = StructureType::ACTION_STATE_FLOAT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ActionStateFloat {
+    const TYPE: StructureType = StructureType::ACTION_STATE_FLOAT;
 }
+unsafe impl XrOutType for ActionStateFloat {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionStateVector2f](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateVector2f)"]
@@ -3681,21 +3571,10 @@ pub struct ActionStateVector2f {
     pub last_change_time: Time,
     pub is_active: Bool32,
 }
-impl ActionStateVector2f {
-    pub const TYPE: StructureType = StructureType::ACTION_STATE_VECTOR2F;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ActionStateVector2f {
+    const TYPE: StructureType = StructureType::ACTION_STATE_VECTOR2F;
 }
+unsafe impl XrOutType for ActionStateVector2f {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionStatePose](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStatePose)"]
@@ -3704,21 +3583,10 @@ pub struct ActionStatePose {
     pub next: *mut c_void,
     pub is_active: Bool32,
 }
-impl ActionStatePose {
-    pub const TYPE: StructureType = StructureType::ACTION_STATE_POSE;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ActionStatePose {
+    const TYPE: StructureType = StructureType::ACTION_STATE_POSE;
 }
+unsafe impl XrOutType for ActionStatePose {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionStateGetInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionStateGetInfo)"]
@@ -3728,9 +3596,10 @@ pub struct ActionStateGetInfo {
     pub action: Action,
     pub subaction_path: Path,
 }
-impl ActionStateGetInfo {
-    pub const TYPE: StructureType = StructureType::ACTION_STATE_GET_INFO;
+impl XrType for ActionStateGetInfo {
+    const TYPE: StructureType = StructureType::ACTION_STATE_GET_INFO;
 }
+unsafe impl XrInType for ActionStateGetInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHapticActionInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHapticActionInfo)"]
@@ -3740,9 +3609,10 @@ pub struct HapticActionInfo {
     pub action: Action,
     pub subaction_path: Path,
 }
-impl HapticActionInfo {
-    pub const TYPE: StructureType = StructureType::HAPTIC_ACTION_INFO;
+impl XrType for HapticActionInfo {
+    const TYPE: StructureType = StructureType::HAPTIC_ACTION_INFO;
 }
+unsafe impl XrInType for HapticActionInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionSetCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSetCreateInfo)"]
@@ -3753,9 +3623,10 @@ pub struct ActionSetCreateInfo {
     pub localized_action_set_name: [c_char; MAX_LOCALIZED_ACTION_SET_NAME_SIZE],
     pub priority: u32,
 }
-impl ActionSetCreateInfo {
-    pub const TYPE: StructureType = StructureType::ACTION_SET_CREATE_INFO;
+impl XrType for ActionSetCreateInfo {
+    const TYPE: StructureType = StructureType::ACTION_SET_CREATE_INFO;
 }
+unsafe impl XrInType for ActionSetCreateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionSuggestedBinding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSuggestedBinding)"]
@@ -3773,9 +3644,10 @@ pub struct InteractionProfileSuggestedBinding {
     pub count_suggested_bindings: u32,
     pub suggested_bindings: *const ActionSuggestedBinding,
 }
-impl InteractionProfileSuggestedBinding {
-    pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_SUGGESTED_BINDING;
+impl XrType for InteractionProfileSuggestedBinding {
+    const TYPE: StructureType = StructureType::INTERACTION_PROFILE_SUGGESTED_BINDING;
 }
+unsafe impl XrInType for InteractionProfileSuggestedBinding {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActiveActionSet](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActiveActionSet)"]
@@ -3792,9 +3664,10 @@ pub struct SessionActionSetsAttachInfo {
     pub count_action_sets: u32,
     pub action_sets: *const ActionSet,
 }
-impl SessionActionSetsAttachInfo {
-    pub const TYPE: StructureType = StructureType::SESSION_ACTION_SETS_ATTACH_INFO;
+impl XrType for SessionActionSetsAttachInfo {
+    const TYPE: StructureType = StructureType::SESSION_ACTION_SETS_ATTACH_INFO;
 }
+unsafe impl XrInType for SessionActionSetsAttachInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionsSyncInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionsSyncInfo)"]
@@ -3804,9 +3677,10 @@ pub struct ActionsSyncInfo {
     pub count_active_action_sets: u32,
     pub active_action_sets: *const ActiveActionSet,
 }
-impl ActionsSyncInfo {
-    pub const TYPE: StructureType = StructureType::ACTIONS_SYNC_INFO;
+impl XrType for ActionsSyncInfo {
+    const TYPE: StructureType = StructureType::ACTIONS_SYNC_INFO;
 }
+unsafe impl XrInType for ActionsSyncInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrBoundSourcesForActionEnumerateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBoundSourcesForActionEnumerateInfo)"]
@@ -3815,9 +3689,10 @@ pub struct BoundSourcesForActionEnumerateInfo {
     pub next: *const c_void,
     pub action: Action,
 }
-impl BoundSourcesForActionEnumerateInfo {
-    pub const TYPE: StructureType = StructureType::BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO;
+impl XrType for BoundSourcesForActionEnumerateInfo {
+    const TYPE: StructureType = StructureType::BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO;
 }
+unsafe impl XrInType for BoundSourcesForActionEnumerateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrInputSourceLocalizedNameGetInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInputSourceLocalizedNameGetInfo)"]
@@ -3827,9 +3702,10 @@ pub struct InputSourceLocalizedNameGetInfo {
     pub source_path: Path,
     pub which_components: InputSourceLocalizedNameFlags,
 }
-impl InputSourceLocalizedNameGetInfo {
-    pub const TYPE: StructureType = StructureType::INPUT_SOURCE_LOCALIZED_NAME_GET_INFO;
+impl XrType for InputSourceLocalizedNameGetInfo {
+    const TYPE: StructureType = StructureType::INPUT_SOURCE_LOCALIZED_NAME_GET_INFO;
 }
+unsafe impl XrInType for InputSourceLocalizedNameGetInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataInteractionProfileChanged](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataInteractionProfileChanged)"]
@@ -3838,9 +3714,10 @@ pub struct EventDataInteractionProfileChanged {
     pub next: *const c_void,
     pub session: Session,
 }
-impl EventDataInteractionProfileChanged {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED;
+impl XrType for EventDataInteractionProfileChanged {
+    const TYPE: StructureType = StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED;
 }
+unsafe impl XrInType for EventDataInteractionProfileChanged {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrInteractionProfileState](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInteractionProfileState)"]
@@ -3849,21 +3726,10 @@ pub struct InteractionProfileState {
     pub next: *mut c_void,
     pub interaction_profile: Path,
 }
-impl InteractionProfileState {
-    pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_STATE;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for InteractionProfileState {
+    const TYPE: StructureType = StructureType::INTERACTION_PROFILE_STATE;
 }
+unsafe impl XrOutType for InteractionProfileState {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrActionCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionCreateInfo)"]
@@ -3876,9 +3742,10 @@ pub struct ActionCreateInfo {
     pub subaction_paths: *const Path,
     pub localized_action_name: [c_char; MAX_LOCALIZED_ACTION_NAME_SIZE],
 }
-impl ActionCreateInfo {
-    pub const TYPE: StructureType = StructureType::ACTION_CREATE_INFO;
+impl XrType for ActionCreateInfo {
+    const TYPE: StructureType = StructureType::ACTION_CREATE_INFO;
 }
+unsafe impl XrInType for ActionCreateInfo {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrInstanceCreateInfoAndroidKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstanceCreateInfoAndroidKHR) - defined by [XR_KHR_android_create_instance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_android_create_instance)"]
@@ -3890,9 +3757,11 @@ pub struct InstanceCreateInfoAndroidKHR {
     pub application_activity: *mut c_void,
 }
 #[cfg(target_os = "android")]
-impl InstanceCreateInfoAndroidKHR {
-    pub const TYPE: StructureType = StructureType::INSTANCE_CREATE_INFO_ANDROID_KHR;
+impl XrType for InstanceCreateInfoAndroidKHR {
+    const TYPE: StructureType = StructureType::INSTANCE_CREATE_INFO_ANDROID_KHR;
 }
+#[cfg(target_os = "android")]
+unsafe impl XrInType for InstanceCreateInfoAndroidKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrVulkanSwapchainFormatListCreateInfoKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVulkanSwapchainFormatListCreateInfoKHR) - defined by [XR_KHR_vulkan_swapchain_format_list](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_swapchain_format_list)"]
@@ -3902,9 +3771,10 @@ pub struct VulkanSwapchainFormatListCreateInfoKHR {
     pub view_format_count: u32,
     pub view_formats: *const VkFormat,
 }
-impl VulkanSwapchainFormatListCreateInfoKHR {
-    pub const TYPE: StructureType = StructureType::VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR;
+impl XrType for VulkanSwapchainFormatListCreateInfoKHR {
+    const TYPE: StructureType = StructureType::VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR;
 }
+unsafe impl XrInType for VulkanSwapchainFormatListCreateInfoKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrDebugUtilsObjectNameInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsObjectNameInfoEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
@@ -3915,9 +3785,10 @@ pub struct DebugUtilsObjectNameInfoEXT {
     pub object_handle: u64,
     pub object_name: *const c_char,
 }
-impl DebugUtilsObjectNameInfoEXT {
-    pub const TYPE: StructureType = StructureType::DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+impl XrType for DebugUtilsObjectNameInfoEXT {
+    const TYPE: StructureType = StructureType::DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
 }
+unsafe impl XrInType for DebugUtilsObjectNameInfoEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrDebugUtilsLabelEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsLabelEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
@@ -3926,9 +3797,10 @@ pub struct DebugUtilsLabelEXT {
     pub next: *const c_void,
     pub label_name: *const c_char,
 }
-impl DebugUtilsLabelEXT {
-    pub const TYPE: StructureType = StructureType::DEBUG_UTILS_LABEL_EXT;
+impl XrType for DebugUtilsLabelEXT {
+    const TYPE: StructureType = StructureType::DEBUG_UTILS_LABEL_EXT;
 }
+unsafe impl XrInType for DebugUtilsLabelEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrDebugUtilsMessengerCallbackDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessengerCallbackDataEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
@@ -3943,9 +3815,10 @@ pub struct DebugUtilsMessengerCallbackDataEXT {
     pub session_label_count: u32,
     pub session_labels: *mut DebugUtilsLabelEXT,
 }
-impl DebugUtilsMessengerCallbackDataEXT {
-    pub const TYPE: StructureType = StructureType::DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT;
+impl XrType for DebugUtilsMessengerCallbackDataEXT {
+    const TYPE: StructureType = StructureType::DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT;
 }
+unsafe impl XrInType for DebugUtilsMessengerCallbackDataEXT {}
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrDebugUtilsMessengerCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessengerCreateInfoEXT) - defined by [XR_EXT_debug_utils](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_debug_utils)"]
@@ -3957,9 +3830,10 @@ pub struct DebugUtilsMessengerCreateInfoEXT {
     pub user_callback: Option<pfn::DebugUtilsMessengerCallbackEXT>,
     pub user_data: *mut c_void,
 }
-impl DebugUtilsMessengerCreateInfoEXT {
-    pub const TYPE: StructureType = StructureType::DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+impl XrType for DebugUtilsMessengerCreateInfoEXT {
+    const TYPE: StructureType = StructureType::DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 }
+unsafe impl XrInType for DebugUtilsMessengerCreateInfoEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrVisibilityMaskKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVisibilityMaskKHR) - defined by [XR_KHR_visibility_mask](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_visibility_mask)"]
@@ -3973,21 +3847,10 @@ pub struct VisibilityMaskKHR {
     pub index_count_output: u32,
     pub indices: *mut u32,
 }
-impl VisibilityMaskKHR {
-    pub const TYPE: StructureType = StructureType::VISIBILITY_MASK_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for VisibilityMaskKHR {
+    const TYPE: StructureType = StructureType::VISIBILITY_MASK_KHR;
 }
+unsafe impl XrOutType for VisibilityMaskKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsRequirementsOpenGLKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsOpenGLKHR) - defined by [XR_KHR_opengl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable)"]
@@ -3997,21 +3860,10 @@ pub struct GraphicsRequirementsOpenGLKHR {
     pub min_api_version_supported: Version,
     pub max_api_version_supported: Version,
 }
-impl GraphicsRequirementsOpenGLKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for GraphicsRequirementsOpenGLKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_KHR;
 }
+unsafe impl XrOutType for GraphicsRequirementsOpenGLKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsRequirementsOpenGLESKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsOpenGLESKHR) - defined by [XR_KHR_opengl_es_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_es_enable)"]
@@ -4021,21 +3873,10 @@ pub struct GraphicsRequirementsOpenGLESKHR {
     pub min_api_version_supported: Version,
     pub max_api_version_supported: Version,
 }
-impl GraphicsRequirementsOpenGLESKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for GraphicsRequirementsOpenGLESKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR;
 }
+unsafe impl XrOutType for GraphicsRequirementsOpenGLESKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGraphicsRequirementsVulkanKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsVulkanKHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
@@ -4045,21 +3886,10 @@ pub struct GraphicsRequirementsVulkanKHR {
     pub min_api_version_supported: Version,
     pub max_api_version_supported: Version,
 }
-impl GraphicsRequirementsVulkanKHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for GraphicsRequirementsVulkanKHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
 }
+unsafe impl XrOutType for GraphicsRequirementsVulkanKHR {}
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrGraphicsRequirementsD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
@@ -4071,21 +3901,11 @@ pub struct GraphicsRequirementsD3D11KHR {
     pub min_feature_level: D3D_FEATURE_LEVEL,
 }
 #[cfg(windows)]
-impl GraphicsRequirementsD3D11KHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D11_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for GraphicsRequirementsD3D11KHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D11_KHR;
 }
+#[cfg(windows)]
+unsafe impl XrOutType for GraphicsRequirementsD3D11KHR {}
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrGraphicsRequirementsD3D12KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsD3D12KHR) - defined by [XR_KHR_D3D12_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable)"]
@@ -4097,21 +3917,11 @@ pub struct GraphicsRequirementsD3D12KHR {
     pub min_feature_level: D3D_FEATURE_LEVEL,
 }
 #[cfg(windows)]
-impl GraphicsRequirementsD3D12KHR {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D12_KHR;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for GraphicsRequirementsD3D12KHR {
+    const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D12_KHR;
 }
+#[cfg(windows)]
+unsafe impl XrOutType for GraphicsRequirementsD3D12KHR {}
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrVulkanInstanceCreateInfoKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVulkanInstanceCreateInfoKHR) - defined by [XR_KHR_vulkan_enable2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable2)"]
@@ -4124,9 +3934,10 @@ pub struct VulkanInstanceCreateInfoKHR {
     pub vulkan_create_info: *const VkInstanceCreateInfo,
     pub vulkan_allocator: *const VkAllocationCallbacks,
 }
-impl VulkanInstanceCreateInfoKHR {
-    pub const TYPE: StructureType = StructureType::VULKAN_INSTANCE_CREATE_INFO_KHR;
+impl XrType for VulkanInstanceCreateInfoKHR {
+    const TYPE: StructureType = StructureType::VULKAN_INSTANCE_CREATE_INFO_KHR;
 }
+unsafe impl XrInType for VulkanInstanceCreateInfoKHR {}
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrVulkanDeviceCreateInfoKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVulkanDeviceCreateInfoKHR) - defined by [XR_KHR_vulkan_enable2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable2)"]
@@ -4140,9 +3951,10 @@ pub struct VulkanDeviceCreateInfoKHR {
     pub vulkan_create_info: *const VkDeviceCreateInfo,
     pub vulkan_allocator: *const VkAllocationCallbacks,
 }
-impl VulkanDeviceCreateInfoKHR {
-    pub const TYPE: StructureType = StructureType::VULKAN_DEVICE_CREATE_INFO_KHR;
+impl XrType for VulkanDeviceCreateInfoKHR {
+    const TYPE: StructureType = StructureType::VULKAN_DEVICE_CREATE_INFO_KHR;
 }
+unsafe impl XrInType for VulkanDeviceCreateInfoKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrVulkanGraphicsDeviceGetInfoKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVulkanGraphicsDeviceGetInfoKHR) - defined by [XR_KHR_vulkan_enable2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable2)"]
@@ -4152,9 +3964,10 @@ pub struct VulkanGraphicsDeviceGetInfoKHR {
     pub system_id: SystemId,
     pub vulkan_instance: VkInstance,
 }
-impl VulkanGraphicsDeviceGetInfoKHR {
-    pub const TYPE: StructureType = StructureType::VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR;
+impl XrType for VulkanGraphicsDeviceGetInfoKHR {
+    const TYPE: StructureType = StructureType::VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR;
 }
+unsafe impl XrInType for VulkanGraphicsDeviceGetInfoKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSessionCreateInfoOverlayEXTX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionCreateInfoOverlayEXTX) - defined by [XR_EXTX_overlay](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXTX_overlay)"]
@@ -4164,9 +3977,10 @@ pub struct SessionCreateInfoOverlayEXTX {
     pub create_flags: OverlaySessionCreateFlagsEXTX,
     pub session_layers_placement: u32,
 }
-impl SessionCreateInfoOverlayEXTX {
-    pub const TYPE: StructureType = StructureType::SESSION_CREATE_INFO_OVERLAY_EXTX;
+impl XrType for SessionCreateInfoOverlayEXTX {
+    const TYPE: StructureType = StructureType::SESSION_CREATE_INFO_OVERLAY_EXTX;
 }
+unsafe impl XrInType for SessionCreateInfoOverlayEXTX {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataMainSessionVisibilityChangedEXTX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataMainSessionVisibilityChangedEXTX) - defined by [XR_EXTX_overlay](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXTX_overlay)"]
@@ -4176,9 +3990,10 @@ pub struct EventDataMainSessionVisibilityChangedEXTX {
     pub visible: Bool32,
     pub flags: OverlayMainSessionFlagsEXTX,
 }
-impl EventDataMainSessionVisibilityChangedEXTX {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX;
+impl XrType for EventDataMainSessionVisibilityChangedEXTX {
+    const TYPE: StructureType = StructureType::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX;
 }
+unsafe impl XrInType for EventDataMainSessionVisibilityChangedEXTX {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataDisplayRefreshRateChangedFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataDisplayRefreshRateChangedFB) - defined by [XR_FB_display_refresh_rate](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_display_refresh_rate)"]
@@ -4188,9 +4003,10 @@ pub struct EventDataDisplayRefreshRateChangedFB {
     pub from_display_refresh_rate: f32,
     pub to_display_refresh_rate: f32,
 }
-impl EventDataDisplayRefreshRateChangedFB {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB;
+impl XrType for EventDataDisplayRefreshRateChangedFB {
+    const TYPE: StructureType = StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB;
 }
+unsafe impl XrInType for EventDataDisplayRefreshRateChangedFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViewConfigurationDepthRangeEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationDepthRangeEXT) - defined by [XR_EXT_view_configuration_depth_range](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_view_configuration_depth_range)"]
@@ -4202,21 +4018,10 @@ pub struct ViewConfigurationDepthRangeEXT {
     pub recommended_far_z: f32,
     pub max_far_z: f32,
 }
-impl ViewConfigurationDepthRangeEXT {
-    pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_DEPTH_RANGE_EXT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ViewConfigurationDepthRangeEXT {
+    const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_DEPTH_RANGE_EXT;
 }
+unsafe impl XrOutType for ViewConfigurationDepthRangeEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViewConfigurationViewFovEPIC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewConfigurationViewFovEPIC) - defined by [XR_EPIC_view_configuration_fov](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EPIC_view_configuration_fov)"]
@@ -4226,9 +4031,10 @@ pub struct ViewConfigurationViewFovEPIC {
     pub recommended_fov: Fovf,
     pub max_mutable_fov: Fovf,
 }
-impl ViewConfigurationViewFovEPIC {
-    pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW_FOV_EPIC;
+impl XrType for ViewConfigurationViewFovEPIC {
+    const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW_FOV_EPIC;
 }
+unsafe impl XrInType for ViewConfigurationViewFovEPIC {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrInteractionProfileAnalogThresholdVALVE](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInteractionProfileAnalogThresholdVALVE) - defined by [XR_VALVE_analog_threshold](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VALVE_analog_threshold)"]
@@ -4242,9 +4048,10 @@ pub struct InteractionProfileAnalogThresholdVALVE {
     pub on_haptic: *const HapticBaseHeader,
     pub off_haptic: *const HapticBaseHeader,
 }
-impl InteractionProfileAnalogThresholdVALVE {
-    pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE;
+impl XrType for InteractionProfileAnalogThresholdVALVE {
+    const TYPE: StructureType = StructureType::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE;
 }
+unsafe impl XrInType for InteractionProfileAnalogThresholdVALVE {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrBindingModificationsKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBindingModificationsKHR) - defined by [XR_KHR_binding_modification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_binding_modification)"]
@@ -4254,9 +4061,10 @@ pub struct BindingModificationsKHR {
     pub binding_modification_count: u32,
     pub binding_modifications: *const *const BindingModificationBaseHeaderKHR,
 }
-impl BindingModificationsKHR {
-    pub const TYPE: StructureType = StructureType::BINDING_MODIFICATIONS_KHR;
+impl XrType for BindingModificationsKHR {
+    const TYPE: StructureType = StructureType::BINDING_MODIFICATIONS_KHR;
 }
+unsafe impl XrInType for BindingModificationsKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrBindingModificationBaseHeaderKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBindingModificationBaseHeaderKHR) - defined by [XR_KHR_binding_modification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_binding_modification)"]
@@ -4272,21 +4080,10 @@ pub struct SystemEyeGazeInteractionPropertiesEXT {
     pub next: *mut c_void,
     pub supports_eye_gaze_interaction: Bool32,
 }
-impl SystemEyeGazeInteractionPropertiesEXT {
-    pub const TYPE: StructureType = StructureType::SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemEyeGazeInteractionPropertiesEXT {
+    const TYPE: StructureType = StructureType::SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT;
 }
+unsafe impl XrOutType for SystemEyeGazeInteractionPropertiesEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEyeGazeSampleTimeEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEyeGazeSampleTimeEXT) - defined by [XR_EXT_eye_gaze_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_eye_gaze_interaction)"]
@@ -4295,21 +4092,10 @@ pub struct EyeGazeSampleTimeEXT {
     pub next: *mut c_void,
     pub time: Time,
 }
-impl EyeGazeSampleTimeEXT {
-    pub const TYPE: StructureType = StructureType::EYE_GAZE_SAMPLE_TIME_EXT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for EyeGazeSampleTimeEXT {
+    const TYPE: StructureType = StructureType::EYE_GAZE_SAMPLE_TIME_EXT;
 }
+unsafe impl XrOutType for EyeGazeSampleTimeEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorCreateInfoMSFT)"]
@@ -4320,9 +4106,10 @@ pub struct SpatialAnchorCreateInfoMSFT {
     pub pose: Posef,
     pub time: Time,
 }
-impl SpatialAnchorCreateInfoMSFT {
-    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_MSFT;
+impl XrType for SpatialAnchorCreateInfoMSFT {
+    const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_MSFT;
 }
+unsafe impl XrInType for SpatialAnchorCreateInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorSpaceCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorSpaceCreateInfoMSFT)"]
@@ -4332,9 +4119,10 @@ pub struct SpatialAnchorSpaceCreateInfoMSFT {
     pub anchor: SpatialAnchorMSFT,
     pub pose_in_anchor_space: Posef,
 }
-impl SpatialAnchorSpaceCreateInfoMSFT {
-    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT;
+impl XrType for SpatialAnchorSpaceCreateInfoMSFT {
+    const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT;
 }
+unsafe impl XrInType for SpatialAnchorSpaceCreateInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerImageLayoutFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerImageLayoutFB) - defined by [XR_FB_composition_layer_image_layout](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_composition_layer_image_layout)"]
@@ -4343,21 +4131,10 @@ pub struct CompositionLayerImageLayoutFB {
     pub next: *mut c_void,
     pub flags: CompositionLayerImageLayoutFlagsFB,
 }
-impl CompositionLayerImageLayoutFB {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_IMAGE_LAYOUT_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for CompositionLayerImageLayoutFB {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_IMAGE_LAYOUT_FB;
 }
+unsafe impl XrOutType for CompositionLayerImageLayoutFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerAlphaBlendFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerAlphaBlendFB) - defined by [XR_FB_composition_layer_alpha_blend](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_composition_layer_alpha_blend)"]
@@ -4369,21 +4146,10 @@ pub struct CompositionLayerAlphaBlendFB {
     pub src_factor_alpha: BlendFactorFB,
     pub dst_factor_alpha: BlendFactorFB,
 }
-impl CompositionLayerAlphaBlendFB {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_ALPHA_BLEND_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for CompositionLayerAlphaBlendFB {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_ALPHA_BLEND_FB;
 }
+unsafe impl XrOutType for CompositionLayerAlphaBlendFB {}
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrGraphicsBindingEGLMNDX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsBindingEGLMNDX) - defined by [XR_MNDX_egl_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MNDX_egl_enable)"]
@@ -4395,9 +4161,10 @@ pub struct GraphicsBindingEGLMNDX {
     pub config: EGLConfig,
     pub context: EGLContext,
 }
-impl GraphicsBindingEGLMNDX {
-    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_EGL_MNDX;
+impl XrType for GraphicsBindingEGLMNDX {
+    const TYPE: StructureType = StructureType::GRAPHICS_BINDING_EGL_MNDX;
 }
+unsafe impl XrInType for GraphicsBindingEGLMNDX {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialGraphNodeSpaceCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialGraphNodeSpaceCreateInfoMSFT) - defined by [XR_MSFT_spatial_graph_bridge](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_graph_bridge)"]
@@ -4408,9 +4175,10 @@ pub struct SpatialGraphNodeSpaceCreateInfoMSFT {
     pub node_id: [u8; 16usize],
     pub pose: Posef,
 }
-impl SpatialGraphNodeSpaceCreateInfoMSFT {
-    pub const TYPE: StructureType = StructureType::SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT;
+impl XrType for SpatialGraphNodeSpaceCreateInfoMSFT {
+    const TYPE: StructureType = StructureType::SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT;
 }
+unsafe impl XrInType for SpatialGraphNodeSpaceCreateInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemHandTrackingPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemHandTrackingPropertiesEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
@@ -4419,21 +4187,10 @@ pub struct SystemHandTrackingPropertiesEXT {
     pub next: *mut c_void,
     pub supports_hand_tracking: Bool32,
 }
-impl SystemHandTrackingPropertiesEXT {
-    pub const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_PROPERTIES_EXT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemHandTrackingPropertiesEXT {
+    const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_PROPERTIES_EXT;
 }
+unsafe impl XrOutType for SystemHandTrackingPropertiesEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandTrackerCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandTrackerCreateInfoEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
@@ -4443,9 +4200,10 @@ pub struct HandTrackerCreateInfoEXT {
     pub hand: HandEXT,
     pub hand_joint_set: HandJointSetEXT,
 }
-impl HandTrackerCreateInfoEXT {
-    pub const TYPE: StructureType = StructureType::HAND_TRACKER_CREATE_INFO_EXT;
+impl XrType for HandTrackerCreateInfoEXT {
+    const TYPE: StructureType = StructureType::HAND_TRACKER_CREATE_INFO_EXT;
 }
+unsafe impl XrInType for HandTrackerCreateInfoEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandJointsLocateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointsLocateInfoEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
@@ -4455,9 +4213,10 @@ pub struct HandJointsLocateInfoEXT {
     pub base_space: Space,
     pub time: Time,
 }
-impl HandJointsLocateInfoEXT {
-    pub const TYPE: StructureType = StructureType::HAND_JOINTS_LOCATE_INFO_EXT;
+impl XrType for HandJointsLocateInfoEXT {
+    const TYPE: StructureType = StructureType::HAND_JOINTS_LOCATE_INFO_EXT;
 }
+unsafe impl XrInType for HandJointsLocateInfoEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrHandJointLocationEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointLocationEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
@@ -4484,21 +4243,10 @@ pub struct HandJointLocationsEXT {
     pub joint_count: u32,
     pub joint_locations: *mut HandJointLocationEXT,
 }
-impl HandJointLocationsEXT {
-    pub const TYPE: StructureType = StructureType::HAND_JOINT_LOCATIONS_EXT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for HandJointLocationsEXT {
+    const TYPE: StructureType = StructureType::HAND_JOINT_LOCATIONS_EXT;
 }
+unsafe impl XrOutType for HandJointLocationsEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandJointVelocitiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointVelocitiesEXT) - defined by [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)"]
@@ -4508,21 +4256,10 @@ pub struct HandJointVelocitiesEXT {
     pub joint_count: u32,
     pub joint_velocities: *mut HandJointVelocityEXT,
 }
-impl HandJointVelocitiesEXT {
-    pub const TYPE: StructureType = StructureType::HAND_JOINT_VELOCITIES_EXT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for HandJointVelocitiesEXT {
+    const TYPE: StructureType = StructureType::HAND_JOINT_VELOCITIES_EXT;
 }
+unsafe impl XrOutType for HandJointVelocitiesEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandJointsMotionRangeInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandJointsMotionRangeInfoEXT) - defined by [XR_EXT_hand_joints_motion_range](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_joints_motion_range)"]
@@ -4531,9 +4268,10 @@ pub struct HandJointsMotionRangeInfoEXT {
     pub next: *const c_void,
     pub hand_joints_motion_range: HandJointsMotionRangeEXT,
 }
-impl HandJointsMotionRangeInfoEXT {
-    pub const TYPE: StructureType = StructureType::HAND_JOINTS_MOTION_RANGE_INFO_EXT;
+impl XrType for HandJointsMotionRangeInfoEXT {
+    const TYPE: StructureType = StructureType::HAND_JOINTS_MOTION_RANGE_INFO_EXT;
 }
+unsafe impl XrInType for HandJointsMotionRangeInfoEXT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandMeshSpaceCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshSpaceCreateInfoMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
@@ -4543,9 +4281,10 @@ pub struct HandMeshSpaceCreateInfoMSFT {
     pub hand_pose_type: HandPoseTypeMSFT,
     pub pose_in_hand_mesh_space: Posef,
 }
-impl HandMeshSpaceCreateInfoMSFT {
-    pub const TYPE: StructureType = StructureType::HAND_MESH_SPACE_CREATE_INFO_MSFT;
+impl XrType for HandMeshSpaceCreateInfoMSFT {
+    const TYPE: StructureType = StructureType::HAND_MESH_SPACE_CREATE_INFO_MSFT;
 }
+unsafe impl XrInType for HandMeshSpaceCreateInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandMeshUpdateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshUpdateInfoMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
@@ -4555,9 +4294,10 @@ pub struct HandMeshUpdateInfoMSFT {
     pub time: Time,
     pub hand_pose_type: HandPoseTypeMSFT,
 }
-impl HandMeshUpdateInfoMSFT {
-    pub const TYPE: StructureType = StructureType::HAND_MESH_UPDATE_INFO_MSFT;
+impl XrType for HandMeshUpdateInfoMSFT {
+    const TYPE: StructureType = StructureType::HAND_MESH_UPDATE_INFO_MSFT;
 }
+unsafe impl XrInType for HandMeshUpdateInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandMeshMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
@@ -4570,21 +4310,10 @@ pub struct HandMeshMSFT {
     pub index_buffer: HandMeshIndexBufferMSFT,
     pub vertex_buffer: HandMeshVertexBufferMSFT,
 }
-impl HandMeshMSFT {
-    pub const TYPE: StructureType = StructureType::HAND_MESH_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for HandMeshMSFT {
+    const TYPE: StructureType = StructureType::HAND_MESH_MSFT;
 }
+unsafe impl XrOutType for HandMeshMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandMeshIndexBufferMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandMeshIndexBufferMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
@@ -4620,21 +4349,10 @@ pub struct SystemHandTrackingMeshPropertiesMSFT {
     pub max_hand_mesh_index_count: u32,
     pub max_hand_mesh_vertex_count: u32,
 }
-impl SystemHandTrackingMeshPropertiesMSFT {
-    pub const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemHandTrackingMeshPropertiesMSFT {
+    const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT;
 }
+unsafe impl XrOutType for SystemHandTrackingMeshPropertiesMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandPoseTypeInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandPoseTypeInfoMSFT) - defined by [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh)"]
@@ -4643,9 +4361,10 @@ pub struct HandPoseTypeInfoMSFT {
     pub next: *const c_void,
     pub hand_pose_type: HandPoseTypeMSFT,
 }
-impl HandPoseTypeInfoMSFT {
-    pub const TYPE: StructureType = StructureType::HAND_POSE_TYPE_INFO_MSFT;
+impl XrType for HandPoseTypeInfoMSFT {
+    const TYPE: StructureType = StructureType::HAND_POSE_TYPE_INFO_MSFT;
 }
+unsafe impl XrInType for HandPoseTypeInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSecondaryViewConfigurationSessionBeginInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationSessionBeginInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
@@ -4655,10 +4374,10 @@ pub struct SecondaryViewConfigurationSessionBeginInfoMSFT {
     pub view_configuration_count: u32,
     pub enabled_view_configuration_types: *const ViewConfigurationType,
 }
-impl SecondaryViewConfigurationSessionBeginInfoMSFT {
-    pub const TYPE: StructureType =
-        StructureType::SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT;
+impl XrType for SecondaryViewConfigurationSessionBeginInfoMSFT {
+    const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT;
 }
+unsafe impl XrInType for SecondaryViewConfigurationSessionBeginInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSecondaryViewConfigurationStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationStateMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
@@ -4668,21 +4387,10 @@ pub struct SecondaryViewConfigurationStateMSFT {
     pub view_configuration_type: ViewConfigurationType,
     pub active: Bool32,
 }
-impl SecondaryViewConfigurationStateMSFT {
-    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_STATE_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SecondaryViewConfigurationStateMSFT {
+    const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_STATE_MSFT;
 }
+unsafe impl XrOutType for SecondaryViewConfigurationStateMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSecondaryViewConfigurationFrameStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationFrameStateMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
@@ -4692,21 +4400,10 @@ pub struct SecondaryViewConfigurationFrameStateMSFT {
     pub view_configuration_count: u32,
     pub view_configuration_states: *mut SecondaryViewConfigurationStateMSFT,
 }
-impl SecondaryViewConfigurationFrameStateMSFT {
-    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SecondaryViewConfigurationFrameStateMSFT {
+    const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT;
 }
+unsafe impl XrOutType for SecondaryViewConfigurationFrameStateMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSecondaryViewConfigurationFrameEndInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationFrameEndInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
@@ -4716,9 +4413,10 @@ pub struct SecondaryViewConfigurationFrameEndInfoMSFT {
     pub view_configuration_count: u32,
     pub view_configuration_layers_info: *const SecondaryViewConfigurationLayerInfoMSFT,
 }
-impl SecondaryViewConfigurationFrameEndInfoMSFT {
-    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT;
+impl XrType for SecondaryViewConfigurationFrameEndInfoMSFT {
+    const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT;
 }
+unsafe impl XrInType for SecondaryViewConfigurationFrameEndInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSecondaryViewConfigurationLayerInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationLayerInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
@@ -4730,9 +4428,10 @@ pub struct SecondaryViewConfigurationLayerInfoMSFT {
     pub layer_count: u32,
     pub layers: *const *const CompositionLayerBaseHeader,
 }
-impl SecondaryViewConfigurationLayerInfoMSFT {
-    pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT;
+impl XrType for SecondaryViewConfigurationLayerInfoMSFT {
+    const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT;
 }
+unsafe impl XrInType for SecondaryViewConfigurationLayerInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSecondaryViewConfigurationSwapchainCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSecondaryViewConfigurationSwapchainCreateInfoMSFT) - defined by [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)"]
@@ -4741,10 +4440,11 @@ pub struct SecondaryViewConfigurationSwapchainCreateInfoMSFT {
     pub next: *const c_void,
     pub view_configuration_type: ViewConfigurationType,
 }
-impl SecondaryViewConfigurationSwapchainCreateInfoMSFT {
-    pub const TYPE: StructureType =
+impl XrType for SecondaryViewConfigurationSwapchainCreateInfoMSFT {
+    const TYPE: StructureType =
         StructureType::SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT;
 }
+unsafe impl XrInType for SecondaryViewConfigurationSwapchainCreateInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHolographicWindowAttachmentMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHolographicWindowAttachmentMSFT) - defined by [XR_MSFT_holographic_window_attachment](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_holographic_window_attachment)"]
@@ -4756,9 +4456,11 @@ pub struct HolographicWindowAttachmentMSFT {
     pub core_window: *mut IUnknown,
 }
 #[cfg(windows)]
-impl HolographicWindowAttachmentMSFT {
-    pub const TYPE: StructureType = StructureType::HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT;
+impl XrType for HolographicWindowAttachmentMSFT {
+    const TYPE: StructureType = StructureType::HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT;
 }
+#[cfg(windows)]
+unsafe impl XrInType for HolographicWindowAttachmentMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrAndroidSurfaceSwapchainCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrAndroidSurfaceSwapchainCreateInfoFB) - defined by [XR_FB_android_surface_swapchain_create](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_android_surface_swapchain_create)"]
@@ -4769,9 +4471,11 @@ pub struct AndroidSurfaceSwapchainCreateInfoFB {
     pub create_flags: AndroidSurfaceSwapchainFlagsFB,
 }
 #[cfg(target_os = "android")]
-impl AndroidSurfaceSwapchainCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB;
+impl XrType for AndroidSurfaceSwapchainCreateInfoFB {
+    const TYPE: StructureType = StructureType::ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB;
 }
+#[cfg(target_os = "android")]
+unsafe impl XrInType for AndroidSurfaceSwapchainCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainStateBaseHeaderFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateBaseHeaderFB) - defined by [XR_FB_swapchain_update_state](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state)"]
@@ -4790,21 +4494,11 @@ pub struct SwapchainStateAndroidSurfaceDimensionsFB {
     pub height: u32,
 }
 #[cfg(target_os = "android")]
-impl SwapchainStateAndroidSurfaceDimensionsFB {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainStateAndroidSurfaceDimensionsFB {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB;
 }
+#[cfg(target_os = "android")]
+unsafe impl XrOutType for SwapchainStateAndroidSurfaceDimensionsFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainStateSamplerOpenGLESFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateSamplerOpenGLESFB) - defined by [XR_FB_swapchain_update_state_opengl_es](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state_opengl_es)"]
@@ -4822,21 +4516,10 @@ pub struct SwapchainStateSamplerOpenGLESFB {
     pub max_anisotropy: f32,
     pub border_color: Color4f,
 }
-impl SwapchainStateSamplerOpenGLESFB {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainStateSamplerOpenGLESFB {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB;
 }
+unsafe impl XrOutType for SwapchainStateSamplerOpenGLESFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainStateSamplerVulkanFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateSamplerVulkanFB) - defined by [XR_FB_swapchain_update_state_vulkan](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_swapchain_update_state_vulkan)"]
@@ -4855,21 +4538,10 @@ pub struct SwapchainStateSamplerVulkanFB {
     pub max_anisotropy: f32,
     pub border_color: Color4f,
 }
-impl SwapchainStateSamplerVulkanFB {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_VULKAN_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainStateSamplerVulkanFB {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_VULKAN_FB;
 }
+unsafe impl XrOutType for SwapchainStateSamplerVulkanFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerSecureContentFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerSecureContentFB) - defined by [XR_FB_composition_layer_secure_content](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_composition_layer_secure_content)"]
@@ -4878,9 +4550,10 @@ pub struct CompositionLayerSecureContentFB {
     pub next: *const c_void,
     pub flags: CompositionLayerSecureContentFlagsFB,
 }
-impl CompositionLayerSecureContentFB {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_SECURE_CONTENT_FB;
+impl XrType for CompositionLayerSecureContentFB {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_SECURE_CONTENT_FB;
 }
+unsafe impl XrInType for CompositionLayerSecureContentFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrLoaderInitInfoBaseHeaderKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLoaderInitInfoBaseHeaderKHR) - defined by [XR_KHR_loader_init](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_loader_init)"]
@@ -4899,9 +4572,11 @@ pub struct LoaderInitInfoAndroidKHR {
     pub application_context: *mut c_void,
 }
 #[cfg(target_os = "android")]
-impl LoaderInitInfoAndroidKHR {
-    pub const TYPE: StructureType = StructureType::LOADER_INIT_INFO_ANDROID_KHR;
+impl XrType for LoaderInitInfoAndroidKHR {
+    const TYPE: StructureType = StructureType::LOADER_INIT_INFO_ANDROID_KHR;
 }
+#[cfg(target_os = "android")]
+unsafe impl XrInType for LoaderInitInfoAndroidKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerEquirect2KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerEquirect2KHR) - defined by [XR_KHR_composition_layer_equirect2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_equirect2)"]
@@ -4918,9 +4593,10 @@ pub struct CompositionLayerEquirect2KHR {
     pub upper_vertical_angle: f32,
     pub lower_vertical_angle: f32,
 }
-impl CompositionLayerEquirect2KHR {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_EQUIRECT2_KHR;
+impl XrType for CompositionLayerEquirect2KHR {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_EQUIRECT2_KHR;
 }
+unsafe impl XrInType for CompositionLayerEquirect2KHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerColorScaleBiasKHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerColorScaleBiasKHR) - defined by [XR_KHR_composition_layer_color_scale_bias](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_color_scale_bias)"]
@@ -4930,9 +4606,10 @@ pub struct CompositionLayerColorScaleBiasKHR {
     pub color_scale: Color4f,
     pub color_bias: Color4f,
 }
-impl CompositionLayerColorScaleBiasKHR {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_COLOR_SCALE_BIAS_KHR;
+impl XrType for CompositionLayerColorScaleBiasKHR {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_COLOR_SCALE_BIAS_KHR;
 }
+unsafe impl XrInType for CompositionLayerColorScaleBiasKHR {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrControllerModelKeyStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrControllerModelKeyStateMSFT) - defined by [XR_MSFT_controller_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_controller_model)"]
@@ -4941,21 +4618,10 @@ pub struct ControllerModelKeyStateMSFT {
     pub next: *mut c_void,
     pub model_key: ControllerModelKeyMSFT,
 }
-impl ControllerModelKeyStateMSFT {
-    pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_KEY_STATE_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ControllerModelKeyStateMSFT {
+    const TYPE: StructureType = StructureType::CONTROLLER_MODEL_KEY_STATE_MSFT;
 }
+unsafe impl XrOutType for ControllerModelKeyStateMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrControllerModelNodePropertiesMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrControllerModelNodePropertiesMSFT) - defined by [XR_MSFT_controller_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_controller_model)"]
@@ -4965,21 +4631,10 @@ pub struct ControllerModelNodePropertiesMSFT {
     pub parent_node_name: [c_char; MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT],
     pub node_name: [c_char; MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT],
 }
-impl ControllerModelNodePropertiesMSFT {
-    pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_NODE_PROPERTIES_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ControllerModelNodePropertiesMSFT {
+    const TYPE: StructureType = StructureType::CONTROLLER_MODEL_NODE_PROPERTIES_MSFT;
 }
+unsafe impl XrOutType for ControllerModelNodePropertiesMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrControllerModelPropertiesMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrControllerModelPropertiesMSFT) - defined by [XR_MSFT_controller_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_controller_model)"]
@@ -4990,21 +4645,10 @@ pub struct ControllerModelPropertiesMSFT {
     pub node_count_output: u32,
     pub node_properties: *mut ControllerModelNodePropertiesMSFT,
 }
-impl ControllerModelPropertiesMSFT {
-    pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_PROPERTIES_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ControllerModelPropertiesMSFT {
+    const TYPE: StructureType = StructureType::CONTROLLER_MODEL_PROPERTIES_MSFT;
 }
+unsafe impl XrOutType for ControllerModelPropertiesMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrControllerModelNodeStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrControllerModelNodeStateMSFT) - defined by [XR_MSFT_controller_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_controller_model)"]
@@ -5013,21 +4657,10 @@ pub struct ControllerModelNodeStateMSFT {
     pub next: *mut c_void,
     pub node_pose: Posef,
 }
-impl ControllerModelNodeStateMSFT {
-    pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_NODE_STATE_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ControllerModelNodeStateMSFT {
+    const TYPE: StructureType = StructureType::CONTROLLER_MODEL_NODE_STATE_MSFT;
 }
+unsafe impl XrOutType for ControllerModelNodeStateMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrControllerModelStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrControllerModelStateMSFT) - defined by [XR_MSFT_controller_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_controller_model)"]
@@ -5038,21 +4671,10 @@ pub struct ControllerModelStateMSFT {
     pub node_count_output: u32,
     pub node_states: *mut ControllerModelNodeStateMSFT,
 }
-impl ControllerModelStateMSFT {
-    pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_STATE_MSFT;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ControllerModelStateMSFT {
+    const TYPE: StructureType = StructureType::CONTROLLER_MODEL_STATE_MSFT;
 }
+unsafe impl XrOutType for ControllerModelStateMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemColorSpacePropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemColorSpacePropertiesFB) - defined by [XR_FB_color_space](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)"]
@@ -5061,21 +4683,10 @@ pub struct SystemColorSpacePropertiesFB {
     pub next: *mut c_void,
     pub color_space: ColorSpaceFB,
 }
-impl SystemColorSpacePropertiesFB {
-    pub const TYPE: StructureType = StructureType::SYSTEM_COLOR_SPACE_PROPERTIES_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemColorSpacePropertiesFB {
+    const TYPE: StructureType = StructureType::SYSTEM_COLOR_SPACE_PROPERTIES_FB;
 }
+unsafe impl XrOutType for SystemColorSpacePropertiesFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFoveationProfileCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFoveationProfileCreateInfoFB) - defined by [XR_FB_foveation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_foveation)"]
@@ -5083,21 +4694,10 @@ pub struct FoveationProfileCreateInfoFB {
     pub ty: StructureType,
     pub next: *mut c_void,
 }
-impl FoveationProfileCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::FOVEATION_PROFILE_CREATE_INFO_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for FoveationProfileCreateInfoFB {
+    const TYPE: StructureType = StructureType::FOVEATION_PROFILE_CREATE_INFO_FB;
 }
+unsafe impl XrOutType for FoveationProfileCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainCreateInfoFoveationFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainCreateInfoFoveationFB) - defined by [XR_FB_foveation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_foveation)"]
@@ -5106,21 +4706,10 @@ pub struct SwapchainCreateInfoFoveationFB {
     pub next: *mut c_void,
     pub flags: SwapchainCreateFoveationFlagsFB,
 }
-impl SwapchainCreateInfoFoveationFB {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_CREATE_INFO_FOVEATION_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainCreateInfoFoveationFB {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_CREATE_INFO_FOVEATION_FB;
 }
+unsafe impl XrOutType for SwapchainCreateInfoFoveationFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainStateFoveationFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainStateFoveationFB) - defined by [XR_FB_foveation](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_foveation)"]
@@ -5130,21 +4719,10 @@ pub struct SwapchainStateFoveationFB {
     pub flags: SwapchainStateFoveationFlagsFB,
     pub profile: FoveationProfileFB,
 }
-impl SwapchainStateFoveationFB {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_FOVEATION_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainStateFoveationFB {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_FOVEATION_FB;
 }
+unsafe impl XrOutType for SwapchainStateFoveationFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageFoveationVulkanFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageFoveationVulkanFB) - defined by [XR_FB_foveation_vulkan](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_foveation_vulkan)"]
@@ -5155,21 +4733,10 @@ pub struct SwapchainImageFoveationVulkanFB {
     pub width: u32,
     pub height: u32,
 }
-impl SwapchainImageFoveationVulkanFB {
-    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_FOVEATION_VULKAN_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SwapchainImageFoveationVulkanFB {
+    const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_FOVEATION_VULKAN_FB;
 }
+unsafe impl XrOutType for SwapchainImageFoveationVulkanFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFoveationLevelProfileCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFoveationLevelProfileCreateInfoFB) - defined by [XR_FB_foveation_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_foveation_configuration)"]
@@ -5180,21 +4747,10 @@ pub struct FoveationLevelProfileCreateInfoFB {
     pub vertical_offset: f32,
     pub dynamic: FoveationDynamicFB,
 }
-impl FoveationLevelProfileCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for FoveationLevelProfileCreateInfoFB {
+    const TYPE: StructureType = StructureType::FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB;
 }
+unsafe impl XrOutType for FoveationLevelProfileCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrVector4sFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrVector4sFB) - defined by [XR_FB_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_hand_tracking_mesh)"]
@@ -5226,21 +4782,10 @@ pub struct HandTrackingMeshFB {
     pub index_count_output: u32,
     pub indices: *mut i16,
 }
-impl HandTrackingMeshFB {
-    pub const TYPE: StructureType = StructureType::HAND_TRACKING_MESH_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for HandTrackingMeshFB {
+    const TYPE: StructureType = StructureType::HAND_TRACKING_MESH_FB;
 }
+unsafe impl XrOutType for HandTrackingMeshFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandTrackingScaleFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandTrackingScaleFB) - defined by [XR_FB_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_hand_tracking_mesh)"]
@@ -5252,21 +4797,10 @@ pub struct HandTrackingScaleFB {
     pub override_hand_scale: Bool32,
     pub override_value_input: f32,
 }
-impl HandTrackingScaleFB {
-    pub const TYPE: StructureType = StructureType::HAND_TRACKING_SCALE_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for HandTrackingScaleFB {
+    const TYPE: StructureType = StructureType::HAND_TRACKING_SCALE_FB;
 }
+unsafe impl XrOutType for HandTrackingScaleFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandTrackingAimStateFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandTrackingAimStateFB) - defined by [XR_FB_hand_tracking_aim](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_hand_tracking_aim)"]
@@ -5280,21 +4814,10 @@ pub struct HandTrackingAimStateFB {
     pub pinch_strength_ring: f32,
     pub pinch_strength_little: f32,
 }
-impl HandTrackingAimStateFB {
-    pub const TYPE: StructureType = StructureType::HAND_TRACKING_AIM_STATE_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for HandTrackingAimStateFB {
+    const TYPE: StructureType = StructureType::HAND_TRACKING_AIM_STATE_FB;
 }
+unsafe impl XrOutType for HandTrackingAimStateFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrHandCapsuleFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandCapsuleFB) - defined by [XR_FB_hand_tracking_capsules](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_hand_tracking_capsules)"]
@@ -5311,21 +4834,10 @@ pub struct HandTrackingCapsulesStateFB {
     pub next: *mut c_void,
     pub capsules: [HandCapsuleFB; HAND_TRACKING_CAPSULE_COUNT_FB],
 }
-impl HandTrackingCapsulesStateFB {
-    pub const TYPE: StructureType = StructureType::HAND_TRACKING_CAPSULES_STATE_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for HandTrackingCapsulesStateFB {
+    const TYPE: StructureType = StructureType::HAND_TRACKING_CAPSULES_STATE_FB;
 }
+unsafe impl XrOutType for HandTrackingCapsulesStateFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRenderModelPathInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelPathInfoFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
@@ -5334,21 +4846,10 @@ pub struct RenderModelPathInfoFB {
     pub next: *mut c_void,
     pub path: Path,
 }
-impl RenderModelPathInfoFB {
-    pub const TYPE: StructureType = StructureType::RENDER_MODEL_PATH_INFO_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for RenderModelPathInfoFB {
+    const TYPE: StructureType = StructureType::RENDER_MODEL_PATH_INFO_FB;
 }
+unsafe impl XrOutType for RenderModelPathInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRenderModelPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelPropertiesFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
@@ -5361,21 +4862,10 @@ pub struct RenderModelPropertiesFB {
     pub model_version: u32,
     pub flags: RenderModelFlagsFB,
 }
-impl RenderModelPropertiesFB {
-    pub const TYPE: StructureType = StructureType::RENDER_MODEL_PROPERTIES_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for RenderModelPropertiesFB {
+    const TYPE: StructureType = StructureType::RENDER_MODEL_PROPERTIES_FB;
 }
+unsafe impl XrOutType for RenderModelPropertiesFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRenderModelBufferFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelBufferFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
@@ -5386,21 +4876,10 @@ pub struct RenderModelBufferFB {
     pub buffer_count_output: u32,
     pub buffer: *mut u8,
 }
-impl RenderModelBufferFB {
-    pub const TYPE: StructureType = StructureType::RENDER_MODEL_BUFFER_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for RenderModelBufferFB {
+    const TYPE: StructureType = StructureType::RENDER_MODEL_BUFFER_FB;
 }
+unsafe impl XrOutType for RenderModelBufferFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRenderModelLoadInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRenderModelLoadInfoFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
@@ -5409,21 +4888,10 @@ pub struct RenderModelLoadInfoFB {
     pub next: *mut c_void,
     pub model_key: RenderModelKeyFB,
 }
-impl RenderModelLoadInfoFB {
-    pub const TYPE: StructureType = StructureType::RENDER_MODEL_LOAD_INFO_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for RenderModelLoadInfoFB {
+    const TYPE: StructureType = StructureType::RENDER_MODEL_LOAD_INFO_FB;
 }
+unsafe impl XrOutType for RenderModelLoadInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemRenderModelPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemRenderModelPropertiesFB) - defined by [XR_FB_render_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_render_model)"]
@@ -5432,21 +4900,10 @@ pub struct SystemRenderModelPropertiesFB {
     pub next: *mut c_void,
     pub supports_render_model_loading: Bool32,
 }
-impl SystemRenderModelPropertiesFB {
-    pub const TYPE: StructureType = StructureType::SYSTEM_RENDER_MODEL_PROPERTIES_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemRenderModelPropertiesFB {
+    const TYPE: StructureType = StructureType::SYSTEM_RENDER_MODEL_PROPERTIES_FB;
 }
+unsafe impl XrOutType for SystemRenderModelPropertiesFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemKeyboardTrackingPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemKeyboardTrackingPropertiesFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
@@ -5455,21 +4912,10 @@ pub struct SystemKeyboardTrackingPropertiesFB {
     pub next: *mut c_void,
     pub supports_keyboard_tracking: Bool32,
 }
-impl SystemKeyboardTrackingPropertiesFB {
-    pub const TYPE: StructureType = StructureType::SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemKeyboardTrackingPropertiesFB {
+    const TYPE: StructureType = StructureType::SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB;
 }
+unsafe impl XrOutType for SystemKeyboardTrackingPropertiesFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrKeyboardTrackingDescriptionFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrKeyboardTrackingDescriptionFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
@@ -5487,21 +4933,10 @@ pub struct KeyboardSpaceCreateInfoFB {
     pub next: *mut c_void,
     pub tracked_keyboard_id: u64,
 }
-impl KeyboardSpaceCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::KEYBOARD_SPACE_CREATE_INFO_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for KeyboardSpaceCreateInfoFB {
+    const TYPE: StructureType = StructureType::KEYBOARD_SPACE_CREATE_INFO_FB;
 }
+unsafe impl XrOutType for KeyboardSpaceCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrKeyboardTrackingQueryFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrKeyboardTrackingQueryFB) - defined by [XR_FB_keyboard_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_keyboard_tracking)"]
@@ -5510,21 +4945,10 @@ pub struct KeyboardTrackingQueryFB {
     pub next: *mut c_void,
     pub flags: KeyboardTrackingQueryFlagsFB,
 }
-impl KeyboardTrackingQueryFB {
-    pub const TYPE: StructureType = StructureType::KEYBOARD_TRACKING_QUERY_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for KeyboardTrackingQueryFB {
+    const TYPE: StructureType = StructureType::KEYBOARD_TRACKING_QUERY_FB;
 }
+unsafe impl XrOutType for KeyboardTrackingQueryFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerDepthTestVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerDepthTestVARJO) - defined by [XR_VARJO_composition_layer_depth_test](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_composition_layer_depth_test)"]
@@ -5534,9 +4958,10 @@ pub struct CompositionLayerDepthTestVARJO {
     pub depth_test_range_near_z: f32,
     pub depth_test_range_far_z: f32,
 }
-impl CompositionLayerDepthTestVARJO {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_DEPTH_TEST_VARJO;
+impl XrType for CompositionLayerDepthTestVARJO {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_DEPTH_TEST_VARJO;
 }
+unsafe impl XrInType for CompositionLayerDepthTestVARJO {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViewLocateFoveatedRenderingVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViewLocateFoveatedRenderingVARJO) - defined by [XR_VARJO_foveated_rendering](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_foveated_rendering)"]
@@ -5545,9 +4970,10 @@ pub struct ViewLocateFoveatedRenderingVARJO {
     pub next: *const c_void,
     pub foveated_rendering_active: Bool32,
 }
-impl ViewLocateFoveatedRenderingVARJO {
-    pub const TYPE: StructureType = StructureType::VIEW_LOCATE_FOVEATED_RENDERING_VARJO;
+impl XrType for ViewLocateFoveatedRenderingVARJO {
+    const TYPE: StructureType = StructureType::VIEW_LOCATE_FOVEATED_RENDERING_VARJO;
 }
+unsafe impl XrInType for ViewLocateFoveatedRenderingVARJO {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFoveatedViewConfigurationViewVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFoveatedViewConfigurationViewVARJO) - defined by [XR_VARJO_foveated_rendering](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_foveated_rendering)"]
@@ -5556,21 +4982,10 @@ pub struct FoveatedViewConfigurationViewVARJO {
     pub next: *mut c_void,
     pub foveated_rendering_active: Bool32,
 }
-impl FoveatedViewConfigurationViewVARJO {
-    pub const TYPE: StructureType = StructureType::FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for FoveatedViewConfigurationViewVARJO {
+    const TYPE: StructureType = StructureType::FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO;
 }
+unsafe impl XrOutType for FoveatedViewConfigurationViewVARJO {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemFoveatedRenderingPropertiesVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemFoveatedRenderingPropertiesVARJO) - defined by [XR_VARJO_foveated_rendering](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_foveated_rendering)"]
@@ -5579,21 +4994,10 @@ pub struct SystemFoveatedRenderingPropertiesVARJO {
     pub next: *mut c_void,
     pub supports_foveated_rendering: Bool32,
 }
-impl SystemFoveatedRenderingPropertiesVARJO {
-    pub const TYPE: StructureType = StructureType::SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemFoveatedRenderingPropertiesVARJO {
+    const TYPE: StructureType = StructureType::SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO;
 }
+unsafe impl XrOutType for SystemFoveatedRenderingPropertiesVARJO {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerReprojectionInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerReprojectionInfoMSFT) - defined by [XR_MSFT_composition_layer_reprojection](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_composition_layer_reprojection)"]
@@ -5602,9 +5006,10 @@ pub struct CompositionLayerReprojectionInfoMSFT {
     pub next: *const c_void,
     pub reprojection_mode: ReprojectionModeMSFT,
 }
-impl CompositionLayerReprojectionInfoMSFT {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_REPROJECTION_INFO_MSFT;
+impl XrType for CompositionLayerReprojectionInfoMSFT {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_REPROJECTION_INFO_MSFT;
 }
+unsafe impl XrInType for CompositionLayerReprojectionInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerReprojectionPlaneOverrideMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerReprojectionPlaneOverrideMSFT) - defined by [XR_MSFT_composition_layer_reprojection](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_composition_layer_reprojection)"]
@@ -5615,10 +5020,10 @@ pub struct CompositionLayerReprojectionPlaneOverrideMSFT {
     pub normal: Vector3f,
     pub velocity: Vector3f,
 }
-impl CompositionLayerReprojectionPlaneOverrideMSFT {
-    pub const TYPE: StructureType =
-        StructureType::COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT;
+impl XrType for CompositionLayerReprojectionPlaneOverrideMSFT {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT;
 }
+unsafe impl XrInType for CompositionLayerReprojectionPlaneOverrideMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTriangleMeshCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrTriangleMeshCreateInfoFB) - defined by [XR_FB_triangle_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_triangle_mesh)"]
@@ -5632,9 +5037,10 @@ pub struct TriangleMeshCreateInfoFB {
     pub triangle_count: u32,
     pub index_buffer: *const u32,
 }
-impl TriangleMeshCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::TRIANGLE_MESH_CREATE_INFO_FB;
+impl XrType for TriangleMeshCreateInfoFB {
+    const TYPE: StructureType = StructureType::TRIANGLE_MESH_CREATE_INFO_FB;
 }
+unsafe impl XrInType for TriangleMeshCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemPassthroughPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemPassthroughPropertiesFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5643,9 +5049,10 @@ pub struct SystemPassthroughPropertiesFB {
     pub next: *const c_void,
     pub supports_passthrough: Bool32,
 }
-impl SystemPassthroughPropertiesFB {
-    pub const TYPE: StructureType = StructureType::SYSTEM_PASSTHROUGH_PROPERTIES_FB;
+impl XrType for SystemPassthroughPropertiesFB {
+    const TYPE: StructureType = StructureType::SYSTEM_PASSTHROUGH_PROPERTIES_FB;
 }
+unsafe impl XrInType for SystemPassthroughPropertiesFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughCreateInfoFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5654,9 +5061,10 @@ pub struct PassthroughCreateInfoFB {
     pub next: *const c_void,
     pub flags: PassthroughFlagsFB,
 }
-impl PassthroughCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::PASSTHROUGH_CREATE_INFO_FB;
+impl XrType for PassthroughCreateInfoFB {
+    const TYPE: StructureType = StructureType::PASSTHROUGH_CREATE_INFO_FB;
 }
+unsafe impl XrInType for PassthroughCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughLayerCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughLayerCreateInfoFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5667,9 +5075,10 @@ pub struct PassthroughLayerCreateInfoFB {
     pub flags: PassthroughFlagsFB,
     pub purpose: PassthroughLayerPurposeFB,
 }
-impl PassthroughLayerCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::PASSTHROUGH_LAYER_CREATE_INFO_FB;
+impl XrType for PassthroughLayerCreateInfoFB {
+    const TYPE: StructureType = StructureType::PASSTHROUGH_LAYER_CREATE_INFO_FB;
 }
+unsafe impl XrInType for PassthroughLayerCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerPassthroughFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerPassthroughFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5680,9 +5089,10 @@ pub struct CompositionLayerPassthroughFB {
     pub space: Space,
     pub layer_handle: PassthroughLayerFB,
 }
-impl CompositionLayerPassthroughFB {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PASSTHROUGH_FB;
+impl XrType for CompositionLayerPassthroughFB {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PASSTHROUGH_FB;
 }
+unsafe impl XrInType for CompositionLayerPassthroughFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGeometryInstanceCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGeometryInstanceCreateInfoFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5695,9 +5105,10 @@ pub struct GeometryInstanceCreateInfoFB {
     pub pose: Posef,
     pub scale: Vector3f,
 }
-impl GeometryInstanceCreateInfoFB {
-    pub const TYPE: StructureType = StructureType::GEOMETRY_INSTANCE_CREATE_INFO_FB;
+impl XrType for GeometryInstanceCreateInfoFB {
+    const TYPE: StructureType = StructureType::GEOMETRY_INSTANCE_CREATE_INFO_FB;
 }
+unsafe impl XrInType for GeometryInstanceCreateInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrGeometryInstanceTransformFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGeometryInstanceTransformFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5709,9 +5120,10 @@ pub struct GeometryInstanceTransformFB {
     pub pose: Posef,
     pub scale: Vector3f,
 }
-impl GeometryInstanceTransformFB {
-    pub const TYPE: StructureType = StructureType::GEOMETRY_INSTANCE_TRANSFORM_FB;
+impl XrType for GeometryInstanceTransformFB {
+    const TYPE: StructureType = StructureType::GEOMETRY_INSTANCE_TRANSFORM_FB;
 }
+unsafe impl XrInType for GeometryInstanceTransformFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughStyleFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughStyleFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5721,9 +5133,10 @@ pub struct PassthroughStyleFB {
     pub texture_opacity_factor: f32,
     pub edge_color: Color4f,
 }
-impl PassthroughStyleFB {
-    pub const TYPE: StructureType = StructureType::PASSTHROUGH_STYLE_FB;
+impl XrType for PassthroughStyleFB {
+    const TYPE: StructureType = StructureType::PASSTHROUGH_STYLE_FB;
 }
+unsafe impl XrInType for PassthroughStyleFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughColorMapMonoToRgbaFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughColorMapMonoToRgbaFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5732,9 +5145,10 @@ pub struct PassthroughColorMapMonoToRgbaFB {
     pub next: *const c_void,
     pub texture_color_map: [Color4f; PASSTHROUGH_COLOR_MAP_MONO_SIZE_FB],
 }
-impl PassthroughColorMapMonoToRgbaFB {
-    pub const TYPE: StructureType = StructureType::PASSTHROUGH_COLOR_MAP_MONO_TO_RGBA_FB;
+impl XrType for PassthroughColorMapMonoToRgbaFB {
+    const TYPE: StructureType = StructureType::PASSTHROUGH_COLOR_MAP_MONO_TO_RGBA_FB;
 }
+unsafe impl XrInType for PassthroughColorMapMonoToRgbaFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughColorMapMonoToMonoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughColorMapMonoToMonoFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5743,9 +5157,10 @@ pub struct PassthroughColorMapMonoToMonoFB {
     pub next: *const c_void,
     pub texture_color_map: [u8; PASSTHROUGH_COLOR_MAP_MONO_SIZE_FB],
 }
-impl PassthroughColorMapMonoToMonoFB {
-    pub const TYPE: StructureType = StructureType::PASSTHROUGH_COLOR_MAP_MONO_TO_MONO_FB;
+impl XrType for PassthroughColorMapMonoToMonoFB {
+    const TYPE: StructureType = StructureType::PASSTHROUGH_COLOR_MAP_MONO_TO_MONO_FB;
 }
+unsafe impl XrInType for PassthroughColorMapMonoToMonoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataPassthroughStateChangedFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataPassthroughStateChangedFB) - defined by [XR_FB_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough)"]
@@ -5754,9 +5169,10 @@ pub struct EventDataPassthroughStateChangedFB {
     pub next: *const c_void,
     pub flags: PassthroughStateChangedFlagsFB,
 }
-impl EventDataPassthroughStateChangedFB {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB;
+impl XrType for EventDataPassthroughStateChangedFB {
+    const TYPE: StructureType = StructureType::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB;
 }
+unsafe impl XrInType for EventDataPassthroughStateChangedFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughKeyboardHandsIntensityFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughKeyboardHandsIntensityFB) - defined by [XR_FB_passthrough_keyboard_hands](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough_keyboard_hands)"]
@@ -5766,9 +5182,10 @@ pub struct PassthroughKeyboardHandsIntensityFB {
     pub left_hand_intensity: f32,
     pub right_hand_intensity: f32,
 }
-impl PassthroughKeyboardHandsIntensityFB {
-    pub const TYPE: StructureType = StructureType::PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB;
+impl XrType for PassthroughKeyboardHandsIntensityFB {
+    const TYPE: StructureType = StructureType::PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB;
 }
+unsafe impl XrInType for PassthroughKeyboardHandsIntensityFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorPersistenceNameMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorPersistenceNameMSFT) - defined by [XR_MSFT_spatial_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor_persistence)"]
@@ -5784,9 +5201,10 @@ pub struct SpatialAnchorPersistenceInfoMSFT {
     pub spatial_anchor_persistence_name: SpatialAnchorPersistenceNameMSFT,
     pub spatial_anchor: SpatialAnchorMSFT,
 }
-impl SpatialAnchorPersistenceInfoMSFT {
-    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_PERSISTENCE_INFO_MSFT;
+impl XrType for SpatialAnchorPersistenceInfoMSFT {
+    const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_PERSISTENCE_INFO_MSFT;
 }
+unsafe impl XrInType for SpatialAnchorPersistenceInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorFromPersistedAnchorCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorFromPersistedAnchorCreateInfoMSFT) - defined by [XR_MSFT_spatial_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor_persistence)"]
@@ -5796,10 +5214,11 @@ pub struct SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
     pub spatial_anchor_store: SpatialAnchorStoreConnectionMSFT,
     pub spatial_anchor_persistence_name: SpatialAnchorPersistenceNameMSFT,
 }
-impl SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
-    pub const TYPE: StructureType =
+impl XrType for SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
+    const TYPE: StructureType =
         StructureType::SPATIAL_ANCHOR_FROM_PERSISTED_ANCHOR_CREATE_INFO_MSFT;
 }
+unsafe impl XrInType for SpatialAnchorFromPersistedAnchorCreateInfoMSFT {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFacialTrackerCreateInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFacialTrackerCreateInfoHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
@@ -5808,9 +5227,10 @@ pub struct FacialTrackerCreateInfoHTC {
     pub next: *const c_void,
     pub facial_tracking_type: FacialTrackingTypeHTC,
 }
-impl FacialTrackerCreateInfoHTC {
-    pub const TYPE: StructureType = StructureType::FACIAL_TRACKER_CREATE_INFO_HTC;
+impl XrType for FacialTrackerCreateInfoHTC {
+    const TYPE: StructureType = StructureType::FACIAL_TRACKER_CREATE_INFO_HTC;
 }
+unsafe impl XrInType for FacialTrackerCreateInfoHTC {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemFacialTrackingPropertiesHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemFacialTrackingPropertiesHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
@@ -5820,21 +5240,10 @@ pub struct SystemFacialTrackingPropertiesHTC {
     pub support_eye_facial_tracking: Bool32,
     pub support_lip_facial_tracking: Bool32,
 }
-impl SystemFacialTrackingPropertiesHTC {
-    pub const TYPE: StructureType = StructureType::SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemFacialTrackingPropertiesHTC {
+    const TYPE: StructureType = StructureType::SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC;
 }
+unsafe impl XrOutType for SystemFacialTrackingPropertiesHTC {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFacialExpressionsHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFacialExpressionsHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_facial_tracking)"]
@@ -5846,9 +5255,10 @@ pub struct FacialExpressionsHTC {
     pub expression_count: u32,
     pub expression_weightings: *mut f32,
 }
-impl FacialExpressionsHTC {
-    pub const TYPE: StructureType = StructureType::FACIAL_EXPRESSIONS_HTC;
+impl XrType for FacialExpressionsHTC {
+    const TYPE: StructureType = StructureType::FACIAL_EXPRESSIONS_HTC;
 }
+unsafe impl XrInType for FacialExpressionsHTC {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViveTrackerPathsHTCX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViveTrackerPathsHTCX) - defined by [XR_HTCX_vive_tracker_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTCX_vive_tracker_interaction)"]
@@ -5858,21 +5268,10 @@ pub struct ViveTrackerPathsHTCX {
     pub persistent_path: Path,
     pub role_path: Path,
 }
-impl ViveTrackerPathsHTCX {
-    pub const TYPE: StructureType = StructureType::VIVE_TRACKER_PATHS_HTCX;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for ViveTrackerPathsHTCX {
+    const TYPE: StructureType = StructureType::VIVE_TRACKER_PATHS_HTCX;
 }
+unsafe impl XrOutType for ViveTrackerPathsHTCX {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataViveTrackerConnectedHTCX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataViveTrackerConnectedHTCX) - defined by [XR_HTCX_vive_tracker_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTCX_vive_tracker_interaction)"]
@@ -5881,9 +5280,10 @@ pub struct EventDataViveTrackerConnectedHTCX {
     pub next: *const c_void,
     pub paths: *mut ViveTrackerPathsHTCX,
 }
-impl EventDataViveTrackerConnectedHTCX {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX;
+impl XrType for EventDataViveTrackerConnectedHTCX {
+    const TYPE: StructureType = StructureType::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX;
 }
+unsafe impl XrInType for EventDataViveTrackerConnectedHTCX {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerSpaceWarpInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerSpaceWarpInfoFB) - defined by [XR_FB_space_warp](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_space_warp)"]
@@ -5899,9 +5299,10 @@ pub struct CompositionLayerSpaceWarpInfoFB {
     pub near_z: f32,
     pub far_z: f32,
 }
-impl CompositionLayerSpaceWarpInfoFB {
-    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_SPACE_WARP_INFO_FB;
+impl XrType for CompositionLayerSpaceWarpInfoFB {
+    const TYPE: StructureType = StructureType::COMPOSITION_LAYER_SPACE_WARP_INFO_FB;
 }
+unsafe impl XrInType for CompositionLayerSpaceWarpInfoFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemSpaceWarpPropertiesFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemSpaceWarpPropertiesFB) - defined by [XR_FB_space_warp](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_space_warp)"]
@@ -5911,21 +5312,10 @@ pub struct SystemSpaceWarpPropertiesFB {
     pub recommended_motion_vector_image_rect_width: u32,
     pub recommended_motion_vector_image_rect_height: u32,
 }
-impl SystemSpaceWarpPropertiesFB {
-    pub const TYPE: StructureType = StructureType::SYSTEM_SPACE_WARP_PROPERTIES_FB;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemSpaceWarpPropertiesFB {
+    const TYPE: StructureType = StructureType::SYSTEM_SPACE_WARP_PROPERTIES_FB;
 }
+unsafe impl XrOutType for SystemSpaceWarpPropertiesFB {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemMarkerTrackingPropertiesVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemMarkerTrackingPropertiesVARJO) - defined by [XR_VARJO_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_marker_tracking)"]
@@ -5934,21 +5324,10 @@ pub struct SystemMarkerTrackingPropertiesVARJO {
     pub next: *mut c_void,
     pub supports_marker_tracking: Bool32,
 }
-impl SystemMarkerTrackingPropertiesVARJO {
-    pub const TYPE: StructureType = StructureType::SYSTEM_MARKER_TRACKING_PROPERTIES_VARJO;
-    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
-    #[inline]
-    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
-        let mut x = MaybeUninit::<Self>::uninit();
-        unsafe {
-            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
-                ty: Self::TYPE,
-                next,
-            });
-        }
-        x
-    }
+impl XrType for SystemMarkerTrackingPropertiesVARJO {
+    const TYPE: StructureType = StructureType::SYSTEM_MARKER_TRACKING_PROPERTIES_VARJO;
 }
+unsafe impl XrOutType for SystemMarkerTrackingPropertiesVARJO {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataMarkerTrackingUpdateVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataMarkerTrackingUpdateVARJO) - defined by [XR_VARJO_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_marker_tracking)"]
@@ -5960,9 +5339,10 @@ pub struct EventDataMarkerTrackingUpdateVARJO {
     pub is_predicted: Bool32,
     pub time: Time,
 }
-impl EventDataMarkerTrackingUpdateVARJO {
-    pub const TYPE: StructureType = StructureType::EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO;
+impl XrType for EventDataMarkerTrackingUpdateVARJO {
+    const TYPE: StructureType = StructureType::EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO;
 }
+unsafe impl XrInType for EventDataMarkerTrackingUpdateVARJO {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrMarkerSpaceCreateInfoVARJO](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerSpaceCreateInfoVARJO) - defined by [XR_VARJO_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_VARJO_marker_tracking)"]
@@ -5972,9 +5352,10 @@ pub struct MarkerSpaceCreateInfoVARJO {
     pub marker_id: u64,
     pub pose_in_marker_space: Posef,
 }
-impl MarkerSpaceCreateInfoVARJO {
-    pub const TYPE: StructureType = StructureType::MARKER_SPACE_CREATE_INFO_VARJO;
+impl XrType for MarkerSpaceCreateInfoVARJO {
+    const TYPE: StructureType = StructureType::MARKER_SPACE_CREATE_INFO_VARJO;
 }
+unsafe impl XrInType for MarkerSpaceCreateInfoVARJO {}
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrUuidEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrUuidEXT) - defined by [XR_EXT_uuid](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_uuid)"]
@@ -5989,9 +5370,10 @@ pub struct DigitalLensControlALMALENCE {
     pub next: *const c_void,
     pub flags: DigitalLensControlFlagsALMALENCE,
 }
-impl DigitalLensControlALMALENCE {
-    pub const TYPE: StructureType = StructureType::DIGITAL_LENS_CONTROL_ALMALENCE;
+impl XrType for DigitalLensControlALMALENCE {
+    const TYPE: StructureType = StructureType::DIGITAL_LENS_CONTROL_ALMALENCE;
 }
+unsafe impl XrInType for DigitalLensControlALMALENCE {}
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
     use super::*;

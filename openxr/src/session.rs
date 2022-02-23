@@ -151,8 +151,8 @@ impl<G> Session<G> {
             space: space.as_raw(),
         };
         let (flags, raw) = unsafe {
-            let mut out = sys::ViewState::out(ptr::null_mut());
-            let raw = get_arr_init(sys::View::out(ptr::null_mut()), |cap, count, buf| {
+            let mut out = sys::ViewState::base_out(ptr::null_mut());
+            let raw = get_arr_init(sys::View::base_out(ptr::null_mut()), |cap, count, buf| {
                 (self.fp().locate_views)(
                     self.as_raw(),
                     &info,
@@ -178,7 +178,7 @@ impl<G> Session<G> {
     #[inline]
     pub fn current_interaction_profile(&self, top_level_user_path: Path) -> Result<Path> {
         unsafe {
-            let mut out = sys::InteractionProfileState::out(ptr::null_mut());
+            let mut out = sys::InteractionProfileState::base_out(ptr::null_mut());
             cvt((self.fp().get_current_interaction_profile)(
                 self.as_raw(),
                 top_level_user_path,
@@ -549,7 +549,7 @@ impl FrameWaiter {
     #[inline]
     pub fn wait(&mut self) -> Result<FrameState> {
         let out = unsafe {
-            let mut x = sys::FrameState::out(ptr::null_mut());
+            let mut x = sys::FrameState::base_out(ptr::null_mut());
             cvt((self.session.instance.fp().wait_frame)(
                 self.session.handle,
                 ptr::null(),
@@ -576,13 +576,14 @@ impl FrameWaiter {
         let mut vec = Vec::new();
         vec.resize(
             count as usize,
-            sys::SecondaryViewConfigurationStateMSFT::out(ptr::null_mut()),
+            sys::SecondaryViewConfigurationStateMSFT::base_out(ptr::null_mut()),
         );
         let out = unsafe {
-            let mut secondary = sys::SecondaryViewConfigurationFrameStateMSFT::out(ptr::null_mut());
+            let mut secondary =
+                sys::SecondaryViewConfigurationFrameStateMSFT::base_out(ptr::null_mut());
             (*secondary.as_mut_ptr()).view_configuration_count = count;
             (*secondary.as_mut_ptr()).view_configuration_states = vec.as_mut_ptr() as *mut _;
-            let mut x = sys::FrameState::out(&mut secondary as *mut _ as *mut _);
+            let mut x = sys::FrameState::base_out(&mut secondary as *mut _ as *mut _);
             cvt((self.session.instance.fp().wait_frame)(
                 self.session.handle,
                 ptr::null(),
@@ -617,14 +618,15 @@ impl FrameWaiter {
     /// There must only be a single enabled secondary view
     #[inline]
     pub fn wait_secondary(&mut self) -> Result<(FrameState, SecondaryViewState)> {
-        let mut state = [sys::SecondaryViewConfigurationStateMSFT::out(
+        let mut state = [sys::SecondaryViewConfigurationStateMSFT::base_out(
             ptr::null_mut(),
         )];
         let out = unsafe {
-            let mut secondary = sys::SecondaryViewConfigurationFrameStateMSFT::out(ptr::null_mut());
+            let mut secondary =
+                sys::SecondaryViewConfigurationFrameStateMSFT::base_out(ptr::null_mut());
             (*secondary.as_mut_ptr()).view_configuration_count = 1;
             (*secondary.as_mut_ptr()).view_configuration_states = state.as_mut_ptr() as *mut _;
-            let mut x = sys::FrameState::out(&mut secondary as *mut _ as *mut _);
+            let mut x = sys::FrameState::base_out(&mut secondary as *mut _ as *mut _);
             cvt((self.session.instance.fp().wait_frame)(
                 self.session.handle,
                 ptr::null(),

@@ -5,7 +5,8 @@
 use std::os::raw::c_char;
 
 pub use sys::{
-    self, Duration, Path, SystemId, Time, Version, CURRENT_API_VERSION, FREQUENCY_UNSPECIFIED,
+    self, Duration, Path, SystemId, Time, Version, XrOutType, XrType, CURRENT_API_VERSION,
+    FREQUENCY_UNSPECIFIED,
 };
 
 mod generated;
