@@ -36,6 +36,8 @@ mod foveation_profile_fb;
 pub use foveation_profile_fb::*;
 mod vive_tracker_paths;
 pub use vive_tracker_paths::*;
+mod passthrough;
+pub use passthrough::*;
 
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
