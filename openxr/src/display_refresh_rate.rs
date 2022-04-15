@@ -43,7 +43,10 @@ impl<G> Session<G> {
             .expect("XR_FB_display_refresh_rate not loaded");
         unsafe {
             let mut out = MaybeUninit::uninit();
-            cvt((ext.get_display_refresh_rate)(self.as_raw(), out.as_mut_ptr()))?;
+            cvt((ext.get_display_refresh_rate)(
+                self.as_raw(),
+                out.as_mut_ptr(),
+            ))?;
             Ok(out.assume_init())
         }
     }
@@ -61,6 +64,7 @@ impl<G> Session<G> {
             .fb_display_refresh_rate
             .as_ref()
             .expect("XR_FB_display_refresh_rate not loaded");
-        cvt(unsafe { (ext.request_display_refresh_rate)(self.as_raw(), display_refresh_rate) })
+        cvt(unsafe { (ext.request_display_refresh_rate)(self.as_raw(), display_refresh_rate) })?;
+        Ok(())
     }
 }
