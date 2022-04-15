@@ -36,6 +36,7 @@ mod foveation_profile_fb;
 pub use foveation_profile_fb::*;
 mod vive_tracker_paths;
 pub use vive_tracker_paths::*;
+mod display_refresh_rate;
 mod passthrough;
 pub use passthrough::*;
 
