@@ -6,7 +6,6 @@
 //! largely decouple its Vulkan and OpenXR components and handle errors gracefully.
 
 use std::{
-    ffi::{CStr, CString},
     io::Cursor,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -51,15 +50,11 @@ pub fn main() {
     // If a required extension isn't present, you want to ditch out here! It's possible something
     // like your rendering API might not be provided by the active runtime. APIs like OpenGL don't
     // have universal support.
-    assert!(available_extensions.khr_vulkan_enable || available_extensions.khr_vulkan_enable2);
+    assert!(available_extensions.khr_vulkan_enable2);
 
     // Initialize OpenXR with the extensions we've found!
     let mut enabled_extensions = xr::ExtensionSet::default();
-    if available_extensions.khr_vulkan_enable2 {
-        enabled_extensions.khr_vulkan_enable2 = true;
-    } else {
-        enabled_extensions.khr_vulkan_enable = true;
-    }
+    enabled_extensions.khr_vulkan_enable2 = true;
     #[cfg(target_os = "android")]
     {
         enabled_extensions.khr_android_create_instance = true;
@@ -121,7 +116,7 @@ pub fn main() {
             .engine_version(0)
             .api_version(vk_target_version);
 
-        let vk_instance = if enabled_extensions.khr_vulkan_enable2 {
+        let vk_instance = {
             let vk_instance = xr_instance
                 .create_vulkan_instance(
                     system,
@@ -136,30 +131,6 @@ pub fn main() {
                 vk_entry.static_fn(),
                 vk::Instance::from_raw(vk_instance as _),
             )
-        } else {
-            let vk_instance_exts = xr_instance
-                .vulkan_legacy_instance_extensions(system)
-                .unwrap()
-                .split(' ')
-                .map(|x| CString::new(x).unwrap())
-                .collect::<Vec<_>>();
-            println!(
-                "Required Vulkan instance extensions: {:?}",
-                vk_instance_exts
-            );
-            let vk_instance_ext_ptrs = vk_instance_exts
-                .iter()
-                .map(|x| x.as_ptr())
-                .collect::<Vec<_>>();
-
-            vk_entry
-                .create_instance(
-                    &vk::InstanceCreateInfo::builder()
-                        .application_info(&vk_app_info)
-                        .enabled_extension_names(&vk_instance_ext_ptrs),
-                    None,
-                )
-                .expect("Vulkan error creating Vulkan instance")
         };
 
         let vk_physical_device = vk::PhysicalDevice::from_raw(
@@ -187,7 +158,7 @@ pub fn main() {
             })
             .expect("Vulkan device has no graphics queue");
 
-        let vk_device = if enabled_extensions.khr_vulkan_enable2 {
+        let vk_device = {
             let vk_device = xr_instance
                 .create_vulkan_device(
                     system,
@@ -208,50 +179,6 @@ pub fn main() {
                 .expect("Vulkan error creating Vulkan device");
 
             ash::Device::load(vk_instance.fp_v1_0(), vk::Device::from_raw(vk_device as _))
-        } else {
-            let vk_device_exts = xr_instance
-                .vulkan_legacy_device_extensions(system)
-                .unwrap()
-                .split(' ')
-                .map(|x| CString::new(x).unwrap())
-                .collect::<Vec<_>>();
-            println!("Required Vulkan device extensions: {:?}", vk_device_exts);
-            let vk_device_ext_ptrs = vk_device_exts
-                .iter()
-                .map(|x| x.as_ptr())
-                .collect::<Vec<_>>();
-
-            // Check that we have the required Vulkan device extensions.
-            let device_extensions = vk_instance
-                .enumerate_device_extension_properties(vk_physical_device)
-                .unwrap();
-            for ext in &vk_device_exts {
-                if !device_extensions.iter().any(|inst_ext| {
-                    CStr::from_ptr(inst_ext.extension_name.as_ptr()) == ext.as_c_str()
-                }) {
-                    panic!(
-                        "OpenXR runtime requires missing Vulkan device extension {:?}",
-                        ext
-                    );
-                }
-            }
-
-            vk_instance
-                .create_device(
-                    vk_physical_device,
-                    &vk::DeviceCreateInfo::builder()
-                        .queue_create_infos(&[vk::DeviceQueueCreateInfo::builder()
-                            .queue_family_index(queue_family_index)
-                            .queue_priorities(&[1.0])
-                            .build()])
-                        .enabled_extension_names(&vk_device_ext_ptrs)
-                        .push_next(&mut vk::PhysicalDeviceVulkan11Features {
-                            multiview: vk::TRUE,
-                            ..Default::default()
-                        }),
-                    None,
-                )
-                .expect("Vulkan error creating Vulkan device")
         };
 
         let queue = vk_device.get_device_queue(queue_family_index, 0);
