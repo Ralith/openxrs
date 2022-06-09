@@ -87,6 +87,39 @@ impl Entry {
         })
     }
 
+    pub unsafe fn from_get_instance_proc_addr(
+        get_instance_proc_addr: sys::pfn::GetInstanceProcAddr,
+    ) -> Result<Self> {
+        Ok(Self {
+            inner: Arc::new(Inner {
+                raw: RawEntry {
+                    get_instance_proc_addr,
+                    create_instance: mem::transmute(get_instance_proc_addr_helper(
+                        get_instance_proc_addr,
+                        sys::Instance::NULL,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
+                    )?),
+                    enumerate_instance_extension_properties: mem::transmute(
+                        get_instance_proc_addr_helper(
+                            get_instance_proc_addr,
+                            sys::Instance::NULL,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumerateInstanceExtensionProperties\0",
+                            ),
+                        )?,
+                    ),
+                    enumerate_api_layer_properties: mem::transmute(get_instance_proc_addr_helper(
+                        get_instance_proc_addr,
+                        sys::Instance::NULL,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
+                    )?),
+                },
+                #[cfg(feature = "loaded")]
+                _lib_guard: None,
+            }),
+        })
+    }
+
     /// Access the raw function pointers
     #[inline]
     pub fn fp(&self) -> &RawEntry {
@@ -99,13 +132,7 @@ impl Entry {
         instance: sys::Instance,
         name: &CStr,
     ) -> Result<unsafe extern "system" fn()> {
-        let mut f = None;
-        cvt((self.fp().get_instance_proc_addr)(
-            instance,
-            name.as_ptr(),
-            &mut f,
-        ))?;
-        Ok(f.unwrap())
+        get_instance_proc_addr_helper(self.fp().get_instance_proc_addr, instance, name)
     }
 
     /// Initialize Android loader. This must be called before `create_instance()`.
@@ -254,6 +281,17 @@ impl Entry {
                 .collect())
         }
     }
+}
+
+#[inline]
+unsafe fn get_instance_proc_addr_helper(
+    get_instance_proc_addr: sys::pfn::GetInstanceProcAddr,
+    instance: sys::Instance,
+    name: &CStr,
+) -> Result<unsafe extern "system" fn()> {
+    let mut f = None;
+    cvt((get_instance_proc_addr)(instance, name.as_ptr(), &mut f))?;
+    Ok(f.unwrap())
 }
 
 struct Inner {
