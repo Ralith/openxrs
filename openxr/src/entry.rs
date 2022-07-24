@@ -87,6 +87,12 @@ impl Entry {
         })
     }
 
+    /// Load entry points using an arbitrary `xrGetInstanceProcAddr` implementation
+    ///
+    /// # Safety
+    ///
+    /// For all core OpenXR instance functions, `get_instance_proc_addr` must yield function
+    /// pointers that satisfy the semantics given in the OpenXR specification.
     pub unsafe fn from_get_instance_proc_addr(
         get_instance_proc_addr: sys::pfn::GetInstanceProcAddr,
     ) -> Result<Self> {
