@@ -57,30 +57,35 @@ impl Entry {
         const PATH: &str = "libopenxr_loader.dylib";
         #[cfg(not(any(target_os = "windows", target_os = "macos")))]
         const PATH: &str = "libopenxr_loader.so";
-        Self::load_from(Path::new(PATH))
+        unsafe {
+            Self::load_from(Path::new(PATH))
+        }
     }
 
     /// Load entry points at run time from the dynamic library identified by `path`
     ///
     /// Available if the `loaded` feature is enabled.
+    ///
+    /// # Safety
+    ///
+    /// `path` must be a shared library that provides OpenXR-compliant definitions for every core
+    /// OpenXR entry point.
     #[cfg(feature = "loaded")]
-    pub fn load_from(path: &Path) -> std::result::Result<Self, LoadError> {
-        let lib = unsafe { Library::new(path).map_err(LoadError)? };
+    pub unsafe fn load_from(path: &Path) -> std::result::Result<Self, LoadError> {
+        let lib = Library::new(path).map_err(LoadError)?;
         Ok(Self {
             inner: Arc::new(Inner {
-                raw: unsafe {
-                    RawEntry {
-                        get_instance_proc_addr: *lib
-                            .get(b"xrGetInstanceProcAddr\0")
-                            .map_err(LoadError)?,
-                        create_instance: *lib.get(b"xrCreateInstance\0").map_err(LoadError)?,
-                        enumerate_instance_extension_properties: *lib
-                            .get(b"xrEnumerateInstanceExtensionProperties\0")
-                            .map_err(LoadError)?,
-                        enumerate_api_layer_properties: *lib
-                            .get(b"xrEnumerateApiLayerProperties\0")
-                            .map_err(LoadError)?,
-                    }
+                raw: RawEntry {
+                    get_instance_proc_addr: *lib
+                        .get(b"xrGetInstanceProcAddr\0")
+                        .map_err(LoadError)?,
+                    create_instance: *lib.get(b"xrCreateInstance\0").map_err(LoadError)?,
+                    enumerate_instance_extension_properties: *lib
+                        .get(b"xrEnumerateInstanceExtensionProperties\0")
+                        .map_err(LoadError)?,
+                    enumerate_api_layer_properties: *lib
+                        .get(b"xrEnumerateApiLayerProperties\0")
+                        .map_err(LoadError)?,
                 },
                 _lib_guard: Some(lib),
             }),
