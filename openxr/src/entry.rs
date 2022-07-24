@@ -49,17 +49,20 @@ impl Entry {
     /// target platform's naming conventions
     ///
     /// Available if the `loaded` feature is enabled.
+    ///
+    /// # Safety
+    ///
+    /// The OpenXR loader shared library in the dynamic loader's search path must conform to the
+    /// OpenXR specification.
     #[cfg(feature = "loaded")]
-    pub fn load() -> std::result::Result<Self, LoadError> {
+    pub unsafe fn load() -> std::result::Result<Self, LoadError> {
         #[cfg(target_os = "windows")]
         const PATH: &str = "openxr_loader.dll";
         #[cfg(target_os = "macos")]
         const PATH: &str = "libopenxr_loader.dylib";
         #[cfg(not(any(target_os = "windows", target_os = "macos")))]
         const PATH: &str = "libopenxr_loader.so";
-        unsafe {
-            Self::load_from(Path::new(PATH))
-        }
+        Self::load_from(Path::new(PATH))
     }
 
     /// Load entry points at run time from the dynamic library identified by `path`
