@@ -94,7 +94,7 @@ impl fmt::Debug for Duration {
 
 impl From<Duration> for std::time::Duration {
     fn from(x: Duration) -> Self {
-        Self::from_nanos(x.0.abs() as u64)
+        Self::from_nanos(x.0.unsigned_abs())
     }
 }
 
