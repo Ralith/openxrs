@@ -267,33 +267,36 @@ impl Instance {
     ///
     /// When using 'khr_vulkan_enable2`, call [`Instance::create_vulkan_instance()`] first to get a
     /// suitable `VkInstance`.
+    ///
+    /// # Safety
+    ///
+    /// `vulkan_instance` must be a valid Vulkan instance, and must have been obtained from
+    /// [`Instance::create_vulkan_instance()`] unless `khr_vulkan_enable2` is not in use.
     #[inline]
-    pub fn vulkan_graphics_device(
+    pub unsafe fn vulkan_graphics_device(
         &self,
         system: SystemId,
         vulkan_instance: VkInstance,
     ) -> Result<VkPhysicalDevice> {
         let mut out = ptr::null();
-        unsafe {
-            if self.exts().khr_vulkan_enable2.is_some() {
-                cvt((self.vulkan().get_vulkan_graphics_device2)(
-                    self.as_raw(),
-                    &sys::VulkanGraphicsDeviceGetInfoKHR {
-                        ty: sys::VulkanGraphicsDeviceGetInfoKHR::TYPE,
-                        next: ptr::null(),
-                        system_id: system,
-                        vulkan_instance,
-                    },
-                    &mut out,
-                ))?;
-            } else {
-                cvt((self.vulkan_legacy().get_vulkan_graphics_device)(
-                    self.as_raw(),
-                    system,
+        if self.exts().khr_vulkan_enable2.is_some() {
+            cvt((self.vulkan().get_vulkan_graphics_device2)(
+                self.as_raw(),
+                &sys::VulkanGraphicsDeviceGetInfoKHR {
+                    ty: sys::VulkanGraphicsDeviceGetInfoKHR::TYPE,
+                    next: ptr::null(),
+                    system_id: system,
                     vulkan_instance,
-                    &mut out,
-                ))?;
-            }
+                },
+                &mut out,
+            ))?;
+        } else {
+            cvt((self.vulkan_legacy().get_vulkan_graphics_device)(
+                self.as_raw(),
+                system,
+                vulkan_instance,
+                &mut out,
+            ))?;
         }
         Ok(out)
     }
