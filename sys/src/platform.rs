@@ -43,25 +43,35 @@ pub use jni::sys::jobject;
 
 // Win32
 #[cfg(windows)]
-pub type ID3D10Device = *const c_void;
+pub use windows::*;
 #[cfg(windows)]
-pub type ID3D10Texture2D = *const c_void;
-#[cfg(windows)]
-pub type D3D10_FEATURE_LEVEL1 = u32;
-#[cfg(windows)]
-pub use winapi::{
-    shared::{
-        ntdef::LUID,
-        windef::{HDC, HGLRC},
-    },
-    um::{
-        d3d11::{ID3D11Device, ID3D11Texture2D},
-        d3d12::{ID3D12CommandQueue, ID3D12Device, ID3D12Resource},
-        d3dcommon::D3D_FEATURE_LEVEL,
-        unknwnbase::IUnknown,
-        winnt::LARGE_INTEGER,
-    },
-};
+#[allow(non_snake_case)]
+mod windows {
+    //! Transcribed from windows-sys
+
+    use std::os::raw::c_void;
+
+    pub type IUnknown = *mut c_void;
+    pub type ID3D10Device = *const c_void;
+    pub type ID3D10Texture2D = *const c_void;
+    pub type D3D10_FEATURE_LEVEL1 = u32;
+    pub type LARGE_INTEGER = i64;
+    pub type HDC = isize;
+    pub type HGLRC = isize;
+    pub type ID3D11Device = *mut c_void;
+    pub type ID3D11Texture2D = *mut c_void;
+    pub type ID3D12CommandQueue = *mut c_void;
+    pub type ID3D12Device = *mut c_void;
+    pub type ID3D12Resource = *mut c_void;
+    pub type D3D_FEATURE_LEVEL = i32;
+
+    #[derive(Copy, Clone)]
+    #[repr(C)]
+    pub struct LUID {
+        pub LowPart: u32,
+        pub HighPart: i32,
+    }
+}
 
 // EGL
 pub type EGLConfig = *mut c_void;
