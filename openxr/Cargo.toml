@@ -29,9 +29,6 @@ libloading = { version = "0.7", optional = true }
 ash = { version = "0.37", default-features = false, features = ["loaded"] }
 ctrlc = "3.1.5"
 
-[target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3", features = ["profileapi"] }
-
 [target.'cfg(target_os = "android")'.dependencies]
 ndk-context = "0.1"
 

@@ -543,9 +543,13 @@ impl Instance {
     #[inline]
     #[cfg(windows)]
     pub fn now(&self) -> Result<Time> {
+        extern "system" {
+            fn QueryPerformanceCounter(lpperformancecount: *mut i64) -> i32;
+        }
+
         unsafe {
             let mut now = MaybeUninit::uninit();
-            winapi::um::profileapi::QueryPerformanceCounter(now.as_mut_ptr());
+            QueryPerformanceCounter(now.as_mut_ptr());
             let now = now.assume_init();
             let mut out = MaybeUninit::uninit();
             cvt((self
