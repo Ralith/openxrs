@@ -2464,92 +2464,92 @@ impl DigitalLensControlFlagsALMALENCE {
 bitmask!(DigitalLensControlFlagsALMALENCE);
 #[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Instance(u64);
 handle!(Instance);
 #[doc = "See [XrSession](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSession)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Session(u64);
 handle!(Session);
 #[doc = "See [XrActionSet](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrActionSet)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct ActionSet(u64);
 handle!(ActionSet);
 #[doc = "See [XrAction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrAction)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Action(u64);
 handle!(Action);
 #[doc = "See [XrSwapchain](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchain)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Swapchain(u64);
 handle!(Swapchain);
 #[doc = "See [XrSpace](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpace)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Space(u64);
 handle!(Space);
 #[doc = "See [XrDebugUtilsMessengerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrDebugUtilsMessengerEXT)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct DebugUtilsMessengerEXT(u64);
 handle!(DebugUtilsMessengerEXT);
 #[doc = "See [XrSpatialAnchorMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorMSFT)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct SpatialAnchorMSFT(u64);
 handle!(SpatialAnchorMSFT);
 #[doc = "See [XrHandTrackerEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandTrackerEXT)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct HandTrackerEXT(u64);
 handle!(HandTrackerEXT);
 #[doc = "See [XrFoveationProfileFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFoveationProfileFB)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct FoveationProfileFB(u64);
 handle!(FoveationProfileFB);
 #[doc = "See [XrTriangleMeshFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrTriangleMeshFB)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct TriangleMeshFB(u64);
 handle!(TriangleMeshFB);
 #[doc = "See [XrPassthroughFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughFB)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct PassthroughFB(u64);
 handle!(PassthroughFB);
 #[doc = "See [XrPassthroughLayerFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughLayerFB)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct PassthroughLayerFB(u64);
 handle!(PassthroughLayerFB);
 #[doc = "See [XrGeometryInstanceFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGeometryInstanceFB)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct GeometryInstanceFB(u64);
 handle!(GeometryInstanceFB);
 #[doc = "See [XrSceneObserverMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneObserverMSFT)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct SceneObserverMSFT(u64);
 handle!(SceneObserverMSFT);
 #[doc = "See [XrSceneMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSceneMSFT)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct SceneMSFT(u64);
 handle!(SceneMSFT);
 #[doc = "See [XrSpatialAnchorStoreConnectionMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorStoreConnectionMSFT)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct SpatialAnchorStoreConnectionMSFT(u64);
 handle!(SpatialAnchorStoreConnectionMSFT);
 #[doc = "See [XrFacialTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFacialTrackerHTC)"]
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct FacialTrackerHTC(u64);
 handle!(FacialTrackerHTC);
 #[repr(C)]

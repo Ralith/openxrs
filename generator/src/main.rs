@@ -1031,7 +1031,7 @@ impl Parser {
             quote! {
                 #[doc = #doc]
                 #[repr(transparent)]
-                #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+                #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
                 pub struct #ident(u64);
                 handle!(#ident);
             }
