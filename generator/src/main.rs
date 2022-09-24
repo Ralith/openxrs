@@ -23,16 +23,18 @@ use xml::{
 fn main() {
     let mut args = env::args_os();
     args.next().unwrap();
-    let source = File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../sys/OpenXR-SDK/specification/registry/xr.xml")
-    }))
-    .expect("failed to open registry XML file");
+
+    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let source =
+        File::open(args.next().map(PathBuf::from).unwrap_or_else(|| {
+            manifest_dir.join("../sys/OpenXR-SDK/specification/registry/xr.xml")
+        }))
+        .expect("failed to open registry XML file");
 
     let mut parser = Parser::new(source);
     parser.parse();
-    let mut sys_out = File::create("../sys/src/generated.rs").unwrap();
-    let mut hl_out = File::create("../openxr/src/generated.rs").unwrap();
+    let mut sys_out = File::create(manifest_dir.join("../sys/src/generated.rs")).unwrap();
+    let mut hl_out = File::create(manifest_dir.join("../openxr/src/generated.rs")).unwrap();
     write!(sys_out, "{}", parser.generate_sys()).unwrap();
     write!(hl_out, "{}", parser.generate_hl()).unwrap();
 }
