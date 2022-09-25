@@ -1,5 +1,7 @@
 use std::{
-    ffi::CString,
+    any::Any,
+    ffi::{CStr, CString},
+    fmt,
     marker::PhantomData,
     mem::{self, MaybeUninit},
     ptr,
@@ -614,6 +616,47 @@ impl Instance {
         }
     }
 
+    /// Create a debug messenger
+    ///
+    /// Requires EXT_debug_utils.
+    ///
+    /// # Safety
+    ///
+    /// Must not be called concurrently with any OpenXR function on `self` or any object descended
+    /// from `self`.
+    pub unsafe fn create_debug_utils_messenger<F>(
+        &self,
+        severities: DebugUtilsMessageSeverityFlagsEXT,
+        types: DebugUtilsMessageTypeFlagsEXT,
+        callback: F,
+    ) -> DebugMessenger
+    where
+        F: Fn(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, DebugMessage<'_>)
+            + 'static,
+    {
+        let mut out = MaybeUninit::uninit();
+        let callback: Box<F> = Box::new(callback);
+        let info = sys::DebugUtilsMessengerCreateInfoEXT {
+            ty: sys::DebugUtilsMessengerCreateInfoEXT::TYPE,
+            next: ptr::null(),
+            message_severities: severities,
+            message_types: types,
+            user_callback: Some(debug_messenger_callback::<F>),
+            user_data: &*callback as *const _ as *mut libc::c_void,
+        };
+        (self
+            .exts()
+            .ext_debug_utils
+            .as_ref()
+            .expect("EXT_debug_utils not loaded")
+            .create_debug_utils_messenger)(self.as_raw(), &info, out.as_mut_ptr());
+        DebugMessenger {
+            instance: self.clone(),
+            handle: out.assume_init(),
+            _callback: callback,
+        }
+    }
+
     //
     // Internal helpers
     //
@@ -760,4 +803,90 @@ impl<'a> Binding<'a> {
             _marker: PhantomData,
         }
     }
+}
+
+pub struct DebugMessage<'a>(&'a sys::DebugUtilsMessengerCallbackDataEXT);
+
+impl<'a> DebugMessage<'a> {
+    #[inline]
+    pub fn message_id(&self) -> Option<&'a str> {
+        if self.0.message_id.is_null() {
+            return None;
+        }
+        Some(
+            unsafe { CStr::from_ptr(self.0.message_id) }
+                .to_str()
+                .unwrap(),
+        )
+    }
+
+    #[inline]
+    pub fn function_name(&self) -> Option<&'a str> {
+        if self.0.message_id.is_null() {
+            return None;
+        }
+        Some(
+            unsafe { CStr::from_ptr(self.0.function_name) }
+                .to_str()
+                .unwrap(),
+        )
+    }
+
+    #[inline]
+    pub fn message(&self) -> &'a str {
+        unsafe { CStr::from_ptr(self.0.message) }.to_str().unwrap()
+    }
+
+    #[inline]
+    pub fn as_raw(&self) -> &'a sys::DebugUtilsMessengerCallbackDataEXT {
+        self.0
+    }
+}
+
+impl<'a> fmt::Display for DebugMessage<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
+        if let Some(x) = self.function_name() {
+            write!(f, "{}: ", x)?;
+        }
+        if let Some(x) = self.message_id() {
+            write!(f, "{}: ", x)?;
+        }
+        write!(f, "{}", self.message())
+    }
+}
+
+pub struct DebugMessenger {
+    instance: Instance,
+    handle: sys::DebugUtilsMessengerEXT,
+    _callback: Box<dyn Any>,
+}
+
+impl Drop for DebugMessenger {
+    fn drop(&mut self) {
+        unsafe {
+            (self
+                .instance
+                .exts()
+                .ext_debug_utils
+                .as_ref()
+                .unwrap()
+                .destroy_debug_utils_messenger)(self.handle);
+        }
+    }
+}
+
+extern "system" fn debug_messenger_callback<F>(
+    severity: DebugUtilsMessageSeverityFlagsEXT,
+    ty: DebugUtilsMessageTypeFlagsEXT,
+    data: *const sys::DebugUtilsMessengerCallbackDataEXT,
+    f: *mut libc::c_void,
+) -> sys::Bool32
+where
+    F: Fn(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT, DebugMessage<'_>),
+{
+    unsafe {
+        let f = &*(f as *const F);
+        (f)(severity, ty, DebugMessage(&*data));
+    }
+    sys::FALSE
 }
