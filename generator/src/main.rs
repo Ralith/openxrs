@@ -1368,7 +1368,7 @@ impl Parser {
             .filter_map(|(name, s)| {
                 if s.extension
                     .as_ref()
-                    .map_or(false, |ext| self.disabled_exts.contains(&*ext))
+                    .map_or(false, |ext| self.disabled_exts.contains(ext))
                 {
                     return None;
                 }
