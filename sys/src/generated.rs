@@ -3,7 +3,8 @@
     non_upper_case_globals,
     clippy::unreadable_literal,
     clippy::identity_op,
-    unused
+    unused,
+    clippy::derive_partial_eq_without_eq
 )]
 use crate::platform::*;
 use crate::support::*;

@@ -1191,7 +1191,7 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
-            #![allow(non_upper_case_globals, clippy::unreadable_literal, clippy::identity_op, unused)]
+            #![allow(non_upper_case_globals, clippy::unreadable_literal, clippy::identity_op, unused, clippy::derive_partial_eq_without_eq)]
             use std::fmt;
             use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};
