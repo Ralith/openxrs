@@ -261,7 +261,7 @@ impl Entry {
     pub fn enumerate_extensions(&self) -> Result<ExtensionSet> {
         unsafe {
             let exts = get_arr_init(
-                sys::ExtensionProperties::out(ptr::null_mut()),
+                sys::ExtensionProperties::base_out(ptr::null_mut()),
                 |cap, count, buf| {
                     (self.fp().enumerate_instance_extension_properties)(
                         ptr::null(),
@@ -278,7 +278,7 @@ impl Entry {
     pub fn enumerate_layers(&self) -> Result<Vec<ApiLayerProperties>> {
         unsafe {
             let layers = get_arr_init(
-                sys::ApiLayerProperties::out(ptr::null_mut()),
+                sys::ApiLayerProperties::base_out(ptr::null_mut()),
                 |cap, count, buf| (self.fp().enumerate_api_layer_properties)(cap, count, buf as _),
             )?;
             Ok(layers

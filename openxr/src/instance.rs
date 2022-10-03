@@ -152,8 +152,8 @@ impl Instance {
     #[inline]
     pub fn supports_hand_tracking(&self, system: SystemId) -> Result<bool> {
         unsafe {
-            let mut hand = sys::SystemHandTrackingPropertiesEXT::out(ptr::null_mut());
-            let mut p = sys::SystemProperties::out(&mut hand as *mut _ as _);
+            let mut hand = sys::SystemHandTrackingPropertiesEXT::base_out(ptr::null_mut());
+            let mut p = sys::SystemProperties::base_out(&mut hand as *mut _ as _);
             cvt((self.fp().get_system_properties)(
                 self.as_raw(),
                 system,
@@ -442,7 +442,7 @@ impl Instance {
         ty: ViewConfigurationType,
     ) -> Result<ViewConfigurationProperties> {
         let out = unsafe {
-            let mut x = sys::ViewConfigurationProperties::out(ptr::null_mut());
+            let mut x = sys::ViewConfigurationProperties::base_out(ptr::null_mut());
             cvt((self.fp().get_view_configuration_properties)(
                 self.as_raw(),
                 system,
@@ -464,7 +464,7 @@ impl Instance {
         ty: ViewConfigurationType,
     ) -> Result<Vec<ViewConfigurationView>> {
         let views = get_arr_init(
-            sys::ViewConfigurationView::out(ptr::null_mut()),
+            sys::ViewConfigurationView::base_out(ptr::null_mut()),
             |capacity, count, buf| unsafe {
                 (self.fp().enumerate_view_configuration_views)(
                     self.as_raw(),

@@ -26,7 +26,7 @@ impl Graphics for D3D11 {
 
     fn requirements(inst: &Instance, system: SystemId) -> Result<Requirements> {
         let out = unsafe {
-            let mut x = sys::GraphicsRequirementsD3D11KHR::out(ptr::null_mut());
+            let mut x = sys::GraphicsRequirementsD3D11KHR::base_out(ptr::null_mut());
             cvt((inst.d3d11().get_d3d11_graphics_requirements)(
                 inst.as_raw(),
                 system,

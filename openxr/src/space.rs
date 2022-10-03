@@ -84,7 +84,7 @@ impl Space {
         assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
                    "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
         unsafe {
-            let mut x = sys::SpaceLocation::out(ptr::null_mut());
+            let mut x = sys::SpaceLocation::base_out(ptr::null_mut());
             cvt((self.fp().locate_space)(
                 self.as_raw(),
                 base.as_raw(),
@@ -103,8 +103,8 @@ impl Space {
         assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
                    "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
         unsafe {
-            let mut velocity = sys::SpaceVelocity::out(ptr::null_mut());
-            let mut location = sys::SpaceLocation::out(&mut velocity as *mut _ as _);
+            let mut velocity = sys::SpaceVelocity::base_out(ptr::null_mut());
+            let mut location = sys::SpaceLocation::base_out(&mut velocity as *mut _ as _);
             cvt((self.fp().locate_space)(
                 self.as_raw(),
                 base.as_raw(),
