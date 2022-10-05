@@ -2126,6 +2126,12 @@ fn xr_bitmask_value_name(ty: &str, name: &str) -> Ident {
     let ty = &ty[0..ty.len() - "Flags".len()];
     let prefix_len = ty.to_shouty_snake_case().len() + 1;
     let end = name.rfind("_BIT").unwrap();
+
+    if prefix_len == end + 1 {
+        //  some BITs have no name, i.e. XR_PASSTHROUGH_CAPABILITY_BIT_FB
+        //  in this case, return PASSTHROUGH_CAPABILITY
+        return Ident::new(&name["XR_".len()..end], Span::call_site());
+    }
     Ident::new(&name[prefix_len..end], Span::call_site())
 }
 
