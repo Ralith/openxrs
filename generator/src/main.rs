@@ -1913,6 +1913,9 @@ impl Parser {
             let ident = xr_var_name(&m.name);
             let (ty, value) = if m.ty == "XrBool32" {
                 (quote! { bool }, quote! { (self.0).#ident.into() })
+            } else if m.ty == "XrResult" {
+                //  prevent name collision with std Result
+                (quote! { sys::Result }, quote! { (self.0).#ident })
             } else if self.handles.contains(&m.ty) {
                 let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                 (quote! { sys::#ty }, quote! { (self.0).#ident })
