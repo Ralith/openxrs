@@ -2040,7 +2040,7 @@ impl<'a> SpatialAnchorCreateCompleteFB<'a> {
         (self.0).request_id
     }
     #[inline]
-    pub fn result(self) -> Result {
+    pub fn result(self) -> sys::Result {
         (self.0).result
     }
     #[inline]
@@ -2068,7 +2068,7 @@ impl<'a> SpaceSetStatusCompleteFB<'a> {
         (self.0).request_id
     }
     #[inline]
-    pub fn result(self) -> Result {
+    pub fn result(self) -> sys::Result {
         (self.0).result
     }
     #[inline]
@@ -2120,7 +2120,7 @@ impl<'a> SpaceQueryCompleteFB<'a> {
         (self.0).request_id
     }
     #[inline]
-    pub fn result(self) -> Result {
+    pub fn result(self) -> sys::Result {
         (self.0).result
     }
 }
@@ -2140,7 +2140,7 @@ impl<'a> SpaceSaveCompleteFB<'a> {
         (self.0).request_id
     }
     #[inline]
-    pub fn result(self) -> Result {
+    pub fn result(self) -> sys::Result {
         (self.0).result
     }
     #[inline]
@@ -2172,7 +2172,7 @@ impl<'a> SpaceEraseCompleteFB<'a> {
         (self.0).request_id
     }
     #[inline]
-    pub fn result(self) -> Result {
+    pub fn result(self) -> sys::Result {
         (self.0).result
     }
     #[inline]
