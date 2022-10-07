@@ -5,7 +5,7 @@
 use std::os::raw::c_char;
 
 pub use sys::{
-    self, AsyncRequestIdFB, Duration, Path, SystemId, Time, Version, CURRENT_API_VERSION,
+    self, AsyncRequestIdFB, Duration, Path, SystemId, Time, UuidEXT, Version, CURRENT_API_VERSION,
     FREQUENCY_UNSPECIFIED,
 };
 

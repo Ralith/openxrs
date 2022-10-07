@@ -1379,6 +1379,7 @@ impl Parser {
                 }
             })
             .collect::<IndexSet<&str>>();
+
         let reexports = simple_structs
             .iter()
             .cloned()
