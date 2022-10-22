@@ -7,9 +7,7 @@ use std::{
     time::Duration,
 };
 
-use ash::{
-    vk::{self, Handle},
-};
+use ash::vk::{self, Handle};
 use openxr as xr;
 
 use wgpu_hal::{api::Vulkan as HalVulkan, Api};

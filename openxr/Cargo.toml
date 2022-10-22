@@ -45,6 +45,9 @@ name = "vulkan-android"
 path = "examples/vulkan.rs"
 crate-type = ["cdylib"]
 
+[[example]]
+name = "wgpu"
+
 # The following manifest metadata is used by cargo-apk to configure the example Android app for the Oculus Quest 1 and Quest 2.
 # It does not affect the openxr crate.
 [package.metadata.android]
