@@ -97,8 +97,8 @@ fn main() {
     // OpenXR wants to ensure apps are using the correct graphics card and Vulkan features and
     // extensions, so the instance and device MUST be set up before Instance::create_session.
 
-    let vk_target_version = vk::make_api_version(0, 1, 1, 0); // Vulkan 1.1 guarantees multiview support
-    let vk_target_version_xr = xr::Version::new(1, 1, 0);
+    let vk_target_version = vk::make_api_version(0, 1, 2, 0); // Vulkan 1.2 guarantees multiview support
+    let vk_target_version_xr = xr::Version::new(1, 2, 0);
 
     let reqs = xr_instance
         .graphics_requirements::<xr::Vulkan>(system)
@@ -108,7 +108,7 @@ fn main() {
         || vk_target_version_xr.major() > reqs.max_api_version_supported.major()
     {
         panic!(
-            "OpenXR runtime requires Vulkan version > {}, < {}.0.0",
+            "OpenXR runtime requires Vulkan version > {}, < {}.2.0",
             reqs.min_api_version_supported,
             reqs.max_api_version_supported.major() + 1
         );
