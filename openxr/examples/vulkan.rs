@@ -586,10 +586,6 @@ pub fn main() {
             // Who knows! It's up to the runtime to decide.
             let image_index = swapchain.handle.acquire_image().unwrap();
 
-            // Wait until the image is available to render to. The compositor could still be
-            // reading from it.
-            swapchain.handle.wait_image(xr::Duration::INFINITE).unwrap();
-
             // Ensure the last use of this frame's resources is 100% done
             vk_device
                 .wait_for_fences(&[fences[frame]], true, u64::MAX)
@@ -688,6 +684,10 @@ pub fn main() {
             let (_, views) = session
                 .locate_views(VIEW_TYPE, xr_frame_state.predicted_display_time, &stage)
                 .unwrap();
+
+            // Wait until the image is available to render to before beginning work on the GPU. The
+            // compositor could still be reading from it.
+            swapchain.handle.wait_image(xr::Duration::INFINITE).unwrap();
 
             // Submit commands to the GPU, then tell OpenXR we're done with our part.
             vk_device

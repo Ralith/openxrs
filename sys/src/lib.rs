@@ -108,6 +108,11 @@ impl TryFrom<std::time::Duration> for Duration {
 
 wrapper! {
     #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    AsyncRequestIdFB(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Path(u64)
 }
 

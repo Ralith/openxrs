@@ -9,21 +9,25 @@ pub use sys::platform::{
 pub use sys::{
     ActionType, AndroidSurfaceSwapchainFlagsFB, AndroidThreadTypeKHR, BlendFactorFB, Color4f,
     ColorSpaceFB, CompositionLayerFlags, CompositionLayerImageLayoutFlagsFB,
-    CompositionLayerSecureContentFlagsFB, CompositionLayerSpaceWarpInfoFlagsFB,
-    DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT,
-    DigitalLensControlFlagsALMALENCE, EnvironmentBlendMode, Extent2Df, Extent2Di, EyeExpressionHTC,
-    EyeVisibility, FacialTrackingTypeHTC, FormFactor, FoveationDynamicFB, FoveationLevelFB, Fovf,
-    HandEXT, HandJointEXT, HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT,
+    CompositionLayerSecureContentFlagsFB, CompositionLayerSettingsFlagsFB,
+    CompositionLayerSpaceWarpInfoFlagsFB, DebugUtilsMessageSeverityFlagsEXT,
+    DebugUtilsMessageTypeFlagsEXT, DigitalLensControlFlagsALMALENCE, EnvironmentBlendMode,
+    Extent2Df, Extent2Di, Extent3DfFB, EyeExpressionHTC, EyeVisibility, FacialTrackingTypeHTC,
+    FormFactor, FoveationDynamicFB, FoveationLevelFB, Fovf, HandEXT, HandForearmJointULTRALEAP,
+    HandJointEXT, HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT,
     HandJointsMotionRangeEXT, HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB,
     InputSourceLocalizedNameFlags, InstanceCreateFlags, KeyboardTrackingFlagsFB,
     KeyboardTrackingQueryFlagsFB, LipExpressionHTC, MeshComputeLodMSFT, ObjectType, Offset2Df,
-    Offset2Di, OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX, PassthroughFlagsFB,
-    PassthroughLayerPurposeFB, PassthroughStateChangedFlagsFB, PerfSettingsDomainEXT,
-    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, Posef,
-    Quaternionf, Rect2Df, Rect2Di, ReferenceSpaceType, RenderModelFlagsFB, ReprojectionModeMSFT,
-    SceneComponentTypeMSFT, SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT,
-    SceneComputeStateMSFT, SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT, SessionCreateFlags,
-    SessionState, SpaceLocationFlags, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
+    Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX,
+    PassthroughCapabilityFlagsFB, PassthroughFlagsFB, PassthroughLayerPurposeFB,
+    PassthroughStateChangedFlagsFB, PerfSettingsDomainEXT, PerfSettingsLevelEXT,
+    PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT, PerformanceMetricsCounterFlagsMETA,
+    PerformanceMetricsCounterUnitMETA, Posef, Quaternionf, Rect2Df, Rect2Di, Rect3DfFB,
+    ReferenceSpaceType, RenderModelFlagsFB, ReprojectionModeMSFT, SceneComponentTypeMSFT,
+    SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT, SceneComputeStateMSFT,
+    SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT, SessionCreateFlags, SessionState,
+    SpaceComponentTypeFB, SpaceLocationFlags, SpacePersistenceModeFB, SpaceQueryActionFB,
+    SpaceStorageLocationFB, SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType,
     SwapchainCreateFlags, SwapchainCreateFoveationFlagsFB, SwapchainStateFoveationFlagsFB,
     SwapchainUsageFlags, SystemGraphicsProperties, TriangleMeshFlagsFB, Vector2f, Vector3f,
     Vector4f, Vector4sFB, ViewConfigurationType, ViewStateFlags, VisibilityMaskTypeKHR,
@@ -44,9 +48,11 @@ pub struct ExtensionSet {
     pub ext_hand_tracking: bool,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: bool,
+    pub ext_dpad_binding: bool,
     pub ext_hand_joints_motion_range: bool,
     pub ext_samsung_odyssey_controller: bool,
     pub ext_hp_mixed_reality_controller: bool,
+    pub ext_palm_pose: bool,
     pub ext_uuid: bool,
     pub extx_overlay: bool,
     pub fb_composition_layer_image_layout: bool,
@@ -60,22 +66,30 @@ pub struct ExtensionSet {
     pub fb_hand_tracking_mesh: bool,
     pub fb_hand_tracking_aim: bool,
     pub fb_hand_tracking_capsules: bool,
+    pub fb_spatial_entity: bool,
     pub fb_foveation: bool,
     pub fb_foveation_configuration: bool,
     pub fb_keyboard_tracking: bool,
     pub fb_triangle_mesh: bool,
     pub fb_passthrough: bool,
     pub fb_render_model: bool,
+    pub fb_spatial_entity_query: bool,
+    pub fb_spatial_entity_storage: bool,
     pub fb_foveation_vulkan: bool,
     #[cfg(target_os = "android")]
     pub fb_swapchain_update_state_android_surface: bool,
     pub fb_swapchain_update_state_opengl_es: bool,
     pub fb_swapchain_update_state_vulkan: bool,
     pub fb_space_warp: bool,
+    pub fb_scene: bool,
+    pub fb_spatial_entity_container: bool,
     pub fb_passthrough_keyboard_hands: bool,
+    pub fb_composition_layer_settings: bool,
     pub htc_vive_cosmos_controller_interaction: bool,
     pub htc_facial_tracking: bool,
     pub htc_vive_focus3_controller_interaction: bool,
+    pub htc_hand_interaction: bool,
+    pub htc_vive_wrist_tracker_interaction: bool,
     pub htcx_vive_tracker_interaction: bool,
     pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
@@ -108,6 +122,9 @@ pub struct ExtensionSet {
     pub khr_composition_layer_equirect2: bool,
     pub khr_binding_modification: bool,
     pub khr_swapchain_usage_input_attachment_bit: bool,
+    pub meta_vulkan_swapchain_create_info: bool,
+    pub meta_performance_metrics: bool,
+    pub ml_ml2_controller_interaction: bool,
     pub mnd_headless: bool,
     pub mnd_swapchain_usage_input_attachment_bit: bool,
     pub mndx_egl_enable: bool,
@@ -128,12 +145,14 @@ pub struct ExtensionSet {
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: bool,
     pub oculus_audio_device_guid: bool,
+    pub ultraleap_hand_tracking_forearm: bool,
     pub valve_analog_threshold: bool,
     pub varjo_quad_views: bool,
     pub varjo_foveated_rendering: bool,
     pub varjo_composition_layer_depth_test: bool,
     pub varjo_environment_depth_estimation: bool,
     pub varjo_marker_tracking: bool,
+    pub varjo_view_offset: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<String>,
 }
@@ -173,6 +192,9 @@ impl ExtensionSet {
                 raw::Win32AppcontainerCompatibleEXT::NAME => {
                     out.ext_win32_appcontainer_compatible = true;
                 }
+                raw::DpadBindingEXT::NAME => {
+                    out.ext_dpad_binding = true;
+                }
                 raw::HandJointsMotionRangeEXT::NAME => {
                     out.ext_hand_joints_motion_range = true;
                 }
@@ -181,6 +203,9 @@ impl ExtensionSet {
                 }
                 raw::HpMixedRealityControllerEXT::NAME => {
                     out.ext_hp_mixed_reality_controller = true;
+                }
+                raw::PalmPoseEXT::NAME => {
+                    out.ext_palm_pose = true;
                 }
                 raw::UuidEXT::NAME => {
                     out.ext_uuid = true;
@@ -219,6 +244,9 @@ impl ExtensionSet {
                 raw::HandTrackingCapsulesFB::NAME => {
                     out.fb_hand_tracking_capsules = true;
                 }
+                raw::SpatialEntityFB::NAME => {
+                    out.fb_spatial_entity = true;
+                }
                 raw::FoveationFB::NAME => {
                     out.fb_foveation = true;
                 }
@@ -237,6 +265,12 @@ impl ExtensionSet {
                 raw::RenderModelFB::NAME => {
                     out.fb_render_model = true;
                 }
+                raw::SpatialEntityQueryFB::NAME => {
+                    out.fb_spatial_entity_query = true;
+                }
+                raw::SpatialEntityStorageFB::NAME => {
+                    out.fb_spatial_entity_storage = true;
+                }
                 raw::FoveationVulkanFB::NAME => {
                     out.fb_foveation_vulkan = true;
                 }
@@ -253,8 +287,17 @@ impl ExtensionSet {
                 raw::SpaceWarpFB::NAME => {
                     out.fb_space_warp = true;
                 }
+                raw::SceneFB::NAME => {
+                    out.fb_scene = true;
+                }
+                raw::SpatialEntityContainerFB::NAME => {
+                    out.fb_spatial_entity_container = true;
+                }
                 raw::PassthroughKeyboardHandsFB::NAME => {
                     out.fb_passthrough_keyboard_hands = true;
+                }
+                raw::CompositionLayerSettingsFB::NAME => {
+                    out.fb_composition_layer_settings = true;
                 }
                 raw::ViveCosmosControllerInteractionHTC::NAME => {
                     out.htc_vive_cosmos_controller_interaction = true;
@@ -264,6 +307,12 @@ impl ExtensionSet {
                 }
                 raw::ViveFocus3ControllerInteractionHTC::NAME => {
                     out.htc_vive_focus3_controller_interaction = true;
+                }
+                raw::HandInteractionHTC::NAME => {
+                    out.htc_hand_interaction = true;
+                }
+                raw::ViveWristTrackerInteractionHTC::NAME => {
+                    out.htc_vive_wrist_tracker_interaction = true;
                 }
                 raw::ViveTrackerInteractionHTCX::NAME => {
                     out.htcx_vive_tracker_interaction = true;
@@ -347,6 +396,15 @@ impl ExtensionSet {
                 raw::SwapchainUsageInputAttachmentBitKHR::NAME => {
                     out.khr_swapchain_usage_input_attachment_bit = true;
                 }
+                raw::VulkanSwapchainCreateInfoMETA::NAME => {
+                    out.meta_vulkan_swapchain_create_info = true;
+                }
+                raw::PerformanceMetricsMETA::NAME => {
+                    out.meta_performance_metrics = true;
+                }
+                raw::Ml2ControllerInteractionML::NAME => {
+                    out.ml_ml2_controller_interaction = true;
+                }
                 raw::HeadlessMND::NAME => {
                     out.mnd_headless = true;
                 }
@@ -401,6 +459,9 @@ impl ExtensionSet {
                 raw::AudioDeviceGuidOCULUS::NAME => {
                     out.oculus_audio_device_guid = true;
                 }
+                raw::HandTrackingForearmULTRALEAP::NAME => {
+                    out.ultraleap_hand_tracking_forearm = true;
+                }
                 raw::AnalogThresholdVALVE::NAME => {
                     out.valve_analog_threshold = true;
                 }
@@ -418,6 +479,9 @@ impl ExtensionSet {
                 }
                 raw::MarkerTrackingVARJO::NAME => {
                     out.varjo_marker_tracking = true;
+                }
+                raw::ViewOffsetVARJO::NAME => {
+                    out.varjo_view_offset = true;
                 }
                 bytes => {
                     if let Ok(name) = std::str::from_utf8(bytes) {
@@ -482,6 +546,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.ext_dpad_binding {
+                out.push(raw::DpadBindingEXT::NAME.into());
+            }
+        }
+        {
             if self.ext_hand_joints_motion_range {
                 out.push(raw::HandJointsMotionRangeEXT::NAME.into());
             }
@@ -494,6 +563,11 @@ impl ExtensionSet {
         {
             if self.ext_hp_mixed_reality_controller {
                 out.push(raw::HpMixedRealityControllerEXT::NAME.into());
+            }
+        }
+        {
+            if self.ext_palm_pose {
+                out.push(raw::PalmPoseEXT::NAME.into());
             }
         }
         {
@@ -558,6 +632,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_spatial_entity {
+                out.push(raw::SpatialEntityFB::NAME.into());
+            }
+        }
+        {
             if self.fb_foveation {
                 out.push(raw::FoveationFB::NAME.into());
             }
@@ -588,6 +667,16 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_spatial_entity_query {
+                out.push(raw::SpatialEntityQueryFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_spatial_entity_storage {
+                out.push(raw::SpatialEntityStorageFB::NAME.into());
+            }
+        }
+        {
             if self.fb_foveation_vulkan {
                 out.push(raw::FoveationVulkanFB::NAME.into());
             }
@@ -614,8 +703,23 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_scene {
+                out.push(raw::SceneFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_spatial_entity_container {
+                out.push(raw::SpatialEntityContainerFB::NAME.into());
+            }
+        }
+        {
             if self.fb_passthrough_keyboard_hands {
                 out.push(raw::PassthroughKeyboardHandsFB::NAME.into());
+            }
+        }
+        {
+            if self.fb_composition_layer_settings {
+                out.push(raw::CompositionLayerSettingsFB::NAME.into());
             }
         }
         {
@@ -631,6 +735,16 @@ impl ExtensionSet {
         {
             if self.htc_vive_focus3_controller_interaction {
                 out.push(raw::ViveFocus3ControllerInteractionHTC::NAME.into());
+            }
+        }
+        {
+            if self.htc_hand_interaction {
+                out.push(raw::HandInteractionHTC::NAME.into());
+            }
+        }
+        {
+            if self.htc_vive_wrist_tracker_interaction {
+                out.push(raw::ViveWristTrackerInteractionHTC::NAME.into());
             }
         }
         {
@@ -766,6 +880,21 @@ impl ExtensionSet {
             }
         }
         {
+            if self.meta_vulkan_swapchain_create_info {
+                out.push(raw::VulkanSwapchainCreateInfoMETA::NAME.into());
+            }
+        }
+        {
+            if self.meta_performance_metrics {
+                out.push(raw::PerformanceMetricsMETA::NAME.into());
+            }
+        }
+        {
+            if self.ml_ml2_controller_interaction {
+                out.push(raw::Ml2ControllerInteractionML::NAME.into());
+            }
+        }
+        {
             if self.mnd_headless {
                 out.push(raw::HeadlessMND::NAME.into());
             }
@@ -854,6 +983,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.ultraleap_hand_tracking_forearm {
+                out.push(raw::HandTrackingForearmULTRALEAP::NAME.into());
+            }
+        }
+        {
             if self.valve_analog_threshold {
                 out.push(raw::AnalogThresholdVALVE::NAME.into());
             }
@@ -883,6 +1017,11 @@ impl ExtensionSet {
                 out.push(raw::MarkerTrackingVARJO::NAME.into());
             }
         }
+        {
+            if self.varjo_view_offset {
+                out.push(raw::ViewOffsetVARJO::NAME.into());
+            }
+        }
         for name in &self.other {
             let mut bytes = Vec::with_capacity(name.len() + 1);
             bytes.extend_from_slice(name.as_bytes());
@@ -906,9 +1045,11 @@ pub struct InstanceExtensions {
     pub ext_hand_tracking: Option<raw::HandTrackingEXT>,
     #[cfg(windows)]
     pub ext_win32_appcontainer_compatible: Option<raw::Win32AppcontainerCompatibleEXT>,
+    pub ext_dpad_binding: Option<raw::DpadBindingEXT>,
     pub ext_hand_joints_motion_range: Option<raw::HandJointsMotionRangeEXT>,
     pub ext_samsung_odyssey_controller: Option<raw::SamsungOdysseyControllerEXT>,
     pub ext_hp_mixed_reality_controller: Option<raw::HpMixedRealityControllerEXT>,
+    pub ext_palm_pose: Option<raw::PalmPoseEXT>,
     pub ext_uuid: Option<raw::UuidEXT>,
     pub extx_overlay: Option<raw::OverlayEXTX>,
     pub fb_composition_layer_image_layout: Option<raw::CompositionLayerImageLayoutFB>,
@@ -922,12 +1063,15 @@ pub struct InstanceExtensions {
     pub fb_hand_tracking_mesh: Option<raw::HandTrackingMeshFB>,
     pub fb_hand_tracking_aim: Option<raw::HandTrackingAimFB>,
     pub fb_hand_tracking_capsules: Option<raw::HandTrackingCapsulesFB>,
+    pub fb_spatial_entity: Option<raw::SpatialEntityFB>,
     pub fb_foveation: Option<raw::FoveationFB>,
     pub fb_foveation_configuration: Option<raw::FoveationConfigurationFB>,
     pub fb_keyboard_tracking: Option<raw::KeyboardTrackingFB>,
     pub fb_triangle_mesh: Option<raw::TriangleMeshFB>,
     pub fb_passthrough: Option<raw::PassthroughFB>,
     pub fb_render_model: Option<raw::RenderModelFB>,
+    pub fb_spatial_entity_query: Option<raw::SpatialEntityQueryFB>,
+    pub fb_spatial_entity_storage: Option<raw::SpatialEntityStorageFB>,
     pub fb_foveation_vulkan: Option<raw::FoveationVulkanFB>,
     #[cfg(target_os = "android")]
     pub fb_swapchain_update_state_android_surface:
@@ -935,10 +1079,15 @@ pub struct InstanceExtensions {
     pub fb_swapchain_update_state_opengl_es: Option<raw::SwapchainUpdateStateOpenglEsFB>,
     pub fb_swapchain_update_state_vulkan: Option<raw::SwapchainUpdateStateVulkanFB>,
     pub fb_space_warp: Option<raw::SpaceWarpFB>,
+    pub fb_scene: Option<raw::SceneFB>,
+    pub fb_spatial_entity_container: Option<raw::SpatialEntityContainerFB>,
     pub fb_passthrough_keyboard_hands: Option<raw::PassthroughKeyboardHandsFB>,
+    pub fb_composition_layer_settings: Option<raw::CompositionLayerSettingsFB>,
     pub htc_vive_cosmos_controller_interaction: Option<raw::ViveCosmosControllerInteractionHTC>,
     pub htc_facial_tracking: Option<raw::FacialTrackingHTC>,
     pub htc_vive_focus3_controller_interaction: Option<raw::ViveFocus3ControllerInteractionHTC>,
+    pub htc_hand_interaction: Option<raw::HandInteractionHTC>,
+    pub htc_vive_wrist_tracker_interaction: Option<raw::ViveWristTrackerInteractionHTC>,
     pub htcx_vive_tracker_interaction: Option<raw::ViveTrackerInteractionHTCX>,
     pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
@@ -972,6 +1121,9 @@ pub struct InstanceExtensions {
     pub khr_composition_layer_equirect2: Option<raw::CompositionLayerEquirect2KHR>,
     pub khr_binding_modification: Option<raw::BindingModificationKHR>,
     pub khr_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitKHR>,
+    pub meta_vulkan_swapchain_create_info: Option<raw::VulkanSwapchainCreateInfoMETA>,
+    pub meta_performance_metrics: Option<raw::PerformanceMetricsMETA>,
+    pub ml_ml2_controller_interaction: Option<raw::Ml2ControllerInteractionML>,
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub mnd_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitMND>,
     pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
@@ -992,12 +1144,14 @@ pub struct InstanceExtensions {
     #[cfg(target_os = "android")]
     pub oculus_android_session_state_enable: Option<raw::AndroidSessionStateEnableOCULUS>,
     pub oculus_audio_device_guid: Option<raw::AudioDeviceGuidOCULUS>,
+    pub ultraleap_hand_tracking_forearm: Option<raw::HandTrackingForearmULTRALEAP>,
     pub valve_analog_threshold: Option<raw::AnalogThresholdVALVE>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
     pub varjo_foveated_rendering: Option<raw::FoveatedRenderingVARJO>,
     pub varjo_composition_layer_depth_test: Option<raw::CompositionLayerDepthTestVARJO>,
     pub varjo_environment_depth_estimation: Option<raw::EnvironmentDepthEstimationVARJO>,
     pub varjo_marker_tracking: Option<raw::MarkerTrackingVARJO>,
+    pub varjo_view_offset: Option<raw::ViewOffsetVARJO>,
 }
 impl InstanceExtensions {
     #[doc = r" Load extension function pointer tables"]
@@ -1062,6 +1216,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            ext_dpad_binding: if required.ext_dpad_binding {
+                Some(raw::DpadBindingEXT {})
+            } else {
+                None
+            },
             ext_hand_joints_motion_range: if required.ext_hand_joints_motion_range {
                 Some(raw::HandJointsMotionRangeEXT {})
             } else {
@@ -1074,6 +1233,11 @@ impl InstanceExtensions {
             },
             ext_hp_mixed_reality_controller: if required.ext_hp_mixed_reality_controller {
                 Some(raw::HpMixedRealityControllerEXT {})
+            } else {
+                None
+            },
+            ext_palm_pose: if required.ext_palm_pose {
+                Some(raw::PalmPoseEXT {})
             } else {
                 None
             },
@@ -1138,6 +1302,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            fb_spatial_entity: if required.fb_spatial_entity {
+                Some(raw::SpatialEntityFB::load(entry, instance)?)
+            } else {
+                None
+            },
             fb_foveation: if required.fb_foveation {
                 Some(raw::FoveationFB::load(entry, instance)?)
             } else {
@@ -1165,6 +1334,16 @@ impl InstanceExtensions {
             },
             fb_render_model: if required.fb_render_model {
                 Some(raw::RenderModelFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_spatial_entity_query: if required.fb_spatial_entity_query {
+                Some(raw::SpatialEntityQueryFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_spatial_entity_storage: if required.fb_spatial_entity_storage {
+                Some(raw::SpatialEntityStorageFB::load(entry, instance)?)
             } else {
                 None
             },
@@ -1196,8 +1375,23 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            fb_scene: if required.fb_scene {
+                Some(raw::SceneFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_spatial_entity_container: if required.fb_spatial_entity_container {
+                Some(raw::SpatialEntityContainerFB::load(entry, instance)?)
+            } else {
+                None
+            },
             fb_passthrough_keyboard_hands: if required.fb_passthrough_keyboard_hands {
                 Some(raw::PassthroughKeyboardHandsFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_composition_layer_settings: if required.fb_composition_layer_settings {
+                Some(raw::CompositionLayerSettingsFB {})
             } else {
                 None
             },
@@ -1217,6 +1411,16 @@ impl InstanceExtensions {
                 .htc_vive_focus3_controller_interaction
             {
                 Some(raw::ViveFocus3ControllerInteractionHTC {})
+            } else {
+                None
+            },
+            htc_hand_interaction: if required.htc_hand_interaction {
+                Some(raw::HandInteractionHTC {})
+            } else {
+                None
+            },
+            htc_vive_wrist_tracker_interaction: if required.htc_vive_wrist_tracker_interaction {
+                Some(raw::ViveWristTrackerInteractionHTC {})
             } else {
                 None
             },
@@ -1360,6 +1564,21 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            meta_vulkan_swapchain_create_info: if required.meta_vulkan_swapchain_create_info {
+                Some(raw::VulkanSwapchainCreateInfoMETA {})
+            } else {
+                None
+            },
+            meta_performance_metrics: if required.meta_performance_metrics {
+                Some(raw::PerformanceMetricsMETA::load(entry, instance)?)
+            } else {
+                None
+            },
+            ml_ml2_controller_interaction: if required.ml_ml2_controller_interaction {
+                Some(raw::Ml2ControllerInteractionML {})
+            } else {
+                None
+            },
             mnd_headless: if required.mnd_headless {
                 Some(raw::HeadlessMND {})
             } else {
@@ -1452,6 +1671,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            ultraleap_hand_tracking_forearm: if required.ultraleap_hand_tracking_forearm {
+                Some(raw::HandTrackingForearmULTRALEAP {})
+            } else {
+                None
+            },
             valve_analog_threshold: if required.valve_analog_threshold {
                 Some(raw::AnalogThresholdVALVE {})
             } else {
@@ -1482,6 +1706,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            varjo_view_offset: if required.varjo_view_offset {
+                Some(raw::ViewOffsetVARJO::load(entry, instance)?)
+            } else {
+                None
+            },
         })
     }
 }
@@ -1497,6 +1726,12 @@ pub enum Event<'a> {
     InteractionProfileChanged(InteractionProfileChanged<'a>),
     MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX<'a>),
     DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB<'a>),
+    SpatialAnchorCreateCompleteFB(SpatialAnchorCreateCompleteFB<'a>),
+    SpaceSetStatusCompleteFB(SpaceSetStatusCompleteFB<'a>),
+    SpaceQueryResultsAvailableFB(SpaceQueryResultsAvailableFB<'a>),
+    SpaceQueryCompleteFB(SpaceQueryCompleteFB<'a>),
+    SpaceSaveCompleteFB(SpaceSaveCompleteFB<'a>),
+    SpaceEraseCompleteFB(SpaceEraseCompleteFB<'a>),
     PassthroughStateChangedFB(PassthroughStateChangedFB<'a>),
     ViveTrackerConnectedHTCX(ViveTrackerConnectedHTCX<'a>),
     MarkerTrackingUpdateVARJO(MarkerTrackingUpdateVARJO<'a>),
@@ -1550,6 +1785,30 @@ impl<'a> Event<'a> {
             sys::StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB => {
                 let typed = &*(raw as *const sys::EventDataDisplayRefreshRateChangedFB);
                 Event::DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_SPATIAL_ANCHOR_CREATE_COMPLETE_FB => {
+                let typed = &*(raw as *const sys::EventDataSpatialAnchorCreateCompleteFB);
+                Event::SpatialAnchorCreateCompleteFB(SpatialAnchorCreateCompleteFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_SPACE_SET_STATUS_COMPLETE_FB => {
+                let typed = &*(raw as *const sys::EventDataSpaceSetStatusCompleteFB);
+                Event::SpaceSetStatusCompleteFB(SpaceSetStatusCompleteFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_SPACE_QUERY_RESULTS_AVAILABLE_FB => {
+                let typed = &*(raw as *const sys::EventDataSpaceQueryResultsAvailableFB);
+                Event::SpaceQueryResultsAvailableFB(SpaceQueryResultsAvailableFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_SPACE_QUERY_COMPLETE_FB => {
+                let typed = &*(raw as *const sys::EventDataSpaceQueryCompleteFB);
+                Event::SpaceQueryCompleteFB(SpaceQueryCompleteFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_SPACE_SAVE_COMPLETE_FB => {
+                let typed = &*(raw as *const sys::EventDataSpaceSaveCompleteFB);
+                Event::SpaceSaveCompleteFB(SpaceSaveCompleteFB::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_SPACE_ERASE_COMPLETE_FB => {
+                let typed = &*(raw as *const sys::EventDataSpaceEraseCompleteFB);
+                Event::SpaceEraseCompleteFB(SpaceEraseCompleteFB::new(typed))
             }
             sys::StructureType::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB => {
                 let typed = &*(raw as *const sys::EventDataPassthroughStateChangedFB);
@@ -1763,6 +2022,170 @@ impl<'a> DisplayRefreshRateChangedFB<'a> {
     #[inline]
     pub fn to_display_refresh_rate(self) -> f32 {
         (self.0).to_display_refresh_rate
+    }
+}
+#[derive(Copy, Clone)]
+pub struct SpatialAnchorCreateCompleteFB<'a>(&'a sys::EventDataSpatialAnchorCreateCompleteFB);
+impl<'a> SpatialAnchorCreateCompleteFB<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataSpatialAnchorCreateCompleteFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataSpatialAnchorCreateCompleteFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn request_id(self) -> AsyncRequestIdFB {
+        (self.0).request_id
+    }
+    #[inline]
+    pub fn result(self) -> sys::Result {
+        (self.0).result
+    }
+    #[inline]
+    pub fn space(self) -> sys::Space {
+        (self.0).space
+    }
+    #[inline]
+    pub fn uuid(self) -> UuidEXT {
+        (self.0).uuid
+    }
+}
+#[derive(Copy, Clone)]
+pub struct SpaceSetStatusCompleteFB<'a>(&'a sys::EventDataSpaceSetStatusCompleteFB);
+impl<'a> SpaceSetStatusCompleteFB<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataSpaceSetStatusCompleteFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataSpaceSetStatusCompleteFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn request_id(self) -> AsyncRequestIdFB {
+        (self.0).request_id
+    }
+    #[inline]
+    pub fn result(self) -> sys::Result {
+        (self.0).result
+    }
+    #[inline]
+    pub fn space(self) -> sys::Space {
+        (self.0).space
+    }
+    #[inline]
+    pub fn uuid(self) -> UuidEXT {
+        (self.0).uuid
+    }
+    #[inline]
+    pub fn component_type(self) -> SpaceComponentTypeFB {
+        (self.0).component_type
+    }
+    #[inline]
+    pub fn enabled(self) -> bool {
+        (self.0).enabled.into()
+    }
+}
+#[derive(Copy, Clone)]
+pub struct SpaceQueryResultsAvailableFB<'a>(&'a sys::EventDataSpaceQueryResultsAvailableFB);
+impl<'a> SpaceQueryResultsAvailableFB<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataSpaceQueryResultsAvailableFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataSpaceQueryResultsAvailableFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn request_id(self) -> AsyncRequestIdFB {
+        (self.0).request_id
+    }
+}
+#[derive(Copy, Clone)]
+pub struct SpaceQueryCompleteFB<'a>(&'a sys::EventDataSpaceQueryCompleteFB);
+impl<'a> SpaceQueryCompleteFB<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataSpaceQueryCompleteFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataSpaceQueryCompleteFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn request_id(self) -> AsyncRequestIdFB {
+        (self.0).request_id
+    }
+    #[inline]
+    pub fn result(self) -> sys::Result {
+        (self.0).result
+    }
+}
+#[derive(Copy, Clone)]
+pub struct SpaceSaveCompleteFB<'a>(&'a sys::EventDataSpaceSaveCompleteFB);
+impl<'a> SpaceSaveCompleteFB<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataSpaceSaveCompleteFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataSpaceSaveCompleteFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn request_id(self) -> AsyncRequestIdFB {
+        (self.0).request_id
+    }
+    #[inline]
+    pub fn result(self) -> sys::Result {
+        (self.0).result
+    }
+    #[inline]
+    pub fn space(self) -> sys::Space {
+        (self.0).space
+    }
+    #[inline]
+    pub fn uuid(self) -> UuidEXT {
+        (self.0).uuid
+    }
+    #[inline]
+    pub fn location(self) -> SpaceStorageLocationFB {
+        (self.0).location
+    }
+}
+#[derive(Copy, Clone)]
+pub struct SpaceEraseCompleteFB<'a>(&'a sys::EventDataSpaceEraseCompleteFB);
+impl<'a> SpaceEraseCompleteFB<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataSpaceEraseCompleteFB]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataSpaceEraseCompleteFB) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn request_id(self) -> AsyncRequestIdFB {
+        (self.0).request_id
+    }
+    #[inline]
+    pub fn result(self) -> sys::Result {
+        (self.0).result
+    }
+    #[inline]
+    pub fn space(self) -> sys::Space {
+        (self.0).space
+    }
+    #[inline]
+    pub fn uuid(self) -> UuidEXT {
+        (self.0).uuid
+    }
+    #[inline]
+    pub fn location(self) -> SpaceStorageLocationFB {
+        (self.0).location
     }
 }
 #[derive(Copy, Clone)]
@@ -2347,6 +2770,12 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct DpadBindingEXT {}
+    impl DpadBindingEXT {
+        pub const VERSION: u32 = sys::EXT_dpad_binding_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_DPAD_BINDING_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct HandJointsMotionRangeEXT {}
     impl HandJointsMotionRangeEXT {
         pub const VERSION: u32 = sys::EXT_hand_joints_motion_range_SPEC_VERSION;
@@ -2363,6 +2792,12 @@ pub mod raw {
     impl HpMixedRealityControllerEXT {
         pub const VERSION: u32 = sys::EXT_hp_mixed_reality_controller_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct PalmPoseEXT {}
+    impl PalmPoseEXT {
+        pub const VERSION: u32 = sys::EXT_palm_pose_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_PALM_POSE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct UuidEXT {}
@@ -2517,6 +2952,51 @@ pub mod raw {
     impl HandTrackingCapsulesFB {
         pub const VERSION: u32 = sys::FB_hand_tracking_capsules_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct SpatialEntityFB {
+        pub create_spatial_anchor: pfn::CreateSpatialAnchorFB,
+        pub get_space_uuid: pfn::GetSpaceUuidFB,
+        pub enumerate_space_supported_components: pfn::EnumerateSpaceSupportedComponentsFB,
+        pub set_space_component_status: pfn::SetSpaceComponentStatusFB,
+        pub get_space_component_status: pfn::GetSpaceComponentStatusFB,
+    }
+    impl SpatialEntityFB {
+        pub const VERSION: u32 = sys::FB_spatial_entity_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorFB\0"),
+                )?),
+                get_space_uuid: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceUuidFB\0"),
+                )?),
+                enumerate_space_supported_components: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrEnumerateSpaceSupportedComponentsFB\0",
+                        ),
+                    )?,
+                ),
+                set_space_component_status: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetSpaceComponentStatusFB\0"),
+                )?),
+                get_space_component_status: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceComponentStatusFB\0"),
+                )?),
+            })
+        }
     }
     #[derive(Copy, Clone)]
     pub struct FoveationFB {
@@ -2748,6 +3228,58 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct SpatialEntityQueryFB {
+        pub query_spaces: pfn::QuerySpacesFB,
+        pub retrieve_space_query_results: pfn::RetrieveSpaceQueryResultsFB,
+    }
+    impl SpatialEntityQueryFB {
+        pub const VERSION: u32 = sys::FB_spatial_entity_query_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                query_spaces: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrQuerySpacesFB\0"),
+                )?),
+                retrieve_space_query_results: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrRetrieveSpaceQueryResultsFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct SpatialEntityStorageFB {
+        pub save_space: pfn::SaveSpaceFB,
+        pub erase_space: pfn::EraseSpaceFB,
+    }
+    impl SpatialEntityStorageFB {
+        pub const VERSION: u32 = sys::FB_spatial_entity_storage_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                save_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSaveSpaceFB\0"),
+                )?),
+                erase_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEraseSpaceFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct FoveationVulkanFB {}
     impl FoveationVulkanFB {
         pub const VERSION: u32 = sys::FB_foveation_vulkan_SPEC_VERSION;
@@ -2781,6 +3313,68 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::FB_SPACE_WARP_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct SceneFB {
+        pub get_space_bounding_box2_d: pfn::GetSpaceBoundingBox2DFB,
+        pub get_space_bounding_box3_d: pfn::GetSpaceBoundingBox3DFB,
+        pub get_space_semantic_labels: pfn::GetSpaceSemanticLabelsFB,
+        pub get_space_boundary2_d: pfn::GetSpaceBoundary2DFB,
+        pub get_space_room_layout: pfn::GetSpaceRoomLayoutFB,
+    }
+    impl SceneFB {
+        pub const VERSION: u32 = sys::FB_scene_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SCENE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_space_bounding_box2_d: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox2DFB\0"),
+                )?),
+                get_space_bounding_box3_d: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox3DFB\0"),
+                )?),
+                get_space_semantic_labels: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceSemanticLabelsFB\0"),
+                )?),
+                get_space_boundary2_d: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundary2DFB\0"),
+                )?),
+                get_space_room_layout: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceRoomLayoutFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct SpatialEntityContainerFB {
+        pub get_space_container: pfn::GetSpaceContainerFB,
+    }
+    impl SpatialEntityContainerFB {
+        pub const VERSION: u32 = sys::FB_spatial_entity_container_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_space_container: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceContainerFB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct PassthroughKeyboardHandsFB {
         pub passthrough_layer_set_keyboard_hands_intensity:
             pfn::PassthroughLayerSetKeyboardHandsIntensityFB,
@@ -2805,6 +3399,12 @@ pub mod raw {
                 ),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct CompositionLayerSettingsFB {}
+    impl CompositionLayerSettingsFB {
+        pub const VERSION: u32 = sys::FB_composition_layer_settings_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_SETTINGS_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ViveCosmosControllerInteractionHTC {}
@@ -2848,6 +3448,18 @@ pub mod raw {
     impl ViveFocus3ControllerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_focus3_controller_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct HandInteractionHTC {}
+    impl HandInteractionHTC {
+        pub const VERSION: u32 = sys::HTC_hand_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTC_HAND_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViveWristTrackerInteractionHTC {}
+    impl ViveWristTrackerInteractionHTC {
+        pub const VERSION: u32 = sys::HTC_vive_wrist_tracker_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTC_VIVE_WRIST_TRACKER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ViveTrackerInteractionHTCX {
@@ -3259,6 +3871,59 @@ pub mod raw {
             sys::KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct VulkanSwapchainCreateInfoMETA {}
+    impl VulkanSwapchainCreateInfoMETA {
+        pub const VERSION: u32 = sys::META_vulkan_swapchain_create_info_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct PerformanceMetricsMETA {
+        pub enumerate_performance_metrics_counter_paths:
+            pfn::EnumeratePerformanceMetricsCounterPathsMETA,
+        pub set_performance_metrics_state: pfn::SetPerformanceMetricsStateMETA,
+        pub get_performance_metrics_state: pfn::GetPerformanceMetricsStateMETA,
+        pub query_performance_metrics_counter: pfn::QueryPerformanceMetricsCounterMETA,
+    }
+    impl PerformanceMetricsMETA {
+        pub const VERSION: u32 = sys::META_performance_metrics_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_PERFORMANCE_METRICS_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enumerate_performance_metrics_counter_paths: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrEnumeratePerformanceMetricsCounterPathsMETA\0",
+                        ),
+                    )?,
+                ),
+                set_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetPerformanceMetricsStateMETA\0"),
+                )?),
+                get_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetPerformanceMetricsStateMETA\0"),
+                )?),
+                query_performance_metrics_counter: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrQueryPerformanceMetricsCounterMETA\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct Ml2ControllerInteractionML {}
+    impl Ml2ControllerInteractionML {
+        pub const VERSION: u32 = sys::ML_ml2_controller_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct HeadlessMND {}
     impl HeadlessMND {
         pub const VERSION: u32 = sys::MND_headless_SPEC_VERSION;
@@ -3317,6 +3982,11 @@ pub mod raw {
     #[derive(Copy, Clone)]
     pub struct SpatialGraphBridgeMSFT {
         pub create_spatial_graph_node_space: pfn::CreateSpatialGraphNodeSpaceMSFT,
+        pub try_create_spatial_graph_static_node_binding:
+            pfn::TryCreateSpatialGraphStaticNodeBindingMSFT,
+        pub destroy_spatial_graph_node_binding: pfn::DestroySpatialGraphNodeBindingMSFT,
+        pub get_spatial_graph_node_binding_properties:
+            pfn::GetSpatialGraphNodeBindingPropertiesMSFT,
     }
     impl SpatialGraphBridgeMSFT {
         pub const VERSION: u32 = sys::MSFT_spatial_graph_bridge_SPEC_VERSION;
@@ -3332,6 +4002,26 @@ pub mod raw {
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialGraphNodeSpaceMSFT\0"),
                 )?),
+                try_create_spatial_graph_static_node_binding: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrTryCreateSpatialGraphStaticNodeBindingMSFT\0",
+                        ),
+                    )?,
+                ),
+                destroy_spatial_graph_node_binding: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpatialGraphNodeBindingMSFT\0"),
+                )?),
+                get_spatial_graph_node_binding_properties: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrGetSpatialGraphNodeBindingPropertiesMSFT\0",
+                        ),
+                    )?,
+                ),
             })
         }
     }
@@ -3585,6 +4275,12 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct HandTrackingForearmULTRALEAP {}
+    impl HandTrackingForearmULTRALEAP {
+        pub const VERSION: u32 = sys::ULTRALEAP_hand_tracking_forearm_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct AnalogThresholdVALVE {}
     impl AnalogThresholdVALVE {
         pub const VERSION: u32 = sys::VALVE_analog_threshold_SPEC_VERSION;
@@ -3666,6 +4362,27 @@ pub mod raw {
                 create_marker_space: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceVARJO\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViewOffsetVARJO {
+        pub set_view_offset: pfn::SetViewOffsetVARJO,
+    }
+    impl ViewOffsetVARJO {
+        pub const VERSION: u32 = sys::VARJO_view_offset_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VARJO_VIEW_OFFSET_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                set_view_offset: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetViewOffsetVARJO\0"),
                 )?),
             })
         }
@@ -4506,6 +5223,102 @@ pub(crate) mod builder {
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
+    pub struct InteractionProfileDpadBindingEXT<'a> {
+        inner: sys::InteractionProfileDpadBindingEXT,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> InteractionProfileDpadBindingEXT<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::InteractionProfileDpadBindingEXT {
+                    ty: sys::StructureType::INTERACTION_PROFILE_DPAD_BINDING_EXT,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::InteractionProfileDpadBindingEXT) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::InteractionProfileDpadBindingEXT {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::InteractionProfileDpadBindingEXT {
+            &self.inner
+        }
+        #[inline]
+        pub fn binding(mut self, value: Path) -> Self {
+            self.inner.binding = value;
+            self
+        }
+        #[inline]
+        pub fn action_set(mut self, value: &'a ActionSet) -> Self {
+            self.inner.action_set = value.as_raw();
+            self
+        }
+        #[inline]
+        pub fn force_threshold(mut self, value: f32) -> Self {
+            self.inner.force_threshold = value;
+            self
+        }
+        #[inline]
+        pub fn force_threshold_released(mut self, value: f32) -> Self {
+            self.inner.force_threshold_released = value;
+            self
+        }
+        #[inline]
+        pub fn center_region(mut self, value: f32) -> Self {
+            self.inner.center_region = value;
+            self
+        }
+        #[inline]
+        pub fn wedge_angle(mut self, value: f32) -> Self {
+            self.inner.wedge_angle = value;
+            self
+        }
+        #[inline]
+        pub fn is_sticky(mut self, value: bool) -> Self {
+            self.inner.is_sticky = value.into();
+            self
+        }
+        #[inline]
+        pub fn on_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
+            self.inner.on_haptic = value as *const _ as _;
+            self
+        }
+        #[inline]
+        pub fn off_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
+            self.inner.off_haptic = value as *const _ as _;
+            self
+        }
+    }
+    impl<'a> Deref for InteractionProfileDpadBindingEXT<'a> {
+        type Target = BindingModificationBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for InteractionProfileDpadBindingEXT<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
     pub struct InteractionProfileAnalogThresholdVALVE<'a> {
         inner: sys::InteractionProfileAnalogThresholdVALVE,
         _marker: PhantomData<&'a ()>,
@@ -4919,6 +5732,205 @@ pub(crate) mod builder {
         }
     }
     impl<'a> Default for SwapchainStateFoveationFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[repr(transparent)]
+    pub struct SpaceQueryInfoBase<'a> {
+        _inner: sys::SpaceQueryInfoBaseHeaderFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SpaceQueryInfoFB<'a> {
+        inner: sys::SpaceQueryInfoFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> SpaceQueryInfoFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SpaceQueryInfoFB {
+                    ty: sys::StructureType::SPACE_QUERY_INFO_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::SpaceQueryInfoFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SpaceQueryInfoFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SpaceQueryInfoFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn query_action(mut self, value: SpaceQueryActionFB) -> Self {
+            self.inner.query_action = value;
+            self
+        }
+        #[inline]
+        pub fn max_result_count(mut self, value: u32) -> Self {
+            self.inner.max_result_count = value;
+            self
+        }
+        #[inline]
+        pub fn timeout(mut self, value: Duration) -> Self {
+            self.inner.timeout = value;
+            self
+        }
+        #[inline]
+        pub fn filter(mut self, value: &'a SpaceFilterInfoBase<'a>) -> Self {
+            self.inner.filter = value as *const _ as _;
+            self
+        }
+        #[inline]
+        pub fn exclude_filter(mut self, value: &'a SpaceFilterInfoBase<'a>) -> Self {
+            self.inner.exclude_filter = value as *const _ as _;
+            self
+        }
+    }
+    impl<'a> Deref for SpaceQueryInfoFB<'a> {
+        type Target = SpaceQueryInfoBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for SpaceQueryInfoFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[repr(transparent)]
+    pub struct SpaceFilterInfoBase<'a> {
+        _inner: sys::SpaceFilterInfoBaseHeaderFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SpaceUuidFilterInfoFB<'a> {
+        inner: sys::SpaceUuidFilterInfoFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> SpaceUuidFilterInfoFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SpaceUuidFilterInfoFB {
+                    ty: sys::StructureType::SPACE_UUID_FILTER_INFO_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::SpaceUuidFilterInfoFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SpaceUuidFilterInfoFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SpaceUuidFilterInfoFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn uuids(mut self, value: &'a [UuidEXT]) -> Self {
+            self.inner.uuids = value.as_ptr() as *const _ as _;
+            self.inner.uuid_count = value.len() as u32;
+            self
+        }
+    }
+    impl<'a> Deref for SpaceUuidFilterInfoFB<'a> {
+        type Target = SpaceFilterInfoBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for SpaceUuidFilterInfoFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SpaceComponentFilterInfoFB<'a> {
+        inner: sys::SpaceComponentFilterInfoFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> SpaceComponentFilterInfoFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SpaceComponentFilterInfoFB {
+                    ty: sys::StructureType::SPACE_COMPONENT_FILTER_INFO_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::SpaceComponentFilterInfoFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SpaceComponentFilterInfoFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SpaceComponentFilterInfoFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn component_type(mut self, value: SpaceComponentTypeFB) -> Self {
+            self.inner.component_type = value;
+            self
+        }
+    }
+    impl<'a> Deref for SpaceComponentFilterInfoFB<'a> {
+        type Target = SpaceFilterInfoBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for SpaceComponentFilterInfoFB<'a> {
         fn default() -> Self {
             Self::new()
         }

@@ -1379,6 +1379,7 @@ impl Parser {
                 }
             })
             .collect::<IndexSet<&str>>();
+
         let reexports = simple_structs
             .iter()
             .cloned()
@@ -1913,6 +1914,9 @@ impl Parser {
             let ident = xr_var_name(&m.name);
             let (ty, value) = if m.ty == "XrBool32" {
                 (quote! { bool }, quote! { (self.0).#ident.into() })
+            } else if m.ty == "XrResult" {
+                //  prevent name collision with std Result
+                (quote! { sys::Result }, quote! { (self.0).#ident })
             } else if self.handles.contains(&m.ty) {
                 let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                 (quote! { sys::#ty }, quote! { (self.0).#ident })
@@ -2126,6 +2130,12 @@ fn xr_bitmask_value_name(ty: &str, name: &str) -> Ident {
     let ty = &ty[0..ty.len() - "Flags".len()];
     let prefix_len = ty.to_shouty_snake_case().len() + 1;
     let end = name.rfind("_BIT").unwrap();
+
+    if prefix_len == end + 1 {
+        //  some BITs have no name, i.e. XR_PASSTHROUGH_CAPABILITY_BIT_FB
+        //  in this case, return PASSTHROUGH_CAPABILITY
+        return Ident::new(&name["XR_".len()..end], Span::call_site());
+    }
     Ident::new(&name[prefix_len..end], Span::call_site())
 }
 
