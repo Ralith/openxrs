@@ -122,12 +122,19 @@ fn main() {
             .engine_version(0)
             .api_version(vk_target_version);
 
+        type HalInstance = <HalVulkan as Api>::Instance;
+        let flags = wgpu_hal::InstanceFlags::empty();
+        let extensions = HalInstance::required_extensions(&vk_entry, flags).unwrap();
+        let extension_ptrs: Vec<_> = extensions.iter().map(|s| s.as_ptr()).collect();
+
         let vk_instance = {
             let vk_instance = xr_instance
                 .create_vulkan_instance(
                     system,
                     std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
-                    &vk::InstanceCreateInfo::builder().application_info(&vk_app_info) as *const _
+                    &vk::InstanceCreateInfo::builder()
+                        .application_info(&vk_app_info)
+                        .enabled_extension_names(&extension_ptrs) as *const _
                         as *const _,
                 )
                 .expect("XR error creating Vulkan instance")
@@ -138,6 +145,18 @@ fn main() {
                 vk::Instance::from_raw(vk_instance as _),
             )
         };
+
+        let hal_instance = HalInstance::from_raw(
+            vk_entry.clone(),
+            vk_instance.clone(),
+            vk_target_version,
+            0,
+            extensions,
+            flags,
+            false,
+            Some(Box::new(())),
+        )
+        .unwrap();
 
         let vk_physical_device = vk::PhysicalDevice::from_raw(
             xr_instance
@@ -163,6 +182,15 @@ fn main() {
                 }
             })
             .expect("Vulkan device has no graphics queue");
+
+        let hal_exposed_adapter = hal_instance.expose_adapter(vk_physical_device).unwrap();
+        println!(
+            "Using adapter {:?}; features: {:?}",
+            hal_exposed_adapter.info, hal_exposed_adapter.features
+        );
+        let enabled_extensions = hal_exposed_adapter
+            .adapter
+            .required_device_extensions(hal_exposed_adapter.features);
 
         let vk_device = {
             let vk_device = xr_instance
@@ -203,29 +231,6 @@ fn main() {
             )
             .unwrap();
 
-        // Now wrap all our Vulkan stuff into WGPU stuff
-
-        type HalInstance = <HalVulkan as Api>::Instance;
-        let flags = wgpu_hal::InstanceFlags::empty();
-        let extensions = HalInstance::required_extensions(&vk_entry, flags).unwrap();
-        let hal_instance = HalInstance::from_raw(
-            vk_entry,
-            vk_instance,
-            vk_target_version,
-            0,
-            extensions,
-            flags,
-            false,
-            Some(Box::new(())),
-        )
-        .unwrap();
-
-        let hal_exposed_adapter = hal_instance.expose_adapter(vk_physical_device).unwrap();
-        println!(
-            "Using adapter {:?}; features: {:?}",
-            hal_exposed_adapter.info, hal_exposed_adapter.features
-        );
-
         let limits = hal_exposed_adapter.capabilities.limits.clone();
         let phd_limits = hal_exposed_adapter
             .adapter
@@ -234,9 +239,6 @@ fn main() {
             .limits;
         let uab_types = wgpu_hal::UpdateAfterBindTypes::from_limits(&limits, &phd_limits);
 
-        let enabled_extensions = hal_exposed_adapter
-            .adapter
-            .required_device_extensions(hal_exposed_adapter.features);
         let hal_device = hal_exposed_adapter
             .adapter
             .device_from_raw(
