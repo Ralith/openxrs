@@ -40,8 +40,7 @@ pub type xcb_glx_context_t = u32;
 // Wayland
 pub type wl_display = c_void;
 
-#[cfg(target_os = "android")]
-pub use jni::sys::jobject;
+pub type jobject = *mut c_void;
 
 // Win32
 #[cfg(windows)]
