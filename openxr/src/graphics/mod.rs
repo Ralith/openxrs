@@ -44,3 +44,6 @@ pub use vulkan::Vulkan;
 
 pub mod opengl;
 pub use opengl::OpenGL;
+
+pub mod opengles;
+pub use opengles::OpenGlEs;
