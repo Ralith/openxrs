@@ -9,6 +9,7 @@ use crate::*;
 /// See [`XR_KHR_d3d11_enable`] for safety details.
 ///
 /// [`XR_KHR_d3d_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable
+#[derive(Copy, Clone)]
 pub enum D3D11 {}
 
 impl Graphics for D3D11 {

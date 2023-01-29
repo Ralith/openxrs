@@ -9,6 +9,7 @@ use crate::*;
 /// See [`XR_KHR_opengl_enable`] for safety details.
 ///
 /// [`XR_KHR_opengl_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_opengl_enable
+#[derive(Copy, Clone)]
 pub enum OpenGL {}
 
 impl Graphics for OpenGL {
