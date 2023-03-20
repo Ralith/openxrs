@@ -9,7 +9,7 @@ publish = false
 [dependencies]
 xml = { package = "xml-rs", version = "0.8" }
 quote = "1.0"
-syn = { version = "1.0", default-features = false, features = ["derive", "printing"] }
+syn = { version = "2.0", default-features = false, features = ["derive", "printing"] }
 proc-macro2 = "1.0"
 heck = "0.4"
 indexmap = "1"
