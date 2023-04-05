@@ -314,8 +314,8 @@ impl Parser {
         } else {
             let (tag, _) = split_ext_tag(&ext_name);
             self.extensions
-                .get_mut(tag)
-                .unwrap()
+                .entry(tag.to_owned())
+                .or_default()
                 .extensions
                 .push(Extension {
                     name: ext_name,
@@ -1094,12 +1094,14 @@ impl Parser {
                 quote! {}
             };
             let meta = self.compute_meta(name, s);
-            let derives = if (meta.has_pointer || meta.has_array) && meta.has_unprintable {
+            let derives = if meta.has_unprintable {
                 quote! { #[derive(Copy, Clone)] }
             } else if meta.has_pointer || meta.has_array {
                 quote! { #[derive(Copy, Clone, Debug)] }
+            } else if meta.has_enum || meta.has_bitmask || meta.has_time {
+                quote! { #[derive(Copy, Clone, Debug, PartialEq)] }
             } else {
-                quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
+                quote! { #[derive(Copy, Clone, Debug, PartialEq, Default)] }
             };
             quote! {
                 #[repr(C)]
@@ -1113,10 +1115,18 @@ impl Parser {
             }
         });
 
+        let struct_aliases = self.struct_aliases.iter().map(|(alias, source)| {
+            let alias = xr_ty_name(alias);
+            let source = xr_ty_name(source);
+            quote! {
+                pub type #alias = #source;
+            }
+        });
+
         let commands = self.commands.iter().chain(
             self.cmd_aliases
                 .iter()
-                .map(|&(ref name, ref target)| (name, self.commands.get(target).unwrap())),
+                .map(|(name, target)| (name, self.commands.get(target).unwrap())),
         );
 
         let (pfns, protos) = commands
@@ -1210,6 +1220,7 @@ impl Parser {
             #(#bitmasks)*
             #(#handles)*
             #(#structs)*
+            #(#struct_aliases)*
 
             /// Function pointer prototypes
             pub mod pfn {
@@ -1597,8 +1608,13 @@ impl Parser {
     fn compute_meta(&self, name: &str, s: &Struct) -> StructMeta {
         let mut out = StructMeta::default();
         for member in &s.members {
-            out.has_unprintable |= member.ty.starts_with("PFN") || member.ty == "LUID";
+            out.has_unprintable |= member.ty.starts_with("PFN")
+                || member.ty == "LUID"
+                || member.ty == "MLCoordinateFrameUID";
             out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
+            out.has_enum |= self.enums.contains_key(&member.ty);
+            out.has_bitmask |= self.bitmasks.contains_key(&member.ty);
+            out.has_time |= member.ty == "XrTime";
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
             out.has_array |= member.static_array_len.is_some();
             if member.ty != name {
@@ -1981,6 +1997,9 @@ impl Parser {
 #[derive(Debug, Copy, Clone, Default)]
 struct StructMeta {
     has_unprintable: bool,
+    has_enum: bool,
+    has_bitmask: bool,
+    has_time: bool,
     has_pointer: bool,
     has_array: bool,
     has_graphics: bool,
@@ -2029,6 +2048,7 @@ impl std::ops::BitOrAssign for StructMeta {
     }
 }
 
+#[derive(Default)]
 struct Tag {
     extensions: Vec<Extension>,
 }

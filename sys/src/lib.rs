@@ -113,6 +113,11 @@ wrapper! {
 
 wrapper! {
     #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    SpaceUserIdFB(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Path(u64)
 }
 
@@ -220,3 +225,7 @@ impl<T> std::ops::IndexMut<HandJointEXT> for [T] {
         &mut self[joint.into_raw() as usize]
     }
 }
+
+// Do not make this const public as it is a dublicate of EyePositionFB::COUNT. This is needed to
+// work around a schema exception not yet handled by the generator.
+pub(crate) const EYE_POSITION_COUNT_FB: usize = 2;

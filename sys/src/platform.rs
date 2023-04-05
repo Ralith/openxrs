@@ -81,3 +81,10 @@ pub type EGLDisplay = *mut c_void;
 pub type EGLenum = c_uint;
 pub type PFNEGLGETPROCADDRESSPROC =
     unsafe extern "system" fn(*const c_char) -> Option<unsafe extern "system" fn()>;
+
+// ML
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct MLCoordinateFrameUID {
+    pub data: [u64; 2],
+}
