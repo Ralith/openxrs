@@ -12,7 +12,7 @@ use std::{
 use heck::{ToShoutySnakeCase, ToSnakeCase, ToUpperCamelCase};
 use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
-use quote::quote;
+use quote::{format_ident, quote};
 use regex::Regex;
 use syn::{Ident, LitByteStr};
 use xml::{
@@ -580,6 +580,7 @@ impl Parser {
             }
         }
         let parent: Option<String> = attr(attrs, "parentstruct").map(|x| x.into());
+        let extends: Option<Rc<str>> = attr(attrs, "structextends").map(|x| Rc::from(x));
         if let Some(ref parent) = parent {
             self.base_headers
                 .entry(parent.clone())
@@ -596,6 +597,7 @@ impl Parser {
                     members,
                     ty,
                     extension: None,
+                    extends,
                     mut_next,
                 },
             );
@@ -1087,6 +1089,11 @@ impl Parser {
                     #conditions2
                     impl #ident {
                         pub const TYPE: StructureType = StructureType::#ty;
+
+                        pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
+                            ptr_chain_iter(self)
+                        }
+
                         #out
                     }
                 }
@@ -1380,6 +1387,24 @@ impl Parser {
             })
             .collect::<IndexSet<&str>>();
 
+        let root_structs = self
+            .structs
+            .iter()
+            .filter_map(|(name, s)| {
+                if s.extension
+                    .as_ref()
+                    .map_or(false, |ext| self.disabled_exts.contains(ext))
+                {
+                    return None;
+                }
+                if self.is_root_struct(name, s) {
+                    Some(&name[..])
+                } else {
+                    None
+                }
+            })
+            .collect::<IndexSet<&str>>();
+
         let reexports = simple_structs
             .iter()
             .cloned()
@@ -1447,6 +1472,7 @@ impl Parser {
 
         let whitelist = [
             "XrCompositionLayerProjectionView",
+            "XrCompositionLayerDepthInfoKHR",
             "XrSwapchainSubImage",
             "XrActionSetCreateInfo",
             "XrActionCreateInfo",
@@ -1456,7 +1482,7 @@ impl Parser {
         .collect::<HashSet<&str>>();
         let builders = self.structs.iter().filter_map(|(name, s)| {
             if whitelist.contains(&name[..]) {
-                Some(self.generate_builder(&struct_meta, &simple_structs, name, s))
+                Some(self.generate_builder(&struct_meta, &simple_structs, &root_structs, name, s))
             } else {
                 None
             }
@@ -1834,6 +1860,7 @@ impl Parser {
         &self,
         meta: &HashMap<&str, StructMeta>,
         simple: &IndexSet<&str>,
+        root: &IndexSet<&str>,
         name: &str,
         s: &Struct,
     ) -> TokenStream {
@@ -1843,6 +1870,40 @@ impl Parser {
         let inits = self.generate_builder_inits(s);
         let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
         let conds2 = conds.clone();
+        let is_root_struct = root.contains(name);
+        let extends_name = format_ident!("Extends{}", ident);
+        let extend_trait = if is_root_struct {
+            quote!(pub unsafe trait #extends_name {})
+        } else {
+            quote!()
+        };
+        // Adds a `push_next` method to the builder if the struct is a root struct
+        // based on Ash
+        let next_fn = if is_root_struct {
+            quote! {
+                #[inline]
+                pub fn push_next<T: #extends_name>(mut self, next: &'a mut T) -> Self {
+                    unsafe {
+                        let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                        let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                        let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                        (*last_next).next = self.inner.next as _;
+                        self.inner.next = next_ptr;
+                    }
+                    self
+                }
+            }
+        } else {
+            quote!()
+        };
+        let implement_extensions = if let Some(parent_struct) = s.extends.as_ref() {
+            let parent_ident = xr_ty_name(parent_struct);
+            let parent_extend_name = format_ident!("Extends{}", parent_ident);
+            quote!(unsafe impl #type_params #parent_extend_name for #ident #type_args {})
+        } else {
+            quote!()
+        };
+
         quote! {
             #[derive(Copy, Clone)]
             #[repr(transparent)]
@@ -1889,6 +1950,8 @@ impl Parser {
                 }
 
                 #setters
+
+                #next_fn
             }
 
             impl #type_params Default for #ident #type_args {
@@ -1896,6 +1959,10 @@ impl Parser {
                     Self::new()
                 }
             }
+
+            #extend_trait
+
+            #implement_extensions
         }
     }
 
@@ -1975,6 +2042,17 @@ impl Parser {
                     .map_or(true, |x| self.is_simple_struct(x))
                 && !self.handles.contains(&x.ty)
         })
+    }
+
+    /// Determine whether a struct is a root struct to be reexported with a push next function
+    fn is_root_struct(&self, s_name: &str, s: &Struct) -> bool {
+        s.extends.is_none()
+            && self.structs.iter().any(|(_, v)| {
+                v.extends
+                    .as_ref()
+                    .map(|parent_name| parent_name.as_ref() == s_name)
+                    .unwrap_or(false)
+            })
     }
 }
 
@@ -2069,6 +2147,7 @@ enum ConstantValue<T> {
 struct Struct {
     members: Vec<Member>,
     extension: Option<Rc<str>>,
+    extends: Option<Rc<str>>,
     ty: Option<String>,
     mut_next: bool,
 }
