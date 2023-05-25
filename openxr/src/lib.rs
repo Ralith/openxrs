@@ -44,7 +44,7 @@ pub use passthrough::*;
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
     CompositionLayerEquirectKHR, CompositionLayerProjection, CompositionLayerProjectionView,
-    CompositionLayerQuad, HapticBase, HapticVibration, SwapchainSubImage,
+    CompositionLayerQuad, HapticBase, HapticVibration, SwapchainSubImage, CompositionLayerDepthInfoKHR
 };
 
 pub type Result<T, E = sys::Result> = std::result::Result<T, E>;
