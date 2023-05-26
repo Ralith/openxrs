@@ -1473,6 +1473,7 @@ impl Parser {
         let whitelist = [
             "XrCompositionLayerProjectionView",
             "XrCompositionLayerDepthInfoKHR",
+            "XrCompositionLayerSpaceWarpInfoFB",
             "XrSwapchainSubImage",
             "XrActionSetCreateInfo",
             "XrActionCreateInfo",

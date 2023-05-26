@@ -4721,6 +4721,94 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct CompositionLayerSpaceWarpInfoFB<'a, G: Graphics> {
+        inner: sys::CompositionLayerSpaceWarpInfoFB,
+        _marker: PhantomData<&'a G>,
+    }
+    impl<'a, G: Graphics> CompositionLayerSpaceWarpInfoFB<'a, G> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::CompositionLayerSpaceWarpInfoFB {
+                    ty: sys::StructureType::COMPOSITION_LAYER_SPACE_WARP_INFO_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::CompositionLayerSpaceWarpInfoFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::CompositionLayerSpaceWarpInfoFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::CompositionLayerSpaceWarpInfoFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn layer_flags(mut self, value: CompositionLayerSpaceWarpInfoFlagsFB) -> Self {
+            self.inner.layer_flags = value;
+            self
+        }
+        #[inline]
+        pub fn motion_vector_sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
+            self.inner.motion_vector_sub_image = value.inner;
+            self
+        }
+        #[inline]
+        pub fn app_space_delta_pose(mut self, value: Posef) -> Self {
+            self.inner.app_space_delta_pose = value;
+            self
+        }
+        #[inline]
+        pub fn depth_sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
+            self.inner.depth_sub_image = value.inner;
+            self
+        }
+        #[inline]
+        pub fn min_depth(mut self, value: f32) -> Self {
+            self.inner.min_depth = value;
+            self
+        }
+        #[inline]
+        pub fn max_depth(mut self, value: f32) -> Self {
+            self.inner.max_depth = value;
+            self
+        }
+        #[inline]
+        pub fn near_z(mut self, value: f32) -> Self {
+            self.inner.near_z = value;
+            self
+        }
+        #[inline]
+        pub fn far_z(mut self, value: f32) -> Self {
+            self.inner.far_z = value;
+            self
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerSpaceWarpInfoFB<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    unsafe impl<'a, G: Graphics> ExtendsCompositionLayerProjectionView
+        for CompositionLayerSpaceWarpInfoFB<'a, G>
+    {
+    }
     #[repr(transparent)]
     pub struct CompositionLayerBase<'a, G: Graphics> {
         _inner: sys::CompositionLayerBaseHeader,
