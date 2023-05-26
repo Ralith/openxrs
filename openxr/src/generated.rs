@@ -4511,7 +4511,7 @@ pub(crate) mod builder {
         ) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
                 let last_next = sys::ptr_chain_iter(other).last().unwrap();
                 (*last_next).next = self.inner.next as _;
                 self.inner.next = next_ptr;
@@ -4866,19 +4866,9 @@ pub(crate) mod builder {
         _marker: PhantomData<&'a G>,
     }
     pub unsafe trait ExtendsCompositionLayerBase {}
-    impl<'a, G: Graphics> CompositionLayerBase<'a, G> {
-        #[inline]
+    pub trait ImplCompositionLayerBase<'a> {
         #[doc = "Chains a structure as the next member of this one"]
-        pub fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
-            unsafe {
-                let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
-                self.inner.next = next_ptr;
-            }
-            self
-        }
+        fn push_next<T: ExtendsCompositionLayerBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -4945,6 +4935,19 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerProjection<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerProjection<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5026,6 +5029,19 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerQuad<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerQuad<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5119,6 +5135,19 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerCylinderKHR<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct CompositionLayerCubeKHR<'a, G: Graphics> {
@@ -5198,6 +5227,19 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerCubeKHR<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerCubeKHR<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5289,6 +5331,19 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerEquirectKHR<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerEquirectKHR<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5387,25 +5442,28 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    #[repr(transparent)]
-    pub struct HapticBase<'a> {
-        inner: sys::HapticBaseHeader,
-        _marker: PhantomData<&'a ()>,
-    }
-    pub unsafe trait ExtendsHapticBase {}
-    impl<'a> HapticBase<'a> {
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerEquirect2KHR<'a, G> {
         #[inline]
-        #[doc = "Chains a structure as the next member of this one"]
-        pub fn push_next<T: ExtendsHapticBase>(mut self, next: &'a mut T) -> Self {
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
                 let last_next = sys::ptr_chain_iter(other).last().unwrap();
                 (*last_next).next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
         }
+    }
+    #[repr(transparent)]
+    pub struct HapticBase<'a> {
+        inner: sys::HapticBaseHeader,
+        _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsHapticBase {}
+    pub trait ImplHapticBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsHapticBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5473,25 +5531,28 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    #[repr(transparent)]
-    pub struct BindingModificationBase<'a> {
-        inner: sys::BindingModificationBaseHeaderKHR,
-        _marker: PhantomData<&'a ()>,
-    }
-    pub unsafe trait ExtendsBindingModificationBase {}
-    impl<'a> BindingModificationBase<'a> {
+    impl<'a> ImplHapticBase<'a> for HapticVibration<'a> {
         #[inline]
-        #[doc = "Chains a structure as the next member of this one"]
-        pub fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
+        fn push_next<T: ExtendsHapticBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
                 let last_next = sys::ptr_chain_iter(other).last().unwrap();
                 (*last_next).next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
         }
+    }
+    #[repr(transparent)]
+    pub struct BindingModificationBase<'a> {
+        inner: sys::BindingModificationBaseHeaderKHR,
+        _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsBindingModificationBase {}
+    pub trait ImplBindingModificationBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsBindingModificationBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5589,6 +5650,19 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplBindingModificationBase<'a> for InteractionProfileDpadBindingEXT<'a> {
+        #[inline]
+        fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct InteractionProfileAnalogThresholdVALVE<'a> {
@@ -5670,25 +5744,28 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    #[repr(transparent)]
-    pub struct SwapchainStateBase<'a> {
-        inner: sys::SwapchainStateBaseHeaderFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    pub unsafe trait ExtendsSwapchainStateBase {}
-    impl<'a> SwapchainStateBase<'a> {
+    impl<'a> ImplBindingModificationBase<'a> for InteractionProfileAnalogThresholdVALVE<'a> {
         #[inline]
-        #[doc = "Chains a structure as the next member of this one"]
-        pub fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+        fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
                 let last_next = sys::ptr_chain_iter(other).last().unwrap();
                 (*last_next).next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
         }
+    }
+    #[repr(transparent)]
+    pub struct SwapchainStateBase<'a> {
+        inner: sys::SwapchainStateBaseHeaderFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSwapchainStateBase {}
+    pub trait ImplSwapchainStateBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsSwapchainStateBase>(self, next: &'a mut T) -> Self;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -5753,6 +5830,20 @@ pub(crate) mod builder {
     impl<'a> Default for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    #[cfg(target_os = "android")]
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5854,6 +5945,19 @@ pub(crate) mod builder {
     impl<'a> Default for SwapchainStateSamplerOpenGLESFB<'a> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateSamplerOpenGLESFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5962,6 +6066,19 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateSamplerVulkanFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct SwapchainStateFoveationFB<'a> {
@@ -6023,25 +6140,28 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    #[repr(transparent)]
-    pub struct SpaceQueryInfoBase<'a> {
-        inner: sys::SpaceQueryInfoBaseHeaderFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    pub unsafe trait ExtendsSpaceQueryInfoBase {}
-    impl<'a> SpaceQueryInfoBase<'a> {
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateFoveationFB<'a> {
         #[inline]
-        #[doc = "Chains a structure as the next member of this one"]
-        pub fn push_next<T: ExtendsSpaceQueryInfoBase>(mut self, next: &'a mut T) -> Self {
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
                 let last_next = sys::ptr_chain_iter(other).last().unwrap();
                 (*last_next).next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
         }
+    }
+    #[repr(transparent)]
+    pub struct SpaceQueryInfoBase<'a> {
+        inner: sys::SpaceQueryInfoBaseHeaderFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSpaceQueryInfoBase {}
+    pub trait ImplSpaceQueryInfoBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsSpaceQueryInfoBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -6119,25 +6239,28 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    #[repr(transparent)]
-    pub struct SpaceFilterInfoBase<'a> {
-        inner: sys::SpaceFilterInfoBaseHeaderFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    pub unsafe trait ExtendsSpaceFilterInfoBase {}
-    impl<'a> SpaceFilterInfoBase<'a> {
+    impl<'a> ImplSpaceQueryInfoBase<'a> for SpaceQueryInfoFB<'a> {
         #[inline]
-        #[doc = "Chains a structure as the next member of this one"]
-        pub fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
+        fn push_next<T: ExtendsSpaceQueryInfoBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
                 let last_next = sys::ptr_chain_iter(other).last().unwrap();
                 (*last_next).next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
         }
+    }
+    #[repr(transparent)]
+    pub struct SpaceFilterInfoBase<'a> {
+        inner: sys::SpaceFilterInfoBaseHeaderFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSpaceFilterInfoBase {}
+    pub trait ImplSpaceFilterInfoBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsSpaceFilterInfoBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -6196,6 +6319,19 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplSpaceFilterInfoBase<'a> for SpaceUuidFilterInfoFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct SpaceComponentFilterInfoFB<'a> {
@@ -6250,6 +6386,19 @@ pub(crate) mod builder {
     impl<'a> Default for SpaceComponentFilterInfoFB<'a> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a> ImplSpaceFilterInfoBase<'a> for SpaceComponentFilterInfoFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
 }

@@ -580,7 +580,7 @@ impl Parser {
             }
         }
         let parent: Option<String> = attr(attrs, "parentstruct").map(|x| x.into());
-        let extends: Option<Rc<str>> = attr(attrs, "structextends").map(|x| Rc::from(x));
+        let extends: Option<Rc<str>> = attr(attrs, "structextends").map(Rc::from);
         if let Some(ref parent) = parent {
             self.base_headers
                 .entry(parent.clone())
@@ -1633,24 +1633,6 @@ impl Parser {
         out
     }
 
-    /// Generates a push_next function for structures that can be extended through the `next` pointer
-    fn generate_next_fn(extension_trait_ident: &Ident) -> TokenStream {
-        quote! {
-            #[inline]
-            #[doc = "Chains a structure as the next member of this one"]
-            pub fn push_next<T: #extension_trait_ident>(mut self, next: &'a mut T) -> Self {
-                unsafe {
-                    let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                    let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
-                    let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                    (*last_next).next = self.inner.next as _;
-                    self.inner.next = next_ptr;
-                }
-                self
-            }
-        }
-    }
-
     fn generate_polymorphic_builders(
         &self,
         meta: &HashMap<&str, StructMeta>,
@@ -1665,6 +1647,8 @@ impl Parser {
             base_meta |= *meta.get(&name[..]).unwrap();
         }
 
+        let extends_name = format_ident!("Extends{}", base_ident);
+        let impl_trait_name = format_ident!("Impl{}", base_ident);
         let (type_params, type_args, marker, marker_init) = base_meta.type_params();
         let builders = children.iter().map(|name| {
             let ident = xr_ty_name(name);
@@ -1672,6 +1656,8 @@ impl Parser {
             let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
             let inits = self.generate_builder_inits(s);
             let setters = self.generate_setters(meta, simple, s);
+            let next_fn = generate_next_fn(&extends_name, NextFnType::TraitImpl);
+
             quote! {
                 #conds
                 #[derive(Copy, Clone)]
@@ -1734,12 +1720,14 @@ impl Parser {
                         Self::new()
                     }
                 }
+                #conds
+                impl #type_params #impl_trait_name<'a> for #ident #type_args {
+                    #next_fn
+                }
             }
         });
 
-        let extends_name = format_ident!("Extends{}", base_ident);
-        let next_fn = Self::generate_next_fn(&extends_name);
-
+        let next_fn = generate_next_fn(&extends_name, NextFnType::TraitDef);
         quote! {
             #[repr(transparent)]
             pub struct #base_ident #type_params {
@@ -1747,7 +1735,7 @@ impl Parser {
                 #marker
             }
             pub unsafe trait #extends_name {}
-            impl #type_params #base_ident #type_args {
+            pub trait #impl_trait_name<'a> {
                 #next_fn
             }
             #(#builders)*
@@ -1902,7 +1890,7 @@ impl Parser {
         // Adds a `push_next` method to the builder if the struct is a root struct
         // based on Ash
         let next_fn = if is_root_struct {
-            Self::generate_next_fn(&extends_name)
+            generate_next_fn(&extends_name, NextFnType::Fn)
         } else {
             quote!()
         };
@@ -2182,6 +2170,12 @@ struct Extension {
     commands: Vec<String>,
 }
 
+enum NextFnType {
+    Fn,
+    TraitDef,
+    TraitImpl,
+}
+
 fn attr<'a>(attrs: &'a [OwnedAttribute], name: &str) -> Option<&'a str> {
     attrs
         .iter()
@@ -2372,4 +2366,50 @@ fn base_header_ty(base_name: &str) -> Ident {
         &base_name[2..base_header_pos + "Base".len()],
         Span::call_site(),
     )
+}
+
+/// Generates a push_next function for structures that can be extended through the `next` pointer
+fn generate_next_fn(extension_trait_ident: &Ident, fn_type: NextFnType) -> TokenStream {
+    let docs = match fn_type {
+        NextFnType::TraitImpl => quote!(),
+        _ => quote!(#[doc = "Chains a structure as the next member of this one"]),
+    };
+
+    let fn_body = match fn_type {
+        NextFnType::TraitDef => quote!(;),
+        _ => quote! {
+            {
+                unsafe {
+                    let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                    let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
+                    let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                    (*last_next).next = self.inner.next as _;
+                    self.inner.next = next_ptr;
+                }
+                self
+            }
+        },
+    };
+
+    let fn_accessor = match fn_type {
+        NextFnType::Fn => quote!(pub),
+        _ => quote!(),
+    };
+
+    let self_pattern = match fn_type {
+        NextFnType::TraitDef => quote!(self),
+        _ => quote!(mut self),
+    };
+
+    let inlining = match fn_type {
+        NextFnType::TraitDef => quote!(),
+        _ => quote!(#[inline]),
+    };
+
+    quote! {
+        #inlining
+        #docs
+        #fn_accessor fn push_next<T: #extension_trait_ident>(#self_pattern, next: &'a mut T) -> Self
+        #fn_body
+    }
 }
