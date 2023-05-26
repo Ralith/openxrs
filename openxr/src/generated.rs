@@ -4504,6 +4504,7 @@ pub(crate) mod builder {
             self
         }
         #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
         pub fn push_next<T: ExtendsCompositionLayerProjectionView>(
             mut self,
             next: &'a mut T,
@@ -4770,7 +4771,7 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    unsafe impl<'a> ExtendsCompositionLayerBaseHeader for CompositionLayerImageLayoutFB<'a> {}
+    unsafe impl<'a> ExtendsCompositionLayerBase for CompositionLayerImageLayoutFB<'a> {}
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct CompositionLayerSpaceWarpInfoFB<'a, G: Graphics> {
@@ -4861,8 +4862,23 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct CompositionLayerBase<'a, G: Graphics> {
-        _inner: sys::CompositionLayerBaseHeader,
+        inner: sys::CompositionLayerBaseHeader,
         _marker: PhantomData<&'a G>,
+    }
+    pub unsafe trait ExtendsCompositionLayerBase {}
+    impl<'a, G: Graphics> CompositionLayerBase<'a, G> {
+        #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
+        pub fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5373,8 +5389,23 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct HapticBase<'a> {
-        _inner: sys::HapticBaseHeader,
+        inner: sys::HapticBaseHeader,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsHapticBase {}
+    impl<'a> HapticBase<'a> {
+        #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
+        pub fn push_next<T: ExtendsHapticBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5444,8 +5475,23 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct BindingModificationBase<'a> {
-        _inner: sys::BindingModificationBaseHeaderKHR,
+        inner: sys::BindingModificationBaseHeaderKHR,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsBindingModificationBase {}
+    impl<'a> BindingModificationBase<'a> {
+        #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
+        pub fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5626,8 +5672,23 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct SwapchainStateBase<'a> {
-        _inner: sys::SwapchainStateBaseHeaderFB,
+        inner: sys::SwapchainStateBaseHeaderFB,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSwapchainStateBase {}
+    impl<'a> SwapchainStateBase<'a> {
+        #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
+        pub fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -5964,8 +6025,23 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct SpaceQueryInfoBase<'a> {
-        _inner: sys::SpaceQueryInfoBaseHeaderFB,
+        inner: sys::SpaceQueryInfoBaseHeaderFB,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSpaceQueryInfoBase {}
+    impl<'a> SpaceQueryInfoBase<'a> {
+        #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
+        pub fn push_next<T: ExtendsSpaceQueryInfoBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -6045,8 +6121,23 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct SpaceFilterInfoBase<'a> {
-        _inner: sys::SpaceFilterInfoBaseHeaderFB,
+        inner: sys::SpaceFilterInfoBaseHeaderFB,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSpaceFilterInfoBase {}
+    impl<'a> SpaceFilterInfoBase<'a> {
+        #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
+        pub fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                (*last_next).next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]

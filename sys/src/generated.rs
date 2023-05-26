@@ -3070,9 +3070,6 @@ pub struct ApiLayerProperties {
 }
 impl ApiLayerProperties {
     pub const TYPE: StructureType = StructureType::API_LAYER_PROPERTIES;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3097,9 +3094,6 @@ pub struct ExtensionProperties {
 }
 impl ExtensionProperties {
     pub const TYPE: StructureType = StructureType::EXTENSION_PROPERTIES;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3138,9 +3132,6 @@ pub struct InstanceCreateInfo {
 }
 impl InstanceCreateInfo {
     pub const TYPE: StructureType = StructureType::INSTANCE_CREATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3153,9 +3144,6 @@ pub struct InstanceProperties {
 }
 impl InstanceProperties {
     pub const TYPE: StructureType = StructureType::INSTANCE_PROPERTIES;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3179,9 +3167,6 @@ pub struct SystemGetInfo {
 }
 impl SystemGetInfo {
     pub const TYPE: StructureType = StructureType::SYSTEM_GET_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3197,9 +3182,6 @@ pub struct SystemProperties {
 }
 impl SystemProperties {
     pub const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3241,9 +3223,6 @@ pub struct GraphicsBindingOpenGLWin32KHR {
 #[cfg(windows)]
 impl GraphicsBindingOpenGLWin32KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WIN32_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3259,9 +3238,6 @@ pub struct GraphicsBindingOpenGLXlibKHR {
 }
 impl GraphicsBindingOpenGLXlibKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XLIB_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3278,9 +3254,6 @@ pub struct GraphicsBindingOpenGLXcbKHR {
 }
 impl GraphicsBindingOpenGLXcbKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_XCB_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3292,9 +3265,6 @@ pub struct GraphicsBindingOpenGLWaylandKHR {
 }
 impl GraphicsBindingOpenGLWaylandKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_WAYLAND_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3308,9 +3278,6 @@ pub struct GraphicsBindingD3D11KHR {
 #[cfg(windows)]
 impl GraphicsBindingD3D11KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D11_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3325,9 +3292,6 @@ pub struct GraphicsBindingD3D12KHR {
 #[cfg(windows)]
 impl GraphicsBindingD3D12KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_D3D12_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3343,9 +3307,6 @@ pub struct GraphicsBindingOpenGLESAndroidKHR {
 #[cfg(target_os = "android")]
 impl GraphicsBindingOpenGLESAndroidKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3361,9 +3322,6 @@ pub struct GraphicsBindingVulkanKHR {
 }
 impl GraphicsBindingVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_VULKAN_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3376,9 +3334,6 @@ pub struct SessionCreateInfo {
 }
 impl SessionCreateInfo {
     pub const TYPE: StructureType = StructureType::SESSION_CREATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3390,9 +3345,6 @@ pub struct SessionBeginInfo {
 }
 impl SessionBeginInfo {
     pub const TYPE: StructureType = StructureType::SESSION_BEGIN_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3412,9 +3364,6 @@ pub struct SwapchainCreateInfo {
 }
 impl SwapchainCreateInfo {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_CREATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3433,9 +3382,6 @@ pub struct SwapchainImageOpenGLKHR {
 }
 impl SwapchainImageOpenGLKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3459,9 +3405,6 @@ pub struct SwapchainImageOpenGLESKHR {
 }
 impl SwapchainImageOpenGLESKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3485,9 +3428,6 @@ pub struct SwapchainImageVulkanKHR {
 }
 impl SwapchainImageVulkanKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_VULKAN_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3513,9 +3453,6 @@ pub struct SwapchainImageD3D11KHR {
 #[cfg(windows)]
 impl SwapchainImageD3D11KHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D11_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3541,9 +3478,6 @@ pub struct SwapchainImageD3D12KHR {
 #[cfg(windows)]
 impl SwapchainImageD3D12KHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_D3D12_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3566,9 +3500,6 @@ pub struct SwapchainImageAcquireInfo {
 }
 impl SwapchainImageAcquireInfo {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_ACQUIRE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3580,9 +3511,6 @@ pub struct SwapchainImageWaitInfo {
 }
 impl SwapchainImageWaitInfo {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_WAIT_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3593,9 +3521,6 @@ pub struct SwapchainImageReleaseInfo {
 }
 impl SwapchainImageReleaseInfo {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_RELEASE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3608,9 +3533,6 @@ pub struct ReferenceSpaceCreateInfo {
 }
 impl ReferenceSpaceCreateInfo {
     pub const TYPE: StructureType = StructureType::REFERENCE_SPACE_CREATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3624,9 +3546,6 @@ pub struct ActionSpaceCreateInfo {
 }
 impl ActionSpaceCreateInfo {
     pub const TYPE: StructureType = StructureType::ACTION_SPACE_CREATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3639,9 +3558,6 @@ pub struct SpaceLocation {
 }
 impl SpaceLocation {
     pub const TYPE: StructureType = StructureType::SPACE_LOCATION;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3667,9 +3583,6 @@ pub struct SpaceVelocity {
 }
 impl SpaceVelocity {
     pub const TYPE: StructureType = StructureType::SPACE_VELOCITY;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3703,9 +3616,6 @@ pub struct View {
 }
 impl View {
     pub const TYPE: StructureType = StructureType::VIEW;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3731,9 +3641,6 @@ pub struct ViewLocateInfo {
 }
 impl ViewLocateInfo {
     pub const TYPE: StructureType = StructureType::VIEW_LOCATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3745,9 +3652,6 @@ pub struct ViewState {
 }
 impl ViewState {
     pub const TYPE: StructureType = StructureType::VIEW_STATE;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3776,9 +3680,6 @@ pub struct ViewConfigurationView {
 }
 impl ViewConfigurationView {
     pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -3821,9 +3722,6 @@ pub struct CompositionLayerProjectionView {
 }
 impl CompositionLayerProjectionView {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PROJECTION_VIEW;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3838,9 +3736,6 @@ pub struct CompositionLayerProjection {
 }
 impl CompositionLayerProjection {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PROJECTION;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3857,9 +3752,6 @@ pub struct CompositionLayerQuad {
 }
 impl CompositionLayerQuad {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_QUAD;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3878,9 +3770,6 @@ pub struct CompositionLayerCylinderKHR {
 }
 impl CompositionLayerCylinderKHR {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_CYLINDER_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3897,9 +3786,6 @@ pub struct CompositionLayerCubeKHR {
 }
 impl CompositionLayerCubeKHR {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_CUBE_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3918,9 +3804,6 @@ pub struct CompositionLayerEquirectKHR {
 }
 impl CompositionLayerEquirectKHR {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_EQUIRECT_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3936,9 +3819,6 @@ pub struct CompositionLayerDepthInfoKHR {
 }
 impl CompositionLayerDepthInfoKHR {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_DEPTH_INFO_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3949,9 +3829,6 @@ pub struct FrameBeginInfo {
 }
 impl FrameBeginInfo {
     pub const TYPE: StructureType = StructureType::FRAME_BEGIN_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3966,9 +3843,6 @@ pub struct FrameEndInfo {
 }
 impl FrameEndInfo {
     pub const TYPE: StructureType = StructureType::FRAME_END_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3979,9 +3853,6 @@ pub struct FrameWaitInfo {
 }
 impl FrameWaitInfo {
     pub const TYPE: StructureType = StructureType::FRAME_WAIT_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -3995,9 +3866,6 @@ pub struct FrameState {
 }
 impl FrameState {
     pub const TYPE: StructureType = StructureType::FRAME_STATE;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4030,9 +3898,6 @@ pub struct HapticVibration {
 }
 impl HapticVibration {
     pub const TYPE: StructureType = StructureType::HAPTIC_VIBRATION;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4051,9 +3916,6 @@ pub struct EventDataBuffer {
 }
 impl EventDataBuffer {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_BUFFER;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4065,9 +3927,6 @@ pub struct EventDataEventsLost {
 }
 impl EventDataEventsLost {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_EVENTS_LOST;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4079,9 +3938,6 @@ pub struct EventDataInstanceLossPending {
 }
 impl EventDataInstanceLossPending {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4095,9 +3951,6 @@ pub struct EventDataSessionStateChanged {
 }
 impl EventDataSessionStateChanged {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_SESSION_STATE_CHANGED;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4113,9 +3966,6 @@ pub struct EventDataReferenceSpaceChangePending {
 }
 impl EventDataReferenceSpaceChangePending {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4130,9 +3980,6 @@ pub struct EventDataPerfSettingsEXT {
 }
 impl EventDataPerfSettingsEXT {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_PERF_SETTINGS_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4146,9 +3993,6 @@ pub struct EventDataVisibilityMaskChangedKHR {
 }
 impl EventDataVisibilityMaskChangedKHR {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4161,9 +4005,6 @@ pub struct ViewConfigurationProperties {
 }
 impl ViewConfigurationProperties {
     pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_PROPERTIES;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4190,9 +4031,6 @@ pub struct ActionStateBoolean {
 }
 impl ActionStateBoolean {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_BOOLEAN;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4219,9 +4057,6 @@ pub struct ActionStateFloat {
 }
 impl ActionStateFloat {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_FLOAT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4248,9 +4083,6 @@ pub struct ActionStateVector2f {
 }
 impl ActionStateVector2f {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_VECTOR2F;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4274,9 +4106,6 @@ pub struct ActionStatePose {
 }
 impl ActionStatePose {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_POSE;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4301,9 +4130,6 @@ pub struct ActionStateGetInfo {
 }
 impl ActionStateGetInfo {
     pub const TYPE: StructureType = StructureType::ACTION_STATE_GET_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4316,9 +4142,6 @@ pub struct HapticActionInfo {
 }
 impl HapticActionInfo {
     pub const TYPE: StructureType = StructureType::HAPTIC_ACTION_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4332,9 +4155,6 @@ pub struct ActionSetCreateInfo {
 }
 impl ActionSetCreateInfo {
     pub const TYPE: StructureType = StructureType::ACTION_SET_CREATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4355,9 +4175,6 @@ pub struct InteractionProfileSuggestedBinding {
 }
 impl InteractionProfileSuggestedBinding {
     pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_SUGGESTED_BINDING;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4377,9 +4194,6 @@ pub struct SessionActionSetsAttachInfo {
 }
 impl SessionActionSetsAttachInfo {
     pub const TYPE: StructureType = StructureType::SESSION_ACTION_SETS_ATTACH_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4392,9 +4206,6 @@ pub struct ActionsSyncInfo {
 }
 impl ActionsSyncInfo {
     pub const TYPE: StructureType = StructureType::ACTIONS_SYNC_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4406,9 +4217,6 @@ pub struct BoundSourcesForActionEnumerateInfo {
 }
 impl BoundSourcesForActionEnumerateInfo {
     pub const TYPE: StructureType = StructureType::BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4421,9 +4229,6 @@ pub struct InputSourceLocalizedNameGetInfo {
 }
 impl InputSourceLocalizedNameGetInfo {
     pub const TYPE: StructureType = StructureType::INPUT_SOURCE_LOCALIZED_NAME_GET_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4435,9 +4240,6 @@ pub struct EventDataInteractionProfileChanged {
 }
 impl EventDataInteractionProfileChanged {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4449,9 +4251,6 @@ pub struct InteractionProfileState {
 }
 impl InteractionProfileState {
     pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_STATE;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4479,9 +4278,6 @@ pub struct ActionCreateInfo {
 }
 impl ActionCreateInfo {
     pub const TYPE: StructureType = StructureType::ACTION_CREATE_INFO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4496,9 +4292,6 @@ pub struct InstanceCreateInfoAndroidKHR {
 #[cfg(target_os = "android")]
 impl InstanceCreateInfoAndroidKHR {
     pub const TYPE: StructureType = StructureType::INSTANCE_CREATE_INFO_ANDROID_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4511,9 +4304,6 @@ pub struct VulkanSwapchainFormatListCreateInfoKHR {
 }
 impl VulkanSwapchainFormatListCreateInfoKHR {
     pub const TYPE: StructureType = StructureType::VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4527,9 +4317,6 @@ pub struct DebugUtilsObjectNameInfoEXT {
 }
 impl DebugUtilsObjectNameInfoEXT {
     pub const TYPE: StructureType = StructureType::DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4541,9 +4328,6 @@ pub struct DebugUtilsLabelEXT {
 }
 impl DebugUtilsLabelEXT {
     pub const TYPE: StructureType = StructureType::DEBUG_UTILS_LABEL_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4561,9 +4345,6 @@ pub struct DebugUtilsMessengerCallbackDataEXT {
 }
 impl DebugUtilsMessengerCallbackDataEXT {
     pub const TYPE: StructureType = StructureType::DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -4578,9 +4359,6 @@ pub struct DebugUtilsMessengerCreateInfoEXT {
 }
 impl DebugUtilsMessengerCreateInfoEXT {
     pub const TYPE: StructureType = StructureType::DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4597,9 +4375,6 @@ pub struct VisibilityMaskKHR {
 }
 impl VisibilityMaskKHR {
     pub const TYPE: StructureType = StructureType::VISIBILITY_MASK_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4624,9 +4399,6 @@ pub struct GraphicsRequirementsOpenGLKHR {
 }
 impl GraphicsRequirementsOpenGLKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4651,9 +4423,6 @@ pub struct GraphicsRequirementsOpenGLESKHR {
 }
 impl GraphicsRequirementsOpenGLESKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4678,9 +4447,6 @@ pub struct GraphicsRequirementsVulkanKHR {
 }
 impl GraphicsRequirementsVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_VULKAN_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4707,9 +4473,6 @@ pub struct GraphicsRequirementsD3D11KHR {
 #[cfg(windows)]
 impl GraphicsRequirementsD3D11KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D11_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4736,9 +4499,6 @@ pub struct GraphicsRequirementsD3D12KHR {
 #[cfg(windows)]
 impl GraphicsRequirementsD3D12KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D12_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4766,9 +4526,6 @@ pub struct VulkanInstanceCreateInfoKHR {
 }
 impl VulkanInstanceCreateInfoKHR {
     pub const TYPE: StructureType = StructureType::VULKAN_INSTANCE_CREATE_INFO_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -4785,9 +4542,6 @@ pub struct VulkanDeviceCreateInfoKHR {
 }
 impl VulkanDeviceCreateInfoKHR {
     pub const TYPE: StructureType = StructureType::VULKAN_DEVICE_CREATE_INFO_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4800,9 +4554,6 @@ pub struct VulkanGraphicsDeviceGetInfoKHR {
 }
 impl VulkanGraphicsDeviceGetInfoKHR {
     pub const TYPE: StructureType = StructureType::VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4815,9 +4566,6 @@ pub struct VulkanSwapchainCreateInfoMETA {
 }
 impl VulkanSwapchainCreateInfoMETA {
     pub const TYPE: StructureType = StructureType::VULKAN_SWAPCHAIN_CREATE_INFO_META;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4830,9 +4578,6 @@ pub struct SessionCreateInfoOverlayEXTX {
 }
 impl SessionCreateInfoOverlayEXTX {
     pub const TYPE: StructureType = StructureType::SESSION_CREATE_INFO_OVERLAY_EXTX;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4845,9 +4590,6 @@ pub struct EventDataMainSessionVisibilityChangedEXTX {
 }
 impl EventDataMainSessionVisibilityChangedEXTX {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4860,9 +4602,6 @@ pub struct EventDataDisplayRefreshRateChangedFB {
 }
 impl EventDataDisplayRefreshRateChangedFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4877,9 +4616,6 @@ pub struct ViewConfigurationDepthRangeEXT {
 }
 impl ViewConfigurationDepthRangeEXT {
     pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_DEPTH_RANGE_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -4904,9 +4640,6 @@ pub struct ViewConfigurationViewFovEPIC {
 }
 impl ViewConfigurationViewFovEPIC {
     pub const TYPE: StructureType = StructureType::VIEW_CONFIGURATION_VIEW_FOV_EPIC;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4926,9 +4659,6 @@ pub struct InteractionProfileDpadBindingEXT {
 }
 impl InteractionProfileDpadBindingEXT {
     pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_DPAD_BINDING_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4945,9 +4675,6 @@ pub struct InteractionProfileAnalogThresholdVALVE {
 }
 impl InteractionProfileAnalogThresholdVALVE {
     pub const TYPE: StructureType = StructureType::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4960,9 +4687,6 @@ pub struct BindingModificationsKHR {
 }
 impl BindingModificationsKHR {
     pub const TYPE: StructureType = StructureType::BINDING_MODIFICATIONS_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -4981,9 +4705,6 @@ pub struct SystemEyeGazeInteractionPropertiesEXT {
 }
 impl SystemEyeGazeInteractionPropertiesEXT {
     pub const TYPE: StructureType = StructureType::SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5007,9 +4728,6 @@ pub struct EyeGazeSampleTimeEXT {
 }
 impl EyeGazeSampleTimeEXT {
     pub const TYPE: StructureType = StructureType::EYE_GAZE_SAMPLE_TIME_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5035,9 +4753,6 @@ pub struct SpatialAnchorCreateInfoMSFT {
 }
 impl SpatialAnchorCreateInfoMSFT {
     pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5050,9 +4765,6 @@ pub struct SpatialAnchorSpaceCreateInfoMSFT {
 }
 impl SpatialAnchorSpaceCreateInfoMSFT {
     pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5064,9 +4776,6 @@ pub struct CompositionLayerImageLayoutFB {
 }
 impl CompositionLayerImageLayoutFB {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_IMAGE_LAYOUT_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5093,9 +4802,6 @@ pub struct CompositionLayerAlphaBlendFB {
 }
 impl CompositionLayerAlphaBlendFB {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_ALPHA_BLEND_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5122,9 +4828,6 @@ pub struct GraphicsBindingEGLMNDX {
 }
 impl GraphicsBindingEGLMNDX {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_EGL_MNDX;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5138,9 +4841,6 @@ pub struct SpatialGraphNodeSpaceCreateInfoMSFT {
 }
 impl SpatialGraphNodeSpaceCreateInfoMSFT {
     pub const TYPE: StructureType = StructureType::SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5155,9 +4855,6 @@ pub struct SpatialGraphStaticNodeBindingCreateInfoMSFT {
 impl SpatialGraphStaticNodeBindingCreateInfoMSFT {
     pub const TYPE: StructureType =
         StructureType::SPATIAL_GRAPH_STATIC_NODE_BINDING_CREATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5169,9 +4866,6 @@ pub struct SpatialGraphNodeBindingPropertiesGetInfoMSFT {
 impl SpatialGraphNodeBindingPropertiesGetInfoMSFT {
     pub const TYPE: StructureType =
         StructureType::SPATIAL_GRAPH_NODE_BINDING_PROPERTIES_GET_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5184,9 +4878,6 @@ pub struct SpatialGraphNodeBindingPropertiesMSFT {
 }
 impl SpatialGraphNodeBindingPropertiesMSFT {
     pub const TYPE: StructureType = StructureType::SPATIAL_GRAPH_NODE_BINDING_PROPERTIES_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5210,9 +4901,6 @@ pub struct SystemHandTrackingPropertiesEXT {
 }
 impl SystemHandTrackingPropertiesEXT {
     pub const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_PROPERTIES_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5237,9 +4925,6 @@ pub struct HandTrackerCreateInfoEXT {
 }
 impl HandTrackerCreateInfoEXT {
     pub const TYPE: StructureType = StructureType::HAND_TRACKER_CREATE_INFO_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5252,9 +4937,6 @@ pub struct HandJointsLocateInfoEXT {
 }
 impl HandJointsLocateInfoEXT {
     pub const TYPE: StructureType = StructureType::HAND_JOINTS_LOCATE_INFO_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
@@ -5284,9 +4966,6 @@ pub struct HandJointLocationsEXT {
 }
 impl HandJointLocationsEXT {
     pub const TYPE: StructureType = StructureType::HAND_JOINT_LOCATIONS_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5311,9 +4990,6 @@ pub struct HandJointVelocitiesEXT {
 }
 impl HandJointVelocitiesEXT {
     pub const TYPE: StructureType = StructureType::HAND_JOINT_VELOCITIES_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5337,9 +5013,6 @@ pub struct HandJointsMotionRangeInfoEXT {
 }
 impl HandJointsMotionRangeInfoEXT {
     pub const TYPE: StructureType = StructureType::HAND_JOINTS_MOTION_RANGE_INFO_EXT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5352,9 +5025,6 @@ pub struct HandMeshSpaceCreateInfoMSFT {
 }
 impl HandMeshSpaceCreateInfoMSFT {
     pub const TYPE: StructureType = StructureType::HAND_MESH_SPACE_CREATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5367,9 +5037,6 @@ pub struct HandMeshUpdateInfoMSFT {
 }
 impl HandMeshUpdateInfoMSFT {
     pub const TYPE: StructureType = StructureType::HAND_MESH_UPDATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5385,9 +5052,6 @@ pub struct HandMeshMSFT {
 }
 impl HandMeshMSFT {
     pub const TYPE: StructureType = StructureType::HAND_MESH_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5438,9 +5102,6 @@ pub struct SystemHandTrackingMeshPropertiesMSFT {
 }
 impl SystemHandTrackingMeshPropertiesMSFT {
     pub const TYPE: StructureType = StructureType::SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5464,9 +5125,6 @@ pub struct HandPoseTypeInfoMSFT {
 }
 impl HandPoseTypeInfoMSFT {
     pub const TYPE: StructureType = StructureType::HAND_POSE_TYPE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5480,9 +5138,6 @@ pub struct SecondaryViewConfigurationSessionBeginInfoMSFT {
 impl SecondaryViewConfigurationSessionBeginInfoMSFT {
     pub const TYPE: StructureType =
         StructureType::SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5495,9 +5150,6 @@ pub struct SecondaryViewConfigurationStateMSFT {
 }
 impl SecondaryViewConfigurationStateMSFT {
     pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_STATE_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5522,9 +5174,6 @@ pub struct SecondaryViewConfigurationFrameStateMSFT {
 }
 impl SecondaryViewConfigurationFrameStateMSFT {
     pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5549,9 +5198,6 @@ pub struct SecondaryViewConfigurationFrameEndInfoMSFT {
 }
 impl SecondaryViewConfigurationFrameEndInfoMSFT {
     pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5566,9 +5212,6 @@ pub struct SecondaryViewConfigurationLayerInfoMSFT {
 }
 impl SecondaryViewConfigurationLayerInfoMSFT {
     pub const TYPE: StructureType = StructureType::SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5581,9 +5224,6 @@ pub struct SecondaryViewConfigurationSwapchainCreateInfoMSFT {
 impl SecondaryViewConfigurationSwapchainCreateInfoMSFT {
     pub const TYPE: StructureType =
         StructureType::SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5598,9 +5238,6 @@ pub struct HolographicWindowAttachmentMSFT {
 #[cfg(windows)]
 impl HolographicWindowAttachmentMSFT {
     pub const TYPE: StructureType = StructureType::HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5614,9 +5251,6 @@ pub struct AndroidSurfaceSwapchainCreateInfoFB {
 #[cfg(target_os = "android")]
 impl AndroidSurfaceSwapchainCreateInfoFB {
     pub const TYPE: StructureType = StructureType::ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5638,9 +5272,6 @@ pub struct SwapchainStateAndroidSurfaceDimensionsFB {
 #[cfg(target_os = "android")]
 impl SwapchainStateAndroidSurfaceDimensionsFB {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5673,9 +5304,6 @@ pub struct SwapchainStateSamplerOpenGLESFB {
 }
 impl SwapchainStateSamplerOpenGLESFB {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5709,9 +5337,6 @@ pub struct SwapchainStateSamplerVulkanFB {
 }
 impl SwapchainStateSamplerVulkanFB {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_SAMPLER_VULKAN_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5735,9 +5360,6 @@ pub struct CompositionLayerSecureContentFB {
 }
 impl CompositionLayerSecureContentFB {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_SECURE_CONTENT_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5759,9 +5381,6 @@ pub struct LoaderInitInfoAndroidKHR {
 #[cfg(target_os = "android")]
 impl LoaderInitInfoAndroidKHR {
     pub const TYPE: StructureType = StructureType::LOADER_INIT_INFO_ANDROID_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5781,9 +5400,6 @@ pub struct CompositionLayerEquirect2KHR {
 }
 impl CompositionLayerEquirect2KHR {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_EQUIRECT2_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5796,9 +5412,6 @@ pub struct CompositionLayerColorScaleBiasKHR {
 }
 impl CompositionLayerColorScaleBiasKHR {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_COLOR_SCALE_BIAS_KHR;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5810,9 +5423,6 @@ pub struct ControllerModelKeyStateMSFT {
 }
 impl ControllerModelKeyStateMSFT {
     pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_KEY_STATE_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5837,9 +5447,6 @@ pub struct ControllerModelNodePropertiesMSFT {
 }
 impl ControllerModelNodePropertiesMSFT {
     pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_NODE_PROPERTIES_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5865,9 +5472,6 @@ pub struct ControllerModelPropertiesMSFT {
 }
 impl ControllerModelPropertiesMSFT {
     pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_PROPERTIES_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5891,9 +5495,6 @@ pub struct ControllerModelNodeStateMSFT {
 }
 impl ControllerModelNodeStateMSFT {
     pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_NODE_STATE_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5919,9 +5520,6 @@ pub struct ControllerModelStateMSFT {
 }
 impl ControllerModelStateMSFT {
     pub const TYPE: StructureType = StructureType::CONTROLLER_MODEL_STATE_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5945,9 +5543,6 @@ pub struct SystemColorSpacePropertiesFB {
 }
 impl SystemColorSpacePropertiesFB {
     pub const TYPE: StructureType = StructureType::SYSTEM_COLOR_SPACE_PROPERTIES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -5971,9 +5566,6 @@ pub struct SystemSpatialEntityPropertiesFB {
 }
 impl SystemSpatialEntityPropertiesFB {
     pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_ENTITY_PROPERTIES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5987,9 +5579,6 @@ pub struct SpatialAnchorCreateInfoFB {
 }
 impl SpatialAnchorCreateInfoFB {
     pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6003,9 +5592,6 @@ pub struct SpaceComponentStatusSetInfoFB {
 }
 impl SpaceComponentStatusSetInfoFB {
     pub const TYPE: StructureType = StructureType::SPACE_COMPONENT_STATUS_SET_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6018,9 +5604,6 @@ pub struct SpaceComponentStatusFB {
 }
 impl SpaceComponentStatusFB {
     pub const TYPE: StructureType = StructureType::SPACE_COMPONENT_STATUS_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6047,9 +5630,6 @@ pub struct EventDataSpatialAnchorCreateCompleteFB {
 }
 impl EventDataSpatialAnchorCreateCompleteFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_SPATIAL_ANCHOR_CREATE_COMPLETE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6066,9 +5646,6 @@ pub struct EventDataSpaceSetStatusCompleteFB {
 }
 impl EventDataSpaceSetStatusCompleteFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACE_SET_STATUS_COMPLETE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6079,9 +5656,6 @@ pub struct FoveationProfileCreateInfoFB {
 }
 impl FoveationProfileCreateInfoFB {
     pub const TYPE: StructureType = StructureType::FOVEATION_PROFILE_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6105,9 +5679,6 @@ pub struct SwapchainCreateInfoFoveationFB {
 }
 impl SwapchainCreateInfoFoveationFB {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_CREATE_INFO_FOVEATION_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6132,9 +5703,6 @@ pub struct SwapchainStateFoveationFB {
 }
 impl SwapchainStateFoveationFB {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_STATE_FOVEATION_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6160,9 +5728,6 @@ pub struct SwapchainImageFoveationVulkanFB {
 }
 impl SwapchainImageFoveationVulkanFB {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_FOVEATION_VULKAN_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6188,9 +5753,6 @@ pub struct FoveationLevelProfileCreateInfoFB {
 }
 impl FoveationLevelProfileCreateInfoFB {
     pub const TYPE: StructureType = StructureType::FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6237,9 +5799,6 @@ pub struct HandTrackingMeshFB {
 }
 impl HandTrackingMeshFB {
     pub const TYPE: StructureType = StructureType::HAND_TRACKING_MESH_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6266,9 +5825,6 @@ pub struct HandTrackingScaleFB {
 }
 impl HandTrackingScaleFB {
     pub const TYPE: StructureType = StructureType::HAND_TRACKING_SCALE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6297,9 +5853,6 @@ pub struct HandTrackingAimStateFB {
 }
 impl HandTrackingAimStateFB {
     pub const TYPE: StructureType = StructureType::HAND_TRACKING_AIM_STATE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6331,9 +5884,6 @@ pub struct HandTrackingCapsulesStateFB {
 }
 impl HandTrackingCapsulesStateFB {
     pub const TYPE: StructureType = StructureType::HAND_TRACKING_CAPSULES_STATE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6357,9 +5907,6 @@ pub struct RenderModelPathInfoFB {
 }
 impl RenderModelPathInfoFB {
     pub const TYPE: StructureType = StructureType::RENDER_MODEL_PATH_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6387,9 +5934,6 @@ pub struct RenderModelPropertiesFB {
 }
 impl RenderModelPropertiesFB {
     pub const TYPE: StructureType = StructureType::RENDER_MODEL_PROPERTIES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6415,9 +5959,6 @@ pub struct RenderModelBufferFB {
 }
 impl RenderModelBufferFB {
     pub const TYPE: StructureType = StructureType::RENDER_MODEL_BUFFER_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6441,9 +5982,6 @@ pub struct RenderModelLoadInfoFB {
 }
 impl RenderModelLoadInfoFB {
     pub const TYPE: StructureType = StructureType::RENDER_MODEL_LOAD_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6467,9 +6005,6 @@ pub struct SystemRenderModelPropertiesFB {
 }
 impl SystemRenderModelPropertiesFB {
     pub const TYPE: StructureType = StructureType::SYSTEM_RENDER_MODEL_PROPERTIES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6493,9 +6028,6 @@ pub struct RenderModelCapabilitiesRequestFB {
 }
 impl RenderModelCapabilitiesRequestFB {
     pub const TYPE: StructureType = StructureType::RENDER_MODEL_CAPABILITIES_REQUEST_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6537,9 +6069,6 @@ pub struct SpaceQueryInfoFB {
 }
 impl SpaceQueryInfoFB {
     pub const TYPE: StructureType = StructureType::SPACE_QUERY_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6551,9 +6080,6 @@ pub struct SpaceStorageLocationFilterInfoFB {
 }
 impl SpaceStorageLocationFilterInfoFB {
     pub const TYPE: StructureType = StructureType::SPACE_STORAGE_LOCATION_FILTER_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6566,9 +6092,6 @@ pub struct SpaceUuidFilterInfoFB {
 }
 impl SpaceUuidFilterInfoFB {
     pub const TYPE: StructureType = StructureType::SPACE_UUID_FILTER_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6580,9 +6103,6 @@ pub struct SpaceComponentFilterInfoFB {
 }
 impl SpaceComponentFilterInfoFB {
     pub const TYPE: StructureType = StructureType::SPACE_COMPONENT_FILTER_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6603,9 +6123,6 @@ pub struct SpaceQueryResultsFB {
 }
 impl SpaceQueryResultsFB {
     pub const TYPE: StructureType = StructureType::SPACE_QUERY_RESULTS_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6629,9 +6146,6 @@ pub struct EventDataSpaceQueryResultsAvailableFB {
 }
 impl EventDataSpaceQueryResultsAvailableFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACE_QUERY_RESULTS_AVAILABLE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6644,9 +6158,6 @@ pub struct EventDataSpaceQueryCompleteFB {
 }
 impl EventDataSpaceQueryCompleteFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACE_QUERY_COMPLETE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6660,9 +6171,6 @@ pub struct SpaceSaveInfoFB {
 }
 impl SpaceSaveInfoFB {
     pub const TYPE: StructureType = StructureType::SPACE_SAVE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6675,9 +6183,6 @@ pub struct SpaceEraseInfoFB {
 }
 impl SpaceEraseInfoFB {
     pub const TYPE: StructureType = StructureType::SPACE_ERASE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6693,9 +6198,6 @@ pub struct EventDataSpaceSaveCompleteFB {
 }
 impl EventDataSpaceSaveCompleteFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACE_SAVE_COMPLETE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6711,9 +6213,6 @@ pub struct EventDataSpaceEraseCompleteFB {
 }
 impl EventDataSpaceEraseCompleteFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACE_ERASE_COMPLETE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6727,9 +6226,6 @@ pub struct SpaceContainerFB {
 }
 impl SpaceContainerFB {
     pub const TYPE: StructureType = StructureType::SPACE_CONTAINER_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
@@ -6766,9 +6262,6 @@ pub struct SemanticLabelsFB {
 }
 impl SemanticLabelsFB {
     pub const TYPE: StructureType = StructureType::SEMANTIC_LABELS_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6784,9 +6277,6 @@ pub struct RoomLayoutFB {
 }
 impl RoomLayoutFB {
     pub const TYPE: StructureType = StructureType::ROOM_LAYOUT_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6800,9 +6290,6 @@ pub struct Boundary2DFB {
 }
 impl Boundary2DFB {
     pub const TYPE: StructureType = StructureType::BOUNDARY_2D_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6814,9 +6301,6 @@ pub struct SystemKeyboardTrackingPropertiesFB {
 }
 impl SystemKeyboardTrackingPropertiesFB {
     pub const TYPE: StructureType = StructureType::SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6849,9 +6333,6 @@ pub struct KeyboardSpaceCreateInfoFB {
 }
 impl KeyboardSpaceCreateInfoFB {
     pub const TYPE: StructureType = StructureType::KEYBOARD_SPACE_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6875,9 +6356,6 @@ pub struct KeyboardTrackingQueryFB {
 }
 impl KeyboardTrackingQueryFB {
     pub const TYPE: StructureType = StructureType::KEYBOARD_TRACKING_QUERY_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6902,9 +6380,6 @@ pub struct CompositionLayerDepthTestVARJO {
 }
 impl CompositionLayerDepthTestVARJO {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_DEPTH_TEST_VARJO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6916,9 +6391,6 @@ pub struct ViewLocateFoveatedRenderingVARJO {
 }
 impl ViewLocateFoveatedRenderingVARJO {
     pub const TYPE: StructureType = StructureType::VIEW_LOCATE_FOVEATED_RENDERING_VARJO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6930,9 +6402,6 @@ pub struct FoveatedViewConfigurationViewVARJO {
 }
 impl FoveatedViewConfigurationViewVARJO {
     pub const TYPE: StructureType = StructureType::FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6956,9 +6425,6 @@ pub struct SystemFoveatedRenderingPropertiesVARJO {
 }
 impl SystemFoveatedRenderingPropertiesVARJO {
     pub const TYPE: StructureType = StructureType::SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -6982,9 +6448,6 @@ pub struct CompositionLayerReprojectionInfoMSFT {
 }
 impl CompositionLayerReprojectionInfoMSFT {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_REPROJECTION_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -6999,9 +6462,6 @@ pub struct CompositionLayerReprojectionPlaneOverrideMSFT {
 impl CompositionLayerReprojectionPlaneOverrideMSFT {
     pub const TYPE: StructureType =
         StructureType::COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7018,9 +6478,6 @@ pub struct TriangleMeshCreateInfoFB {
 }
 impl TriangleMeshCreateInfoFB {
     pub const TYPE: StructureType = StructureType::TRIANGLE_MESH_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7032,9 +6489,6 @@ pub struct SystemPassthroughPropertiesFB {
 }
 impl SystemPassthroughPropertiesFB {
     pub const TYPE: StructureType = StructureType::SYSTEM_PASSTHROUGH_PROPERTIES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7046,9 +6500,6 @@ pub struct SystemPassthroughProperties2FB {
 }
 impl SystemPassthroughProperties2FB {
     pub const TYPE: StructureType = StructureType::SYSTEM_PASSTHROUGH_PROPERTIES2_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7060,9 +6511,6 @@ pub struct PassthroughCreateInfoFB {
 }
 impl PassthroughCreateInfoFB {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7076,9 +6524,6 @@ pub struct PassthroughLayerCreateInfoFB {
 }
 impl PassthroughLayerCreateInfoFB {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_LAYER_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7092,9 +6537,6 @@ pub struct CompositionLayerPassthroughFB {
 }
 impl CompositionLayerPassthroughFB {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PASSTHROUGH_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7110,9 +6552,6 @@ pub struct GeometryInstanceCreateInfoFB {
 }
 impl GeometryInstanceCreateInfoFB {
     pub const TYPE: StructureType = StructureType::GEOMETRY_INSTANCE_CREATE_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7127,9 +6566,6 @@ pub struct GeometryInstanceTransformFB {
 }
 impl GeometryInstanceTransformFB {
     pub const TYPE: StructureType = StructureType::GEOMETRY_INSTANCE_TRANSFORM_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7142,9 +6578,6 @@ pub struct PassthroughStyleFB {
 }
 impl PassthroughStyleFB {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_STYLE_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7156,9 +6589,6 @@ pub struct PassthroughColorMapMonoToRgbaFB {
 }
 impl PassthroughColorMapMonoToRgbaFB {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_COLOR_MAP_MONO_TO_RGBA_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7170,9 +6600,6 @@ pub struct PassthroughColorMapMonoToMonoFB {
 }
 impl PassthroughColorMapMonoToMonoFB {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_COLOR_MAP_MONO_TO_MONO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7186,9 +6613,6 @@ pub struct PassthroughBrightnessContrastSaturationFB {
 }
 impl PassthroughBrightnessContrastSaturationFB {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_BRIGHTNESS_CONTRAST_SATURATION_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7200,9 +6624,6 @@ pub struct EventDataPassthroughStateChangedFB {
 }
 impl EventDataPassthroughStateChangedFB {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7215,9 +6636,6 @@ pub struct PassthroughKeyboardHandsIntensityFB {
 }
 impl PassthroughKeyboardHandsIntensityFB {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7236,9 +6654,6 @@ pub struct SpatialAnchorPersistenceInfoMSFT {
 }
 impl SpatialAnchorPersistenceInfoMSFT {
     pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_PERSISTENCE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7252,9 +6667,6 @@ pub struct SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
 impl SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
     pub const TYPE: StructureType =
         StructureType::SPATIAL_ANCHOR_FROM_PERSISTED_ANCHOR_CREATE_INFO_MSFT;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7266,9 +6678,6 @@ pub struct FacialTrackerCreateInfoHTC {
 }
 impl FacialTrackerCreateInfoHTC {
     pub const TYPE: StructureType = StructureType::FACIAL_TRACKER_CREATE_INFO_HTC;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7281,9 +6690,6 @@ pub struct SystemFacialTrackingPropertiesHTC {
 }
 impl SystemFacialTrackingPropertiesHTC {
     pub const TYPE: StructureType = StructureType::SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -7310,9 +6716,6 @@ pub struct FacialExpressionsHTC {
 }
 impl FacialExpressionsHTC {
     pub const TYPE: StructureType = StructureType::FACIAL_EXPRESSIONS_HTC;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7325,9 +6728,6 @@ pub struct ViveTrackerPathsHTCX {
 }
 impl ViveTrackerPathsHTCX {
     pub const TYPE: StructureType = StructureType::VIVE_TRACKER_PATHS_HTCX;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -7351,9 +6751,6 @@ pub struct EventDataViveTrackerConnectedHTCX {
 }
 impl EventDataViveTrackerConnectedHTCX {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7372,9 +6769,6 @@ pub struct CompositionLayerSpaceWarpInfoFB {
 }
 impl CompositionLayerSpaceWarpInfoFB {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_SPACE_WARP_INFO_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7387,9 +6781,6 @@ pub struct SystemSpaceWarpPropertiesFB {
 }
 impl SystemSpaceWarpPropertiesFB {
     pub const TYPE: StructureType = StructureType::SYSTEM_SPACE_WARP_PROPERTIES_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -7413,9 +6804,6 @@ pub struct SystemMarkerTrackingPropertiesVARJO {
 }
 impl SystemMarkerTrackingPropertiesVARJO {
     pub const TYPE: StructureType = StructureType::SYSTEM_MARKER_TRACKING_PROPERTIES_VARJO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -7442,9 +6830,6 @@ pub struct EventDataMarkerTrackingUpdateVARJO {
 }
 impl EventDataMarkerTrackingUpdateVARJO {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7457,9 +6842,6 @@ pub struct MarkerSpaceCreateInfoVARJO {
 }
 impl MarkerSpaceCreateInfoVARJO {
     pub const TYPE: StructureType = StructureType::MARKER_SPACE_CREATE_INFO_VARJO;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7477,9 +6859,6 @@ pub struct DigitalLensControlALMALENCE {
 }
 impl DigitalLensControlALMALENCE {
     pub const TYPE: StructureType = StructureType::DIGITAL_LENS_CONTROL_ALMALENCE;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7491,9 +6870,6 @@ pub struct CompositionLayerSettingsFB {
 }
 impl CompositionLayerSettingsFB {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_SETTINGS_FB;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7505,9 +6881,6 @@ pub struct PerformanceMetricsStateMETA {
 }
 impl PerformanceMetricsStateMETA {
     pub const TYPE: StructureType = StructureType::PERFORMANCE_METRICS_STATE_META;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7522,9 +6895,6 @@ pub struct PerformanceMetricsCounterMETA {
 }
 impl PerformanceMetricsCounterMETA {
     pub const TYPE: StructureType = StructureType::PERFORMANCE_METRICS_COUNTER_META;
-    pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-        ptr_chain_iter(self)
-    }
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {

@@ -1089,11 +1089,6 @@ impl Parser {
                     #conditions2
                     impl #ident {
                         pub const TYPE: StructureType = StructureType::#ty;
-
-                        pub unsafe fn as_ptr_iterator(&mut self) -> impl Iterator<Item = *mut BaseOutStructure> {
-                            ptr_chain_iter(self)
-                        }
-
                         #out
                     }
                 }
@@ -1638,6 +1633,24 @@ impl Parser {
         out
     }
 
+    /// Generates a push_next function for structures that can be extended through the `next` pointer
+    fn generate_next_fn(extension_trait_ident: &Ident) -> TokenStream {
+        quote! {
+            #[inline]
+            #[doc = "Chains a structure as the next member of this one"]
+            pub fn push_next<T: #extension_trait_ident>(mut self, next: &'a mut T) -> Self {
+                unsafe {
+                    let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                    let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
+                    let last_next = sys::ptr_chain_iter(other).last().unwrap();
+                    (*last_next).next = self.inner.next as _;
+                    self.inner.next = next_ptr;
+                }
+                self
+            }
+        }
+    }
+
     fn generate_polymorphic_builders(
         &self,
         meta: &HashMap<&str, StructMeta>,
@@ -1724,11 +1737,18 @@ impl Parser {
             }
         });
 
+        let extends_name = format_ident!("Extends{}", base_ident);
+        let next_fn = Self::generate_next_fn(&extends_name);
+
         quote! {
             #[repr(transparent)]
             pub struct #base_ident #type_params {
-                _inner: sys::#sys_ident,
+                inner: sys::#sys_ident,
                 #marker
+            }
+            pub unsafe trait #extends_name {}
+            impl #type_params #base_ident #type_args {
+                #next_fn
             }
             #(#builders)*
         }
@@ -1882,24 +1902,16 @@ impl Parser {
         // Adds a `push_next` method to the builder if the struct is a root struct
         // based on Ash
         let next_fn = if is_root_struct {
-            quote! {
-                #[inline]
-                pub fn push_next<T: #extends_name>(mut self, next: &'a mut T) -> Self {
-                    unsafe {
-                        let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                        let next_ptr = <*mut sys::BaseOutStructure>::cast((*other).next);
-                        let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                        (*last_next).next = self.inner.next as _;
-                        self.inner.next = next_ptr;
-                    }
-                    self
-                }
-            }
+            Self::generate_next_fn(&extends_name)
         } else {
             quote!()
         };
         let implement_extensions = if let Some(parent_struct) = s.extends.as_ref() {
-            let parent_ident = xr_ty_name(parent_struct);
+            let parent_ident = if self.base_headers.contains_key(parent_struct.as_ref()) {
+                base_header_ty(parent_struct.as_ref())
+            } else {
+                xr_ty_name(parent_struct)
+            };
             let parent_extend_name = format_ident!("Extends{}", parent_ident);
             quote!(unsafe impl #type_params #parent_extend_name for #ident #type_args {})
         } else {
