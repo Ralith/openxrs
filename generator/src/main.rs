@@ -1474,6 +1474,7 @@ impl Parser {
             "XrCompositionLayerProjectionView",
             "XrCompositionLayerDepthInfoKHR",
             "XrCompositionLayerSpaceWarpInfoFB",
+            "XrCompositionLayerImageLayoutFB",
             "XrSwapchainSubImage",
             "XrActionSetCreateInfo",
             "XrActionCreateInfo",

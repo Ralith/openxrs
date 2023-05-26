@@ -4723,6 +4723,56 @@ pub(crate) mod builder {
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
+    pub struct CompositionLayerImageLayoutFB<'a> {
+        inner: sys::CompositionLayerImageLayoutFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> CompositionLayerImageLayoutFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::CompositionLayerImageLayoutFB {
+                    ty: sys::StructureType::COMPOSITION_LAYER_IMAGE_LAYOUT_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::CompositionLayerImageLayoutFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::CompositionLayerImageLayoutFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::CompositionLayerImageLayoutFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn flags(mut self, value: CompositionLayerImageLayoutFlagsFB) -> Self {
+            self.inner.flags = value;
+            self
+        }
+    }
+    impl<'a> Default for CompositionLayerImageLayoutFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    unsafe impl<'a> ExtendsCompositionLayerBaseHeader for CompositionLayerImageLayoutFB<'a> {}
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
     pub struct CompositionLayerSpaceWarpInfoFB<'a, G: Graphics> {
         inner: sys::CompositionLayerSpaceWarpInfoFB,
         _marker: PhantomData<&'a G>,
