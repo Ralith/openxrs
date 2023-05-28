@@ -220,18 +220,3 @@ impl<T> std::ops::IndexMut<HandJointEXT> for [T] {
         &mut self[joint.into_raw() as usize]
     }
 }
-
-/// Iterates through the pointer chain. Includes the item that is passed into the function.
-/// Stops at the last [`BaseOutStructure`] that has a null [`BaseOutStructure::next`] field.
-pub unsafe fn ptr_chain_iter<T>(ptr: &mut T) -> impl Iterator<Item = *mut BaseOutStructure> {
-    let ptr = <*mut T>::cast::<BaseOutStructure>(ptr);
-    (0..).scan(ptr, |p_ptr, _| {
-        if p_ptr.is_null() {
-            return None;
-        }
-        let n_ptr = (**p_ptr).next;
-        let old = *p_ptr;
-        *p_ptr = n_ptr;
-        Some(old)
-    })
-}

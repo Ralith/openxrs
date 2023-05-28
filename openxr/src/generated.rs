@@ -4511,9 +4511,8 @@ pub(crate) mod builder {
         ) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -4942,9 +4941,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5036,9 +5034,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5140,9 +5137,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5234,9 +5230,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5338,9 +5333,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5447,9 +5441,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5536,9 +5529,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsHapticBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5655,9 +5647,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5749,9 +5740,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5838,9 +5828,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -5952,9 +5941,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -6071,9 +6059,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -6145,9 +6132,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -6244,9 +6230,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsSpaceQueryInfoBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -6324,9 +6309,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self
@@ -6393,9 +6377,8 @@ pub(crate) mod builder {
         fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
             unsafe {
                 let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                (*last_next).next = self.inner.next as _;
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
                 self.inner.next = next_ptr;
             }
             self

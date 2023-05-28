@@ -1394,13 +1394,13 @@ impl fmt::Debug for PerfSettingsSubDomainEXT {
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PerfSettingsLevelEXT(i32);
 impl PerfSettingsLevelEXT {
-    #[doc = "Performance settings hint used by the application to indicate that it enters a non-XR\n                 section (head-locked / static screen), during which power savings are to be prioritized"]
+    #[doc = "Performance settings hint used by the application to indicate that it enters a non-XR\r\n                 section (head-locked / static screen), during which power savings are to be prioritized"]
     pub const POWER_SAVINGS: PerfSettingsLevelEXT = Self(0i32);
-    #[doc = "Performance settings hint used by the application to indicate that it enters a low\n                 and stable complexity section, during which reducing power is more important than\n                 occasional late rendering frames"]
+    #[doc = "Performance settings hint used by the application to indicate that it enters a low\r\n                 and stable complexity section, during which reducing power is more important than\r\n                 occasional late rendering frames"]
     pub const SUSTAINED_LOW: PerfSettingsLevelEXT = Self(25i32);
-    #[doc = "Performance settings hint used by the application to indicate that it enters\n                 a high or dynamic complexity section, during which the XR Runtime strives for consistent\n                 XR compositing and frame rendering within a thermally sustainable range"]
+    #[doc = "Performance settings hint used by the application to indicate that it enters\r\n                 a high or dynamic complexity section, during which the XR Runtime strives for consistent\r\n                 XR compositing and frame rendering within a thermally sustainable range"]
     pub const SUSTAINED_HIGH: PerfSettingsLevelEXT = Self(50i32);
-    #[doc = "Performance settings hint used by the application to indicate that the application enters\n                 a section with very high complexity, during which the XR Runtime is allowed to step\n                 up beyond the thermally sustainable range"]
+    #[doc = "Performance settings hint used by the application to indicate that the application enters\r\n                 a section with very high complexity, during which the XR Runtime is allowed to step\r\n                 up beyond the thermally sustainable range"]
     pub const BOOST: PerfSettingsLevelEXT = Self(75i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
@@ -1426,11 +1426,11 @@ impl fmt::Debug for PerfSettingsLevelEXT {
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PerfSettingsNotificationLevelEXT(i32);
 impl PerfSettingsNotificationLevelEXT {
-    #[doc = "Notifies that the sub-domain has reached a level\n                 where no further actions other than currently applied are necessary"]
+    #[doc = "Notifies that the sub-domain has reached a level\r\n                 where no further actions other than currently applied are necessary"]
     pub const NORMAL: PerfSettingsNotificationLevelEXT = Self(0i32);
-    #[doc = "Notifies that the sub-domain has reached an early warning level\n                 where the application should start proactive mitigation actions\n                 with the goal to return to the XR_PERF_NOTIF_LEVEL_NORMAL level"]
+    #[doc = "Notifies that the sub-domain has reached an early warning level\r\n                 where the application should start proactive mitigation actions\r\n                 with the goal to return to the XR_PERF_NOTIF_LEVEL_NORMAL level"]
     pub const WARNING: PerfSettingsNotificationLevelEXT = Self(25i32);
-    #[doc = "Notifies that the sub-domain has reached a critical\n                 level with significant performance degradation.\n                 The application should take drastic mitigation action"]
+    #[doc = "Notifies that the sub-domain has reached a critical\r\n                 level with significant performance degradation.\r\n                 The application should take drastic mitigation action"]
     pub const IMPAIRED: PerfSettingsNotificationLevelEXT = Self(75i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)

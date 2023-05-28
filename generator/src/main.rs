@@ -1887,8 +1887,6 @@ impl Parser {
         } else {
             quote!()
         };
-        // Adds a `push_next` method to the builder if the struct is a root struct
-        // based on Ash
         let next_fn = if is_root_struct {
             generate_next_fn(&extends_name, NextFnType::Fn)
         } else {
@@ -2381,9 +2379,8 @@ fn generate_next_fn(extension_trait_ident: &Ident, fn_type: NextFnType) -> Token
             {
                 unsafe {
                     let other: &mut sys::BaseOutStructure = mem::transmute(next);
-                    let next_ptr = <*mut sys::BaseOutStructure>::cast(other.next);
-                    let last_next = sys::ptr_chain_iter(other).last().unwrap();
-                    (*last_next).next = self.inner.next as _;
+                    let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                    other.next = self.inner.next as _;
                     self.inner.next = next_ptr;
                 }
                 self
