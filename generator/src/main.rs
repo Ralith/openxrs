@@ -1392,7 +1392,7 @@ impl Parser {
                 {
                     return None;
                 }
-                if self.is_root_struct(name, s) {
+                if self.is_root_struct(name) {
                     Some(&name[..])
                 } else {
                     None
@@ -2045,14 +2045,13 @@ impl Parser {
     }
 
     /// Determine whether a struct is a root struct to be reexported with a push next function
-    fn is_root_struct(&self, s_name: &str, s: &Struct) -> bool {
-        s.extends.is_none()
-            && self.structs.iter().any(|(_, v)| {
-                v.extends
-                    .as_ref()
-                    .map(|parent_name| parent_name.as_ref() == s_name)
-                    .unwrap_or(false)
-            })
+    fn is_root_struct(&self, s_name: &str) -> bool {
+        self.structs.iter().any(|(_, v)| {
+            v.extends
+                .as_ref()
+                .map(|parent_name| parent_name.as_ref() == s_name)
+                .unwrap_or(false)
+        })
     }
 }
 
