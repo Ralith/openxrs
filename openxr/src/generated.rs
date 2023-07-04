@@ -4503,11 +4503,99 @@ pub(crate) mod builder {
             self.inner.sub_image = value.inner;
             self
         }
+        #[inline]
+        #[doc = "Chains a structure as the next member of this one"]
+        pub fn push_next<T: ExtendsCompositionLayerProjectionView>(
+            mut self,
+            next: &'a mut T,
+        ) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
     }
     impl<'a, G: Graphics> Default for CompositionLayerProjectionView<'a, G> {
         fn default() -> Self {
             Self::new()
         }
+    }
+    pub unsafe trait ExtendsCompositionLayerProjectionView {}
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct CompositionLayerDepthInfoKHR<'a, G: Graphics> {
+        inner: sys::CompositionLayerDepthInfoKHR,
+        _marker: PhantomData<&'a G>,
+    }
+    impl<'a, G: Graphics> CompositionLayerDepthInfoKHR<'a, G> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::CompositionLayerDepthInfoKHR {
+                    ty: sys::StructureType::COMPOSITION_LAYER_DEPTH_INFO_KHR,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::CompositionLayerDepthInfoKHR) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::CompositionLayerDepthInfoKHR {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::CompositionLayerDepthInfoKHR {
+            &self.inner
+        }
+        #[inline]
+        pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
+            self.inner.sub_image = value.inner;
+            self
+        }
+        #[inline]
+        pub fn min_depth(mut self, value: f32) -> Self {
+            self.inner.min_depth = value;
+            self
+        }
+        #[inline]
+        pub fn max_depth(mut self, value: f32) -> Self {
+            self.inner.max_depth = value;
+            self
+        }
+        #[inline]
+        pub fn near_z(mut self, value: f32) -> Self {
+            self.inner.near_z = value;
+            self
+        }
+        #[inline]
+        pub fn far_z(mut self, value: f32) -> Self {
+            self.inner.far_z = value;
+            self
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerDepthInfoKHR<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    unsafe impl<'a, G: Graphics> ExtendsCompositionLayerProjectionView
+        for CompositionLayerDepthInfoKHR<'a, G>
+    {
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -4633,10 +4721,153 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct CompositionLayerImageLayoutFB<'a> {
+        inner: sys::CompositionLayerImageLayoutFB,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> CompositionLayerImageLayoutFB<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::CompositionLayerImageLayoutFB {
+                    ty: sys::StructureType::COMPOSITION_LAYER_IMAGE_LAYOUT_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::CompositionLayerImageLayoutFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::CompositionLayerImageLayoutFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::CompositionLayerImageLayoutFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn flags(mut self, value: CompositionLayerImageLayoutFlagsFB) -> Self {
+            self.inner.flags = value;
+            self
+        }
+    }
+    impl<'a> Default for CompositionLayerImageLayoutFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    unsafe impl<'a> ExtendsCompositionLayerBase for CompositionLayerImageLayoutFB<'a> {}
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct CompositionLayerSpaceWarpInfoFB<'a, G: Graphics> {
+        inner: sys::CompositionLayerSpaceWarpInfoFB,
+        _marker: PhantomData<&'a G>,
+    }
+    impl<'a, G: Graphics> CompositionLayerSpaceWarpInfoFB<'a, G> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::CompositionLayerSpaceWarpInfoFB {
+                    ty: sys::StructureType::COMPOSITION_LAYER_SPACE_WARP_INFO_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::CompositionLayerSpaceWarpInfoFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::CompositionLayerSpaceWarpInfoFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::CompositionLayerSpaceWarpInfoFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn layer_flags(mut self, value: CompositionLayerSpaceWarpInfoFlagsFB) -> Self {
+            self.inner.layer_flags = value;
+            self
+        }
+        #[inline]
+        pub fn motion_vector_sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
+            self.inner.motion_vector_sub_image = value.inner;
+            self
+        }
+        #[inline]
+        pub fn app_space_delta_pose(mut self, value: Posef) -> Self {
+            self.inner.app_space_delta_pose = value;
+            self
+        }
+        #[inline]
+        pub fn depth_sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
+            self.inner.depth_sub_image = value.inner;
+            self
+        }
+        #[inline]
+        pub fn min_depth(mut self, value: f32) -> Self {
+            self.inner.min_depth = value;
+            self
+        }
+        #[inline]
+        pub fn max_depth(mut self, value: f32) -> Self {
+            self.inner.max_depth = value;
+            self
+        }
+        #[inline]
+        pub fn near_z(mut self, value: f32) -> Self {
+            self.inner.near_z = value;
+            self
+        }
+        #[inline]
+        pub fn far_z(mut self, value: f32) -> Self {
+            self.inner.far_z = value;
+            self
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerSpaceWarpInfoFB<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    unsafe impl<'a, G: Graphics> ExtendsCompositionLayerProjectionView
+        for CompositionLayerSpaceWarpInfoFB<'a, G>
+    {
+    }
     #[repr(transparent)]
     pub struct CompositionLayerBase<'a, G: Graphics> {
-        _inner: sys::CompositionLayerBaseHeader,
+        inner: sys::CompositionLayerBaseHeader,
         _marker: PhantomData<&'a G>,
+    }
+    pub unsafe trait ExtendsCompositionLayerBase {}
+    pub trait ImplCompositionLayerBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsCompositionLayerBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -4703,6 +4934,18 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerProjection<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerProjection<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -4784,6 +5027,18 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerQuad<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerQuad<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -4877,6 +5132,18 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerCylinderKHR<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct CompositionLayerCubeKHR<'a, G: Graphics> {
@@ -4956,6 +5223,18 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerCubeKHR<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerCubeKHR<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5047,6 +5326,18 @@ pub(crate) mod builder {
     impl<'a, G: Graphics> Default for CompositionLayerEquirectKHR<'a, G> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerEquirectKHR<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5145,10 +5436,27 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a, G: Graphics> ImplCompositionLayerBase<'a> for CompositionLayerEquirect2KHR<'a, G> {
+        #[inline]
+        fn push_next<T: ExtendsCompositionLayerBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[repr(transparent)]
     pub struct HapticBase<'a> {
-        _inner: sys::HapticBaseHeader,
+        inner: sys::HapticBaseHeader,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsHapticBase {}
+    pub trait ImplHapticBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsHapticBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5216,10 +5524,27 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplHapticBase<'a> for HapticVibration<'a> {
+        #[inline]
+        fn push_next<T: ExtendsHapticBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[repr(transparent)]
     pub struct BindingModificationBase<'a> {
-        _inner: sys::BindingModificationBaseHeaderKHR,
+        inner: sys::BindingModificationBaseHeaderKHR,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsBindingModificationBase {}
+    pub trait ImplBindingModificationBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsBindingModificationBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5317,6 +5642,18 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplBindingModificationBase<'a> for InteractionProfileDpadBindingEXT<'a> {
+        #[inline]
+        fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct InteractionProfileAnalogThresholdVALVE<'a> {
@@ -5398,10 +5735,27 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplBindingModificationBase<'a> for InteractionProfileAnalogThresholdVALVE<'a> {
+        #[inline]
+        fn push_next<T: ExtendsBindingModificationBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[repr(transparent)]
     pub struct SwapchainStateBase<'a> {
-        _inner: sys::SwapchainStateBaseHeaderFB,
+        inner: sys::SwapchainStateBaseHeaderFB,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSwapchainStateBase {}
+    pub trait ImplSwapchainStateBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsSwapchainStateBase>(self, next: &'a mut T) -> Self;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -5466,6 +5820,19 @@ pub(crate) mod builder {
     impl<'a> Default for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    #[cfg(target_os = "android")]
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5567,6 +5934,18 @@ pub(crate) mod builder {
     impl<'a> Default for SwapchainStateSamplerOpenGLESFB<'a> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateSamplerOpenGLESFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
     #[derive(Copy, Clone)]
@@ -5675,6 +6054,18 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateSamplerVulkanFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct SwapchainStateFoveationFB<'a> {
@@ -5736,10 +6127,27 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplSwapchainStateBase<'a> for SwapchainStateFoveationFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSwapchainStateBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[repr(transparent)]
     pub struct SpaceQueryInfoBase<'a> {
-        _inner: sys::SpaceQueryInfoBaseHeaderFB,
+        inner: sys::SpaceQueryInfoBaseHeaderFB,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSpaceQueryInfoBase {}
+    pub trait ImplSpaceQueryInfoBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsSpaceQueryInfoBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5817,10 +6225,27 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplSpaceQueryInfoBase<'a> for SpaceQueryInfoFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSpaceQueryInfoBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[repr(transparent)]
     pub struct SpaceFilterInfoBase<'a> {
-        _inner: sys::SpaceFilterInfoBaseHeaderFB,
+        inner: sys::SpaceFilterInfoBaseHeaderFB,
         _marker: PhantomData<&'a ()>,
+    }
+    pub unsafe trait ExtendsSpaceFilterInfoBase {}
+    pub trait ImplSpaceFilterInfoBase<'a> {
+        #[doc = "Chains a structure as the next member of this one"]
+        fn push_next<T: ExtendsSpaceFilterInfoBase>(self, next: &'a mut T) -> Self;
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -5879,6 +6304,18 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    impl<'a> ImplSpaceFilterInfoBase<'a> for SpaceUuidFilterInfoFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct SpaceComponentFilterInfoFB<'a> {
@@ -5933,6 +6370,18 @@ pub(crate) mod builder {
     impl<'a> Default for SpaceComponentFilterInfoFB<'a> {
         fn default() -> Self {
             Self::new()
+        }
+    }
+    impl<'a> ImplSpaceFilterInfoBase<'a> for SpaceComponentFilterInfoFB<'a> {
+        #[inline]
+        fn push_next<T: ExtendsSpaceFilterInfoBase>(mut self, next: &'a mut T) -> Self {
+            unsafe {
+                let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                other.next = self.inner.next as _;
+                self.inner.next = next_ptr;
+            }
+            self
         }
     }
 }

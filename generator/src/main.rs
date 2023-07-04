@@ -12,7 +12,7 @@ use std::{
 use heck::{ToShoutySnakeCase, ToSnakeCase, ToUpperCamelCase};
 use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
-use quote::quote;
+use quote::{format_ident, quote};
 use regex::Regex;
 use syn::{Ident, LitByteStr};
 use xml::{
@@ -580,6 +580,7 @@ impl Parser {
             }
         }
         let parent: Option<String> = attr(attrs, "parentstruct").map(|x| x.into());
+        let extends: Option<Rc<str>> = attr(attrs, "structextends").map(Rc::from);
         if let Some(ref parent) = parent {
             self.base_headers
                 .entry(parent.clone())
@@ -596,6 +597,7 @@ impl Parser {
                     members,
                     ty,
                     extension: None,
+                    extends,
                     mut_next,
                 },
             );
@@ -1380,6 +1382,24 @@ impl Parser {
             })
             .collect::<IndexSet<&str>>();
 
+        let root_structs = self
+            .structs
+            .iter()
+            .filter_map(|(name, s)| {
+                if s.extension
+                    .as_ref()
+                    .map_or(false, |ext| self.disabled_exts.contains(ext))
+                {
+                    return None;
+                }
+                if self.is_root_struct(name) {
+                    Some(&name[..])
+                } else {
+                    None
+                }
+            })
+            .collect::<IndexSet<&str>>();
+
         let reexports = simple_structs
             .iter()
             .cloned()
@@ -1447,6 +1467,9 @@ impl Parser {
 
         let whitelist = [
             "XrCompositionLayerProjectionView",
+            "XrCompositionLayerDepthInfoKHR",
+            "XrCompositionLayerSpaceWarpInfoFB",
+            "XrCompositionLayerImageLayoutFB",
             "XrSwapchainSubImage",
             "XrActionSetCreateInfo",
             "XrActionCreateInfo",
@@ -1456,7 +1479,7 @@ impl Parser {
         .collect::<HashSet<&str>>();
         let builders = self.structs.iter().filter_map(|(name, s)| {
             if whitelist.contains(&name[..]) {
-                Some(self.generate_builder(&struct_meta, &simple_structs, name, s))
+                Some(self.generate_builder(&struct_meta, &simple_structs, &root_structs, name, s))
             } else {
                 None
             }
@@ -1624,6 +1647,8 @@ impl Parser {
             base_meta |= *meta.get(&name[..]).unwrap();
         }
 
+        let extends_name = format_ident!("Extends{}", base_ident);
+        let impl_trait_name = format_ident!("Impl{}", base_ident);
         let (type_params, type_args, marker, marker_init) = base_meta.type_params();
         let builders = children.iter().map(|name| {
             let ident = xr_ty_name(name);
@@ -1631,6 +1656,8 @@ impl Parser {
             let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
             let inits = self.generate_builder_inits(s);
             let setters = self.generate_setters(meta, simple, s);
+            let next_fn = generate_next_fn(&extends_name, NextFnType::TraitImpl);
+
             quote! {
                 #conds
                 #[derive(Copy, Clone)]
@@ -1693,14 +1720,23 @@ impl Parser {
                         Self::new()
                     }
                 }
+                #conds
+                impl #type_params #impl_trait_name<'a> for #ident #type_args {
+                    #next_fn
+                }
             }
         });
 
+        let next_fn = generate_next_fn(&extends_name, NextFnType::TraitDef);
         quote! {
             #[repr(transparent)]
             pub struct #base_ident #type_params {
-                _inner: sys::#sys_ident,
+                inner: sys::#sys_ident,
                 #marker
+            }
+            pub unsafe trait #extends_name {}
+            pub trait #impl_trait_name<'a> {
+                #next_fn
             }
             #(#builders)*
         }
@@ -1834,6 +1870,7 @@ impl Parser {
         &self,
         meta: &HashMap<&str, StructMeta>,
         simple: &IndexSet<&str>,
+        root: &IndexSet<&str>,
         name: &str,
         s: &Struct,
     ) -> TokenStream {
@@ -1843,6 +1880,30 @@ impl Parser {
         let inits = self.generate_builder_inits(s);
         let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
         let conds2 = conds.clone();
+        let is_root_struct = root.contains(name);
+        let extends_name = format_ident!("Extends{}", ident);
+        let extend_trait = if is_root_struct {
+            quote!(pub unsafe trait #extends_name {})
+        } else {
+            quote!()
+        };
+        let next_fn = if is_root_struct {
+            generate_next_fn(&extends_name, NextFnType::Fn)
+        } else {
+            quote!()
+        };
+        let implement_extensions = if let Some(parent_struct) = s.extends.as_ref() {
+            let parent_ident = if self.base_headers.contains_key(parent_struct.as_ref()) {
+                base_header_ty(parent_struct.as_ref())
+            } else {
+                xr_ty_name(parent_struct)
+            };
+            let parent_extend_name = format_ident!("Extends{}", parent_ident);
+            quote!(unsafe impl #type_params #parent_extend_name for #ident #type_args {})
+        } else {
+            quote!()
+        };
+
         quote! {
             #[derive(Copy, Clone)]
             #[repr(transparent)]
@@ -1889,6 +1950,8 @@ impl Parser {
                 }
 
                 #setters
+
+                #next_fn
             }
 
             impl #type_params Default for #ident #type_args {
@@ -1896,6 +1959,10 @@ impl Parser {
                     Self::new()
                 }
             }
+
+            #extend_trait
+
+            #implement_extensions
         }
     }
 
@@ -1974,6 +2041,16 @@ impl Parser {
                     .get(&x.ty)
                     .map_or(true, |x| self.is_simple_struct(x))
                 && !self.handles.contains(&x.ty)
+        })
+    }
+
+    /// Determine whether a struct is a root struct to be reexported with a push next function
+    fn is_root_struct(&self, s_name: &str) -> bool {
+        self.structs.iter().any(|(_, v)| {
+            v.extends
+                .as_ref()
+                .map(|parent_name| parent_name.as_ref() == s_name)
+                .unwrap_or(false)
         })
     }
 }
@@ -2069,6 +2146,7 @@ enum ConstantValue<T> {
 struct Struct {
     members: Vec<Member>,
     extension: Option<Rc<str>>,
+    extends: Option<Rc<str>>,
     ty: Option<String>,
     mut_next: bool,
 }
@@ -2087,6 +2165,12 @@ struct Extension {
     name: Rc<str>,
     version: u32,
     commands: Vec<String>,
+}
+
+enum NextFnType {
+    Fn,
+    TraitDef,
+    TraitImpl,
 }
 
 fn attr<'a>(attrs: &'a [OwnedAttribute], name: &str) -> Option<&'a str> {
@@ -2279,4 +2363,49 @@ fn base_header_ty(base_name: &str) -> Ident {
         &base_name[2..base_header_pos + "Base".len()],
         Span::call_site(),
     )
+}
+
+/// Generates a push_next function for structures that can be extended through the `next` pointer
+fn generate_next_fn(extension_trait_ident: &Ident, fn_type: NextFnType) -> TokenStream {
+    let docs = match fn_type {
+        NextFnType::TraitImpl => quote!(),
+        _ => quote!(#[doc = "Chains a structure as the next member of this one"]),
+    };
+
+    let fn_body = match fn_type {
+        NextFnType::TraitDef => quote!(;),
+        _ => quote! {
+            {
+                unsafe {
+                    let other: &mut sys::BaseOutStructure = mem::transmute(next);
+                    let next_ptr = <*mut sys::BaseOutStructure>::cast(other);
+                    other.next = self.inner.next as _;
+                    self.inner.next = next_ptr;
+                }
+                self
+            }
+        },
+    };
+
+    let fn_accessor = match fn_type {
+        NextFnType::Fn => quote!(pub),
+        _ => quote!(),
+    };
+
+    let self_pattern = match fn_type {
+        NextFnType::TraitDef => quote!(self),
+        _ => quote!(mut self),
+    };
+
+    let inlining = match fn_type {
+        NextFnType::TraitDef => quote!(),
+        _ => quote!(#[inline]),
+    };
+
+    quote! {
+        #inlining
+        #docs
+        #fn_accessor fn push_next<T: #extension_trait_ident>(#self_pattern, next: &'a mut T) -> Self
+        #fn_body
+    }
 }
