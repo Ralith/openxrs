@@ -6,7 +6,7 @@ use std::os::raw::c_char;
 
 pub use sys::{
     self, AsyncRequestIdFB, Duration, Path, SystemId, Time, UuidEXT, Version, CURRENT_API_VERSION,
-    FREQUENCY_UNSPECIFIED,
+    FREQUENCY_UNSPECIFIED, MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META,
 };
 
 mod generated;

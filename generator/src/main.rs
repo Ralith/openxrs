@@ -78,6 +78,7 @@ impl Parser {
             extensions: IndexMap::new(),
             // TODO: Handle these extensions
             disabled_exts: [
+                "XR_HTC_passthrough",
                 "XR_MSFT_scene_understanding",
                 "XR_MSFT_scene_understanding_serialization",
             ]
@@ -312,16 +313,16 @@ impl Parser {
         if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
             self.disabled_exts.insert(ext_name);
         } else {
-            let (tag, _) = split_ext_tag(&ext_name);
-            self.extensions
-                .get_mut(tag)
-                .unwrap()
-                .extensions
-                .push(Extension {
+            let (tag_name, _) = split_ext_tag(&ext_name);
+            if let Some(tag) = self.extensions.get_mut(tag_name) {
+                tag.extensions.push(Extension {
                     name: ext_name,
                     version: ext_version.unwrap(),
                     commands,
                 });
+            } else {
+                eprintln!("ignoring extension with unlisted tag: {}", ext_name);
+            }
         }
     }
 
@@ -546,6 +547,11 @@ impl Parser {
     }
 
     fn parse_struct(&mut self, attrs: &[OwnedAttribute]) {
+        const STRUCTS_BLACKLIST: [&str; 3] = [
+            "XrCompositionLayerPassthroughHTC",
+            "XrPassthroughColorHTC",
+            "XrPassthroughHTC",
+        ];
         let struct_name = attr(attrs, "name").unwrap();
         let mut members = Vec::new();
         let mut ty = None;
@@ -579,10 +585,21 @@ impl Parser {
                 _ => {}
             }
         }
-        let parent: Option<String> = attr(attrs, "parentstruct").map(|x| x.into());
-        if let Some(ref parent) = parent {
+        if STRUCTS_BLACKLIST.contains(&struct_name) {
+            return;
+        }
+        if let Some(structextends) = attr(attrs, "structextends") {
+            if STRUCTS_BLACKLIST.contains(&structextends) {
+                return;
+            }
+        }
+        let parent = attr(attrs, "parentstruct");
+        if let Some(parent) = parent {
+            if STRUCTS_BLACKLIST.contains(&parent) {
+                return;
+            }
             self.base_headers
-                .entry(parent.clone())
+                .entry(parent.into())
                 .or_insert_with(Vec::new)
                 .push(struct_name.into());
         }
@@ -1098,6 +1115,8 @@ impl Parser {
                 quote! { #[derive(Copy, Clone)] }
             } else if meta.has_pointer || meta.has_array {
                 quote! { #[derive(Copy, Clone, Debug)] }
+            } else if meta.has_non_default {
+                quote! { #[derive(Copy, Clone, Debug, PartialEq)] }
             } else {
                 quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
             };
@@ -1214,6 +1233,7 @@ impl Parser {
             /// Function pointer prototypes
             pub mod pfn {
                 use super::*;
+                pub use crate::platform::EglGetProcAddressMNDX;
 
                 pub type VoidFunction = unsafe extern "system" fn();
                 pub type DebugUtilsMessengerCallbackEXT = unsafe extern "system" fn(
@@ -1601,9 +1621,13 @@ impl Parser {
             out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
             out.has_array |= member.static_array_len.is_some();
+            out.has_non_default |= member.ty == "XrTime" || member.ty == "XrDuration";
             if member.ty != name {
                 if let Some(x) = self.structs.get(&member.ty) {
                     out |= self.compute_meta(&member.ty, x);
+                }
+                if self.enums.contains_key(&member.ty) {
+                    out.has_non_default = true;
                 }
             }
         }
@@ -1984,6 +2008,7 @@ struct StructMeta {
     has_pointer: bool,
     has_array: bool,
     has_graphics: bool,
+    has_non_default: bool,
 }
 
 impl StructMeta {
@@ -2026,6 +2051,7 @@ impl std::ops::BitOrAssign for StructMeta {
         self.has_pointer |= rhs.has_pointer;
         self.has_array |= rhs.has_array;
         self.has_graphics |= rhs.has_graphics;
+        self.has_non_default |= self.has_non_default;
     }
 }
 

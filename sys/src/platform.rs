@@ -79,5 +79,5 @@ pub type EGLConfig = *mut c_void;
 pub type EGLContext = *mut c_void;
 pub type EGLDisplay = *mut c_void;
 pub type EGLenum = c_uint;
-pub type PFNEGLGETPROCADDRESSPROC =
+pub type EglGetProcAddressMNDX =
     unsafe extern "system" fn(*const c_char) -> Option<unsafe extern "system" fn()>;
