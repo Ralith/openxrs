@@ -1804,10 +1804,17 @@ impl Parser {
                         let mut inner = m.clone();
                         inner.ptr_depth -= 1;
                         let ty = xr_var_ty(self.api_aliases.as_ref(), &inner);
-                        (
-                            quote! { &'a #ty #type_args },
-                            quote! { self.inner.#ident = value as *const _ as _; },
-                        )
+                        if m.is_const {
+                            (
+                                quote! { &'a #ty #type_args },
+                                quote! { self.inner.#ident = value as *const _ as _; },
+                            )
+                        } else {
+                            (
+                                quote! { &'a mut #ty #type_args },
+                                quote! { self.inner.#ident = value as *mut _ as _; },
+                            )
+                        }
                     } else if self.structs.contains_key(&m.ty) && !simple.contains(&m.ty[..]) {
                         let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                         (

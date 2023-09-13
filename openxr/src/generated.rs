@@ -6512,8 +6512,8 @@ pub(crate) mod builder {
             self
         }
         #[inline]
-        pub fn samples_consumed(mut self, value: &'a u32) -> Self {
-            self.inner.samples_consumed = value as *const _ as _;
+        pub fn samples_consumed(mut self, value: &'a mut u32) -> Self {
+            self.inner.samples_consumed = value as *mut _ as _;
             self
         }
     }
