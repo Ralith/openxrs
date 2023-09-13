@@ -600,7 +600,7 @@ impl Parser {
             }
             self.base_headers
                 .entry(parent.into())
-                .or_insert_with(Vec::new)
+                .or_default()
                 .push(struct_name.into());
         }
         if let Some(target) = attr(attrs, "alias") {
@@ -1135,7 +1135,7 @@ impl Parser {
         let commands = self.commands.iter().chain(
             self.cmd_aliases
                 .iter()
-                .map(|&(ref name, ref target)| (name, self.commands.get(target).unwrap())),
+                .map(|(name, target)| (name, self.commands.get(target).unwrap())),
         );
 
         let (pfns, protos) = commands
