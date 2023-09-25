@@ -1621,7 +1621,7 @@ impl Parser {
             out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
             out.has_array |= member.static_array_len.is_some();
-            out.has_non_default |= member.ty == "XrTime" || member.ty == "XrDuration";
+            out.has_non_default |= member.ty == "XrTime";
             if member.ty != name {
                 if let Some(x) = self.structs.get(&member.ty) {
                     out |= self.compute_meta(&member.ty, x);
