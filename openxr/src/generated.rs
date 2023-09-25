@@ -121,6 +121,7 @@ pub struct ExtensionSet {
     pub htc_vive_focus3_controller_interaction: bool,
     pub htc_hand_interaction: bool,
     pub htc_vive_wrist_tracker_interaction: bool,
+    pub htc_passthrough: bool,
     pub htc_foveation: bool,
     pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
@@ -406,6 +407,9 @@ impl ExtensionSet {
                 }
                 raw::ViveWristTrackerInteractionHTC::NAME => {
                     out.htc_vive_wrist_tracker_interaction = true;
+                }
+                raw::PassthroughHTC::NAME => {
+                    out.htc_passthrough = true;
                 }
                 raw::FoveationHTC::NAME => {
                     out.htc_foveation = true;
@@ -959,6 +963,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.htc_passthrough {
+                out.push(raw::PassthroughHTC::NAME.into());
+            }
+        }
+        {
             if self.htc_foveation {
                 out.push(raw::FoveationHTC::NAME.into());
             }
@@ -1371,6 +1380,7 @@ pub struct InstanceExtensions {
     pub htc_vive_focus3_controller_interaction: Option<raw::ViveFocus3ControllerInteractionHTC>,
     pub htc_hand_interaction: Option<raw::HandInteractionHTC>,
     pub htc_vive_wrist_tracker_interaction: Option<raw::ViveWristTrackerInteractionHTC>,
+    pub htc_passthrough: Option<raw::PassthroughHTC>,
     pub htc_foveation: Option<raw::FoveationHTC>,
     pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
@@ -1800,6 +1810,11 @@ impl InstanceExtensions {
             },
             htc_vive_wrist_tracker_interaction: if required.htc_vive_wrist_tracker_interaction {
                 Some(raw::ViveWristTrackerInteractionHTC {})
+            } else {
+                None
+            },
+            htc_passthrough: if required.htc_passthrough {
+                Some(raw::PassthroughHTC::load(entry, instance)?)
             } else {
                 None
             },
@@ -4387,6 +4402,32 @@ pub mod raw {
     impl ViveWristTrackerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_wrist_tracker_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::HTC_VIVE_WRIST_TRACKER_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct PassthroughHTC {
+        pub create_passthrough: pfn::CreatePassthroughHTC,
+        pub destroy_passthrough: pfn::DestroyPassthroughHTC,
+    }
+    impl PassthroughHTC {
+        pub const VERSION: u32 = sys::HTC_passthrough_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTC_PASSTHROUGH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughHTC\0"),
+                )?),
+                destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughHTC\0"),
+                )?),
+            })
+        }
     }
     #[derive(Copy, Clone)]
     pub struct FoveationHTC {

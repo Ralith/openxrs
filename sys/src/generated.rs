@@ -8547,6 +8547,60 @@ impl FacialExpressionsHTC {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPassthroughCreateInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughCreateInfoHTC) - defined by [XR_HTC_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_passthrough)"]
+pub struct PassthroughCreateInfoHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub form: PassthroughFormHTC,
+}
+impl PassthroughCreateInfoHTC {
+    pub const TYPE: StructureType = StructureType::PASSTHROUGH_CREATE_INFO_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPassthroughColorHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughColorHTC) - defined by [XR_HTC_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_passthrough)"]
+pub struct PassthroughColorHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub alpha: f32,
+}
+impl PassthroughColorHTC {
+    pub const TYPE: StructureType = StructureType::PASSTHROUGH_COLOR_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPassthroughMeshTransformInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughMeshTransformInfoHTC) - defined by [XR_HTC_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_passthrough)"]
+pub struct PassthroughMeshTransformInfoHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub vertex_count: u32,
+    pub vertices: *const Vector3f,
+    pub index_count: u32,
+    pub indices: *const u32,
+    pub base_space: Space,
+    pub time: Time,
+    pub pose: Posef,
+    pub scale: Vector3f,
+}
+impl PassthroughMeshTransformInfoHTC {
+    pub const TYPE: StructureType = StructureType::PASSTHROUGH_MESH_TRANSFORM_INFO_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCompositionLayerPassthroughHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrCompositionLayerPassthroughHTC) - defined by [XR_HTC_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_passthrough)"]
+pub struct CompositionLayerPassthroughHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub layer_flags: CompositionLayerFlags,
+    pub space: Space,
+    pub passthrough: PassthroughHTC,
+    pub color: PassthroughColorHTC,
+}
+impl CompositionLayerPassthroughHTC {
+    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PASSTHROUGH_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViveTrackerPathsHTCX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViveTrackerPathsHTCX) - defined by [XR_HTCX_vive_tracker_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTCX_vive_tracker_interaction)"]
 pub struct ViveTrackerPathsHTCX {
     pub ty: StructureType,
@@ -10452,6 +10506,15 @@ pub mod pfn {
         facial_tracker: FacialTrackerHTC,
         facial_expressions: *mut FacialExpressionsHTC,
     ) -> Result;
+    #[doc = "See [xrCreatePassthroughHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreatePassthroughHTC) - defined by [XR_HTC_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_passthrough)"]
+    pub type CreatePassthroughHTC = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const PassthroughCreateInfoHTC,
+        passthrough: *mut PassthroughHTC,
+    ) -> Result;
+    #[doc = "See [xrDestroyPassthroughHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyPassthroughHTC) - defined by [XR_HTC_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_passthrough)"]
+    pub type DestroyPassthroughHTC =
+        unsafe extern "system" fn(passthrough: PassthroughHTC) -> Result;
     #[doc = "See [xrEnumerateViveTrackerPathsHTCX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateViveTrackerPathsHTCX) - defined by [XR_HTCX_vive_tracker_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTCX_vive_tracker_interaction)"]
     pub type EnumerateViveTrackerPathsHTCX = unsafe extern "system" fn(
         instance: Instance,

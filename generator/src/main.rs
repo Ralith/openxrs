@@ -78,7 +78,6 @@ impl Parser {
             extensions: IndexMap::new(),
             // TODO: Handle these extensions
             disabled_exts: [
-                "XR_HTC_passthrough",
                 "XR_MSFT_scene_understanding",
                 "XR_MSFT_scene_understanding_serialization",
             ]
@@ -547,11 +546,6 @@ impl Parser {
     }
 
     fn parse_struct(&mut self, attrs: &[OwnedAttribute]) {
-        const STRUCTS_BLACKLIST: [&str; 3] = [
-            "XrCompositionLayerPassthroughHTC",
-            "XrPassthroughColorHTC",
-            "XrPassthroughHTC",
-        ];
         let struct_name = attr(attrs, "name").unwrap();
         let mut members = Vec::new();
         let mut ty = None;
@@ -585,19 +579,8 @@ impl Parser {
                 _ => {}
             }
         }
-        if STRUCTS_BLACKLIST.contains(&struct_name) {
-            return;
-        }
-        if let Some(structextends) = attr(attrs, "structextends") {
-            if STRUCTS_BLACKLIST.contains(&structextends) {
-                return;
-            }
-        }
         let parent = attr(attrs, "parentstruct");
         if let Some(parent) = parent {
-            if STRUCTS_BLACKLIST.contains(&parent) {
-                return;
-            }
             self.base_headers
                 .entry(parent.into())
                 .or_default()
@@ -1650,6 +1633,10 @@ impl Parser {
 
         let (type_params, type_args, marker, marker_init) = base_meta.type_params();
         let builders = children.iter().map(|name| {
+            if name == "XrCompositionLayerPassthroughHTC" {
+                // XrCompositionLayerPassthroughHTC has problems with its setters so we skip for now.
+                return quote! {};
+            }
             let ident = xr_ty_name(name);
             let s = self.structs.get(name).unwrap();
             let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
