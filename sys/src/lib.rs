@@ -68,7 +68,7 @@ impl std::ops::Sub<Time> for Time {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Default, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Duration(i64);
 impl Duration {
@@ -220,3 +220,18 @@ impl<T> std::ops::IndexMut<HandJointEXT> for [T] {
         &mut self[joint.into_raw() as usize]
     }
 }
+
+type DevicePcmSampleRateGetInfoFB = DevicePcmSampleRateStateFB;
+
+// Magic Leap
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct MLCoordinateFrameUID {
+    pub data: [u64; 2],
+}
+
+// Hacky constants originating from enums
+pub const EYE_POSITION_COUNT_FB: usize = 2;
+pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992;
+
+pub type SpaceUserIdFB = u64;

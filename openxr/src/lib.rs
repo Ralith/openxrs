@@ -6,7 +6,7 @@ use std::os::raw::c_char;
 
 pub use sys::{
     self, AsyncRequestIdFB, Duration, Path, SystemId, Time, UuidEXT, Version, CURRENT_API_VERSION,
-    FREQUENCY_UNSPECIFIED,
+    FREQUENCY_UNSPECIFIED, MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META,
 };
 
 mod generated;
@@ -44,7 +44,7 @@ pub use passthrough::*;
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
     CompositionLayerEquirectKHR, CompositionLayerProjection, CompositionLayerProjectionView,
-    CompositionLayerQuad, HapticBase, HapticVibration, SwapchainSubImage,
+    CompositionLayerQuad, HapticBase, HapticPcmVibrationFB, HapticVibration, SwapchainSubImage,
 };
 
 pub type Result<T, E = sys::Result> = std::result::Result<T, E>;

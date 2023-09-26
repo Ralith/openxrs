@@ -312,16 +312,16 @@ impl Parser {
         if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
             self.disabled_exts.insert(ext_name);
         } else {
-            let (tag, _) = split_ext_tag(&ext_name);
-            self.extensions
-                .get_mut(tag)
-                .unwrap()
-                .extensions
-                .push(Extension {
+            let (tag_name, _) = split_ext_tag(&ext_name);
+            if let Some(tag) = self.extensions.get_mut(tag_name) {
+                tag.extensions.push(Extension {
                     name: ext_name,
                     version: ext_version.unwrap(),
                     commands,
                 });
+            } else {
+                eprintln!("ignoring extension with unlisted tag: {}", ext_name);
+            }
         }
     }
 
@@ -579,11 +579,11 @@ impl Parser {
                 _ => {}
             }
         }
-        let parent: Option<String> = attr(attrs, "parentstruct").map(|x| x.into());
-        if let Some(ref parent) = parent {
+        let parent = attr(attrs, "parentstruct");
+        if let Some(parent) = parent {
             self.base_headers
-                .entry(parent.clone())
-                .or_insert_with(Vec::new)
+                .entry(parent.into())
+                .or_default()
                 .push(struct_name.into());
         }
         if let Some(target) = attr(attrs, "alias") {
@@ -1098,6 +1098,8 @@ impl Parser {
                 quote! { #[derive(Copy, Clone)] }
             } else if meta.has_pointer || meta.has_array {
                 quote! { #[derive(Copy, Clone, Debug)] }
+            } else if meta.has_non_default {
+                quote! { #[derive(Copy, Clone, Debug, PartialEq)] }
             } else {
                 quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
             };
@@ -1116,7 +1118,7 @@ impl Parser {
         let commands = self.commands.iter().chain(
             self.cmd_aliases
                 .iter()
-                .map(|&(ref name, ref target)| (name, self.commands.get(target).unwrap())),
+                .map(|(name, target)| (name, self.commands.get(target).unwrap())),
         );
 
         let (pfns, protos) = commands
@@ -1214,6 +1216,7 @@ impl Parser {
             /// Function pointer prototypes
             pub mod pfn {
                 use super::*;
+                pub use crate::platform::EglGetProcAddressMNDX;
 
                 pub type VoidFunction = unsafe extern "system" fn();
                 pub type DebugUtilsMessengerCallbackEXT = unsafe extern "system" fn(
@@ -1601,9 +1604,13 @@ impl Parser {
             out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
             out.has_array |= member.static_array_len.is_some();
+            out.has_non_default |= member.ty == "XrTime";
             if member.ty != name {
                 if let Some(x) = self.structs.get(&member.ty) {
                     out |= self.compute_meta(&member.ty, x);
+                }
+                if self.enums.contains_key(&member.ty) {
+                    out.has_non_default = true;
                 }
             }
         }
@@ -1626,6 +1633,10 @@ impl Parser {
 
         let (type_params, type_args, marker, marker_init) = base_meta.type_params();
         let builders = children.iter().map(|name| {
+            if name == "XrCompositionLayerPassthroughHTC" {
+                // XrCompositionLayerPassthroughHTC has problems with its setters so we skip for now.
+                return quote! {};
+            }
             let ident = xr_ty_name(name);
             let s = self.structs.get(name).unwrap();
             let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
@@ -1780,10 +1791,17 @@ impl Parser {
                         let mut inner = m.clone();
                         inner.ptr_depth -= 1;
                         let ty = xr_var_ty(self.api_aliases.as_ref(), &inner);
-                        (
-                            quote! { &'a #ty #type_args },
-                            quote! { self.inner.#ident = value as *const _ as _; },
-                        )
+                        if m.is_const {
+                            (
+                                quote! { &'a #ty #type_args },
+                                quote! { self.inner.#ident = value as *const _ as _; },
+                            )
+                        } else {
+                            (
+                                quote! { &'a mut #ty #type_args },
+                                quote! { self.inner.#ident = value as *mut _ as _; },
+                            )
+                        }
                     } else if self.structs.contains_key(&m.ty) && !simple.contains(&m.ty[..]) {
                         let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                         (
@@ -1984,6 +2002,7 @@ struct StructMeta {
     has_pointer: bool,
     has_array: bool,
     has_graphics: bool,
+    has_non_default: bool,
 }
 
 impl StructMeta {
@@ -2026,6 +2045,7 @@ impl std::ops::BitOrAssign for StructMeta {
         self.has_pointer |= rhs.has_pointer;
         self.has_array |= rhs.has_array;
         self.has_graphics |= rhs.has_graphics;
+        self.has_non_default |= self.has_non_default;
     }
 }
 
