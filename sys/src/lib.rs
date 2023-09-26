@@ -68,7 +68,7 @@ impl std::ops::Sub<Time> for Time {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Default, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Duration(i64);
 impl Duration {
