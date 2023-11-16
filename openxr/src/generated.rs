@@ -15,8 +15,8 @@ pub use sys::{
     DebugUtilsMessageTypeFlagsEXT, DigitalLensControlFlagsALMALENCE, EnvironmentBlendMode,
     Extent2Df, Extent2Di, Extent3DfEXT, Extent3DfFB, ExternalCameraAttachedToDeviceOCULUS,
     ExternalCameraExtrinsicsOCULUS, ExternalCameraIntrinsicsOCULUS,
-    ExternalCameraStatusFlagsOCULUS, EyeExpressionHTC, EyePositionFB, EyeVisibility,
-    FaceConfidenceFB, FaceExpressionFB, FaceExpressionSetFB, FacialTrackingTypeHTC,
+    ExternalCameraStatusFlagsOCULUS, EyeCalibrationStatusML, EyeExpressionHTC, EyePositionFB,
+    EyeVisibility, FaceConfidenceFB, FaceExpressionFB, FaceExpressionSetFB, FacialTrackingTypeHTC,
     ForceFeedbackCurlApplyLocationMNDX, ForceFeedbackCurlLocationMNDX, FormFactor,
     FoveationConfigurationHTC, FoveationDynamicFB, FoveationDynamicFlagsHTC,
     FoveationEyeTrackedProfileCreateFlagsMETA, FoveationEyeTrackedStateFlagsMETA, FoveationLevelFB,
@@ -24,9 +24,9 @@ pub use sys::{
     GlobalDimmerFrameEndInfoFlagsML, HandEXT, HandForearmJointULTRALEAP, HandJointEXT,
     HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT, HandJointsMotionRangeEXT,
     HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB, HandTrackingDataSourceEXT,
-    InputSourceLocalizedNameFlags, InstanceCreateFlags, KeyboardTrackingFlagsFB,
-    KeyboardTrackingQueryFlagsFB, LipExpressionHTC, LocalDimmingModeMETA, MeshComputeLodMSFT,
-    ObjectType, Offset2Df, Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX,
+    HeadsetFitStatusML, InputSourceLocalizedNameFlags, InstanceCreateFlags,
+    KeyboardTrackingFlagsFB, KeyboardTrackingQueryFlagsFB, LipExpressionHTC, LocalDimmingModeMETA,
+    MeshComputeLodMSFT, ObjectType, Offset2Df, Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX,
     OverlaySessionCreateFlagsEXTX, PassthroughCapabilityFlagsFB, PassthroughColorLutChannelsMETA,
     PassthroughFlagsFB, PassthroughFormHTC, PassthroughLayerPurposeFB,
     PassthroughPreferenceFlagsMETA, PassthroughStateChangedFlagsFB, PerfSettingsDomainEXT,
@@ -36,16 +36,17 @@ pub use sys::{
     PlaneDetectorOrientationEXT, PlaneDetectorSemanticTypeEXT, Posef, Quaternionf, Rect2Df,
     Rect2Di, Rect3DfFB, ReferenceSpaceType, RenderModelFlagsFB, ReprojectionModeMSFT,
     SceneComponentTypeMSFT, SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT,
-    SceneComputeStateMSFT, SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT,
-    SemanticLabelsSupportFlagsFB, SessionCreateFlags, SessionState, SpaceComponentTypeFB,
-    SpaceLocationFlags, SpacePersistenceModeFB, SpaceQueryActionFB, SpaceStorageLocationFB,
-    SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, StructureType, SwapchainCreateFlags,
-    SwapchainCreateFoveationFlagsFB, SwapchainStateFoveationFlagsFB, SwapchainUsageFlags,
-    SystemGraphicsProperties, TrackingOptimizationSettingsDomainQCOM,
-    TrackingOptimizationSettingsHintQCOM, TriangleMeshFlagsFB, Vector2f, Vector3f, Vector4f,
-    Vector4sFB, ViewConfigurationType, ViewStateFlags, VirtualKeyboardInputSourceMETA,
-    VirtualKeyboardInputStateFlagsMETA, VirtualKeyboardLocationTypeMETA, VisibilityMaskTypeKHR,
-    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR, WindingOrderFB,
+    SceneComputeStateMSFT, SceneMarkerQRCodeSymbolTypeMSFT, SceneMarkerTypeMSFT,
+    SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT, SemanticLabelsSupportFlagsFB,
+    SessionCreateFlags, SessionState, SpaceComponentTypeFB, SpaceLocationFlags,
+    SpacePersistenceModeFB, SpaceQueryActionFB, SpaceStorageLocationFB, SpaceVelocityFlags,
+    SpatialGraphNodeTypeMSFT, StructureType, SwapchainCreateFlags, SwapchainCreateFoveationFlagsFB,
+    SwapchainStateFoveationFlagsFB, SwapchainUsageFlags, SystemGraphicsProperties,
+    TrackingOptimizationSettingsDomainQCOM, TrackingOptimizationSettingsHintQCOM,
+    TriangleMeshFlagsFB, Vector2f, Vector3f, Vector4f, Vector4sFB, ViewConfigurationType,
+    ViewStateFlags, VirtualKeyboardInputSourceMETA, VirtualKeyboardInputStateFlagsMETA,
+    VirtualKeyboardLocationTypeMETA, VisibilityMaskTypeKHR, VulkanDeviceCreateFlagsKHR,
+    VulkanInstanceCreateFlagsKHR, WindingOrderFB,
 };
 #[doc = r" A subset of known extensions"]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
@@ -166,6 +167,7 @@ pub struct ExtensionSet {
     pub ml_frame_end_info: bool,
     pub ml_global_dimmer: bool,
     pub ml_compat: bool,
+    pub ml_user_calibration: bool,
     pub mnd_headless: bool,
     pub mnd_swapchain_usage_input_attachment_bit: bool,
     pub msft_unbounded_reference_space: bool,
@@ -196,6 +198,7 @@ pub struct ExtensionSet {
     pub varjo_environment_depth_estimation: bool,
     pub varjo_marker_tracking: bool,
     pub varjo_view_offset: bool,
+    pub yvr_controller_interaction: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<String>,
 }
@@ -529,6 +532,9 @@ impl ExtensionSet {
                 raw::CompatML::NAME => {
                     out.ml_compat = true;
                 }
+                raw::UserCalibrationML::NAME => {
+                    out.ml_user_calibration = true;
+                }
                 raw::HeadlessMND::NAME => {
                     out.mnd_headless = true;
                 }
@@ -612,6 +618,9 @@ impl ExtensionSet {
                 }
                 raw::ViewOffsetVARJO::NAME => {
                     out.varjo_view_offset = true;
+                }
+                raw::ControllerInteractionYVR::NAME => {
+                    out.yvr_controller_interaction = true;
                 }
                 bytes => {
                     if let Ok(name) = std::str::from_utf8(bytes) {
@@ -1160,6 +1169,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.ml_user_calibration {
+                out.push(raw::UserCalibrationML::NAME.into());
+            }
+        }
+        {
             if self.mnd_headless {
                 out.push(raw::HeadlessMND::NAME.into());
             }
@@ -1297,6 +1311,11 @@ impl ExtensionSet {
                 out.push(raw::ViewOffsetVARJO::NAME.into());
             }
         }
+        {
+            if self.yvr_controller_interaction {
+                out.push(raw::ControllerInteractionYVR::NAME.into());
+            }
+        }
         for name in &self.other {
             let mut bytes = Vec::with_capacity(name.len() + 1);
             bytes.extend_from_slice(name.as_bytes());
@@ -1426,6 +1445,7 @@ pub struct InstanceExtensions {
     pub ml_frame_end_info: Option<raw::FrameEndInfoML>,
     pub ml_global_dimmer: Option<raw::GlobalDimmerML>,
     pub ml_compat: Option<raw::CompatML>,
+    pub ml_user_calibration: Option<raw::UserCalibrationML>,
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub mnd_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitMND>,
     pub msft_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceMSFT>,
@@ -1456,6 +1476,7 @@ pub struct InstanceExtensions {
     pub varjo_environment_depth_estimation: Option<raw::EnvironmentDepthEstimationVARJO>,
     pub varjo_marker_tracking: Option<raw::MarkerTrackingVARJO>,
     pub varjo_view_offset: Option<raw::ViewOffsetVARJO>,
+    pub yvr_controller_interaction: Option<raw::ControllerInteractionYVR>,
 }
 impl InstanceExtensions {
     #[doc = r" Load extension function pointer tables"]
@@ -2018,6 +2039,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            ml_user_calibration: if required.ml_user_calibration {
+                Some(raw::UserCalibrationML::load(entry, instance)?)
+            } else {
+                None
+            },
             mnd_headless: if required.mnd_headless {
                 Some(raw::HeadlessMND {})
             } else {
@@ -2162,6 +2188,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            yvr_controller_interaction: if required.yvr_controller_interaction {
+                Some(raw::ControllerInteractionYVR {})
+            } else {
+                None
+            },
         })
     }
 }
@@ -2194,6 +2225,8 @@ pub enum Event<'a> {
     VirtualKeyboardEnterMETA(VirtualKeyboardEnterMETA<'a>),
     VirtualKeyboardShownMETA(VirtualKeyboardShownMETA<'a>),
     VirtualKeyboardHiddenMETA(VirtualKeyboardHiddenMETA<'a>),
+    HeadsetFitChangedML(HeadsetFitChangedML<'a>),
+    EyeCalibrationChangedML(EyeCalibrationChangedML<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -2312,6 +2345,14 @@ impl<'a> Event<'a> {
             sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_HIDDEN_META => {
                 let typed = &*(raw as *const sys::EventDataVirtualKeyboardHiddenMETA);
                 Event::VirtualKeyboardHiddenMETA(VirtualKeyboardHiddenMETA::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_HEADSET_FIT_CHANGED_ML => {
+                let typed = &*(raw as *const sys::EventDataHeadsetFitChangedML);
+                Event::HeadsetFitChangedML(HeadsetFitChangedML::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_EYE_CALIBRATION_CHANGED_ML => {
+                let typed = &*(raw as *const sys::EventDataEyeCalibrationChangedML);
+                Event::EyeCalibrationChangedML(EyeCalibrationChangedML::new(typed))
             }
             _ => {
                 return None;
@@ -2881,6 +2922,42 @@ impl<'a> VirtualKeyboardHiddenMETA<'a> {
     #[inline]
     pub fn keyboard(self) -> sys::VirtualKeyboardMETA {
         (self.0).keyboard
+    }
+}
+#[derive(Copy, Clone)]
+pub struct HeadsetFitChangedML<'a>(&'a sys::EventDataHeadsetFitChangedML);
+impl<'a> HeadsetFitChangedML<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataHeadsetFitChangedML]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataHeadsetFitChangedML) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn status(self) -> HeadsetFitStatusML {
+        (self.0).status
+    }
+    #[inline]
+    pub fn time(self) -> Time {
+        (self.0).time
+    }
+}
+#[derive(Copy, Clone)]
+pub struct EyeCalibrationChangedML<'a>(&'a sys::EventDataEyeCalibrationChangedML);
+impl<'a> EyeCalibrationChangedML<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataEyeCalibrationChangedML]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataEyeCalibrationChangedML) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn status(self) -> EyeCalibrationStatusML {
+        (self.0).status
     }
 }
 pub mod raw {
@@ -5098,6 +5175,27 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct UserCalibrationML {
+        pub enable_user_calibration_events: pfn::EnableUserCalibrationEventsML,
+    }
+    impl UserCalibrationML {
+        pub const VERSION: u32 = sys::ML_user_calibration_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ML_USER_CALIBRATION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enable_user_calibration_events: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnableUserCalibrationEventsML\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct HeadlessMND {}
     impl HeadlessMND {
         pub const VERSION: u32 = sys::MND_headless_SPEC_VERSION;
@@ -5606,6 +5704,12 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct ControllerInteractionYVR {}
+    impl ControllerInteractionYVR {
+        pub const VERSION: u32 = sys::YVR_controller_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::YVR_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
 }
 #[allow(unused)]
