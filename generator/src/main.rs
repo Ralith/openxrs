@@ -78,6 +78,7 @@ impl Parser {
             extensions: IndexMap::new(),
             // TODO: Handle these extensions
             disabled_exts: [
+                "XR_MSFT_scene_marker",
                 "XR_MSFT_scene_understanding",
                 "XR_MSFT_scene_understanding_serialization",
             ]
