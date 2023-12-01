@@ -38,6 +38,8 @@ pub trait Graphics: Sized {
 pub mod d3d;
 #[cfg(windows)]
 pub use d3d::D3D11;
+#[cfg(windows)]
+pub use d3d::D3D12;
 
 pub mod vulkan;
 pub use vulkan::Vulkan;
