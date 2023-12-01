@@ -669,6 +669,13 @@ impl Instance {
             .as_ref()
             .expect("KHR_d3d11_enable not loaded")
     }
+    #[cfg(windows)]
+    pub(crate) fn d3d12(&self) -> &raw::D3d12EnableKHR {
+        self.exts()
+            .khr_d3d12_enable
+            .as_ref()
+            .expect("KHR_d3d12_enable not loaded")
+    }
     pub(crate) fn visibility_mask(&self) -> &raw::VisibilityMaskKHR {
         self.exts()
             .khr_visibility_mask
