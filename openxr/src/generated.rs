@@ -26,6 +26,10 @@ pub use sys::{
     HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB, HandTrackingDataSourceEXT,
     HeadsetFitStatusML, InputSourceLocalizedNameFlags, InstanceCreateFlags,
     KeyboardTrackingFlagsFB, KeyboardTrackingQueryFlagsFB, LipExpressionHTC, LocalDimmingModeMETA,
+    LocalizationMapConfidenceML, LocalizationMapErrorFlagsML, LocalizationMapStateML,
+    LocalizationMapTypeML, MarkerAprilTagDictML, MarkerArucoDictML, MarkerDetectorCameraML,
+    MarkerDetectorCornerRefineMethodML, MarkerDetectorFpsML, MarkerDetectorFullAnalysisIntervalML,
+    MarkerDetectorProfileML, MarkerDetectorResolutionML, MarkerDetectorStatusML, MarkerTypeML,
     MeshComputeLodMSFT, ObjectType, Offset2Df, Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX,
     OverlaySessionCreateFlagsEXTX, PassthroughCapabilityFlagsFB, PassthroughColorLutChannelsMETA,
     PassthroughFlagsFB, PassthroughFormHTC, PassthroughLayerPurposeFB,
@@ -124,6 +128,7 @@ pub struct ExtensionSet {
     pub htc_vive_wrist_tracker_interaction: bool,
     pub htc_passthrough: bool,
     pub htc_foveation: bool,
+    pub htc_anchor: bool,
     pub huawei_controller_interaction: bool,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: bool,
@@ -163,10 +168,13 @@ pub struct ExtensionSet {
     pub meta_performance_metrics: bool,
     pub meta_headset_id: bool,
     pub meta_passthrough_color_lut: bool,
+    pub meta_touch_controller_plus: bool,
     pub ml_ml2_controller_interaction: bool,
     pub ml_frame_end_info: bool,
     pub ml_global_dimmer: bool,
     pub ml_compat: bool,
+    pub ml_marker_understanding: bool,
+    pub ml_localization_map: bool,
     pub ml_user_calibration: bool,
     pub mnd_headless: bool,
     pub mnd_swapchain_usage_input_attachment_bit: bool,
@@ -417,6 +425,9 @@ impl ExtensionSet {
                 raw::FoveationHTC::NAME => {
                     out.htc_foveation = true;
                 }
+                raw::AnchorHTC::NAME => {
+                    out.htc_anchor = true;
+                }
                 raw::ControllerInteractionHUAWEI::NAME => {
                     out.huawei_controller_interaction = true;
                 }
@@ -520,6 +531,9 @@ impl ExtensionSet {
                 raw::PassthroughColorLutMETA::NAME => {
                     out.meta_passthrough_color_lut = true;
                 }
+                raw::TouchControllerPlusMETA::NAME => {
+                    out.meta_touch_controller_plus = true;
+                }
                 raw::Ml2ControllerInteractionML::NAME => {
                     out.ml_ml2_controller_interaction = true;
                 }
@@ -531,6 +545,12 @@ impl ExtensionSet {
                 }
                 raw::CompatML::NAME => {
                     out.ml_compat = true;
+                }
+                raw::MarkerUnderstandingML::NAME => {
+                    out.ml_marker_understanding = true;
+                }
+                raw::LocalizationMapML::NAME => {
+                    out.ml_localization_map = true;
                 }
                 raw::UserCalibrationML::NAME => {
                     out.ml_user_calibration = true;
@@ -982,6 +1002,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.htc_anchor {
+                out.push(raw::AnchorHTC::NAME.into());
+            }
+        }
+        {
             if self.huawei_controller_interaction {
                 out.push(raw::ControllerInteractionHUAWEI::NAME.into());
             }
@@ -1149,6 +1174,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.meta_touch_controller_plus {
+                out.push(raw::TouchControllerPlusMETA::NAME.into());
+            }
+        }
+        {
             if self.ml_ml2_controller_interaction {
                 out.push(raw::Ml2ControllerInteractionML::NAME.into());
             }
@@ -1166,6 +1196,16 @@ impl ExtensionSet {
         {
             if self.ml_compat {
                 out.push(raw::CompatML::NAME.into());
+            }
+        }
+        {
+            if self.ml_marker_understanding {
+                out.push(raw::MarkerUnderstandingML::NAME.into());
+            }
+        }
+        {
+            if self.ml_localization_map {
+                out.push(raw::LocalizationMapML::NAME.into());
             }
         }
         {
@@ -1401,6 +1441,7 @@ pub struct InstanceExtensions {
     pub htc_vive_wrist_tracker_interaction: Option<raw::ViveWristTrackerInteractionHTC>,
     pub htc_passthrough: Option<raw::PassthroughHTC>,
     pub htc_foveation: Option<raw::FoveationHTC>,
+    pub htc_anchor: Option<raw::AnchorHTC>,
     pub huawei_controller_interaction: Option<raw::ControllerInteractionHUAWEI>,
     #[cfg(target_os = "android")]
     pub khr_android_thread_settings: Option<raw::AndroidThreadSettingsKHR>,
@@ -1441,10 +1482,13 @@ pub struct InstanceExtensions {
     pub meta_performance_metrics: Option<raw::PerformanceMetricsMETA>,
     pub meta_headset_id: Option<raw::HeadsetIdMETA>,
     pub meta_passthrough_color_lut: Option<raw::PassthroughColorLutMETA>,
+    pub meta_touch_controller_plus: Option<raw::TouchControllerPlusMETA>,
     pub ml_ml2_controller_interaction: Option<raw::Ml2ControllerInteractionML>,
     pub ml_frame_end_info: Option<raw::FrameEndInfoML>,
     pub ml_global_dimmer: Option<raw::GlobalDimmerML>,
     pub ml_compat: Option<raw::CompatML>,
+    pub ml_marker_understanding: Option<raw::MarkerUnderstandingML>,
+    pub ml_localization_map: Option<raw::LocalizationMapML>,
     pub ml_user_calibration: Option<raw::UserCalibrationML>,
     pub mnd_headless: Option<raw::HeadlessMND>,
     pub mnd_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitMND>,
@@ -1844,6 +1888,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            htc_anchor: if required.htc_anchor {
+                Some(raw::AnchorHTC::load(entry, instance)?)
+            } else {
+                None
+            },
             huawei_controller_interaction: if required.huawei_controller_interaction {
                 Some(raw::ControllerInteractionHUAWEI {})
             } else {
@@ -2019,6 +2068,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            meta_touch_controller_plus: if required.meta_touch_controller_plus {
+                Some(raw::TouchControllerPlusMETA {})
+            } else {
+                None
+            },
             ml_ml2_controller_interaction: if required.ml_ml2_controller_interaction {
                 Some(raw::Ml2ControllerInteractionML {})
             } else {
@@ -2036,6 +2090,16 @@ impl InstanceExtensions {
             },
             ml_compat: if required.ml_compat {
                 Some(raw::CompatML::load(entry, instance)?)
+            } else {
+                None
+            },
+            ml_marker_understanding: if required.ml_marker_understanding {
+                Some(raw::MarkerUnderstandingML::load(entry, instance)?)
+            } else {
+                None
+            },
+            ml_localization_map: if required.ml_localization_map {
+                Some(raw::LocalizationMapML::load(entry, instance)?)
             } else {
                 None
             },
@@ -2227,6 +2291,7 @@ pub enum Event<'a> {
     VirtualKeyboardHiddenMETA(VirtualKeyboardHiddenMETA<'a>),
     HeadsetFitChangedML(HeadsetFitChangedML<'a>),
     EyeCalibrationChangedML(EyeCalibrationChangedML<'a>),
+    LocalizationChangedML(LocalizationChangedML<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -2353,6 +2418,10 @@ impl<'a> Event<'a> {
             sys::StructureType::EVENT_DATA_EYE_CALIBRATION_CHANGED_ML => {
                 let typed = &*(raw as *const sys::EventDataEyeCalibrationChangedML);
                 Event::EyeCalibrationChangedML(EyeCalibrationChangedML::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_LOCALIZATION_CHANGED_ML => {
+                let typed = &*(raw as *const sys::EventDataLocalizationChangedML);
+                Event::LocalizationChangedML(LocalizationChangedML::new(typed))
             }
             _ => {
                 return None;
@@ -2958,6 +3027,38 @@ impl<'a> EyeCalibrationChangedML<'a> {
     #[inline]
     pub fn status(self) -> EyeCalibrationStatusML {
         (self.0).status
+    }
+}
+#[derive(Copy, Clone)]
+pub struct LocalizationChangedML<'a>(&'a sys::EventDataLocalizationChangedML);
+impl<'a> LocalizationChangedML<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataLocalizationChangedML]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataLocalizationChangedML) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn session(self) -> sys::Session {
+        (self.0).session
+    }
+    #[inline]
+    pub fn state(self) -> LocalizationMapStateML {
+        (self.0).state
+    }
+    #[inline]
+    pub fn map(self) -> LocalizationMapML {
+        (self.0).map
+    }
+    #[inline]
+    pub fn confidence(self) -> LocalizationMapConfidenceML {
+        (self.0).confidence
+    }
+    #[inline]
+    pub fn error_flags(self) -> LocalizationMapErrorFlagsML {
+        (self.0).error_flags
     }
 }
 pub mod raw {
@@ -4528,6 +4629,32 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct AnchorHTC {
+        pub create_spatial_anchor: pfn::CreateSpatialAnchorHTC,
+        pub get_spatial_anchor_name: pfn::GetSpatialAnchorNameHTC,
+    }
+    impl AnchorHTC {
+        pub const VERSION: u32 = sys::HTC_anchor_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTC_ANCHOR_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorHTC\0"),
+                )?),
+                get_spatial_anchor_name: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpatialAnchorNameHTC\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct ControllerInteractionHUAWEI {}
     impl ControllerInteractionHUAWEI {
         pub const VERSION: u32 = sys::HUAWEI_controller_interaction_SPEC_VERSION;
@@ -5132,6 +5259,12 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct TouchControllerPlusMETA {}
+    impl TouchControllerPlusMETA {
+        pub const VERSION: u32 = sys::META_touch_controller_plus_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct Ml2ControllerInteractionML {}
     impl Ml2ControllerInteractionML {
         pub const VERSION: u32 = sys::ML_ml2_controller_interaction_SPEC_VERSION;
@@ -5171,6 +5304,123 @@ pub mod raw {
                         ),
                     )?,
                 ),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct MarkerUnderstandingML {
+        pub create_marker_detector: pfn::CreateMarkerDetectorML,
+        pub destroy_marker_detector: pfn::DestroyMarkerDetectorML,
+        pub snapshot_marker_detector: pfn::SnapshotMarkerDetectorML,
+        pub get_marker_detector_state: pfn::GetMarkerDetectorStateML,
+        pub get_markers: pfn::GetMarkersML,
+        pub get_marker_reprojection_error: pfn::GetMarkerReprojectionErrorML,
+        pub get_marker_length: pfn::GetMarkerLengthML,
+        pub get_marker_number: pfn::GetMarkerNumberML,
+        pub get_marker_string: pfn::GetMarkerStringML,
+        pub create_marker_space: pfn::CreateMarkerSpaceML,
+    }
+    impl MarkerUnderstandingML {
+        pub const VERSION: u32 = sys::ML_marker_understanding_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ML_MARKER_UNDERSTANDING_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_marker_detector: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerDetectorML\0"),
+                )?),
+                destroy_marker_detector: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyMarkerDetectorML\0"),
+                )?),
+                snapshot_marker_detector: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSnapshotMarkerDetectorML\0"),
+                )?),
+                get_marker_detector_state: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerDetectorStateML\0"),
+                )?),
+                get_markers: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkersML\0"),
+                )?),
+                get_marker_reprojection_error: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerReprojectionErrorML\0"),
+                )?),
+                get_marker_length: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerLengthML\0"),
+                )?),
+                get_marker_number: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerNumberML\0"),
+                )?),
+                get_marker_string: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerStringML\0"),
+                )?),
+                create_marker_space: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceML\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct LocalizationMapML {
+        pub enable_localization_events: pfn::EnableLocalizationEventsML,
+        pub query_localization_maps: pfn::QueryLocalizationMapsML,
+        pub request_map_localization: pfn::RequestMapLocalizationML,
+        pub import_localization_map: pfn::ImportLocalizationMapML,
+        pub create_exported_localization_map: pfn::CreateExportedLocalizationMapML,
+        pub destroy_exported_localization_map: pfn::DestroyExportedLocalizationMapML,
+        pub get_exported_localization_map_data: pfn::GetExportedLocalizationMapDataML,
+    }
+    impl LocalizationMapML {
+        pub const VERSION: u32 = sys::ML_localization_map_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ML_LOCALIZATION_MAP_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enable_localization_events: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnableLocalizationEventsML\0"),
+                )?),
+                query_localization_maps: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrQueryLocalizationMapsML\0"),
+                )?),
+                request_map_localization: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrRequestMapLocalizationML\0"),
+                )?),
+                import_localization_map: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrImportLocalizationMapML\0"),
+                )?),
+                create_exported_localization_map: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateExportedLocalizationMapML\0"),
+                )?),
+                destroy_exported_localization_map: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyExportedLocalizationMapML\0"),
+                )?),
+                get_exported_localization_map_data: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetExportedLocalizationMapDataML\0"),
+                )?),
             })
         }
     }
