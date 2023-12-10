@@ -3050,7 +3050,7 @@ impl<'a> LocalizationChangedML<'a> {
     }
     #[inline]
     pub fn map(self) -> LocalizationMapML {
-        (self.0).map
+        unsafe { LocalizationMapML::from_raw(self.0.map) }
     }
     #[inline]
     pub fn confidence(self) -> LocalizationMapConfidenceML {

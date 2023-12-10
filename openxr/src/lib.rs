@@ -5,8 +5,8 @@
 use std::os::raw::c_char;
 
 pub use sys::{
-    self, AsyncRequestIdFB, Duration, LocalizationMapML, Path, SystemId, Time, UuidEXT, Version,
-    CURRENT_API_VERSION, FREQUENCY_UNSPECIFIED, MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META,
+    self, AsyncRequestIdFB, Duration, Path, SystemId, Time, UuidEXT, Version, CURRENT_API_VERSION,
+    FREQUENCY_UNSPECIFIED, MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META,
 };
 
 mod generated;
@@ -40,6 +40,8 @@ pub use vive_tracker_paths::*;
 mod display_refresh_rate;
 mod passthrough;
 pub use passthrough::*;
+mod localization_map_ml;
+pub use localization_map_ml::*;
 
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
