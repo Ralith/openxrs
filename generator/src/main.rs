@@ -1954,7 +1954,7 @@ impl Parser {
                         LocalizationMapML
                     },
                     quote! {
-                        unsafe { LocalizationMapML::from_raw(self.0.#ident) }
+                          LocalizationMapML::from_raw(self.0.#ident)
                     },
                 )
             } else {
