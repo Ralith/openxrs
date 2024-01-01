@@ -98,6 +98,26 @@ impl Graphics for OpenGL {
                 ))?;
                 Ok(out)
             }
+            SessionCreateInfo::Wayland { display } => {
+                let binding = sys::GraphicsBindingOpenGLWaylandKHR {
+                    ty: sys::GraphicsBindingOpenGLWaylandKHR::TYPE,
+                    next: ptr::null(),
+                    display,
+                };
+                let info = sys::SessionCreateInfo {
+                    ty: sys::SessionCreateInfo::TYPE,
+                    next: &binding as *const _ as *const _,
+                    create_flags: Default::default(),
+                    system_id: system,
+                };
+                let mut out = sys::Session::NULL;
+                cvt((instance.fp().create_session)(
+                    instance.as_raw(),
+                    &info,
+                    &mut out,
+                ))?;
+                Ok(out)
+            }
         }
     }
 
@@ -137,6 +157,12 @@ pub enum SessionCreateInfo {
         glx_drawable: GLXDrawable,
         glx_context: GLXContext,
     },
+    Wayland {
+        display: *mut wl_display,
+    },
     #[cfg(windows)]
-    Windows { h_dc: HDC, h_glrc: HGLRC },
+    Windows {
+        h_dc: HDC,
+        h_glrc: HGLRC,
+    },
 }
