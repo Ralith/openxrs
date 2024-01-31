@@ -87,7 +87,6 @@ impl Graphics for D3D11 {
     }
 }
 
-
 /// The D3D12 graphics API
 ///
 /// See [`XR_KHR_d3d12_enable`] for safety details.

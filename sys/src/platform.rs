@@ -52,18 +52,15 @@ mod windows {
 
     use std::os::raw::c_void;
 
-    pub type IUnknown = *mut c_void;
-    pub type ID3D10Device = *const c_void;
-    pub type ID3D10Texture2D = *const c_void;
-    pub type D3D10_FEATURE_LEVEL1 = u32;
+    pub type IUnknown = c_void;
     pub type LARGE_INTEGER = i64;
     pub type HDC = isize;
     pub type HGLRC = isize;
-    pub type ID3D11Device = *mut c_void;
-    pub type ID3D11Texture2D = *mut c_void;
-    pub type ID3D12CommandQueue = *mut c_void;
-    pub type ID3D12Device = *mut c_void;
-    pub type ID3D12Resource = *mut c_void;
+    pub type ID3D11Device = c_void;
+    pub type ID3D11Texture2D = c_void;
+    pub type ID3D12CommandQueue = c_void;
+    pub type ID3D12Device = c_void;
+    pub type ID3D12Resource = c_void;
     pub type D3D_FEATURE_LEVEL = i32;
 
     #[derive(Copy, Clone)]
