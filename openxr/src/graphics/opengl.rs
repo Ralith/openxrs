@@ -120,6 +120,35 @@ impl Graphics for OpenGL {
                     ))?;
                     Ok(out)
                 }
+                SessionCreateInfo::Egl {
+                    display,
+                    config,
+                    context,
+                    get_proc_address,
+                } => {
+                    let binding = sys::GraphicsBindingEGLMNDX {
+                        ty: sys::GraphicsBindingEGLMNDX::TYPE,
+                        next: ptr::null(),
+                        display,
+                        config,
+                        context,
+                        get_proc_address: Some(get_proc_address),
+                    };
+                    let info = sys::SessionCreateInfo {
+                        ty: sys::SessionCreateInfo::TYPE,
+                        next: &binding as *const _ as *const _,
+                        create_flags: Default::default(),
+                        system_id: system,
+                    };
+                    let mut out = sys::Session::NULL;
+                    cvt((instance.fp().create_session)(
+                        instance.as_raw(),
+                        &info,
+                        &mut out,
+                    ))?;
+
+                    Ok(out)
+                }
             }
         }
     }
@@ -153,6 +182,12 @@ pub struct Requirements {
 }
 
 pub enum SessionCreateInfo {
+    Egl {
+        display: EGLDisplay,
+        config: EGLConfig,
+        context: EGLContext,
+        get_proc_address: EglGetProcAddressMNDX,
+    },
     Xlib {
         x_display: *mut Display,
         visualid: u32,
