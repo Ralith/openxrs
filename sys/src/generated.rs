@@ -13,7 +13,7 @@ use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 31u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 32u32);
 pub const EXTENSION_ENUM_BASE: usize = 1000000000usize;
 pub const EXTENSION_ENUM_STRIDE: usize = 1000usize;
 pub const NULL_PATH: usize = 0usize;
@@ -50,12 +50,14 @@ pub const HAND_TRACKING_CAPSULE_COUNT_FB: usize = 19usize;
 pub const MAX_KEYBOARD_TRACKING_NAME_SIZE_FB: usize = 128usize;
 pub const PASSTHROUGH_COLOR_MAP_MONO_SIZE_FB: usize = 256usize;
 pub const MAX_RENDER_MODEL_NAME_SIZE_FB: usize = 64usize;
+pub const MAX_LOCALIZATION_MAP_NAME_LENGTH_ML: usize = 64usize;
 pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_MSFT: usize = 256usize;
 pub const MAX_AUDIO_DEVICE_STR_SIZE_OCULUS: usize = 128usize;
 pub const FOVEATION_CENTER_SIZE_META: usize = 2usize;
 pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992usize;
 pub const MAX_EXTERNAL_CAMERA_NAME_SIZE_OCULUS: usize = 32usize;
 pub const UUID_SIZE_EXT: usize = 16usize;
+pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_HTC: usize = 256usize;
 #[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -281,6 +283,20 @@ impl StructureType {
     pub const FRAME_END_INFO_ML: StructureType = Self(1000135000i32);
     pub const GLOBAL_DIMMER_FRAME_END_INFO_ML: StructureType = Self(1000136000i32);
     pub const COORDINATE_SPACE_CREATE_INFO_ML: StructureType = Self(1000137000i32);
+    pub const SYSTEM_MARKER_UNDERSTANDING_PROPERTIES_ML: StructureType = Self(1000138000i32);
+    pub const MARKER_DETECTOR_CREATE_INFO_ML: StructureType = Self(1000138001i32);
+    pub const MARKER_DETECTOR_ARUCO_INFO_ML: StructureType = Self(1000138002i32);
+    pub const MARKER_DETECTOR_SIZE_INFO_ML: StructureType = Self(1000138003i32);
+    pub const MARKER_DETECTOR_APRIL_TAG_INFO_ML: StructureType = Self(1000138004i32);
+    pub const MARKER_DETECTOR_CUSTOM_PROFILE_INFO_ML: StructureType = Self(1000138005i32);
+    pub const MARKER_DETECTOR_SNAPSHOT_INFO_ML: StructureType = Self(1000138006i32);
+    pub const MARKER_DETECTOR_STATE_ML: StructureType = Self(1000138007i32);
+    pub const MARKER_SPACE_CREATE_INFO_ML: StructureType = Self(1000138008i32);
+    pub const LOCALIZATION_MAP_ML: StructureType = Self(1000139000i32);
+    pub const EVENT_DATA_LOCALIZATION_CHANGED_ML: StructureType = Self(1000139001i32);
+    pub const MAP_LOCALIZATION_REQUEST_INFO_ML: StructureType = Self(1000139002i32);
+    pub const LOCALIZATION_MAP_IMPORT_INFO_ML: StructureType = Self(1000139003i32);
+    pub const LOCALIZATION_ENABLE_EVENTS_INFO_ML: StructureType = Self(1000139004i32);
     pub const EVENT_DATA_HEADSET_FIT_CHANGED_ML: StructureType = Self(1000472000i32);
     pub const EVENT_DATA_EYE_CALIBRATION_CHANGED_ML: StructureType = Self(1000472001i32);
     pub const USER_CALIBRATION_ENABLE_EVENTS_INFO_ML: StructureType = Self(1000472002i32);
@@ -373,6 +389,8 @@ impl StructureType {
     pub const FOVEATION_APPLY_INFO_HTC: StructureType = Self(1000318000i32);
     pub const FOVEATION_DYNAMIC_MODE_INFO_HTC: StructureType = Self(1000318001i32);
     pub const FOVEATION_CUSTOM_MODE_INFO_HTC: StructureType = Self(1000318002i32);
+    pub const SYSTEM_ANCHOR_PROPERTIES_HTC: StructureType = Self(1000319000i32);
+    pub const SPATIAL_ANCHOR_CREATE_INFO_HTC: StructureType = Self(1000319001i32);
     pub const ACTIVE_ACTION_SET_PRIORITIES_EXT: StructureType = Self(1000373000i32);
     pub const SYSTEM_FORCE_FEEDBACK_CURL_PROPERTIES_MNDX: StructureType = Self(1000375000i32);
     pub const FORCE_FEEDBACK_CURL_APPLY_LOCATIONS_MNDX: StructureType = Self(1000375001i32);
@@ -722,6 +740,24 @@ impl fmt::Debug for StructureType {
             Self::FRAME_END_INFO_ML => Some("FRAME_END_INFO_ML"),
             Self::GLOBAL_DIMMER_FRAME_END_INFO_ML => Some("GLOBAL_DIMMER_FRAME_END_INFO_ML"),
             Self::COORDINATE_SPACE_CREATE_INFO_ML => Some("COORDINATE_SPACE_CREATE_INFO_ML"),
+            Self::SYSTEM_MARKER_UNDERSTANDING_PROPERTIES_ML => {
+                Some("SYSTEM_MARKER_UNDERSTANDING_PROPERTIES_ML")
+            }
+            Self::MARKER_DETECTOR_CREATE_INFO_ML => Some("MARKER_DETECTOR_CREATE_INFO_ML"),
+            Self::MARKER_DETECTOR_ARUCO_INFO_ML => Some("MARKER_DETECTOR_ARUCO_INFO_ML"),
+            Self::MARKER_DETECTOR_SIZE_INFO_ML => Some("MARKER_DETECTOR_SIZE_INFO_ML"),
+            Self::MARKER_DETECTOR_APRIL_TAG_INFO_ML => Some("MARKER_DETECTOR_APRIL_TAG_INFO_ML"),
+            Self::MARKER_DETECTOR_CUSTOM_PROFILE_INFO_ML => {
+                Some("MARKER_DETECTOR_CUSTOM_PROFILE_INFO_ML")
+            }
+            Self::MARKER_DETECTOR_SNAPSHOT_INFO_ML => Some("MARKER_DETECTOR_SNAPSHOT_INFO_ML"),
+            Self::MARKER_DETECTOR_STATE_ML => Some("MARKER_DETECTOR_STATE_ML"),
+            Self::MARKER_SPACE_CREATE_INFO_ML => Some("MARKER_SPACE_CREATE_INFO_ML"),
+            Self::LOCALIZATION_MAP_ML => Some("LOCALIZATION_MAP_ML"),
+            Self::EVENT_DATA_LOCALIZATION_CHANGED_ML => Some("EVENT_DATA_LOCALIZATION_CHANGED_ML"),
+            Self::MAP_LOCALIZATION_REQUEST_INFO_ML => Some("MAP_LOCALIZATION_REQUEST_INFO_ML"),
+            Self::LOCALIZATION_MAP_IMPORT_INFO_ML => Some("LOCALIZATION_MAP_IMPORT_INFO_ML"),
+            Self::LOCALIZATION_ENABLE_EVENTS_INFO_ML => Some("LOCALIZATION_ENABLE_EVENTS_INFO_ML"),
             Self::EVENT_DATA_HEADSET_FIT_CHANGED_ML => Some("EVENT_DATA_HEADSET_FIT_CHANGED_ML"),
             Self::EVENT_DATA_EYE_CALIBRATION_CHANGED_ML => {
                 Some("EVENT_DATA_EYE_CALIBRATION_CHANGED_ML")
@@ -877,6 +913,8 @@ impl fmt::Debug for StructureType {
             Self::FOVEATION_APPLY_INFO_HTC => Some("FOVEATION_APPLY_INFO_HTC"),
             Self::FOVEATION_DYNAMIC_MODE_INFO_HTC => Some("FOVEATION_DYNAMIC_MODE_INFO_HTC"),
             Self::FOVEATION_CUSTOM_MODE_INFO_HTC => Some("FOVEATION_CUSTOM_MODE_INFO_HTC"),
+            Self::SYSTEM_ANCHOR_PROPERTIES_HTC => Some("SYSTEM_ANCHOR_PROPERTIES_HTC"),
+            Self::SPATIAL_ANCHOR_CREATE_INFO_HTC => Some("SPATIAL_ANCHOR_CREATE_INFO_HTC"),
             Self::ACTIVE_ACTION_SET_PRIORITIES_EXT => Some("ACTIVE_ACTION_SET_PRIORITIES_EXT"),
             Self::SYSTEM_FORCE_FEEDBACK_CURL_PROPERTIES_MNDX => {
                 Some("SYSTEM_FORCE_FEEDBACK_CURL_PROPERTIES_MNDX")
@@ -1074,6 +1112,31 @@ impl Result {
     pub const ERROR_MARKER_NOT_TRACKED_VARJO: Result = Self(-1000124000i32);
     #[doc = "The specified marker ID is not valid."]
     pub const ERROR_MARKER_ID_INVALID_VARJO: Result = Self(-1000124001i32);
+    #[doc = "The com.magicleap.permission.MARKER_TRACKING permission was denied."]
+    pub const ERROR_MARKER_DETECTOR_PERMISSION_DENIED_ML: Result = Self(-1000138000i32);
+    #[doc = "The specified marker could not be located spatially."]
+    pub const ERROR_MARKER_DETECTOR_LOCATE_FAILED_ML: Result = Self(-1000138001i32);
+    #[doc = "The marker queried does not contain data of the requested type."]
+    pub const ERROR_MARKER_DETECTOR_INVALID_DATA_QUERY_ML: Result = Self(-1000138002i32);
+    #[doc = "createInfo contains mutually exclusive parameters, such as setting XR_MARKER_DETECTOR_CORNER_REFINE_METHOD_APRIL_TAG_ML with XR_MARKER_TYPE_ARUCO_ML."]
+    pub const ERROR_MARKER_DETECTOR_INVALID_CREATE_INFO_ML: Result = Self(-1000138003i32);
+    #[doc = "The marker id passed to the function was invalid."]
+    pub const ERROR_MARKER_INVALID_ML: Result = Self(-1000138004i32);
+    #[doc = "The localization map being imported is not compatible with current OS or mode."]
+    pub const ERROR_LOCALIZATION_MAP_INCOMPATIBLE_ML: Result = Self(-1000139000i32);
+    #[doc = "The localization map requested is not available."]
+    pub const ERROR_LOCALIZATION_MAP_UNAVAILABLE_ML: Result = Self(-1000139001i32);
+    #[doc = "The map localization service failed to fulfill the request, retry later."]
+    pub const ERROR_LOCALIZATION_MAP_FAIL_ML: Result = Self(-1000139002i32);
+    #[doc = "The com.magicleap.permission.SPACE_IMPORT_EXPORT permission was denied."]
+    pub const ERROR_LOCALIZATION_MAP_IMPORT_EXPORT_PERMISSION_DENIED_ML: Result =
+        Self(-1000139003i32);
+    #[doc = "The com.magicleap.permission.SPACE_MANAGER permission was denied."]
+    pub const ERROR_LOCALIZATION_MAP_PERMISSION_DENIED_ML: Result = Self(-1000139004i32);
+    #[doc = "The map being imported already exists in the system."]
+    pub const ERROR_LOCALIZATION_MAP_ALREADY_EXISTS_ML: Result = Self(-1000139005i32);
+    #[doc = "The map localization service cannot export cloud based maps."]
+    pub const ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML: Result = Self(-1000139006i32);
     #[doc = "A spatial anchor was not found associated with the spatial anchor name provided"]
     pub const ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT: Result = Self(-1000142001i32);
     #[doc = "The spatial anchor name provided was not valid"]
@@ -1094,6 +1157,8 @@ impl Result {
     pub const ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META: Result = Self(-1000266000i32);
     #[doc = "Tracking optimization hint is already set for the domain."]
     pub const ERROR_HINT_ALREADY_SET_QCOM: Result = Self(-1000306000i32);
+    #[doc = "The provided space is valid but not an anchor."]
+    pub const ERROR_NOT_AN_ANCHOR_HTC: Result = Self(-1000319000i32);
     #[doc = "The space passed to the function was not locatable."]
     pub const ERROR_SPACE_NOT_LOCATABLE_EXT: Result = Self(-1000429000i32);
     #[doc = "The permission for this resource was not granted."]
@@ -1239,6 +1304,38 @@ impl fmt::Debug for Result {
             Self::RENDER_MODEL_UNAVAILABLE_FB => Some("RENDER_MODEL_UNAVAILABLE_FB"),
             Self::ERROR_MARKER_NOT_TRACKED_VARJO => Some("ERROR_MARKER_NOT_TRACKED_VARJO"),
             Self::ERROR_MARKER_ID_INVALID_VARJO => Some("ERROR_MARKER_ID_INVALID_VARJO"),
+            Self::ERROR_MARKER_DETECTOR_PERMISSION_DENIED_ML => {
+                Some("ERROR_MARKER_DETECTOR_PERMISSION_DENIED_ML")
+            }
+            Self::ERROR_MARKER_DETECTOR_LOCATE_FAILED_ML => {
+                Some("ERROR_MARKER_DETECTOR_LOCATE_FAILED_ML")
+            }
+            Self::ERROR_MARKER_DETECTOR_INVALID_DATA_QUERY_ML => {
+                Some("ERROR_MARKER_DETECTOR_INVALID_DATA_QUERY_ML")
+            }
+            Self::ERROR_MARKER_DETECTOR_INVALID_CREATE_INFO_ML => {
+                Some("ERROR_MARKER_DETECTOR_INVALID_CREATE_INFO_ML")
+            }
+            Self::ERROR_MARKER_INVALID_ML => Some("ERROR_MARKER_INVALID_ML"),
+            Self::ERROR_LOCALIZATION_MAP_INCOMPATIBLE_ML => {
+                Some("ERROR_LOCALIZATION_MAP_INCOMPATIBLE_ML")
+            }
+            Self::ERROR_LOCALIZATION_MAP_UNAVAILABLE_ML => {
+                Some("ERROR_LOCALIZATION_MAP_UNAVAILABLE_ML")
+            }
+            Self::ERROR_LOCALIZATION_MAP_FAIL_ML => Some("ERROR_LOCALIZATION_MAP_FAIL_ML"),
+            Self::ERROR_LOCALIZATION_MAP_IMPORT_EXPORT_PERMISSION_DENIED_ML => {
+                Some("ERROR_LOCALIZATION_MAP_IMPORT_EXPORT_PERMISSION_DENIED_ML")
+            }
+            Self::ERROR_LOCALIZATION_MAP_PERMISSION_DENIED_ML => {
+                Some("ERROR_LOCALIZATION_MAP_PERMISSION_DENIED_ML")
+            }
+            Self::ERROR_LOCALIZATION_MAP_ALREADY_EXISTS_ML => {
+                Some("ERROR_LOCALIZATION_MAP_ALREADY_EXISTS_ML")
+            }
+            Self::ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML => {
+                Some("ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML")
+            }
             Self::ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => {
                 Some("ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT")
             }
@@ -1261,6 +1358,7 @@ impl fmt::Debug for Result {
                 Some("ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META")
             }
             Self::ERROR_HINT_ALREADY_SET_QCOM => Some("ERROR_HINT_ALREADY_SET_QCOM"),
+            Self::ERROR_NOT_AN_ANCHOR_HTC => Some("ERROR_NOT_AN_ANCHOR_HTC"),
             Self::ERROR_SPACE_NOT_LOCATABLE_EXT => Some("ERROR_SPACE_NOT_LOCATABLE_EXT"),
             Self::ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT => {
                 Some("ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT")
@@ -1272,7 +1370,7 @@ impl fmt::Debug for Result {
 }
 impl fmt::Display for Result {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let reason = match * self { Self :: SUCCESS => Some ("function successfully completed") , Self :: TIMEOUT_EXPIRED => Some ("the specified timeout time occurred before the operation could complete") , Self :: SESSION_LOSS_PENDING => Some ("the session will be lost soon") , Self :: EVENT_UNAVAILABLE => Some ("no event was available") , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ("the space's bounds are not known at the moment") , Self :: SESSION_NOT_FOCUSED => Some ("the session is not in the focused state") , Self :: FRAME_DISCARDED => Some ("a frame has been discarded from composition") , Self :: ERROR_VALIDATION_FAILURE => Some ("the function usage was invalid in some way") , Self :: ERROR_RUNTIME_FAILURE => Some ("the runtime failed to handle the function in an unexpected way that is not covered by another error result") , Self :: ERROR_OUT_OF_MEMORY => Some ("a memory allocation has failed") , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ("the runtime does not support the requested API version") , Self :: ERROR_INITIALIZATION_FAILED => Some ("initialization of object could not be completed") , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ("the requested function was not found or is otherwise unsupported") , Self :: ERROR_FEATURE_UNSUPPORTED => Some ("the requested feature is not supported") , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ("a requested extension is not supported") , Self :: ERROR_LIMIT_REACHED => Some ("the runtime supports no more of the requested resource") , Self :: ERROR_SIZE_INSUFFICIENT => Some ("the supplied size was smaller than required") , Self :: ERROR_HANDLE_INVALID => Some ("a supplied object handle was invalid") , Self :: ERROR_INSTANCE_LOST => Some ("the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated") , Self :: ERROR_SESSION_RUNNING => Some ("the session is already running") , Self :: ERROR_SESSION_NOT_RUNNING => Some ("the session is not yet running") , Self :: ERROR_SESSION_LOST => Some ("the XrSession was lost. It will need to be destroyed and optionally recreated") , Self :: ERROR_SYSTEM_INVALID => Some ("the provided XrSystemId was invalid") , Self :: ERROR_PATH_INVALID => Some ("the provided XrPath was not valid") , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ("the maximum number of supported semantic paths has been reached") , Self :: ERROR_PATH_FORMAT_INVALID => Some ("the semantic path character format is invalid") , Self :: ERROR_PATH_UNSUPPORTED => Some ("the semantic path is unsupported") , Self :: ERROR_LAYER_INVALID => Some ("the layer was NULL or otherwise invalid") , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ("the number of specified layers is greater than the supported number") , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ("the image rect was negatively sized or otherwise invalid") , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ("the image format is not supported by the runtime or platform") , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ("the API used to retrieve an action's state does not match the action's type") , Self :: ERROR_SESSION_NOT_READY => Some ("the session is not in the ready state") , Self :: ERROR_SESSION_NOT_STOPPING => Some ("the session is not in the stopping state") , Self :: ERROR_TIME_INVALID => Some ("the provided XrTime was zero, negative, or out of range") , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ("the specified reference space is not supported by the runtime or system") , Self :: ERROR_FILE_ACCESS_ERROR => Some ("the file could not be accessed") , Self :: ERROR_FILE_CONTENTS_INVALID => Some ("the file's contents were invalid") , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ("the specified form factor is not supported by the current runtime or platform") , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ("the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off") , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ("a requested API layer is not present or could not be loaded") , Self :: ERROR_CALL_ORDER_INVALID => Some ("the call was made without having made a previously required call") , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ("the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements") , Self :: ERROR_POSE_INVALID => Some ("the supplied pose was invalid with respect to the requirements") , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ("the supplied index was outside the range of valid indices") , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ("the specified view configuration type is not supported by the runtime or platform") , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ("the specified environment blend mode is not supported by the runtime or platform") , Self :: ERROR_NAME_DUPLICATED => Some ("the name provided was a duplicate of an already-existing resource") , Self :: ERROR_NAME_INVALID => Some ("the name provided was invalid") , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ("a referenced action set is not attached to the session") , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ("the session already has attached action sets") , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ("the localized name provided was a duplicate of an already-existing resource") , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ("the localized name provided was invalid") , Self :: ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some ("the xrGetGraphicsRequirements* call was not made before calling xrCreateSession") , Self :: ERROR_RUNTIME_UNAVAILABLE => Some ("the loader was unable to find or load a runtime") , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ("xrSetAndroidApplicationThreadKHR failed as thread id is invalid") , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ("xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority") , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ("spatial anchor could not be created at that location") , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ("the secondary view configuration was not enabled when creating the session") , Self :: ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => Some ("the controller model key is invalid") , Self :: ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => Some ("the reprojection mode is not supported") , Self :: ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => Some ("compute new scene not completed") , Self :: ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => Some ("scene component id invalid") , Self :: ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => Some ("scene component type mismatch") , Self :: ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => Some ("scene mesh buffer id invalid") , Self :: ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => Some ("scene compute feature incompatible") , Self :: ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => Some ("scene compute consistency mismatch") , Self :: ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => Some ("the display refresh rate is not supported by the platform") , Self :: ERROR_COLOR_SPACE_UNSUPPORTED_FB => Some ("the color space is not supported by the runtime") , Self :: ERROR_SPACE_COMPONENT_NOT_SUPPORTED_FB => Some ("the component type is not supported for this space") , Self :: ERROR_SPACE_COMPONENT_NOT_ENABLED_FB => Some ("the required component is not enabled for this space") , Self :: ERROR_SPACE_COMPONENT_STATUS_PENDING_FB => Some ("a request to set the component's status is currently pending") , Self :: ERROR_SPACE_COMPONENT_STATUS_ALREADY_SET_FB => Some ("the component is already set to the requested value") , Self :: ERROR_UNEXPECTED_STATE_PASSTHROUGH_FB => Some ("the object state is unexpected for the issued command") , Self :: ERROR_FEATURE_ALREADY_CREATED_PASSTHROUGH_FB => Some ("trying to create an MR feature when one was already created and only one instance is allowed") , Self :: ERROR_FEATURE_REQUIRED_PASSTHROUGH_FB => Some ("requested functionality requires a feature to be created first") , Self :: ERROR_NOT_PERMITTED_PASSTHROUGH_FB => Some ("requested functionality is not permitted - application is not allowed to perform the requested operation") , Self :: ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB => Some ("there weren't sufficient resources available to perform an operation") , Self :: ERROR_UNKNOWN_PASSTHROUGH_FB => Some ("unknown Passthrough error (no further details provided)") , Self :: ERROR_RENDER_MODEL_KEY_INVALID_FB => Some ("the model key is invalid") , Self :: RENDER_MODEL_UNAVAILABLE_FB => Some ("the model is unavailable") , Self :: ERROR_MARKER_NOT_TRACKED_VARJO => Some ("marker tracking is disabled or the specified marker is not currently tracked") , Self :: ERROR_MARKER_ID_INVALID_VARJO => Some ("the specified marker ID is not valid") , Self :: ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => Some ("a spatial anchor was not found associated with the spatial anchor name provided") , Self :: ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT => Some ("the spatial anchor name provided was not valid") , Self :: SCENE_MARKER_DATA_NOT_STRING_MSFT => Some ("marker does not encode a string") , Self :: ERROR_SPACE_MAPPING_INSUFFICIENT_FB => Some ("anchor import from cloud or export from device failed") , Self :: ERROR_SPACE_LOCALIZATION_FAILED_FB => Some ("anchors were downloaded from the cloud but failed to be imported/aligned on the device") , Self :: ERROR_SPACE_NETWORK_TIMEOUT_FB => Some ("timeout occurred while waiting for network request to complete") , Self :: ERROR_SPACE_NETWORK_REQUEST_FAILED_FB => Some ("the network request failed") , Self :: ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB => Some ("cloud storage is required for this operation but is currently disabled") , Self :: ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META => Some ("the provided data buffer did not match the required size") , Self :: ERROR_HINT_ALREADY_SET_QCOM => Some ("tracking optimization hint is already set for the domain") , Self :: ERROR_SPACE_NOT_LOCATABLE_EXT => Some ("the space passed to the function was not locatable") , Self :: ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT => Some ("the permission for this resource was not granted") , _ => None , } ;
+        let reason = match * self { Self :: SUCCESS => Some ("function successfully completed") , Self :: TIMEOUT_EXPIRED => Some ("the specified timeout time occurred before the operation could complete") , Self :: SESSION_LOSS_PENDING => Some ("the session will be lost soon") , Self :: EVENT_UNAVAILABLE => Some ("no event was available") , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ("the space's bounds are not known at the moment") , Self :: SESSION_NOT_FOCUSED => Some ("the session is not in the focused state") , Self :: FRAME_DISCARDED => Some ("a frame has been discarded from composition") , Self :: ERROR_VALIDATION_FAILURE => Some ("the function usage was invalid in some way") , Self :: ERROR_RUNTIME_FAILURE => Some ("the runtime failed to handle the function in an unexpected way that is not covered by another error result") , Self :: ERROR_OUT_OF_MEMORY => Some ("a memory allocation has failed") , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ("the runtime does not support the requested API version") , Self :: ERROR_INITIALIZATION_FAILED => Some ("initialization of object could not be completed") , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ("the requested function was not found or is otherwise unsupported") , Self :: ERROR_FEATURE_UNSUPPORTED => Some ("the requested feature is not supported") , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ("a requested extension is not supported") , Self :: ERROR_LIMIT_REACHED => Some ("the runtime supports no more of the requested resource") , Self :: ERROR_SIZE_INSUFFICIENT => Some ("the supplied size was smaller than required") , Self :: ERROR_HANDLE_INVALID => Some ("a supplied object handle was invalid") , Self :: ERROR_INSTANCE_LOST => Some ("the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated") , Self :: ERROR_SESSION_RUNNING => Some ("the session is already running") , Self :: ERROR_SESSION_NOT_RUNNING => Some ("the session is not yet running") , Self :: ERROR_SESSION_LOST => Some ("the XrSession was lost. It will need to be destroyed and optionally recreated") , Self :: ERROR_SYSTEM_INVALID => Some ("the provided XrSystemId was invalid") , Self :: ERROR_PATH_INVALID => Some ("the provided XrPath was not valid") , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ("the maximum number of supported semantic paths has been reached") , Self :: ERROR_PATH_FORMAT_INVALID => Some ("the semantic path character format is invalid") , Self :: ERROR_PATH_UNSUPPORTED => Some ("the semantic path is unsupported") , Self :: ERROR_LAYER_INVALID => Some ("the layer was NULL or otherwise invalid") , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ("the number of specified layers is greater than the supported number") , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ("the image rect was negatively sized or otherwise invalid") , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ("the image format is not supported by the runtime or platform") , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ("the API used to retrieve an action's state does not match the action's type") , Self :: ERROR_SESSION_NOT_READY => Some ("the session is not in the ready state") , Self :: ERROR_SESSION_NOT_STOPPING => Some ("the session is not in the stopping state") , Self :: ERROR_TIME_INVALID => Some ("the provided XrTime was zero, negative, or out of range") , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ("the specified reference space is not supported by the runtime or system") , Self :: ERROR_FILE_ACCESS_ERROR => Some ("the file could not be accessed") , Self :: ERROR_FILE_CONTENTS_INVALID => Some ("the file's contents were invalid") , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ("the specified form factor is not supported by the current runtime or platform") , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ("the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off") , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ("a requested API layer is not present or could not be loaded") , Self :: ERROR_CALL_ORDER_INVALID => Some ("the call was made without having made a previously required call") , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ("the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements") , Self :: ERROR_POSE_INVALID => Some ("the supplied pose was invalid with respect to the requirements") , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ("the supplied index was outside the range of valid indices") , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ("the specified view configuration type is not supported by the runtime or platform") , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ("the specified environment blend mode is not supported by the runtime or platform") , Self :: ERROR_NAME_DUPLICATED => Some ("the name provided was a duplicate of an already-existing resource") , Self :: ERROR_NAME_INVALID => Some ("the name provided was invalid") , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ("a referenced action set is not attached to the session") , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ("the session already has attached action sets") , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ("the localized name provided was a duplicate of an already-existing resource") , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ("the localized name provided was invalid") , Self :: ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some ("the xrGetGraphicsRequirements* call was not made before calling xrCreateSession") , Self :: ERROR_RUNTIME_UNAVAILABLE => Some ("the loader was unable to find or load a runtime") , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ("xrSetAndroidApplicationThreadKHR failed as thread id is invalid") , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ("xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority") , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ("spatial anchor could not be created at that location") , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ("the secondary view configuration was not enabled when creating the session") , Self :: ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => Some ("the controller model key is invalid") , Self :: ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => Some ("the reprojection mode is not supported") , Self :: ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => Some ("compute new scene not completed") , Self :: ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => Some ("scene component id invalid") , Self :: ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => Some ("scene component type mismatch") , Self :: ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => Some ("scene mesh buffer id invalid") , Self :: ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => Some ("scene compute feature incompatible") , Self :: ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => Some ("scene compute consistency mismatch") , Self :: ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => Some ("the display refresh rate is not supported by the platform") , Self :: ERROR_COLOR_SPACE_UNSUPPORTED_FB => Some ("the color space is not supported by the runtime") , Self :: ERROR_SPACE_COMPONENT_NOT_SUPPORTED_FB => Some ("the component type is not supported for this space") , Self :: ERROR_SPACE_COMPONENT_NOT_ENABLED_FB => Some ("the required component is not enabled for this space") , Self :: ERROR_SPACE_COMPONENT_STATUS_PENDING_FB => Some ("a request to set the component's status is currently pending") , Self :: ERROR_SPACE_COMPONENT_STATUS_ALREADY_SET_FB => Some ("the component is already set to the requested value") , Self :: ERROR_UNEXPECTED_STATE_PASSTHROUGH_FB => Some ("the object state is unexpected for the issued command") , Self :: ERROR_FEATURE_ALREADY_CREATED_PASSTHROUGH_FB => Some ("trying to create an MR feature when one was already created and only one instance is allowed") , Self :: ERROR_FEATURE_REQUIRED_PASSTHROUGH_FB => Some ("requested functionality requires a feature to be created first") , Self :: ERROR_NOT_PERMITTED_PASSTHROUGH_FB => Some ("requested functionality is not permitted - application is not allowed to perform the requested operation") , Self :: ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB => Some ("there weren't sufficient resources available to perform an operation") , Self :: ERROR_UNKNOWN_PASSTHROUGH_FB => Some ("unknown Passthrough error (no further details provided)") , Self :: ERROR_RENDER_MODEL_KEY_INVALID_FB => Some ("the model key is invalid") , Self :: RENDER_MODEL_UNAVAILABLE_FB => Some ("the model is unavailable") , Self :: ERROR_MARKER_NOT_TRACKED_VARJO => Some ("marker tracking is disabled or the specified marker is not currently tracked") , Self :: ERROR_MARKER_ID_INVALID_VARJO => Some ("the specified marker ID is not valid") , Self :: ERROR_MARKER_DETECTOR_PERMISSION_DENIED_ML => Some ("the com.magicleap.permission.MARKER_TRACKING permission was denied") , Self :: ERROR_MARKER_DETECTOR_LOCATE_FAILED_ML => Some ("the specified marker could not be located spatially") , Self :: ERROR_MARKER_DETECTOR_INVALID_DATA_QUERY_ML => Some ("the marker queried does not contain data of the requested type") , Self :: ERROR_MARKER_DETECTOR_INVALID_CREATE_INFO_ML => Some ("createInfo contains mutually exclusive parameters, such as setting XR_MARKER_DETECTOR_CORNER_REFINE_METHOD_APRIL_TAG_ML with XR_MARKER_TYPE_ARUCO_ML") , Self :: ERROR_MARKER_INVALID_ML => Some ("the marker id passed to the function was invalid") , Self :: ERROR_LOCALIZATION_MAP_INCOMPATIBLE_ML => Some ("the localization map being imported is not compatible with current OS or mode") , Self :: ERROR_LOCALIZATION_MAP_UNAVAILABLE_ML => Some ("the localization map requested is not available") , Self :: ERROR_LOCALIZATION_MAP_FAIL_ML => Some ("the map localization service failed to fulfill the request, retry later") , Self :: ERROR_LOCALIZATION_MAP_IMPORT_EXPORT_PERMISSION_DENIED_ML => Some ("the com.magicleap.permission.SPACE_IMPORT_EXPORT permission was denied") , Self :: ERROR_LOCALIZATION_MAP_PERMISSION_DENIED_ML => Some ("the com.magicleap.permission.SPACE_MANAGER permission was denied") , Self :: ERROR_LOCALIZATION_MAP_ALREADY_EXISTS_ML => Some ("the map being imported already exists in the system") , Self :: ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML => Some ("the map localization service cannot export cloud based maps") , Self :: ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => Some ("a spatial anchor was not found associated with the spatial anchor name provided") , Self :: ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT => Some ("the spatial anchor name provided was not valid") , Self :: SCENE_MARKER_DATA_NOT_STRING_MSFT => Some ("marker does not encode a string") , Self :: ERROR_SPACE_MAPPING_INSUFFICIENT_FB => Some ("anchor import from cloud or export from device failed") , Self :: ERROR_SPACE_LOCALIZATION_FAILED_FB => Some ("anchors were downloaded from the cloud but failed to be imported/aligned on the device") , Self :: ERROR_SPACE_NETWORK_TIMEOUT_FB => Some ("timeout occurred while waiting for network request to complete") , Self :: ERROR_SPACE_NETWORK_REQUEST_FAILED_FB => Some ("the network request failed") , Self :: ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB => Some ("cloud storage is required for this operation but is currently disabled") , Self :: ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META => Some ("the provided data buffer did not match the required size") , Self :: ERROR_HINT_ALREADY_SET_QCOM => Some ("tracking optimization hint is already set for the domain") , Self :: ERROR_NOT_AN_ANCHOR_HTC => Some ("the provided space is valid but not an anchor") , Self :: ERROR_SPACE_NOT_LOCATABLE_EXT => Some ("the space passed to the function was not locatable") , Self :: ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT => Some ("the permission for this resource was not granted") , _ => None , } ;
         if let Some(reason) = reason {
             fmt.pad(reason)
         } else {
@@ -1325,6 +1423,10 @@ impl ObjectType {
     pub const PASSTHROUGH_LAYER_FB: ObjectType = Self(1000118002i32);
     #[doc = "XrGeometryInstanceFB"]
     pub const GEOMETRY_INSTANCE_FB: ObjectType = Self(1000118004i32);
+    #[doc = "XrMarkerDetectorML"]
+    pub const MARKER_DETECTOR_ML: ObjectType = Self(1000138000i32);
+    #[doc = "XrExportedLocalizationMapML"]
+    pub const EXPORTED_LOCALIZATION_MAP_ML: ObjectType = Self(1000139000i32);
     #[doc = "XrSpatialAnchorStoreConnectionMSFT"]
     pub const SPATIAL_ANCHOR_STORE_CONNECTION_MSFT: ObjectType = Self(1000142000i32);
     #[doc = "XrFaceTrackerFB"]
@@ -1371,6 +1473,8 @@ impl fmt::Debug for ObjectType {
             Self::PASSTHROUGH_FB => Some("PASSTHROUGH_FB"),
             Self::PASSTHROUGH_LAYER_FB => Some("PASSTHROUGH_LAYER_FB"),
             Self::GEOMETRY_INSTANCE_FB => Some("GEOMETRY_INSTANCE_FB"),
+            Self::MARKER_DETECTOR_ML => Some("MARKER_DETECTOR_ML"),
+            Self::EXPORTED_LOCALIZATION_MAP_ML => Some("EXPORTED_LOCALIZATION_MAP_ML"),
             Self::SPATIAL_ANCHOR_STORE_CONNECTION_MSFT => {
                 Some("SPATIAL_ANCHOR_STORE_CONNECTION_MSFT")
             }
@@ -1483,6 +1587,7 @@ impl ReferenceSpaceType {
     pub const STAGE: ReferenceSpaceType = Self(3i32);
     pub const UNBOUNDED_MSFT: ReferenceSpaceType = Self(1000038000i32);
     pub const COMBINED_EYE_VARJO: ReferenceSpaceType = Self(1000121000i32);
+    pub const LOCALIZATION_MAP_ML: ReferenceSpaceType = Self(1000139000i32);
     pub const LOCAL_FLOOR_EXT: ReferenceSpaceType = Self(1000426000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
@@ -1499,6 +1604,7 @@ impl fmt::Debug for ReferenceSpaceType {
             Self::STAGE => Some("STAGE"),
             Self::UNBOUNDED_MSFT => Some("UNBOUNDED_MSFT"),
             Self::COMBINED_EYE_VARJO => Some("COMBINED_EYE_VARJO"),
+            Self::LOCALIZATION_MAP_ML => Some("LOCALIZATION_MAP_ML"),
             Self::LOCAL_FLOOR_EXT => Some("LOCAL_FLOOR_EXT"),
             _ => None,
         };
@@ -3122,6 +3228,452 @@ impl fmt::Debug for EyeCalibrationStatusML {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrLocalizationMapStateML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationMapStateML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct LocalizationMapStateML(i32);
+impl LocalizationMapStateML {
+    #[doc = "The system is not localized into a map. Features like Spatial Anchors relying on localization will not work."]
+    pub const NOT_LOCALIZED: LocalizationMapStateML = Self(0i32);
+    #[doc = "The system is localized into a map."]
+    pub const LOCALIZED: LocalizationMapStateML = Self(1i32);
+    #[doc = "The system is localizing into a map."]
+    pub const LOCALIZATION_PENDING: LocalizationMapStateML = Self(2i32);
+    #[doc = "Initial localization failed, the system will retry localization."]
+    pub const LOCALIZATION_SLEEPING_BEFORE_RETRY: LocalizationMapStateML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for LocalizationMapStateML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NOT_LOCALIZED => Some("NOT_LOCALIZED"),
+            Self::LOCALIZED => Some("LOCALIZED"),
+            Self::LOCALIZATION_PENDING => Some("LOCALIZATION_PENDING"),
+            Self::LOCALIZATION_SLEEPING_BEFORE_RETRY => Some("LOCALIZATION_SLEEPING_BEFORE_RETRY"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrLocalizationMapTypeML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationMapTypeML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct LocalizationMapTypeML(i32);
+impl LocalizationMapTypeML {
+    #[doc = "The system is localized into an On-Device map, published anchors are not shared between different devices."]
+    pub const ON_DEVICE: LocalizationMapTypeML = Self(0i32);
+    #[doc = "The system is localized into a Cloud Map, anchors are shared per cloud account settings."]
+    pub const CLOUD: LocalizationMapTypeML = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for LocalizationMapTypeML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::ON_DEVICE => Some("ON_DEVICE"),
+            Self::CLOUD => Some("CLOUD"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrLocalizationMapConfidenceML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationMapConfidenceML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct LocalizationMapConfidenceML(i32);
+impl LocalizationMapConfidenceML {
+    #[doc = "The localization map has poor confidence, systems relying on the localization map are likely to have poor performance."]
+    pub const POOR: LocalizationMapConfidenceML = Self(0i32);
+    #[doc = "The confidence is fair, current environmental conditions may adversely affect localization."]
+    pub const FAIR: LocalizationMapConfidenceML = Self(1i32);
+    #[doc = "The confidence is high, persistent content should be stable."]
+    pub const GOOD: LocalizationMapConfidenceML = Self(2i32);
+    #[doc = "This is a very high-confidence localization, persistent content will be very stable."]
+    pub const EXCELLENT: LocalizationMapConfidenceML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for LocalizationMapConfidenceML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::POOR => Some("POOR"),
+            Self::FAIR => Some("FAIR"),
+            Self::GOOD => Some("GOOD"),
+            Self::EXCELLENT => Some("EXCELLENT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerDetectorProfileML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorProfileML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerDetectorProfileML(i32);
+impl MarkerDetectorProfileML {
+    #[doc = "Tracker profile that covers standard use cases. If this does not suite the needs of the application try the other profiles listed below."]
+    pub const DEFAULT: MarkerDetectorProfileML = Self(0i32);
+    #[doc = "Optimized for speed. Use this profile to reduce the compute load and increase detection/tracker speed. This can result in low accuracy poses."]
+    pub const SPEED: MarkerDetectorProfileML = Self(1i32);
+    #[doc = "Optimized for accuracy. Use this profile to optimize for accurate marker poses. This can cause increased load on the compute."]
+    pub const ACCURACY: MarkerDetectorProfileML = Self(2i32);
+    #[doc = "Optimized for small targets. Use this profile to optimize for markers that are small or for larger markers that need to be detected from afar."]
+    pub const SMALL_TARGETS: MarkerDetectorProfileML = Self(3i32);
+    #[doc = "Optimized for FoV. Use this profile to be able to detect markers across a larger FoV. The marker tracker system will attempt to use multiple cameras to detect the markers."]
+    pub const LARGE_FOV: MarkerDetectorProfileML = Self(4i32);
+    #[doc = "Custom Tracker Profile. The application can define a custom tracker profile. See XrMarkerDetectorCustomProfileInfoML for more details."]
+    pub const CUSTOM: MarkerDetectorProfileML = Self(5i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerDetectorProfileML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DEFAULT => Some("DEFAULT"),
+            Self::SPEED => Some("SPEED"),
+            Self::ACCURACY => Some("ACCURACY"),
+            Self::SMALL_TARGETS => Some("SMALL_TARGETS"),
+            Self::LARGE_FOV => Some("LARGE_FOV"),
+            Self::CUSTOM => Some("CUSTOM"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerTypeML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerTypeML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerTypeML(i32);
+impl MarkerTypeML {
+    #[doc = "Aruco Marker detection and localization. The marker id of the Aruco marker is available via xrGetMarkerNumberML."]
+    pub const ARUCO: MarkerTypeML = Self(0i32);
+    #[doc = "AprilTag detection and localization. The marker id of the AprilTags is available via xrGetMarkerNumberML."]
+    pub const APRIL_TAG: MarkerTypeML = Self(1i32);
+    #[doc = "QR code detection and localization. The contents of the QR code is available via xrGetMarkerStringML."]
+    pub const QR: MarkerTypeML = Self(2i32);
+    #[doc = "EAN-13, detection only, not locatable. The contents of the barcode is available via xrGetMarkerStringML."]
+    pub const EAN_13: MarkerTypeML = Self(3i32);
+    #[doc = "UPC-A, detection only, not locatable. The contents of the barcode is available via xrGetMarkerStringML."]
+    pub const UPC_A: MarkerTypeML = Self(4i32);
+    #[doc = "Code 128, detection only, not locatable. The contents of the barcode is available via xrGetMarkerStringML."]
+    pub const CODE_128: MarkerTypeML = Self(5i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerTypeML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::ARUCO => Some("ARUCO"),
+            Self::APRIL_TAG => Some("APRIL_TAG"),
+            Self::QR => Some("QR"),
+            Self::EAN_13 => Some("EAN_13"),
+            Self::UPC_A => Some("UPC_A"),
+            Self::CODE_128 => Some("CODE_128"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerArucoDictML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerArucoDictML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerArucoDictML(i32);
+impl MarkerArucoDictML {
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_4X4_50: MarkerArucoDictML = Self(0i32);
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_4X4_100: MarkerArucoDictML = Self(1i32);
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_4X4_250: MarkerArucoDictML = Self(2i32);
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_4X4_1000: MarkerArucoDictML = Self(3i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_5X5_50: MarkerArucoDictML = Self(4i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_5X5_100: MarkerArucoDictML = Self(5i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_5X5_250: MarkerArucoDictML = Self(6i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_5X5_1000: MarkerArucoDictML = Self(7i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_6X6_50: MarkerArucoDictML = Self(8i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_6X6_100: MarkerArucoDictML = Self(9i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_6X6_250: MarkerArucoDictML = Self(10i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_6X6_1000: MarkerArucoDictML = Self(11i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_7X7_50: MarkerArucoDictML = Self(12i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_7X7_100: MarkerArucoDictML = Self(13i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_7X7_250: MarkerArucoDictML = Self(14i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_7X7_1000: MarkerArucoDictML = Self(15i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerArucoDictML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DICT_4X4_50 => Some("DICT_4X4_50"),
+            Self::DICT_4X4_100 => Some("DICT_4X4_100"),
+            Self::DICT_4X4_250 => Some("DICT_4X4_250"),
+            Self::DICT_4X4_1000 => Some("DICT_4X4_1000"),
+            Self::DICT_5X5_50 => Some("DICT_5X5_50"),
+            Self::DICT_5X5_100 => Some("DICT_5X5_100"),
+            Self::DICT_5X5_250 => Some("DICT_5X5_250"),
+            Self::DICT_5X5_1000 => Some("DICT_5X5_1000"),
+            Self::DICT_6X6_50 => Some("DICT_6X6_50"),
+            Self::DICT_6X6_100 => Some("DICT_6X6_100"),
+            Self::DICT_6X6_250 => Some("DICT_6X6_250"),
+            Self::DICT_6X6_1000 => Some("DICT_6X6_1000"),
+            Self::DICT_7X7_50 => Some("DICT_7X7_50"),
+            Self::DICT_7X7_100 => Some("DICT_7X7_100"),
+            Self::DICT_7X7_250 => Some("DICT_7X7_250"),
+            Self::DICT_7X7_1000 => Some("DICT_7X7_1000"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerAprilTagDictML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerAprilTagDictML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerAprilTagDictML(i32);
+impl MarkerAprilTagDictML {
+    #[doc = "4 by 4 bits, minimum Hamming distance between any two codes = 5, 30 codes."]
+    pub const DICT_16H5: MarkerAprilTagDictML = Self(0i32);
+    #[doc = "5 by 5 bits, minimum Hamming distance between any two codes = 9, 35 codes."]
+    pub const DICT_25H9: MarkerAprilTagDictML = Self(1i32);
+    #[doc = "6 by 6 bits, minimum Hamming distance between any two codes = 10, 2320 codes."]
+    pub const DICT_36H10: MarkerAprilTagDictML = Self(2i32);
+    #[doc = "6 by 6 bits, minimum Hamming distance between any two codes = 11, 587 codes."]
+    pub const DICT_36H11: MarkerAprilTagDictML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerAprilTagDictML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DICT_16H5 => Some("DICT_16H5"),
+            Self::DICT_25H9 => Some("DICT_25H9"),
+            Self::DICT_36H10 => Some("DICT_36H10"),
+            Self::DICT_36H11 => Some("DICT_36H11"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerDetectorFpsML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorFpsML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerDetectorFpsML(i32);
+impl MarkerDetectorFpsML {
+    #[doc = "Low FPS."]
+    pub const LOW: MarkerDetectorFpsML = Self(0i32);
+    #[doc = "Medium FPS."]
+    pub const MEDIUM: MarkerDetectorFpsML = Self(1i32);
+    #[doc = "High FPS."]
+    pub const HIGH: MarkerDetectorFpsML = Self(2i32);
+    #[doc = "Max possible FPS."]
+    pub const MAX: MarkerDetectorFpsML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerDetectorFpsML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOW => Some("LOW"),
+            Self::MEDIUM => Some("MEDIUM"),
+            Self::HIGH => Some("HIGH"),
+            Self::MAX => Some("MAX"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerDetectorResolutionML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorResolutionML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerDetectorResolutionML(i32);
+impl MarkerDetectorResolutionML {
+    #[doc = "Low Resolution."]
+    pub const LOW: MarkerDetectorResolutionML = Self(0i32);
+    #[doc = "Medium Resolution."]
+    pub const MEDIUM: MarkerDetectorResolutionML = Self(1i32);
+    #[doc = "High Resolution."]
+    pub const HIGH: MarkerDetectorResolutionML = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerDetectorResolutionML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOW => Some("LOW"),
+            Self::MEDIUM => Some("MEDIUM"),
+            Self::HIGH => Some("HIGH"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerDetectorCameraML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorCameraML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerDetectorCameraML(i32);
+impl MarkerDetectorCameraML {
+    #[doc = "Single RGB camera."]
+    pub const RGB_CAMERA: MarkerDetectorCameraML = Self(0i32);
+    #[doc = "One or more world cameras."]
+    pub const WORLD_CAMERAS: MarkerDetectorCameraML = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerDetectorCameraML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::RGB_CAMERA => Some("RGB_CAMERA"),
+            Self::WORLD_CAMERAS => Some("WORLD_CAMERAS"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerDetectorCornerRefineMethodML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorCornerRefineMethodML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerDetectorCornerRefineMethodML(i32);
+impl MarkerDetectorCornerRefineMethodML {
+    #[doc = "No refinement. Inaccurate corners."]
+    pub const NONE: MarkerDetectorCornerRefineMethodML = Self(0i32);
+    #[doc = "Subpixel refinement. Corners have subpixel coordinates. High detection rate, very fast, reasonable accuracy."]
+    pub const SUBPIX: MarkerDetectorCornerRefineMethodML = Self(1i32);
+    #[doc = "Contour refinement. High detection rate, fast, reasonable accuracy."]
+    pub const CONTOUR: MarkerDetectorCornerRefineMethodML = Self(2i32);
+    #[doc = "AprilTag refinement. Reasonable detection rate, slowest, but very accurate. Only valid with AprilTags."]
+    pub const APRIL_TAG: MarkerDetectorCornerRefineMethodML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerDetectorCornerRefineMethodML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NONE => Some("NONE"),
+            Self::SUBPIX => Some("SUBPIX"),
+            Self::CONTOUR => Some("CONTOUR"),
+            Self::APRIL_TAG => Some("APRIL_TAG"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerDetectorFullAnalysisIntervalML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorFullAnalysisIntervalML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerDetectorFullAnalysisIntervalML(i32);
+impl MarkerDetectorFullAnalysisIntervalML {
+    #[doc = "Detector analyzes every frame fully."]
+    pub const MAX: MarkerDetectorFullAnalysisIntervalML = Self(0i32);
+    #[doc = "Detector analyzes frame fully very often."]
+    pub const FAST: MarkerDetectorFullAnalysisIntervalML = Self(1i32);
+    #[doc = "Detector analyzes frame fully a few times per second."]
+    pub const MEDIUM: MarkerDetectorFullAnalysisIntervalML = Self(2i32);
+    #[doc = "Detector analyzes frame fully about every second."]
+    pub const SLOW: MarkerDetectorFullAnalysisIntervalML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerDetectorFullAnalysisIntervalML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::MAX => Some("MAX"),
+            Self::FAST => Some("FAST"),
+            Self::MEDIUM => Some("MEDIUM"),
+            Self::SLOW => Some("SLOW"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrMarkerDetectorStatusML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorStatusML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct MarkerDetectorStatusML(i32);
+impl MarkerDetectorStatusML {
+    #[doc = "The marker detector is working on a new snapshot."]
+    pub const PENDING: MarkerDetectorStatusML = Self(0i32);
+    #[doc = "The marker detector is ready to be inspected."]
+    pub const READY: MarkerDetectorStatusML = Self(1i32);
+    #[doc = "The marker detector has encountered a fatal error."]
+    pub const ERROR: MarkerDetectorStatusML = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for MarkerDetectorStatusML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PENDING => Some("PENDING"),
+            Self::READY => Some("READY"),
+            Self::ERROR => Some("ERROR"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrHandEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandEXT)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -4308,6 +4860,25 @@ impl VirtualKeyboardInputStateFlagsMETA {
     pub const PRESSED: VirtualKeyboardInputStateFlagsMETA = Self(1 << 0u64);
 }
 bitmask!(VirtualKeyboardInputStateFlagsMETA);
+#[doc = "See [XrLocalizationMapErrorFlagsML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationMapErrorFlagsML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct LocalizationMapErrorFlagsML(u64);
+impl LocalizationMapErrorFlagsML {
+    #[doc = "Localization failed for an unknown reason."]
+    pub const UNKNOWN: LocalizationMapErrorFlagsML = Self(1 << 0u64);
+    #[doc = "Localization failed because the user is outside of the mapped area."]
+    pub const OUT_OF_MAPPED_AREA: LocalizationMapErrorFlagsML = Self(1 << 1u64);
+    #[doc = "There are not enough features in the environment to successfully localize."]
+    pub const LOW_FEATURE_COUNT: LocalizationMapErrorFlagsML = Self(1 << 2u64);
+    #[doc = "Localization failed due to excessive motion."]
+    pub const EXCESSIVE_MOTION: LocalizationMapErrorFlagsML = Self(1 << 3u64);
+    #[doc = "Localization failed because the lighting levels are too low in the environment."]
+    pub const LOW_LIGHT: LocalizationMapErrorFlagsML = Self(1 << 4u64);
+    #[doc = "A headpose failure caused localization to be unsuccessful."]
+    pub const HEADPOSE: LocalizationMapErrorFlagsML = Self(1 << 5u64);
+}
+bitmask!(LocalizationMapErrorFlagsML);
 #[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -4423,6 +4994,16 @@ handle!(PlaneDetectorEXT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct VirtualKeyboardMETA(u64);
 handle!(VirtualKeyboardMETA);
+#[doc = "See [XrExportedLocalizationMapML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExportedLocalizationMapML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ExportedLocalizationMapML(u64);
+handle!(ExportedLocalizationMapML);
+#[doc = "See [XrMarkerDetectorML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct MarkerDetectorML(u64);
+handle!(MarkerDetectorML);
 #[doc = "See [XrSpatialGraphNodeBindingMSFT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialGraphNodeBindingMSFT)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -8734,6 +9315,48 @@ impl CompositionLayerPassthroughHTC {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorCreateInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorCreateInfoHTC) - defined by [XR_HTC_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_anchor)"]
+pub struct SpatialAnchorCreateInfoHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space: Space,
+    pub pose_in_space: Posef,
+    pub name: SpatialAnchorNameHTC,
+}
+impl SpatialAnchorCreateInfoHTC {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorNameHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpatialAnchorNameHTC) - defined by [XR_HTC_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_anchor)"]
+pub struct SpatialAnchorNameHTC {
+    pub name: [c_char; MAX_SPATIAL_ANCHOR_NAME_SIZE_HTC],
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemAnchorPropertiesHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemAnchorPropertiesHTC) - defined by [XR_HTC_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_anchor)"]
+pub struct SystemAnchorPropertiesHTC {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_anchor: Bool32,
+}
+impl SystemAnchorPropertiesHTC {
+    pub const TYPE: StructureType = StructureType::SYSTEM_ANCHOR_PROPERTIES_HTC;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrViveTrackerPathsHTCX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrViveTrackerPathsHTCX) - defined by [XR_HTCX_vive_tracker_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTCX_vive_tracker_interaction)"]
 pub struct ViveTrackerPathsHTCX {
     pub ty: StructureType,
@@ -9665,6 +10288,217 @@ pub struct EventDataEyeCalibrationChangedML {
 }
 impl EventDataEyeCalibrationChangedML {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_EYE_CALIBRATION_CHANGED_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrLocalizationMapML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationMapML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+pub struct LocalizationMapML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub name: [c_char; MAX_LOCALIZATION_MAP_NAME_LENGTH_ML],
+    pub map_uuid: UuidEXT,
+    pub map_type: LocalizationMapTypeML,
+}
+impl LocalizationMapML {
+    pub const TYPE: StructureType = StructureType::LOCALIZATION_MAP_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrLocalizationEnableEventsInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationEnableEventsInfoML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+pub struct LocalizationEnableEventsInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub enabled: Bool32,
+}
+impl LocalizationEnableEventsInfoML {
+    pub const TYPE: StructureType = StructureType::LOCALIZATION_ENABLE_EVENTS_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataLocalizationChangedML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataLocalizationChangedML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+pub struct EventDataLocalizationChangedML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub session: Session,
+    pub state: LocalizationMapStateML,
+    pub map: LocalizationMapML,
+    pub confidence: LocalizationMapConfidenceML,
+    pub error_flags: LocalizationMapErrorFlagsML,
+}
+impl EventDataLocalizationChangedML {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_LOCALIZATION_CHANGED_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrLocalizationMapQueryInfoBaseHeaderML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationMapQueryInfoBaseHeaderML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+pub struct LocalizationMapQueryInfoBaseHeaderML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMapLocalizationRequestInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMapLocalizationRequestInfoML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+pub struct MapLocalizationRequestInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub map_uuid: UuidEXT,
+}
+impl MapLocalizationRequestInfoML {
+    pub const TYPE: StructureType = StructureType::MAP_LOCALIZATION_REQUEST_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrLocalizationMapImportInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLocalizationMapImportInfoML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+pub struct LocalizationMapImportInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub size: u32,
+    pub data: *mut c_char,
+}
+impl LocalizationMapImportInfoML {
+    pub const TYPE: StructureType = StructureType::LOCALIZATION_MAP_IMPORT_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemMarkerUnderstandingPropertiesML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemMarkerUnderstandingPropertiesML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct SystemMarkerUnderstandingPropertiesML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_marker_understanding: Bool32,
+}
+impl SystemMarkerUnderstandingPropertiesML {
+    pub const TYPE: StructureType = StructureType::SYSTEM_MARKER_UNDERSTANDING_PROPERTIES_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerDetectorCreateInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorCreateInfoML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerDetectorCreateInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub profile: MarkerDetectorProfileML,
+    pub marker_type: MarkerTypeML,
+}
+impl MarkerDetectorCreateInfoML {
+    pub const TYPE: StructureType = StructureType::MARKER_DETECTOR_CREATE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerDetectorArucoInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorArucoInfoML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerDetectorArucoInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub aruco_dict: MarkerArucoDictML,
+}
+impl MarkerDetectorArucoInfoML {
+    pub const TYPE: StructureType = StructureType::MARKER_DETECTOR_ARUCO_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerDetectorSizeInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorSizeInfoML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerDetectorSizeInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub marker_length: f32,
+}
+impl MarkerDetectorSizeInfoML {
+    pub const TYPE: StructureType = StructureType::MARKER_DETECTOR_SIZE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerDetectorAprilTagInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorAprilTagInfoML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerDetectorAprilTagInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub april_tag_dict: MarkerAprilTagDictML,
+}
+impl MarkerDetectorAprilTagInfoML {
+    pub const TYPE: StructureType = StructureType::MARKER_DETECTOR_APRIL_TAG_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerDetectorCustomProfileInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorCustomProfileInfoML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerDetectorCustomProfileInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub fps_hint: MarkerDetectorFpsML,
+    pub resolution_hint: MarkerDetectorResolutionML,
+    pub camera_hint: MarkerDetectorCameraML,
+    pub corner_refine_method: MarkerDetectorCornerRefineMethodML,
+    pub use_edge_refinement: Bool32,
+    pub full_analysis_interval_hint: MarkerDetectorFullAnalysisIntervalML,
+}
+impl MarkerDetectorCustomProfileInfoML {
+    pub const TYPE: StructureType = StructureType::MARKER_DETECTOR_CUSTOM_PROFILE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerDetectorSnapshotInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorSnapshotInfoML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerDetectorSnapshotInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl MarkerDetectorSnapshotInfoML {
+    pub const TYPE: StructureType = StructureType::MARKER_DETECTOR_SNAPSHOT_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerDetectorStateML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerDetectorStateML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerDetectorStateML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub state: MarkerDetectorStatusML,
+}
+impl MarkerDetectorStateML {
+    pub const TYPE: StructureType = StructureType::MARKER_DETECTOR_STATE_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrMarkerSpaceCreateInfoML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrMarkerSpaceCreateInfoML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+pub struct MarkerSpaceCreateInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub marker_detector: MarkerDetectorML,
+    pub marker: MarkerML,
+    pub pose_in_marker_space: Posef,
+}
+impl MarkerSpaceCreateInfoML {
+    pub const TYPE: StructureType = StructureType::MARKER_SPACE_CREATE_INFO_ML;
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
@@ -10682,6 +11516,15 @@ pub mod pfn {
     #[doc = "See [xrDestroyPassthroughHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyPassthroughHTC) - defined by [XR_HTC_passthrough](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_passthrough)"]
     pub type DestroyPassthroughHTC =
         unsafe extern "system" fn(passthrough: PassthroughHTC) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateSpatialAnchorHTC) - defined by [XR_HTC_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_anchor)"]
+    pub type CreateSpatialAnchorHTC = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialAnchorCreateInfoHTC,
+        anchor: *mut Space,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialAnchorNameHTC](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetSpatialAnchorNameHTC) - defined by [XR_HTC_anchor](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTC_anchor)"]
+    pub type GetSpatialAnchorNameHTC =
+        unsafe extern "system" fn(anchor: Space, name: *mut SpatialAnchorNameHTC) -> Result;
     #[doc = "See [xrEnumerateViveTrackerPathsHTCX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnumerateViveTrackerPathsHTCX) - defined by [XR_HTCX_vive_tracker_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_HTCX_vive_tracker_interaction)"]
     pub type EnumerateViveTrackerPathsHTCX = unsafe extern "system" fn(
         instance: Instance,
@@ -10898,6 +11741,104 @@ pub mod pfn {
         instance: Instance,
         enable_info: *const UserCalibrationEnableEventsInfoML,
     ) -> Result;
+    #[doc = "See [xrEnableLocalizationEventsML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrEnableLocalizationEventsML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+    pub type EnableLocalizationEventsML = unsafe extern "system" fn(
+        session: Session,
+        info: *const LocalizationEnableEventsInfoML,
+    ) -> Result;
+    #[doc = "See [xrQueryLocalizationMapsML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrQueryLocalizationMapsML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+    pub type QueryLocalizationMapsML = unsafe extern "system" fn(
+        session: Session,
+        query_info: *const LocalizationMapQueryInfoBaseHeaderML,
+        map_capacity_input: u32,
+        map_count_output: *mut u32,
+        maps: *mut LocalizationMapML,
+    ) -> Result;
+    #[doc = "See [xrRequestMapLocalizationML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrRequestMapLocalizationML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+    pub type RequestMapLocalizationML = unsafe extern "system" fn(
+        session: Session,
+        request_info: *const MapLocalizationRequestInfoML,
+    ) -> Result;
+    #[doc = "See [xrImportLocalizationMapML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrImportLocalizationMapML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+    pub type ImportLocalizationMapML = unsafe extern "system" fn(
+        session: Session,
+        import_info: *const LocalizationMapImportInfoML,
+        map_uuid: *mut UuidEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateExportedLocalizationMapML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateExportedLocalizationMapML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+    pub type CreateExportedLocalizationMapML = unsafe extern "system" fn(
+        session: Session,
+        map_uuid: *const UuidEXT,
+        map: *mut ExportedLocalizationMapML,
+    ) -> Result;
+    #[doc = "See [xrDestroyExportedLocalizationMapML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyExportedLocalizationMapML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+    pub type DestroyExportedLocalizationMapML =
+        unsafe extern "system" fn(map: ExportedLocalizationMapML) -> Result;
+    #[doc = "See [xrGetExportedLocalizationMapDataML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetExportedLocalizationMapDataML) - defined by [XR_ML_localization_map](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_localization_map)"]
+    pub type GetExportedLocalizationMapDataML = unsafe extern "system" fn(
+        map: ExportedLocalizationMapML,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut c_char,
+    ) -> Result;
+    #[doc = "See [xrCreateMarkerDetectorML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateMarkerDetectorML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type CreateMarkerDetectorML = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const MarkerDetectorCreateInfoML,
+        marker_detector: *mut MarkerDetectorML,
+    ) -> Result;
+    #[doc = "See [xrDestroyMarkerDetectorML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyMarkerDetectorML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type DestroyMarkerDetectorML =
+        unsafe extern "system" fn(marker_detector: MarkerDetectorML) -> Result;
+    #[doc = "See [xrSnapshotMarkerDetectorML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrSnapshotMarkerDetectorML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type SnapshotMarkerDetectorML = unsafe extern "system" fn(
+        marker_detector: MarkerDetectorML,
+        snapshot_info: *mut MarkerDetectorSnapshotInfoML,
+    ) -> Result;
+    #[doc = "See [xrGetMarkerDetectorStateML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetMarkerDetectorStateML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type GetMarkerDetectorStateML = unsafe extern "system" fn(
+        marker_detector: MarkerDetectorML,
+        state: *mut MarkerDetectorStateML,
+    ) -> Result;
+    #[doc = "See [xrGetMarkersML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetMarkersML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type GetMarkersML = unsafe extern "system" fn(
+        marker_detector: MarkerDetectorML,
+        marker_capacity_input: u32,
+        marker_count_output: *mut u32,
+        markers: *mut MarkerML,
+    ) -> Result;
+    #[doc = "See [xrGetMarkerReprojectionErrorML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetMarkerReprojectionErrorML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type GetMarkerReprojectionErrorML = unsafe extern "system" fn(
+        marker_detector: MarkerDetectorML,
+        marker: MarkerML,
+        reprojection_error_meters: *mut f32,
+    ) -> Result;
+    #[doc = "See [xrGetMarkerLengthML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetMarkerLengthML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type GetMarkerLengthML = unsafe extern "system" fn(
+        marker_detector: MarkerDetectorML,
+        marker: MarkerML,
+        meters: *mut f32,
+    ) -> Result;
+    #[doc = "See [xrGetMarkerNumberML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetMarkerNumberML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type GetMarkerNumberML = unsafe extern "system" fn(
+        marker_detector: MarkerDetectorML,
+        marker: MarkerML,
+        number: *mut u64,
+    ) -> Result;
+    #[doc = "See [xrGetMarkerStringML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetMarkerStringML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type GetMarkerStringML = unsafe extern "system" fn(
+        marker_detector: MarkerDetectorML,
+        marker: MarkerML,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut c_char,
+    ) -> Result;
+    #[doc = "See [xrCreateMarkerSpaceML](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateMarkerSpaceML) - defined by [XR_ML_marker_understanding](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_ML_marker_understanding)"]
+    pub type CreateMarkerSpaceML = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const MarkerSpaceCreateInfoML,
+        space: *mut Space,
+    ) -> Result;
     #[doc = "See [xrGetVulkanGraphicsRequirements2KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetVulkanGraphicsRequirements2KHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanGraphicsRequirements2KHR = unsafe extern "system" fn(
         instance: Instance,
@@ -11071,6 +12012,8 @@ pub const HTC_passthrough_SPEC_VERSION: u32 = 1u32;
 pub const HTC_PASSTHROUGH_EXTENSION_NAME: &[u8] = b"XR_HTC_passthrough\0";
 pub const HTC_foveation_SPEC_VERSION: u32 = 1u32;
 pub const HTC_FOVEATION_EXTENSION_NAME: &[u8] = b"XR_HTC_foveation\0";
+pub const HTC_anchor_SPEC_VERSION: u32 = 1u32;
+pub const HTC_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_HTC_anchor\0";
 pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HUAWEI_controller_interaction\0";
@@ -11126,7 +12069,7 @@ pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &[u8] =
     b"XR_KHR_win32_convert_performance_counter_time\0";
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
 pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &[u8] = b"XR_KHR_convert_timespec_time\0";
-pub const KHR_loader_init_SPEC_VERSION: u32 = 1u32;
+pub const KHR_loader_init_SPEC_VERSION: u32 = 2u32;
 pub const KHR_LOADER_INIT_EXTENSION_NAME: &[u8] = b"XR_KHR_loader_init\0";
 #[cfg(target_os = "android")]
 pub const KHR_loader_init_android_SPEC_VERSION: u32 = 1u32;
@@ -11159,6 +12102,8 @@ pub const META_headset_id_SPEC_VERSION: u32 = 1u32;
 pub const META_HEADSET_ID_EXTENSION_NAME: &[u8] = b"XR_META_headset_id\0";
 pub const META_passthrough_color_lut_SPEC_VERSION: u32 = 1u32;
 pub const META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME: &[u8] = b"XR_META_passthrough_color_lut\0";
+pub const META_touch_controller_plus_SPEC_VERSION: u32 = 1u32;
+pub const META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME: &[u8] = b"XR_META_touch_controller_plus\0";
 pub const ML_ml2_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_ML_ml2_controller_interaction\0";
@@ -11168,6 +12113,10 @@ pub const ML_global_dimmer_SPEC_VERSION: u32 = 1u32;
 pub const ML_GLOBAL_DIMMER_EXTENSION_NAME: &[u8] = b"XR_ML_global_dimmer\0";
 pub const ML_compat_SPEC_VERSION: u32 = 1u32;
 pub const ML_COMPAT_EXTENSION_NAME: &[u8] = b"XR_ML_compat\0";
+pub const ML_marker_understanding_SPEC_VERSION: u32 = 1u32;
+pub const ML_MARKER_UNDERSTANDING_EXTENSION_NAME: &[u8] = b"XR_ML_marker_understanding\0";
+pub const ML_localization_map_SPEC_VERSION: u32 = 1u32;
+pub const ML_LOCALIZATION_MAP_EXTENSION_NAME: &[u8] = b"XR_ML_localization_map\0";
 pub const ML_user_calibration_SPEC_VERSION: u32 = 1u32;
 pub const ML_USER_CALIBRATION_EXTENSION_NAME: &[u8] = b"XR_ML_user_calibration\0";
 pub const MND_headless_SPEC_VERSION: u32 = 2u32;

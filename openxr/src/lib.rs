@@ -40,6 +40,8 @@ pub use vive_tracker_paths::*;
 mod display_refresh_rate;
 mod passthrough;
 pub use passthrough::*;
+mod localization_map_ml;
+pub use localization_map_ml::*;
 
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
