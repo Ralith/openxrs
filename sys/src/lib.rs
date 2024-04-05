@@ -145,6 +145,11 @@ wrapper! {
 
 wrapper! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    MarkerML(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Version(u64)
 }
 

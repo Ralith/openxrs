@@ -1948,6 +1948,15 @@ impl Parser {
                         (*unsafe { self.0.#ident.as_ref() }.unwrap()).into()
                     },
                 )
+            } else if m.ty == "XrLocalizationMapML" {
+                (
+                    quote! {
+                        LocalizationMapML
+                    },
+                    quote! {
+                          LocalizationMapML::from_raw(self.0.#ident)
+                    },
+                )
             } else {
                 (
                     xr_var_ty(self.api_aliases.as_ref(), m),
@@ -2135,6 +2144,8 @@ fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
         "XrStructureType" => "XR_TYPE_".len(),
         "XrPerfSettingsNotificationLevel" => "XR_PERF_SETTINGS_NOTIF_LEVEL_".len(),
         "XrResult" => "XR_".len(),
+        "XrMarkerArucoDict" => "XR_MARKER_ARUCO_".len(),
+        "XrMarkerAprilTagDict" => "XR_MARKER_APRIL_TAG_".len(),
         _ => ty.to_shouty_snake_case().len() + 1,
     };
     let end = if !ext.is_empty() {
