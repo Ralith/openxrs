@@ -313,13 +313,24 @@ impl Parser {
         if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
             self.disabled_exts.insert(ext_name);
         } else {
+            let provisional = attr(attrs, "provisional").map_or(false, |x| x == "true");
+
             let (tag_name, _) = split_ext_tag(&ext_name);
+            let ext = Extension {
+                name: ext_name.clone(),
+                version: ext_version.unwrap(),
+                commands,
+            };
+
             if let Some(tag) = self.extensions.get_mut(tag_name) {
-                tag.extensions.push(Extension {
-                    name: ext_name,
-                    version: ext_version.unwrap(),
-                    commands,
-                });
+                tag.extensions.push(ext);
+            } else if provisional {
+                self.extensions.insert(
+                    tag_name.into(),
+                    Tag {
+                        extensions: vec![ext],
+                    },
+                );
             } else {
                 eprintln!("ignoring extension with unlisted tag: {}", ext_name);
             }
