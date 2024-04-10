@@ -207,6 +207,10 @@ pub struct ExtensionSet {
     pub varjo_marker_tracking: bool,
     pub varjo_view_offset: bool,
     pub yvr_controller_interaction: bool,
+    pub extx_overlay: bool,
+    pub mndx_egl_enable: bool,
+    pub mndx_force_feedback_curl: bool,
+    pub htcx_vive_tracker_interaction: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<String>,
 }
@@ -641,6 +645,18 @@ impl ExtensionSet {
                 }
                 raw::ControllerInteractionYVR::NAME => {
                     out.yvr_controller_interaction = true;
+                }
+                raw::OverlayEXTX::NAME => {
+                    out.extx_overlay = true;
+                }
+                raw::EglEnableMNDX::NAME => {
+                    out.mndx_egl_enable = true;
+                }
+                raw::ForceFeedbackCurlMNDX::NAME => {
+                    out.mndx_force_feedback_curl = true;
+                }
+                raw::ViveTrackerInteractionHTCX::NAME => {
+                    out.htcx_vive_tracker_interaction = true;
                 }
                 bytes => {
                     if let Ok(name) = std::str::from_utf8(bytes) {
@@ -1356,6 +1372,26 @@ impl ExtensionSet {
                 out.push(raw::ControllerInteractionYVR::NAME.into());
             }
         }
+        {
+            if self.extx_overlay {
+                out.push(raw::OverlayEXTX::NAME.into());
+            }
+        }
+        {
+            if self.mndx_egl_enable {
+                out.push(raw::EglEnableMNDX::NAME.into());
+            }
+        }
+        {
+            if self.mndx_force_feedback_curl {
+                out.push(raw::ForceFeedbackCurlMNDX::NAME.into());
+            }
+        }
+        {
+            if self.htcx_vive_tracker_interaction {
+                out.push(raw::ViveTrackerInteractionHTCX::NAME.into());
+            }
+        }
         for name in &self.other {
             let mut bytes = Vec::with_capacity(name.len() + 1);
             bytes.extend_from_slice(name.as_bytes());
@@ -1521,6 +1557,10 @@ pub struct InstanceExtensions {
     pub varjo_marker_tracking: Option<raw::MarkerTrackingVARJO>,
     pub varjo_view_offset: Option<raw::ViewOffsetVARJO>,
     pub yvr_controller_interaction: Option<raw::ControllerInteractionYVR>,
+    pub extx_overlay: Option<raw::OverlayEXTX>,
+    pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
+    pub mndx_force_feedback_curl: Option<raw::ForceFeedbackCurlMNDX>,
+    pub htcx_vive_tracker_interaction: Option<raw::ViveTrackerInteractionHTCX>,
 }
 impl InstanceExtensions {
     #[doc = r" Load extension function pointer tables"]
@@ -2254,6 +2294,26 @@ impl InstanceExtensions {
             },
             yvr_controller_interaction: if required.yvr_controller_interaction {
                 Some(raw::ControllerInteractionYVR {})
+            } else {
+                None
+            },
+            extx_overlay: if required.extx_overlay {
+                Some(raw::OverlayEXTX {})
+            } else {
+                None
+            },
+            mndx_egl_enable: if required.mndx_egl_enable {
+                Some(raw::EglEnableMNDX {})
+            } else {
+                None
+            },
+            mndx_force_feedback_curl: if required.mndx_force_feedback_curl {
+                Some(raw::ForceFeedbackCurlMNDX::load(entry, instance)?)
+            } else {
+                None
+            },
+            htcx_vive_tracker_interaction: if required.htcx_vive_tracker_interaction {
+                Some(raw::ViveTrackerInteractionHTCX::load(entry, instance)?)
             } else {
                 None
             },
@@ -5960,6 +6020,60 @@ pub mod raw {
     impl ControllerInteractionYVR {
         pub const VERSION: u32 = sys::YVR_controller_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::YVR_CONTROLLER_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct OverlayEXTX {}
+    impl OverlayEXTX {
+        pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXTX_OVERLAY_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct EglEnableMNDX {}
+    impl EglEnableMNDX {
+        pub const VERSION: u32 = sys::MNDX_egl_enable_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MNDX_EGL_ENABLE_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ForceFeedbackCurlMNDX {
+        pub apply_force_feedback_curl: pfn::ApplyForceFeedbackCurlMNDX,
+    }
+    impl ForceFeedbackCurlMNDX {
+        pub const VERSION: u32 = sys::MNDX_force_feedback_curl_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                apply_force_feedback_curl: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrApplyForceFeedbackCurlMNDX\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViveTrackerInteractionHTCX {
+        pub enumerate_vive_tracker_paths: pfn::EnumerateViveTrackerPathsHTCX,
+    }
+    impl ViveTrackerInteractionHTCX {
+        pub const VERSION: u32 = sys::HTCX_vive_tracker_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                enumerate_vive_tracker_paths: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViveTrackerPathsHTCX\0"),
+                )?),
+            })
+        }
     }
 }
 #[allow(unused)]

@@ -12200,6 +12200,15 @@ pub const VARJO_view_offset_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_VIEW_OFFSET_EXTENSION_NAME: &[u8] = b"XR_VARJO_view_offset\0";
 pub const YVR_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const YVR_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_YVR_controller_interaction\0";
+pub const EXTX_overlay_SPEC_VERSION: u32 = 5u32;
+pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
+pub const MNDX_egl_enable_SPEC_VERSION: u32 = 1u32;
+pub const MNDX_EGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_MNDX_egl_enable\0";
+pub const MNDX_force_feedback_curl_SPEC_VERSION: u32 = 1u32;
+pub const MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME: &[u8] = b"XR_MNDX_force_feedback_curl\0";
+pub const HTCX_vive_tracker_interaction_SPEC_VERSION: u32 = 3u32;
+pub const HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME: &[u8] =
+    b"XR_HTCX_vive_tracker_interaction\0";
 #[cfg(feature = "linked")]
 extern "system" {
     #[link_name = "xrGetInstanceProcAddr"]
