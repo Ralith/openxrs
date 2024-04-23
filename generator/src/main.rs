@@ -2222,6 +2222,7 @@ fn xr_var_ty(api_aliases: &[(String, String)], member: &Member) -> TokenStream {
             "uint32_t" => "u32",
             "uint16_t" => "u16",
             "uint8_t" => "u8",
+            "size_t" => "usize",
             "char" => "c_char",
             "int64_t" => "i64",
             "int32_t" => "i32",
