@@ -226,8 +226,6 @@ impl<T> std::ops::IndexMut<HandJointEXT> for [T] {
     }
 }
 
-type DevicePcmSampleRateGetInfoFB = DevicePcmSampleRateStateFB;
-
 // Magic Leap
 #[derive(Copy, Clone, Debug)]
 #[repr(C)]

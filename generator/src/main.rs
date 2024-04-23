@@ -1115,6 +1115,14 @@ impl Parser {
             } else {
                 quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
             };
+            let aliases = self.struct_aliases.iter().map(|(alias, alias_to)| {
+                if alias_to == name {
+                    let alias_ident = xr_ty_name(alias);
+                    quote! { pub type #alias_ident = #ident; }
+                } else {
+                    quote! {}
+                }
+            });
             quote! {
                 #[repr(C)]
                 #derives
@@ -1124,6 +1132,7 @@ impl Parser {
                     #(#members)*
                 }
                 #ty
+                #(#aliases)*
             }
         });
 

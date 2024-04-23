@@ -5780,6 +5780,7 @@ pub struct GraphicsBindingVulkanKHR {
 impl GraphicsBindingVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_VULKAN_KHR;
 }
+pub type GraphicsBindingVulkan2KHR = GraphicsBindingVulkanKHR;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSessionCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionCreateInfo)"]
@@ -5898,6 +5899,7 @@ impl SwapchainImageVulkanKHR {
         x
     }
 }
+pub type SwapchainImageVulkan2KHR = SwapchainImageVulkanKHR;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
@@ -6917,6 +6919,7 @@ impl GraphicsRequirementsVulkanKHR {
         x
     }
 }
+pub type GraphicsRequirementsVulkan2KHR = GraphicsRequirementsVulkanKHR;
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrGraphicsRequirementsD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
@@ -10322,6 +10325,7 @@ impl DevicePcmSampleRateStateFB {
         x
     }
 }
+pub type DevicePcmSampleRateGetInfoFB = DevicePcmSampleRateStateFB;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpaceUserCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceUserCreateInfoFB) - defined by [XR_FB_spatial_entity_user](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_spatial_entity_user)"]
