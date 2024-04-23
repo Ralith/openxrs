@@ -2145,7 +2145,7 @@ fn xr_ty_name(raw: &str) -> Ident {
 }
 
 fn split_ty_ext(name: &str) -> (&str, &str) {
-    let ext = name.rfind(|x: char| x.is_lowercase()).unwrap() + 1;
+    let ext = name.rfind(|x: char| !x.is_uppercase()).unwrap() + 1;
     name.split_at(ext)
 }
 
