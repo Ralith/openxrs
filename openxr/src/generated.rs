@@ -9,28 +9,28 @@ pub use sys::platform::{
 };
 pub use sys::{
     ActionType, AndroidSurfaceSwapchainFlagsFB, AndroidThreadTypeKHR, BlendFactorFB, BodyJointFB,
-    BodyJointLocationFB, BodyJointSetFB, BodySkeletonJointFB, Color4f, ColorSpaceFB, CompareOpFB,
-    CompositionLayerFlags, CompositionLayerImageLayoutFlagsFB,
+    BodyJointLocationFB, BodyJointSetFB, BodySkeletonJointFB, Boxf, Color3f, Color4f, ColorSpaceFB,
+    CompareOpFB, CompositionLayerFlags, CompositionLayerImageLayoutFlagsFB,
     CompositionLayerSecureContentFlagsFB, CompositionLayerSettingsFlagsFB,
     CompositionLayerSpaceWarpInfoFlagsFB, DebugUtilsMessageSeverityFlagsEXT,
     DebugUtilsMessageTypeFlagsEXT, DigitalLensControlFlagsALMALENCE, EnvironmentBlendMode,
-    Extent2Df, Extent2Di, Extent3DfEXT, Extent3DfFB, ExternalCameraAttachedToDeviceOCULUS,
-    ExternalCameraExtrinsicsOCULUS, ExternalCameraIntrinsicsOCULUS,
-    ExternalCameraStatusFlagsOCULUS, EyeCalibrationStatusML, EyeExpressionHTC, EyePositionFB,
-    EyeVisibility, FaceConfidence2FB, FaceConfidenceFB, FaceExpression2FB, FaceExpressionFB,
-    FaceExpressionSet2FB, FaceExpressionSetFB, FaceTrackingDataSource2FB, FacialTrackingTypeHTC,
-    ForceFeedbackCurlApplyLocationMNDX, ForceFeedbackCurlLocationMNDX, FormFactor,
-    FoveationConfigurationHTC, FoveationDynamicFB, FoveationDynamicFlagsHTC,
-    FoveationEyeTrackedProfileCreateFlagsMETA, FoveationEyeTrackedStateFlagsMETA, FoveationLevelFB,
-    FoveationLevelHTC, FoveationModeHTC, Fovf, FrameEndInfoFlagsML,
-    GlobalDimmerFrameEndInfoFlagsML, HandEXT, HandForearmJointULTRALEAP, HandJointEXT,
-    HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT, HandJointsMotionRangeEXT,
-    HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB, HandTrackingDataSourceEXT,
-    HeadsetFitStatusML, InputSourceLocalizedNameFlags, InstanceCreateFlags,
-    KeyboardTrackingFlagsFB, KeyboardTrackingQueryFlagsFB, LipExpressionHTC,
-    LoaderInterfaceStructs, LocalDimmingModeMETA, LocalizationMapConfidenceML,
-    LocalizationMapErrorFlagsML, LocalizationMapStateML, LocalizationMapTypeML,
-    MarkerAprilTagDictML, MarkerArucoDictML, MarkerDetectorCameraML,
+    EnvironmentDepthProviderCreateFlagsMETA, EnvironmentDepthSwapchainCreateFlagsMETA, Extent2Df,
+    Extent2Di, Extent3Df, ExternalCameraAttachedToDeviceOCULUS, ExternalCameraExtrinsicsOCULUS,
+    ExternalCameraIntrinsicsOCULUS, ExternalCameraStatusFlagsOCULUS, EyeCalibrationStatusML,
+    EyeExpressionHTC, EyePositionFB, EyeVisibility, FaceConfidence2FB, FaceConfidenceFB,
+    FaceExpression2FB, FaceExpressionFB, FaceExpressionSet2FB, FaceExpressionSetFB,
+    FaceTrackingDataSource2FB, FacialTrackingTypeHTC, ForceFeedbackCurlApplyLocationMNDX,
+    ForceFeedbackCurlLocationMNDX, FormFactor, FoveationConfigurationHTC, FoveationDynamicFB,
+    FoveationDynamicFlagsHTC, FoveationEyeTrackedProfileCreateFlagsMETA,
+    FoveationEyeTrackedStateFlagsMETA, FoveationLevelFB, FoveationLevelHTC, FoveationModeHTC, Fovf,
+    FrameEndInfoFlagsML, Frustumf, FutureStateEXT, GlobalDimmerFrameEndInfoFlagsML, HandEXT,
+    HandForearmJointULTRALEAP, HandJointEXT, HandJointLocationEXT, HandJointSetEXT,
+    HandJointVelocityEXT, HandJointsMotionRangeEXT, HandMeshVertexMSFT, HandPoseTypeMSFT,
+    HandTrackingAimFlagsFB, HandTrackingDataSourceEXT, HeadsetFitStatusML,
+    InputSourceLocalizedNameFlags, InstanceCreateFlags, KeyboardTrackingFlagsFB,
+    KeyboardTrackingQueryFlagsFB, LipExpressionHTC, LoaderInterfaceStructs, LocalDimmingModeMETA,
+    LocalizationMapConfidenceML, LocalizationMapErrorFlagsML, LocalizationMapStateML,
+    LocalizationMapTypeML, MarkerAprilTagDictML, MarkerArucoDictML, MarkerDetectorCameraML,
     MarkerDetectorCornerRefineMethodML, MarkerDetectorFpsML, MarkerDetectorFullAnalysisIntervalML,
     MarkerDetectorProfileML, MarkerDetectorResolutionML, MarkerDetectorStatusML, MarkerTypeML,
     MeshComputeLodMSFT, NegotiateApiLayerRequest, NegotiateLoaderInfo, NegotiateRuntimeRequest,
@@ -46,15 +46,15 @@ pub use sys::{
     SceneComponentTypeMSFT, SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT,
     SceneComputeStateMSFT, SceneMarkerQRCodeSymbolTypeMSFT, SceneMarkerTypeMSFT,
     SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT, SemanticLabelsSupportFlagsFB,
-    SessionCreateFlags, SessionState, SpaceComponentTypeFB, SpaceLocationFlags,
-    SpacePersistenceModeFB, SpaceQueryActionFB, SpaceStorageLocationFB, SpaceVelocityFlags,
-    SpatialGraphNodeTypeMSFT, StructureType, SwapchainCreateFlags, SwapchainCreateFoveationFlagsFB,
-    SwapchainStateFoveationFlagsFB, SwapchainUsageFlags, SystemGraphicsProperties,
-    TrackingOptimizationSettingsDomainQCOM, TrackingOptimizationSettingsHintQCOM,
-    TriangleMeshFlagsFB, Vector2f, Vector3f, Vector4f, Vector4sFB, ViewConfigurationType,
-    ViewStateFlags, VirtualKeyboardInputSourceMETA, VirtualKeyboardInputStateFlagsMETA,
-    VirtualKeyboardLocationTypeMETA, VisibilityMaskTypeKHR, VulkanDeviceCreateFlagsKHR,
-    VulkanInstanceCreateFlagsKHR, WindingOrderFB,
+    SessionCreateFlags, SessionState, SpaceComponentTypeFB, SpaceLocationData, SpaceLocationFlags,
+    SpacePersistenceModeFB, SpaceQueryActionFB, SpaceStorageLocationFB, SpaceVelocityData,
+    SpaceVelocityFlags, SpatialGraphNodeTypeMSFT, Spheref, StructureType, SwapchainCreateFlags,
+    SwapchainCreateFoveationFlagsFB, SwapchainStateFoveationFlagsFB, SwapchainUsageFlags,
+    SystemGraphicsProperties, TrackingOptimizationSettingsDomainQCOM,
+    TrackingOptimizationSettingsHintQCOM, TriangleMeshFlagsFB, Vector2f, Vector3f, Vector4f,
+    Vector4sFB, ViewConfigurationType, ViewStateFlags, VirtualKeyboardInputSourceMETA,
+    VirtualKeyboardInputStateFlagsMETA, VirtualKeyboardLocationTypeMETA, VisibilityMaskTypeKHR,
+    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR, WindingOrderFB,
 };
 #[doc = r" A subset of known extensions"]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
@@ -83,6 +83,7 @@ pub struct ExtensionSet {
     pub ext_local_floor: bool,
     pub ext_hand_tracking_data_source: bool,
     pub ext_plane_detection: bool,
+    pub ext_future: bool,
     pub ext_user_presence: bool,
     pub fb_composition_layer_image_layout: bool,
     pub fb_composition_layer_alpha_blend: bool,
@@ -166,6 +167,8 @@ pub struct ExtensionSet {
     pub khr_composition_layer_equirect2: bool,
     pub khr_binding_modification: bool,
     pub khr_swapchain_usage_input_attachment_bit: bool,
+    pub khr_locate_spaces: bool,
+    pub khr_maintenance1: bool,
     pub meta_foveation_eye_tracked: bool,
     pub meta_local_dimming: bool,
     pub meta_passthrough_preferences: bool,
@@ -178,6 +181,7 @@ pub struct ExtensionSet {
     pub meta_spatial_entity_mesh: bool,
     pub meta_automatic_layer_filter: bool,
     pub meta_touch_controller_plus: bool,
+    pub meta_environment_depth: bool,
     pub ml_ml2_controller_interaction: bool,
     pub ml_frame_end_info: bool,
     pub ml_global_dimmer: bool,
@@ -295,6 +299,9 @@ impl ExtensionSet {
                 }
                 raw::PlaneDetectionEXT::NAME => {
                     out.ext_plane_detection = true;
+                }
+                raw::FutureEXT::NAME => {
+                    out.ext_future = true;
                 }
                 raw::UserPresenceEXT::NAME => {
                     out.ext_user_presence = true;
@@ -527,6 +534,12 @@ impl ExtensionSet {
                 raw::SwapchainUsageInputAttachmentBitKHR::NAME => {
                     out.khr_swapchain_usage_input_attachment_bit = true;
                 }
+                raw::LocateSpacesKHR::NAME => {
+                    out.khr_locate_spaces = true;
+                }
+                raw::Maintenance1KHR::NAME => {
+                    out.khr_maintenance1 = true;
+                }
                 raw::FoveationEyeTrackedMETA::NAME => {
                     out.meta_foveation_eye_tracked = true;
                 }
@@ -562,6 +575,9 @@ impl ExtensionSet {
                 }
                 raw::TouchControllerPlusMETA::NAME => {
                     out.meta_touch_controller_plus = true;
+                }
+                raw::EnvironmentDepthMETA::NAME => {
+                    out.meta_environment_depth = true;
                 }
                 raw::Ml2ControllerInteractionML::NAME => {
                     out.ml_ml2_controller_interaction = true;
@@ -810,6 +826,11 @@ impl ExtensionSet {
         {
             if self.ext_plane_detection {
                 out.push(raw::PlaneDetectionEXT::NAME.into());
+            }
+        }
+        {
+            if self.ext_future {
+                out.push(raw::FutureEXT::NAME.into());
             }
         }
         {
@@ -1192,6 +1213,16 @@ impl ExtensionSet {
             }
         }
         {
+            if self.khr_locate_spaces {
+                out.push(raw::LocateSpacesKHR::NAME.into());
+            }
+        }
+        {
+            if self.khr_maintenance1 {
+                out.push(raw::Maintenance1KHR::NAME.into());
+            }
+        }
+        {
             if self.meta_foveation_eye_tracked {
                 out.push(raw::FoveationEyeTrackedMETA::NAME.into());
             }
@@ -1249,6 +1280,11 @@ impl ExtensionSet {
         {
             if self.meta_touch_controller_plus {
                 out.push(raw::TouchControllerPlusMETA::NAME.into());
+            }
+        }
+        {
+            if self.meta_environment_depth {
+                out.push(raw::EnvironmentDepthMETA::NAME.into());
             }
         }
         {
@@ -1489,6 +1525,7 @@ pub struct InstanceExtensions {
     pub ext_local_floor: Option<raw::LocalFloorEXT>,
     pub ext_hand_tracking_data_source: Option<raw::HandTrackingDataSourceEXT>,
     pub ext_plane_detection: Option<raw::PlaneDetectionEXT>,
+    pub ext_future: Option<raw::FutureEXT>,
     pub ext_user_presence: Option<raw::UserPresenceEXT>,
     pub fb_composition_layer_image_layout: Option<raw::CompositionLayerImageLayoutFB>,
     pub fb_composition_layer_alpha_blend: Option<raw::CompositionLayerAlphaBlendFB>,
@@ -1574,6 +1611,8 @@ pub struct InstanceExtensions {
     pub khr_composition_layer_equirect2: Option<raw::CompositionLayerEquirect2KHR>,
     pub khr_binding_modification: Option<raw::BindingModificationKHR>,
     pub khr_swapchain_usage_input_attachment_bit: Option<raw::SwapchainUsageInputAttachmentBitKHR>,
+    pub khr_locate_spaces: Option<raw::LocateSpacesKHR>,
+    pub khr_maintenance1: Option<raw::Maintenance1KHR>,
     pub meta_foveation_eye_tracked: Option<raw::FoveationEyeTrackedMETA>,
     pub meta_local_dimming: Option<raw::LocalDimmingMETA>,
     pub meta_passthrough_preferences: Option<raw::PassthroughPreferencesMETA>,
@@ -1586,6 +1625,7 @@ pub struct InstanceExtensions {
     pub meta_spatial_entity_mesh: Option<raw::SpatialEntityMeshMETA>,
     pub meta_automatic_layer_filter: Option<raw::AutomaticLayerFilterMETA>,
     pub meta_touch_controller_plus: Option<raw::TouchControllerPlusMETA>,
+    pub meta_environment_depth: Option<raw::EnvironmentDepthMETA>,
     pub ml_ml2_controller_interaction: Option<raw::Ml2ControllerInteractionML>,
     pub ml_frame_end_info: Option<raw::FrameEndInfoML>,
     pub ml_global_dimmer: Option<raw::GlobalDimmerML>,
@@ -1750,6 +1790,11 @@ impl InstanceExtensions {
             },
             ext_plane_detection: if required.ext_plane_detection {
                 Some(raw::PlaneDetectionEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            ext_future: if required.ext_future {
+                Some(raw::FutureEXT::load(entry, instance)?)
             } else {
                 None
             },
@@ -2146,6 +2191,16 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            khr_locate_spaces: if required.khr_locate_spaces {
+                Some(raw::LocateSpacesKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            khr_maintenance1: if required.khr_maintenance1 {
+                Some(raw::Maintenance1KHR {})
+            } else {
+                None
+            },
             meta_foveation_eye_tracked: if required.meta_foveation_eye_tracked {
                 Some(raw::FoveationEyeTrackedMETA::load(entry, instance)?)
             } else {
@@ -2203,6 +2258,11 @@ impl InstanceExtensions {
             },
             meta_touch_controller_plus: if required.meta_touch_controller_plus {
                 Some(raw::TouchControllerPlusMETA {})
+            } else {
+                None
+            },
+            meta_environment_depth: if required.meta_environment_depth {
+                Some(raw::EnvironmentDepthMETA::load(entry, instance)?)
             } else {
                 None
             },
@@ -3305,6 +3365,7 @@ pub mod raw {
         pub sync_actions: pfn::SyncActions,
         pub enumerate_bound_sources_for_action: pfn::EnumerateBoundSourcesForAction,
         pub get_input_source_localized_name: pfn::GetInputSourceLocalizedName,
+        pub locate_spaces: pfn::LocateSpaces,
     }
     impl Instance {
         #[doc = r" Load the core function pointer table"]
@@ -3541,6 +3602,10 @@ pub mod raw {
                 get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetInputSourceLocalizedName\0"),
+                )?),
+                locate_spaces: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrLocateSpaces\0"),
                 )?),
             })
         }
@@ -3873,6 +3938,32 @@ pub mod raw {
                 get_plane_polygon_buffer: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetPlanePolygonBufferEXT\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct FutureEXT {
+        pub poll_future: pfn::PollFutureEXT,
+        pub cancel_future: pfn::CancelFutureEXT,
+    }
+    impl FutureEXT {
+        pub const VERSION: u32 = sys::EXT_future_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_FUTURE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                poll_future: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrPollFutureEXT\0"),
+                )?),
+                cancel_future: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCancelFutureEXT\0"),
                 )?),
             })
         }
@@ -5263,6 +5354,33 @@ pub mod raw {
             sys::KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct LocateSpacesKHR {
+        pub locate_spaces: pfn::LocateSpacesKHR,
+    }
+    impl LocateSpacesKHR {
+        pub const VERSION: u32 = sys::KHR_locate_spaces_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_LOCATE_SPACES_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                locate_spaces: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrLocateSpacesKHR\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct Maintenance1KHR {}
+    impl Maintenance1KHR {
+        pub const VERSION: u32 = sys::KHR_maintenance1_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_MAINTENANCE1_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct FoveationEyeTrackedMETA {
         pub get_foveation_eye_tracked_state: pfn::GetFoveationEyeTrackedStateMETA,
     }
@@ -5531,6 +5649,83 @@ pub mod raw {
     impl TouchControllerPlusMETA {
         pub const VERSION: u32 = sys::META_touch_controller_plus_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct EnvironmentDepthMETA {
+        pub create_environment_depth_provider: pfn::CreateEnvironmentDepthProviderMETA,
+        pub destroy_environment_depth_provider: pfn::DestroyEnvironmentDepthProviderMETA,
+        pub start_environment_depth_provider: pfn::StartEnvironmentDepthProviderMETA,
+        pub stop_environment_depth_provider: pfn::StopEnvironmentDepthProviderMETA,
+        pub create_environment_depth_swapchain: pfn::CreateEnvironmentDepthSwapchainMETA,
+        pub destroy_environment_depth_swapchain: pfn::DestroyEnvironmentDepthSwapchainMETA,
+        pub enumerate_environment_depth_swapchain_images:
+            pfn::EnumerateEnvironmentDepthSwapchainImagesMETA,
+        pub get_environment_depth_swapchain_state: pfn::GetEnvironmentDepthSwapchainStateMETA,
+        pub acquire_environment_depth_image: pfn::AcquireEnvironmentDepthImageMETA,
+        pub set_environment_depth_hand_removal: pfn::SetEnvironmentDepthHandRemovalMETA,
+    }
+    impl EnvironmentDepthMETA {
+        pub const VERSION: u32 = sys::META_environment_depth_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_ENVIRONMENT_DEPTH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateEnvironmentDepthProviderMETA\0"),
+                )?),
+                destroy_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyEnvironmentDepthProviderMETA\0"),
+                )?),
+                start_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrStartEnvironmentDepthProviderMETA\0"),
+                )?),
+                stop_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrStopEnvironmentDepthProviderMETA\0"),
+                )?),
+                create_environment_depth_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateEnvironmentDepthSwapchainMETA\0"),
+                )?),
+                destroy_environment_depth_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(
+                        b"xrDestroyEnvironmentDepthSwapchainMETA\0",
+                    ),
+                )?),
+                enumerate_environment_depth_swapchain_images: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrEnumerateEnvironmentDepthSwapchainImagesMETA\0",
+                        ),
+                    )?,
+                ),
+                get_environment_depth_swapchain_state: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrGetEnvironmentDepthSwapchainStateMETA\0",
+                        ),
+                    )?,
+                ),
+                acquire_environment_depth_image: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrAcquireEnvironmentDepthImageMETA\0"),
+                )?),
+                set_environment_depth_hand_removal: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrSetEnvironmentDepthHandRemovalMETA\0"),
+                )?),
+            })
+        }
     }
     #[derive(Copy, Clone)]
     pub struct Ml2ControllerInteractionML {}
@@ -7967,6 +8162,67 @@ pub(crate) mod builder {
         }
     }
     impl<'a> Default for SpaceComponentFilterInfoFB<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[repr(transparent)]
+    pub struct FutureCompletionBase<'a> {
+        _inner: sys::FutureCompletionBaseHeaderEXT,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct FutureCompletionEXT<'a> {
+        inner: sys::FutureCompletionEXT,
+        _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> FutureCompletionEXT<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::FutureCompletionEXT {
+                    ty: sys::StructureType::FUTURE_COMPLETION_EXT,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::FutureCompletionEXT) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::FutureCompletionEXT {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::FutureCompletionEXT {
+            &self.inner
+        }
+        #[inline]
+        pub fn future_result(mut self, value: sys::Result) -> Self {
+            self.inner.future_result = value;
+            self
+        }
+    }
+    impl<'a> Deref for FutureCompletionEXT<'a> {
+        type Target = FutureCompletionBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a> Default for FutureCompletionEXT<'a> {
         fn default() -> Self {
             Self::new()
         }
