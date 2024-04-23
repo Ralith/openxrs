@@ -242,3 +242,4 @@ pub const EYE_POSITION_COUNT_FB: usize = 2;
 pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992;
 
 pub type SpaceUserIdFB = u64;
+pub type FutureEXT = u64;
