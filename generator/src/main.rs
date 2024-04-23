@@ -1771,6 +1771,10 @@ impl Parser {
                 quote! {}
             };
             let (ty, init) = match &m.ty[..] {
+                "XrResult" => (
+                    quote! { sys::Result },
+                    quote! { self.inner.#ident = value; },
+                ),
                 "XrBool32" => (
                     quote! { bool },
                     quote! { self.inner.#ident = value.into(); },
