@@ -16,7 +16,8 @@ pub use sys::{
     Extent2Df, Extent2Di, Extent3DfEXT, Extent3DfFB, ExternalCameraAttachedToDeviceOCULUS,
     ExternalCameraExtrinsicsOCULUS, ExternalCameraIntrinsicsOCULUS,
     ExternalCameraStatusFlagsOCULUS, EyeCalibrationStatusML, EyeExpressionHTC, EyePositionFB,
-    EyeVisibility, FaceConfidenceFB, FaceExpressionFB, FaceExpressionSetFB, FacialTrackingTypeHTC,
+    EyeVisibility, FaceConfidence2FB, FaceConfidenceFB, FaceExpression2FB, FaceExpressionFB,
+    FaceExpressionSet2FB, FaceExpressionSetFB, FaceTrackingDataSource2FB, FacialTrackingTypeHTC,
     ForceFeedbackCurlApplyLocationMNDX, ForceFeedbackCurlLocationMNDX, FormFactor,
     FoveationConfigurationHTC, FoveationDynamicFB, FoveationDynamicFlagsHTC,
     FoveationEyeTrackedProfileCreateFlagsMETA, FoveationEyeTrackedStateFlagsMETA, FoveationLevelFB,
@@ -81,6 +82,7 @@ pub struct ExtensionSet {
     pub ext_local_floor: bool,
     pub ext_hand_tracking_data_source: bool,
     pub ext_plane_detection: bool,
+    pub ext_user_presence: bool,
     pub fb_composition_layer_image_layout: bool,
     pub fb_composition_layer_alpha_blend: bool,
     #[cfg(target_os = "android")]
@@ -123,6 +125,7 @@ pub struct ExtensionSet {
     pub fb_composition_layer_depth_test: bool,
     pub fb_spatial_entity_storage_batch: bool,
     pub fb_spatial_entity_user: bool,
+    pub fb_face_tracking2: bool,
     pub htc_vive_cosmos_controller_interaction: bool,
     pub htc_facial_tracking: bool,
     pub htc_vive_focus3_controller_interaction: bool,
@@ -169,7 +172,10 @@ pub struct ExtensionSet {
     pub meta_vulkan_swapchain_create_info: bool,
     pub meta_performance_metrics: bool,
     pub meta_headset_id: bool,
+    pub meta_recommended_layer_resolution: bool,
     pub meta_passthrough_color_lut: bool,
+    pub meta_spatial_entity_mesh: bool,
+    pub meta_automatic_layer_filter: bool,
     pub meta_touch_controller_plus: bool,
     pub ml_ml2_controller_interaction: bool,
     pub ml_frame_end_info: bool,
@@ -208,6 +214,7 @@ pub struct ExtensionSet {
     pub varjo_environment_depth_estimation: bool,
     pub varjo_marker_tracking: bool,
     pub varjo_view_offset: bool,
+    pub varjo_xr4_controller_interaction: bool,
     pub yvr_controller_interaction: bool,
     pub extx_overlay: bool,
     pub mndx_egl_enable: bool,
@@ -287,6 +294,9 @@ impl ExtensionSet {
                 }
                 raw::PlaneDetectionEXT::NAME => {
                     out.ext_plane_detection = true;
+                }
+                raw::UserPresenceEXT::NAME => {
+                    out.ext_user_presence = true;
                 }
                 raw::CompositionLayerImageLayoutFB::NAME => {
                     out.fb_composition_layer_image_layout = true;
@@ -409,6 +419,9 @@ impl ExtensionSet {
                 }
                 raw::SpatialEntityUserFB::NAME => {
                     out.fb_spatial_entity_user = true;
+                }
+                raw::FaceTracking2FB::NAME => {
+                    out.fb_face_tracking2 = true;
                 }
                 raw::ViveCosmosControllerInteractionHTC::NAME => {
                     out.htc_vive_cosmos_controller_interaction = true;
@@ -534,8 +547,17 @@ impl ExtensionSet {
                 raw::HeadsetIdMETA::NAME => {
                     out.meta_headset_id = true;
                 }
+                raw::RecommendedLayerResolutionMETA::NAME => {
+                    out.meta_recommended_layer_resolution = true;
+                }
                 raw::PassthroughColorLutMETA::NAME => {
                     out.meta_passthrough_color_lut = true;
+                }
+                raw::SpatialEntityMeshMETA::NAME => {
+                    out.meta_spatial_entity_mesh = true;
+                }
+                raw::AutomaticLayerFilterMETA::NAME => {
+                    out.meta_automatic_layer_filter = true;
                 }
                 raw::TouchControllerPlusMETA::NAME => {
                     out.meta_touch_controller_plus = true;
@@ -644,6 +666,9 @@ impl ExtensionSet {
                 }
                 raw::ViewOffsetVARJO::NAME => {
                     out.varjo_view_offset = true;
+                }
+                raw::Xr4ControllerInteractionVARJO::NAME => {
+                    out.varjo_xr4_controller_interaction = true;
                 }
                 raw::ControllerInteractionYVR::NAME => {
                     out.yvr_controller_interaction = true;
@@ -780,6 +805,11 @@ impl ExtensionSet {
         {
             if self.ext_plane_detection {
                 out.push(raw::PlaneDetectionEXT::NAME.into());
+            }
+        }
+        {
+            if self.ext_user_presence {
+                out.push(raw::UserPresenceEXT::NAME.into());
             }
         }
         {
@@ -985,6 +1015,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.fb_face_tracking2 {
+                out.push(raw::FaceTracking2FB::NAME.into());
+            }
+        }
+        {
             if self.htc_vive_cosmos_controller_interaction {
                 out.push(raw::ViveCosmosControllerInteractionHTC::NAME.into());
             }
@@ -1187,8 +1222,23 @@ impl ExtensionSet {
             }
         }
         {
+            if self.meta_recommended_layer_resolution {
+                out.push(raw::RecommendedLayerResolutionMETA::NAME.into());
+            }
+        }
+        {
             if self.meta_passthrough_color_lut {
                 out.push(raw::PassthroughColorLutMETA::NAME.into());
+            }
+        }
+        {
+            if self.meta_spatial_entity_mesh {
+                out.push(raw::SpatialEntityMeshMETA::NAME.into());
+            }
+        }
+        {
+            if self.meta_automatic_layer_filter {
+                out.push(raw::AutomaticLayerFilterMETA::NAME.into());
             }
         }
         {
@@ -1370,6 +1420,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.varjo_xr4_controller_interaction {
+                out.push(raw::Xr4ControllerInteractionVARJO::NAME.into());
+            }
+        }
+        {
             if self.yvr_controller_interaction {
                 out.push(raw::ControllerInteractionYVR::NAME.into());
             }
@@ -1429,6 +1484,7 @@ pub struct InstanceExtensions {
     pub ext_local_floor: Option<raw::LocalFloorEXT>,
     pub ext_hand_tracking_data_source: Option<raw::HandTrackingDataSourceEXT>,
     pub ext_plane_detection: Option<raw::PlaneDetectionEXT>,
+    pub ext_user_presence: Option<raw::UserPresenceEXT>,
     pub fb_composition_layer_image_layout: Option<raw::CompositionLayerImageLayoutFB>,
     pub fb_composition_layer_alpha_blend: Option<raw::CompositionLayerAlphaBlendFB>,
     #[cfg(target_os = "android")]
@@ -1472,6 +1528,7 @@ pub struct InstanceExtensions {
     pub fb_composition_layer_depth_test: Option<raw::CompositionLayerDepthTestFB>,
     pub fb_spatial_entity_storage_batch: Option<raw::SpatialEntityStorageBatchFB>,
     pub fb_spatial_entity_user: Option<raw::SpatialEntityUserFB>,
+    pub fb_face_tracking2: Option<raw::FaceTracking2FB>,
     pub htc_vive_cosmos_controller_interaction: Option<raw::ViveCosmosControllerInteractionHTC>,
     pub htc_facial_tracking: Option<raw::FacialTrackingHTC>,
     pub htc_vive_focus3_controller_interaction: Option<raw::ViveFocus3ControllerInteractionHTC>,
@@ -1519,7 +1576,10 @@ pub struct InstanceExtensions {
     pub meta_vulkan_swapchain_create_info: Option<raw::VulkanSwapchainCreateInfoMETA>,
     pub meta_performance_metrics: Option<raw::PerformanceMetricsMETA>,
     pub meta_headset_id: Option<raw::HeadsetIdMETA>,
+    pub meta_recommended_layer_resolution: Option<raw::RecommendedLayerResolutionMETA>,
     pub meta_passthrough_color_lut: Option<raw::PassthroughColorLutMETA>,
+    pub meta_spatial_entity_mesh: Option<raw::SpatialEntityMeshMETA>,
+    pub meta_automatic_layer_filter: Option<raw::AutomaticLayerFilterMETA>,
     pub meta_touch_controller_plus: Option<raw::TouchControllerPlusMETA>,
     pub ml_ml2_controller_interaction: Option<raw::Ml2ControllerInteractionML>,
     pub ml_frame_end_info: Option<raw::FrameEndInfoML>,
@@ -1558,6 +1618,7 @@ pub struct InstanceExtensions {
     pub varjo_environment_depth_estimation: Option<raw::EnvironmentDepthEstimationVARJO>,
     pub varjo_marker_tracking: Option<raw::MarkerTrackingVARJO>,
     pub varjo_view_offset: Option<raw::ViewOffsetVARJO>,
+    pub varjo_xr4_controller_interaction: Option<raw::Xr4ControllerInteractionVARJO>,
     pub yvr_controller_interaction: Option<raw::ControllerInteractionYVR>,
     pub extx_overlay: Option<raw::OverlayEXTX>,
     pub mndx_egl_enable: Option<raw::EglEnableMNDX>,
@@ -1684,6 +1745,11 @@ impl InstanceExtensions {
             },
             ext_plane_detection: if required.ext_plane_detection {
                 Some(raw::PlaneDetectionEXT::load(entry, instance)?)
+            } else {
+                None
+            },
+            ext_user_presence: if required.ext_user_presence {
+                Some(raw::UserPresenceEXT {})
             } else {
                 None
             },
@@ -1888,6 +1954,11 @@ impl InstanceExtensions {
             },
             fb_spatial_entity_user: if required.fb_spatial_entity_user {
                 Some(raw::SpatialEntityUserFB::load(entry, instance)?)
+            } else {
+                None
+            },
+            fb_face_tracking2: if required.fb_face_tracking2 {
+                Some(raw::FaceTracking2FB::load(entry, instance)?)
             } else {
                 None
             },
@@ -2105,8 +2176,23 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            meta_recommended_layer_resolution: if required.meta_recommended_layer_resolution {
+                Some(raw::RecommendedLayerResolutionMETA::load(entry, instance)?)
+            } else {
+                None
+            },
             meta_passthrough_color_lut: if required.meta_passthrough_color_lut {
                 Some(raw::PassthroughColorLutMETA::load(entry, instance)?)
+            } else {
+                None
+            },
+            meta_spatial_entity_mesh: if required.meta_spatial_entity_mesh {
+                Some(raw::SpatialEntityMeshMETA::load(entry, instance)?)
+            } else {
+                None
+            },
+            meta_automatic_layer_filter: if required.meta_automatic_layer_filter {
+                Some(raw::AutomaticLayerFilterMETA {})
             } else {
                 None
             },
@@ -2294,6 +2380,11 @@ impl InstanceExtensions {
             } else {
                 None
             },
+            varjo_xr4_controller_interaction: if required.varjo_xr4_controller_interaction {
+                Some(raw::Xr4ControllerInteractionVARJO {})
+            } else {
+                None
+            },
             yvr_controller_interaction: if required.yvr_controller_interaction {
                 Some(raw::ControllerInteractionYVR {})
             } else {
@@ -2354,6 +2445,7 @@ pub enum Event<'a> {
     HeadsetFitChangedML(HeadsetFitChangedML<'a>),
     EyeCalibrationChangedML(EyeCalibrationChangedML<'a>),
     LocalizationChangedML(LocalizationChangedML<'a>),
+    UserPresenceChangedEXT(UserPresenceChangedEXT<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -2484,6 +2576,10 @@ impl<'a> Event<'a> {
             sys::StructureType::EVENT_DATA_LOCALIZATION_CHANGED_ML => {
                 let typed = &*(raw as *const sys::EventDataLocalizationChangedML);
                 Event::LocalizationChangedML(LocalizationChangedML::new(typed))
+            }
+            sys::StructureType::EVENT_DATA_USER_PRESENCE_CHANGED_EXT => {
+                let typed = &*(raw as *const sys::EventDataUserPresenceChangedEXT);
+                Event::UserPresenceChangedEXT(UserPresenceChangedEXT::new(typed))
             }
             _ => {
                 return None;
@@ -3121,6 +3217,26 @@ impl<'a> LocalizationChangedML<'a> {
     #[inline]
     pub fn error_flags(self) -> LocalizationMapErrorFlagsML {
         (self.0).error_flags
+    }
+}
+#[derive(Copy, Clone)]
+pub struct UserPresenceChangedEXT<'a>(&'a sys::EventDataUserPresenceChangedEXT);
+impl<'a> UserPresenceChangedEXT<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataUserPresenceChangedEXT]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataUserPresenceChangedEXT) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn session(self) -> sys::Session {
+        (self.0).session
+    }
+    #[inline]
+    pub fn is_user_present(self) -> bool {
+        (self.0).is_user_present.into()
     }
 }
 pub mod raw {
@@ -3774,6 +3890,12 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct UserPresenceEXT {}
+    impl UserPresenceEXT {
+        pub const VERSION: u32 = sys::EXT_user_presence_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_USER_PRESENCE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerImageLayoutFB {}
@@ -4608,6 +4730,37 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct FaceTracking2FB {
+        pub create_face_tracker2: pfn::CreateFaceTracker2FB,
+        pub destroy_face_tracker2: pfn::DestroyFaceTracker2FB,
+        pub get_face_expression_weights2: pfn::GetFaceExpressionWeights2FB,
+    }
+    impl FaceTracking2FB {
+        pub const VERSION: u32 = sys::FB_face_tracking2_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::FB_FACE_TRACKING2_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                create_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateFaceTracker2FB\0"),
+                )?),
+                destroy_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyFaceTracker2FB\0"),
+                )?),
+                get_face_expression_weights2: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetFaceExpressionWeights2FB\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct ViveCosmosControllerInteractionHTC {}
     impl ViveCosmosControllerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_cosmos_controller_interaction_SPEC_VERSION;
@@ -5309,6 +5462,27 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::META_HEADSET_ID_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct RecommendedLayerResolutionMETA {
+        pub get_recommended_layer_resolution: pfn::GetRecommendedLayerResolutionMETA,
+    }
+    impl RecommendedLayerResolutionMETA {
+        pub const VERSION: u32 = sys::META_recommended_layer_resolution_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_recommended_layer_resolution: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetRecommendedLayerResolutionMETA\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct PassthroughColorLutMETA {
         pub create_passthrough_color_lut: pfn::CreatePassthroughColorLutMETA,
         pub destroy_passthrough_color_lut: pfn::DestroyPassthroughColorLutMETA,
@@ -5338,6 +5512,33 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct SpatialEntityMeshMETA {
+        pub get_space_triangle_mesh: pfn::GetSpaceTriangleMeshMETA,
+    }
+    impl SpatialEntityMeshMETA {
+        pub const VERSION: u32 = sys::META_spatial_entity_mesh_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_SPATIAL_ENTITY_MESH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_space_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceTriangleMeshMETA\0"),
+                )?),
+            })
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct AutomaticLayerFilterMETA {}
+    impl AutomaticLayerFilterMETA {
+        pub const VERSION: u32 = sys::META_automatic_layer_filter_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct TouchControllerPlusMETA {}
@@ -6035,6 +6236,12 @@ pub mod raw {
                 )?),
             })
         }
+    }
+    #[derive(Copy, Clone)]
+    pub struct Xr4ControllerInteractionVARJO {}
+    impl Xr4ControllerInteractionVARJO {
+        pub const VERSION: u32 = sys::VARJO_xr4_controller_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ControllerInteractionYVR {}
