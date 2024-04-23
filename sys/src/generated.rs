@@ -13,7 +13,7 @@ use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 32u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 33u32);
 pub const EXTENSION_ENUM_BASE: usize = 1000000000usize;
 pub const EXTENSION_ENUM_STRIDE: usize = 1000usize;
 pub const NULL_PATH: usize = 0usize;
@@ -21,6 +21,14 @@ pub const NULL_SYSTEM_ID: usize = 0usize;
 pub const NO_DURATION: usize = 0usize;
 pub const FREQUENCY_UNSPECIFIED: usize = 0usize;
 pub const MIN_COMPOSITION_LAYERS_SUPPORTED: usize = 16usize;
+pub const CURRENT_LOADER_API_LAYER_VERSION: usize = 1usize;
+pub const CURRENT_LOADER_RUNTIME_VERSION: usize = 1usize;
+pub const LOADER_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_INFO_STRUCT_VERSION: usize = 1usize;
+pub const RUNTIME_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_NEXT_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_CREATE_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_MAX_SETTINGS_PATH_SIZE: usize = 512usize;
 pub const HAND_JOINT_COUNT_EXT: usize = 26usize;
 pub const NULL_CONTROLLER_MODEL_KEY_MSFT: usize = 0usize;
 pub const NULL_RENDER_MODEL_KEY_FB: usize = 0usize;
@@ -58,6 +66,38 @@ pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992usize;
 pub const MAX_EXTERNAL_CAMERA_NAME_SIZE_OCULUS: usize = 32usize;
 pub const UUID_SIZE_EXT: usize = 16usize;
 pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_HTC: usize = 256usize;
+#[doc = "See [XrLoaderInterfaceStructs](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLoaderInterfaceStructs)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct LoaderInterfaceStructs(i32);
+impl LoaderInterfaceStructs {
+    pub const NINTIALIZED: LoaderInterfaceStructs = Self(0i32);
+    pub const OADER_INFO: LoaderInterfaceStructs = Self(1i32);
+    pub const PI_LAYER_REQUEST: LoaderInterfaceStructs = Self(2i32);
+    pub const UNTIME_REQUEST: LoaderInterfaceStructs = Self(3i32);
+    pub const PI_LAYER_CREATE_INFO: LoaderInterfaceStructs = Self(4i32);
+    pub const PI_LAYER_NEXT_INFO: LoaderInterfaceStructs = Self(5i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for LoaderInterfaceStructs {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NINTIALIZED => Some("NINTIALIZED"),
+            Self::OADER_INFO => Some("OADER_INFO"),
+            Self::PI_LAYER_REQUEST => Some("PI_LAYER_REQUEST"),
+            Self::UNTIME_REQUEST => Some("UNTIME_REQUEST"),
+            Self::PI_LAYER_CREATE_INFO => Some("PI_LAYER_CREATE_INFO"),
+            Self::PI_LAYER_NEXT_INFO => Some("PI_LAYER_NEXT_INFO"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -5122,6 +5162,64 @@ pub struct Extent2Di {
 pub struct Rect2Di {
     pub offset: Offset2Di,
     pub extent: Extent2Di,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[doc = "See [XrNegotiateLoaderInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrNegotiateLoaderInfo)"]
+pub struct NegotiateLoaderInfo {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub min_interface_version: u32,
+    pub max_interface_version: u32,
+    pub min_api_version: Version,
+    pub max_api_version: Version,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[doc = "See [XrNegotiateApiLayerRequest](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrNegotiateApiLayerRequest)"]
+pub struct NegotiateApiLayerRequest {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub layer_interface_version: u32,
+    pub layer_api_version: Version,
+    pub get_instance_proc_addr: Option<pfn::GetInstanceProcAddr>,
+    pub create_api_layer_instance: Option<pfn::CreateApiLayerInstance>,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[doc = "See [XrNegotiateRuntimeRequest](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrNegotiateRuntimeRequest)"]
+pub struct NegotiateRuntimeRequest {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub runtime_interface_version: u32,
+    pub runtime_api_version: Version,
+    pub get_instance_proc_addr: Option<pfn::GetInstanceProcAddr>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrApiLayerNextInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApiLayerNextInfo)"]
+pub struct ApiLayerNextInfo {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub layer_name: [c_char; MAX_API_LAYER_NAME_SIZE],
+    pub next_get_instance_proc_addr: Option<pfn::GetInstanceProcAddr>,
+    pub next_create_api_layer_instance: Option<pfn::CreateApiLayerInstance>,
+    pub next: *mut ApiLayerNextInfo,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrApiLayerCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApiLayerCreateInfo)"]
+pub struct ApiLayerCreateInfo {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub loader_instance: *mut c_void,
+    pub settings_file_location: [c_char; API_LAYER_MAX_SETTINGS_PATH_SIZE],
+    pub next_info: *mut ApiLayerNextInfo,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -10511,6 +10609,23 @@ pub mod pfn {
         *const DebugUtilsMessengerCallbackDataEXT,
         *mut c_void,
     ) -> Bool32;
+    #[doc = "See [xrNegotiateLoaderRuntimeInterface](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrNegotiateLoaderRuntimeInterface)"]
+    pub type NegotiateLoaderRuntimeInterface = unsafe extern "system" fn(
+        loader_info: *const NegotiateLoaderInfo,
+        runtime_request: *mut NegotiateRuntimeRequest,
+    ) -> Result;
+    #[doc = "See [xrNegotiateLoaderApiLayerInterface](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrNegotiateLoaderApiLayerInterface)"]
+    pub type NegotiateLoaderApiLayerInterface = unsafe extern "system" fn(
+        loader_info: *const NegotiateLoaderInfo,
+        layer_name: *const c_char,
+        api_layer_request: *mut NegotiateApiLayerRequest,
+    ) -> Result;
+    #[doc = "See [xrCreateApiLayerInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateApiLayerInstance)"]
+    pub type CreateApiLayerInstance = unsafe extern "system" fn(
+        info: *const InstanceCreateInfo,
+        layer_info: *const ApiLayerCreateInfo,
+        instance: *mut Instance,
+    ) -> Result;
     #[doc = "See [xrGetInstanceProcAddr](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetInstanceProcAddr)"]
     pub type GetInstanceProcAddr = unsafe extern "system" fn(
         instance: Instance,
@@ -12018,7 +12133,7 @@ pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HUAWEI_controller_interaction\0";
 #[cfg(target_os = "android")]
-pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;
+pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 6u32;
 #[cfg(target_os = "android")]
 pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_KHR_android_thread_settings\0";
 #[cfg(target_os = "android")]
@@ -12202,7 +12317,7 @@ pub const YVR_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const YVR_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_YVR_controller_interaction\0";
 pub const EXTX_overlay_SPEC_VERSION: u32 = 5u32;
 pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
-pub const MNDX_egl_enable_SPEC_VERSION: u32 = 1u32;
+pub const MNDX_egl_enable_SPEC_VERSION: u32 = 2u32;
 pub const MNDX_EGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_MNDX_egl_enable\0";
 pub const MNDX_force_feedback_curl_SPEC_VERSION: u32 = 1u32;
 pub const MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME: &[u8] = b"XR_MNDX_force_feedback_curl\0";
@@ -12211,6 +12326,23 @@ pub const HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HTCX_vive_tracker_interaction\0";
 #[cfg(feature = "linked")]
 extern "system" {
+    #[link_name = "xrNegotiateLoaderRuntimeInterface"]
+    pub fn negotiate_loader_runtime_interface(
+        loader_info: *const NegotiateLoaderInfo,
+        runtime_request: *mut NegotiateRuntimeRequest,
+    ) -> Result;
+    #[link_name = "xrNegotiateLoaderApiLayerInterface"]
+    pub fn negotiate_loader_api_layer_interface(
+        loader_info: *const NegotiateLoaderInfo,
+        layer_name: *const c_char,
+        api_layer_request: *mut NegotiateApiLayerRequest,
+    ) -> Result;
+    #[link_name = "xrCreateApiLayerInstance"]
+    pub fn create_api_layer_instance(
+        info: *const InstanceCreateInfo,
+        layer_info: *const ApiLayerCreateInfo,
+        instance: *mut Instance,
+    ) -> Result;
     #[link_name = "xrGetInstanceProcAddr"]
     pub fn get_instance_proc_addr(
         instance: Instance,

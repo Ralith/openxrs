@@ -25,12 +25,14 @@ pub use sys::{
     HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT, HandJointsMotionRangeEXT,
     HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB, HandTrackingDataSourceEXT,
     HeadsetFitStatusML, InputSourceLocalizedNameFlags, InstanceCreateFlags,
-    KeyboardTrackingFlagsFB, KeyboardTrackingQueryFlagsFB, LipExpressionHTC, LocalDimmingModeMETA,
-    LocalizationMapConfidenceML, LocalizationMapErrorFlagsML, LocalizationMapStateML,
-    LocalizationMapTypeML, MarkerAprilTagDictML, MarkerArucoDictML, MarkerDetectorCameraML,
+    KeyboardTrackingFlagsFB, KeyboardTrackingQueryFlagsFB, LipExpressionHTC,
+    LoaderInterfaceStructs, LocalDimmingModeMETA, LocalizationMapConfidenceML,
+    LocalizationMapErrorFlagsML, LocalizationMapStateML, LocalizationMapTypeML,
+    MarkerAprilTagDictML, MarkerArucoDictML, MarkerDetectorCameraML,
     MarkerDetectorCornerRefineMethodML, MarkerDetectorFpsML, MarkerDetectorFullAnalysisIntervalML,
     MarkerDetectorProfileML, MarkerDetectorResolutionML, MarkerDetectorStatusML, MarkerTypeML,
-    MeshComputeLodMSFT, ObjectType, Offset2Df, Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX,
+    MeshComputeLodMSFT, NegotiateApiLayerRequest, NegotiateLoaderInfo, NegotiateRuntimeRequest,
+    ObjectType, Offset2Df, Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX,
     OverlaySessionCreateFlagsEXTX, PassthroughCapabilityFlagsFB, PassthroughColorLutChannelsMETA,
     PassthroughFlagsFB, PassthroughFormHTC, PassthroughLayerPurposeFB,
     PassthroughPreferenceFlagsMETA, PassthroughStateChangedFlagsFB, PerfSettingsDomainEXT,
@@ -3127,6 +3129,9 @@ pub mod raw {
     use sys::pfn;
     #[derive(Copy, Clone)]
     pub struct Instance {
+        pub negotiate_loader_runtime_interface: pfn::NegotiateLoaderRuntimeInterface,
+        pub negotiate_loader_api_layer_interface: pfn::NegotiateLoaderApiLayerInterface,
+        pub create_api_layer_instance: pfn::CreateApiLayerInstance,
         pub get_instance_proc_addr: pfn::GetInstanceProcAddr,
         pub enumerate_api_layer_properties: pfn::EnumerateApiLayerProperties,
         pub enumerate_instance_extension_properties: pfn::EnumerateInstanceExtensionProperties,
@@ -3191,6 +3196,22 @@ pub mod raw {
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             Ok(Self {
+                negotiate_loader_runtime_interface: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrNegotiateLoaderRuntimeInterface\0"),
+                )?),
+                negotiate_loader_api_layer_interface: mem::transmute(
+                    entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrNegotiateLoaderApiLayerInterface\0",
+                        ),
+                    )?,
+                ),
+                create_api_layer_instance: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrCreateApiLayerInstance\0"),
+                )?),
                 get_instance_proc_addr: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProcAddr\0"),
