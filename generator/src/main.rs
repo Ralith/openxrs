@@ -205,6 +205,39 @@ impl Parser {
     fn parse_extension_required(&mut self, attrs: &[OwnedAttribute]) {
         let ext_name = Rc::<str>::from(attr(attrs, "name").unwrap());
         let ext_number = attr(attrs, "number").unwrap().parse::<i32>().unwrap();
+        let (ext_version, commands) = self.parse_required(&ext_name, ext_number);
+        if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
+            self.disabled_exts.insert(ext_name);
+        } else {
+            let provisional = attr(attrs, "provisional").map_or(false, |x| x == "true");
+
+            let (tag_name, _) = split_ext_tag(&ext_name);
+            let ext = Extension {
+                name: ext_name.clone(),
+                version: ext_version.unwrap(),
+                commands,
+            };
+
+            if let Some(tag) = self.extensions.get_mut(tag_name) {
+                tag.extensions.push(ext);
+            } else if provisional {
+                self.extensions.insert(
+                    tag_name.into(),
+                    Tag {
+                        extensions: vec![ext],
+                    },
+                );
+            } else {
+                eprintln!("ignoring extension with unlisted tag: {}", ext_name);
+            }
+        }
+    }
+
+    fn parse_required(
+        &mut self,
+        ext_name: &Rc<str>,
+        ext_number: i32,
+    ) -> (Option<u32>, Vec<String>) {
         let mut ext_version = None;
         let mut commands = Vec::new();
         loop {
@@ -280,8 +313,7 @@ impl Parser {
                             } else if name.ends_with("EXTENSION_NAME") {
                                 let value = attr(&attributes, "value").unwrap();
                                 assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
-                            } else {
-                                let value = attr(&attributes, "value").unwrap();
+                            } else if let Some(value) = attr(&attributes, "value") {
                                 self.api_constants
                                     .push((name.into(), value.parse().unwrap()));
                             }
@@ -293,7 +325,7 @@ impl Parser {
                             }
                         }
                         _ => {
-                            eprintln!("unimplemented extension element: {}", name.local_name);
+                            eprintln!("unimplemented require element: {}", name.local_name);
                         }
                     }
                     self.finish_element();
@@ -310,31 +342,7 @@ impl Parser {
                 _ => {}
             }
         }
-        if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
-            self.disabled_exts.insert(ext_name);
-        } else {
-            let provisional = attr(attrs, "provisional").map_or(false, |x| x == "true");
-
-            let (tag_name, _) = split_ext_tag(&ext_name);
-            let ext = Extension {
-                name: ext_name.clone(),
-                version: ext_version.unwrap(),
-                commands,
-            };
-
-            if let Some(tag) = self.extensions.get_mut(tag_name) {
-                tag.extensions.push(ext);
-            } else if provisional {
-                self.extensions.insert(
-                    tag_name.into(),
-                    Tag {
-                        extensions: vec![ext],
-                    },
-                );
-            } else {
-                eprintln!("ignoring extension with unlisted tag: {}", ext_name);
-            }
-        }
+        (ext_version, commands)
     }
 
     fn parse_commands(&mut self) {
