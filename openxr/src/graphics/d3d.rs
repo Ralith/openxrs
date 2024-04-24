@@ -8,7 +8,7 @@ use crate::*;
 ///
 /// See [`XR_KHR_d3d11_enable`] for safety details.
 ///
-/// [`XR_KHR_d3d_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable
+/// [`XR_KHR_d3d_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_D3D11_enable
 pub enum D3D11 {}
 
 impl Graphics for D3D11 {
@@ -91,7 +91,7 @@ impl Graphics for D3D11 {
 ///
 /// See [`XR_KHR_d3d12_enable`] for safety details.
 ///
-/// [`XR_KHR_d3d_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable
+/// [`XR_KHR_d3d_enable`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_D3D12_enable
 pub enum D3D12 {}
 
 impl Graphics for D3D12 {

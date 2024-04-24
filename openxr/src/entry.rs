@@ -355,7 +355,7 @@ pub struct ApplicationInfo<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[doc = "See [XrApiLayerProperties](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApiLayerProperties)"]
+#[doc = "See [XrApiLayerProperties](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrApiLayerProperties)"]
 pub struct ApiLayerProperties {
     pub layer_name: String,
     pub spec_version: Version,

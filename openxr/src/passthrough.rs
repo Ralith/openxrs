@@ -4,7 +4,7 @@
 //! This feature is exclusive to the Oculus Quest 2 as of March 2022.
 //!
 //! More details about passthrough can be found in the [Oculus Native SDK documentation](https://developer.oculus.com/documentation/native/android/mobile-passthrough/)
-//! as well as in the [OpenXR specification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrPassthroughFB)
+//! as well as in the [OpenXR specification](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughFB)
 //!
 //! Not all features are currently implemented. Execution control features are implemented, style-oriented features are not.
 use crate::{
@@ -21,7 +21,7 @@ use sys::PassthroughLayerFB;
 ///
 /// See the [`PassthroughFB struct`].
 ///
-/// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough
+/// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_passthrough
 /// [`PassthroughFB struct`]: https://docs.rs/openxr-sys/latest/openxr_sys/struct.PassthroughFB.html
 /// [passthrough feature]: https://developer.oculus.com/documentation/native/android/mobile-passthrough/#create-and-start-a-passthrough-feature
 pub struct Passthrough {
@@ -86,7 +86,7 @@ impl Drop for Passthrough {
 ///
 /// Requires [`XR_FB_passthrough`].
 ///
-/// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough
+/// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_passthrough
 /// [passthrough layer]: https://developer.oculus.com/documentation/native/android/mobile-passthrough/#create-and-start-a-passthrough-layer
 pub struct PassthroughLayer {
     pub(crate) session: Arc<session::SessionInner>,
