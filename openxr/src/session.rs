@@ -311,14 +311,14 @@ impl<G> Session<G> {
     #[inline]
     /// Create a hand tracker
     ///
-    /// Requires [`XR_EXT_hand_tracking`](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)
+    /// Requires [`XR_EXT_hand_tracking`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_hand_tracking)
     pub fn create_hand_tracker(&self, hand: Hand) -> Result<HandTracker> {
         HandTracker::create(self, hand)
     }
 
     /// Enumerate the list of supported color spaces for [`Session::set_color_space`]
     ///
-    /// Requires [`XR_FB_color_space`](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)
+    /// Requires [`XR_FB_color_space`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_color_space)
     pub fn enumerate_color_spaces(&self) -> Result<Vec<sys::ColorSpaceFB>> {
         let ext = self
             .inner
@@ -334,7 +334,7 @@ impl<G> Session<G> {
 
     /// Specify the color space used in the final rendered frame
     ///
-    /// Requires [`XR_FB_color_space`](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_color_space)    
+    /// Requires [`XR_FB_color_space`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_color_space)
     pub fn set_color_space(&self, color_space: sys::ColorSpaceFB) -> Result<()> {
         let ext = self
             .inner
@@ -434,7 +434,7 @@ impl<G: Graphics> Session<G> {
     ///
     /// Requires [`XR_FB_passthrough`].
     ///
-    /// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough
+    /// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_passthrough
     /// [`Passthrough`]: passthrough/struct.Passthrough.html
     pub fn create_passthrough(&self, flags: PassthroughFlagsFB) -> Result<Passthrough> {
         Passthrough::create(self, flags)
@@ -445,7 +445,7 @@ impl<G: Graphics> Session<G> {
     ///
     /// Requires [`XR_FB_passthrough`].
     ///
-    /// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_passthrough
+    /// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_passthrough
     /// [`PassthroughLayer`]: passthrough/struct.PassthroughLayer.html
     pub fn create_passthrough_layer(
         &self,

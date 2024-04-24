@@ -195,7 +195,7 @@ impl Instance {
     ///
     /// See [`XR_KHR_vulkan_enable2`].
     ///
-    /// [`XR_KHR_vulkan_enable2`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#_vulkan_instance_creation
+    /// [`XR_KHR_vulkan_enable2`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#_vulkan_instance_creation
     #[inline]
     pub unsafe fn create_vulkan_instance(
         &self,
@@ -309,7 +309,7 @@ impl Instance {
     ///
     /// See [`XR_KHR_vulkan_enable2`].
     ///
-    /// [`XR_KHR_vulkan_enable2`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#_vulkan_device_creation
+    /// [`XR_KHR_vulkan_enable2`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#_vulkan_device_creation
     #[inline]
     pub unsafe fn create_vulkan_device(
         &self,
@@ -591,7 +591,7 @@ impl Instance {
 
     /// Allocate a new [`ActionSet`]
     ///
-    /// [`ActionSet`]: https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#input-action-creation
+    /// [`ActionSet`]: https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#input-action-sets
     #[inline]
     pub fn create_action_set(
         &self,
