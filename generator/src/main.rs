@@ -1261,8 +1261,13 @@ impl Parser {
     /// Generate high-level code
     #[allow(clippy::cognitive_complexity)] // TODO
     fn generate_hl(&self) -> TokenStream {
+        const BLACKLISTED_COMMANDS: [&str; 3] = [
+            "xrNegotiateLoaderRuntimeInterface",
+            "xrNegotiateLoaderApiLayerInterface",
+            "xrCreateApiLayerInstance",
+        ];
         let (instance_pfn_fields, instance_pfn_inits) = self.commands.iter().map(|(name, command)| {
-            if command.extension.is_some() {
+            if command.extension.is_some() || BLACKLISTED_COMMANDS.contains(&name.as_str()) {
                 return (quote! {}, quote! {});
             }
             let pfn_ident = xr_command_name(name);
