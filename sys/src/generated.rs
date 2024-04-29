@@ -13,7 +13,7 @@ use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 32u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 0u16, 34u32);
 pub const EXTENSION_ENUM_BASE: usize = 1000000000usize;
 pub const EXTENSION_ENUM_STRIDE: usize = 1000usize;
 pub const NULL_PATH: usize = 0usize;
@@ -21,6 +21,14 @@ pub const NULL_SYSTEM_ID: usize = 0usize;
 pub const NO_DURATION: usize = 0usize;
 pub const FREQUENCY_UNSPECIFIED: usize = 0usize;
 pub const MIN_COMPOSITION_LAYERS_SUPPORTED: usize = 16usize;
+pub const CURRENT_LOADER_API_LAYER_VERSION: usize = 1usize;
+pub const CURRENT_LOADER_RUNTIME_VERSION: usize = 1usize;
+pub const LOADER_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_INFO_STRUCT_VERSION: usize = 1usize;
+pub const RUNTIME_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_NEXT_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_CREATE_INFO_STRUCT_VERSION: usize = 1usize;
+pub const API_LAYER_MAX_SETTINGS_PATH_SIZE: usize = 512usize;
 pub const HAND_JOINT_COUNT_EXT: usize = 26usize;
 pub const NULL_CONTROLLER_MODEL_KEY_MSFT: usize = 0usize;
 pub const NULL_RENDER_MODEL_KEY_FB: usize = 0usize;
@@ -58,6 +66,38 @@ pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992usize;
 pub const MAX_EXTERNAL_CAMERA_NAME_SIZE_OCULUS: usize = 32usize;
 pub const UUID_SIZE_EXT: usize = 16usize;
 pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_HTC: usize = 256usize;
+#[doc = "See [XrLoaderInterfaceStructs](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrLoaderInterfaceStructs)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct LoaderInterfaceStructs(i32);
+impl LoaderInterfaceStructs {
+    pub const NINTIALIZED: LoaderInterfaceStructs = Self(0i32);
+    pub const OADER_INFO: LoaderInterfaceStructs = Self(1i32);
+    pub const PI_LAYER_REQUEST: LoaderInterfaceStructs = Self(2i32);
+    pub const UNTIME_REQUEST: LoaderInterfaceStructs = Self(3i32);
+    pub const PI_LAYER_CREATE_INFO: LoaderInterfaceStructs = Self(4i32);
+    pub const PI_LAYER_NEXT_INFO: LoaderInterfaceStructs = Self(5i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for LoaderInterfaceStructs {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NINTIALIZED => Some("NINTIALIZED"),
+            Self::OADER_INFO => Some("OADER_INFO"),
+            Self::PI_LAYER_REQUEST => Some("PI_LAYER_REQUEST"),
+            Self::UNTIME_REQUEST => Some("UNTIME_REQUEST"),
+            Self::PI_LAYER_CREATE_INFO => Some("PI_LAYER_CREATE_INFO"),
+            Self::PI_LAYER_NEXT_INFO => Some("PI_LAYER_NEXT_INFO"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -377,11 +417,19 @@ impl StructureType {
     pub const EVENT_DATA_SPACE_LIST_SAVE_COMPLETE_FB: StructureType = Self(1000238001i32);
     pub const SPACE_USER_CREATE_INFO_FB: StructureType = Self(1000241001i32);
     pub const SYSTEM_HEADSET_ID_PROPERTIES_META: StructureType = Self(1000245000i32);
+    pub const RECOMMENDED_LAYER_RESOLUTION_META: StructureType = Self(1000254000i32);
+    pub const RECOMMENDED_LAYER_RESOLUTION_GET_INFO_META: StructureType = Self(1000254001i32);
     pub const SYSTEM_PASSTHROUGH_COLOR_LUT_PROPERTIES_META: StructureType = Self(1000266000i32);
     pub const PASSTHROUGH_COLOR_LUT_CREATE_INFO_META: StructureType = Self(1000266001i32);
     pub const PASSTHROUGH_COLOR_LUT_UPDATE_INFO_META: StructureType = Self(1000266002i32);
     pub const PASSTHROUGH_COLOR_MAP_LUT_META: StructureType = Self(1000266100i32);
     pub const PASSTHROUGH_COLOR_MAP_INTERPOLATED_LUT_META: StructureType = Self(1000266101i32);
+    pub const SPACE_TRIANGLE_MESH_GET_INFO_META: StructureType = Self(1000269001i32);
+    pub const SPACE_TRIANGLE_MESH_META: StructureType = Self(1000269002i32);
+    pub const SYSTEM_FACE_TRACKING_PROPERTIES2_FB: StructureType = Self(1000287013i32);
+    pub const FACE_TRACKER_CREATE_INFO2_FB: StructureType = Self(1000287014i32);
+    pub const FACE_EXPRESSION_INFO2_FB: StructureType = Self(1000287015i32);
+    pub const FACE_EXPRESSION_WEIGHTS2_FB: StructureType = Self(1000287016i32);
     pub const PASSTHROUGH_CREATE_INFO_HTC: StructureType = Self(1000317001i32);
     pub const PASSTHROUGH_COLOR_HTC: StructureType = Self(1000317002i32);
     pub const PASSTHROUGH_MESH_TRANSFORM_INFO_HTC: StructureType = Self(1000317003i32);
@@ -403,6 +451,8 @@ impl StructureType {
     pub const PLANE_DETECTOR_LOCATION_EXT: StructureType = Self(1000429005i32);
     pub const PLANE_DETECTOR_POLYGON_BUFFER_EXT: StructureType = Self(1000429006i32);
     pub const SYSTEM_PLANE_DETECTION_PROPERTIES_EXT: StructureType = Self(1000429007i32);
+    pub const EVENT_DATA_USER_PRESENCE_CHANGED_EXT: StructureType = Self(1000470000i32);
+    pub const SYSTEM_USER_PRESENCE_PROPERTIES_EXT: StructureType = Self(1000470001i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -891,6 +941,10 @@ impl fmt::Debug for StructureType {
             }
             Self::SPACE_USER_CREATE_INFO_FB => Some("SPACE_USER_CREATE_INFO_FB"),
             Self::SYSTEM_HEADSET_ID_PROPERTIES_META => Some("SYSTEM_HEADSET_ID_PROPERTIES_META"),
+            Self::RECOMMENDED_LAYER_RESOLUTION_META => Some("RECOMMENDED_LAYER_RESOLUTION_META"),
+            Self::RECOMMENDED_LAYER_RESOLUTION_GET_INFO_META => {
+                Some("RECOMMENDED_LAYER_RESOLUTION_GET_INFO_META")
+            }
             Self::SYSTEM_PASSTHROUGH_COLOR_LUT_PROPERTIES_META => {
                 Some("SYSTEM_PASSTHROUGH_COLOR_LUT_PROPERTIES_META")
             }
@@ -904,6 +958,14 @@ impl fmt::Debug for StructureType {
             Self::PASSTHROUGH_COLOR_MAP_INTERPOLATED_LUT_META => {
                 Some("PASSTHROUGH_COLOR_MAP_INTERPOLATED_LUT_META")
             }
+            Self::SPACE_TRIANGLE_MESH_GET_INFO_META => Some("SPACE_TRIANGLE_MESH_GET_INFO_META"),
+            Self::SPACE_TRIANGLE_MESH_META => Some("SPACE_TRIANGLE_MESH_META"),
+            Self::SYSTEM_FACE_TRACKING_PROPERTIES2_FB => {
+                Some("SYSTEM_FACE_TRACKING_PROPERTIES2_FB")
+            }
+            Self::FACE_TRACKER_CREATE_INFO2_FB => Some("FACE_TRACKER_CREATE_INFO2_FB"),
+            Self::FACE_EXPRESSION_INFO2_FB => Some("FACE_EXPRESSION_INFO2_FB"),
+            Self::FACE_EXPRESSION_WEIGHTS2_FB => Some("FACE_EXPRESSION_WEIGHTS2_FB"),
             Self::PASSTHROUGH_CREATE_INFO_HTC => Some("PASSTHROUGH_CREATE_INFO_HTC"),
             Self::PASSTHROUGH_COLOR_HTC => Some("PASSTHROUGH_COLOR_HTC"),
             Self::PASSTHROUGH_MESH_TRANSFORM_INFO_HTC => {
@@ -934,6 +996,12 @@ impl fmt::Debug for StructureType {
             Self::PLANE_DETECTOR_POLYGON_BUFFER_EXT => Some("PLANE_DETECTOR_POLYGON_BUFFER_EXT"),
             Self::SYSTEM_PLANE_DETECTION_PROPERTIES_EXT => {
                 Some("SYSTEM_PLANE_DETECTION_PROPERTIES_EXT")
+            }
+            Self::EVENT_DATA_USER_PRESENCE_CHANGED_EXT => {
+                Some("EVENT_DATA_USER_PRESENCE_CHANGED_EXT")
+            }
+            Self::SYSTEM_USER_PRESENCE_PROPERTIES_EXT => {
+                Some("SYSTEM_USER_PRESENCE_PROPERTIES_EXT")
             }
             _ => None,
         };
@@ -1439,6 +1507,8 @@ impl ObjectType {
     pub const SPACE_USER_FB: ObjectType = Self(1000241000i32);
     #[doc = "XrPassthroughColorLutMETA"]
     pub const PASSTHROUGH_COLOR_LUT_META: ObjectType = Self(1000266000i32);
+    #[doc = "XrFaceTracker2FB"]
+    pub const FACE_TRACKER2_FB: ObjectType = Self(1000287012i32);
     #[doc = "XrPassthroughHTC"]
     pub const PASSTHROUGH_HTC: ObjectType = Self(1000317000i32);
     #[doc = "XrPlaneDetectorEXT"]
@@ -1483,6 +1553,7 @@ impl fmt::Debug for ObjectType {
             Self::VIRTUAL_KEYBOARD_META => Some("VIRTUAL_KEYBOARD_META"),
             Self::SPACE_USER_FB => Some("SPACE_USER_FB"),
             Self::PASSTHROUGH_COLOR_LUT_META => Some("PASSTHROUGH_COLOR_LUT_META"),
+            Self::FACE_TRACKER2_FB => Some("FACE_TRACKER2_FB"),
             Self::PASSTHROUGH_HTC => Some("PASSTHROUGH_HTC"),
             Self::PLANE_DETECTOR_EXT => Some("PLANE_DETECTOR_EXT"),
             _ => None,
@@ -1952,6 +2023,7 @@ impl SpaceComponentTypeFB {
     pub const ROOM_LAYOUT: SpaceComponentTypeFB = Self(6i32);
     #[doc = "Space container component."]
     pub const SPACE_CONTAINER: SpaceComponentTypeFB = Self(7i32);
+    pub const TRIANGLE_MESH_M: SpaceComponentTypeFB = Self(1000269000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -1970,6 +2042,7 @@ impl fmt::Debug for SpaceComponentTypeFB {
             Self::SEMANTIC_LABELS => Some("SEMANTIC_LABELS"),
             Self::ROOM_LAYOUT => Some("ROOM_LAYOUT"),
             Self::SPACE_CONTAINER => Some("SPACE_CONTAINER"),
+            Self::TRIANGLE_MESH_M => Some("TRIANGLE_MESH_M"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -2676,6 +2749,243 @@ impl FaceConfidenceFB {
     }
 }
 impl fmt::Debug for FaceConfidenceFB {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOWER_FACE => Some("LOWER_FACE"),
+            Self::UPPER_FACE => Some("UPPER_FACE"),
+            Self::COUNT => Some("COUNT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFaceExpression2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceExpression2FB)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct FaceExpression2FB(i32);
+impl FaceExpression2FB {
+    pub const BROW_LOWERER_L: FaceExpression2FB = Self(0i32);
+    pub const BROW_LOWERER_R: FaceExpression2FB = Self(1i32);
+    pub const CHEEK_PUFF_L: FaceExpression2FB = Self(2i32);
+    pub const CHEEK_PUFF_R: FaceExpression2FB = Self(3i32);
+    pub const CHEEK_RAISER_L: FaceExpression2FB = Self(4i32);
+    pub const CHEEK_RAISER_R: FaceExpression2FB = Self(5i32);
+    pub const CHEEK_SUCK_L: FaceExpression2FB = Self(6i32);
+    pub const CHEEK_SUCK_R: FaceExpression2FB = Self(7i32);
+    pub const CHIN_RAISER_B: FaceExpression2FB = Self(8i32);
+    pub const CHIN_RAISER_T: FaceExpression2FB = Self(9i32);
+    pub const DIMPLER_L: FaceExpression2FB = Self(10i32);
+    pub const DIMPLER_R: FaceExpression2FB = Self(11i32);
+    pub const EYES_CLOSED_L: FaceExpression2FB = Self(12i32);
+    pub const EYES_CLOSED_R: FaceExpression2FB = Self(13i32);
+    pub const EYES_LOOK_DOWN_L: FaceExpression2FB = Self(14i32);
+    pub const EYES_LOOK_DOWN_R: FaceExpression2FB = Self(15i32);
+    pub const EYES_LOOK_LEFT_L: FaceExpression2FB = Self(16i32);
+    pub const EYES_LOOK_LEFT_R: FaceExpression2FB = Self(17i32);
+    pub const EYES_LOOK_RIGHT_L: FaceExpression2FB = Self(18i32);
+    pub const EYES_LOOK_RIGHT_R: FaceExpression2FB = Self(19i32);
+    pub const EYES_LOOK_UP_L: FaceExpression2FB = Self(20i32);
+    pub const EYES_LOOK_UP_R: FaceExpression2FB = Self(21i32);
+    pub const INNER_BROW_RAISER_L: FaceExpression2FB = Self(22i32);
+    pub const INNER_BROW_RAISER_R: FaceExpression2FB = Self(23i32);
+    pub const JAW_DROP: FaceExpression2FB = Self(24i32);
+    pub const JAW_SIDEWAYS_LEFT: FaceExpression2FB = Self(25i32);
+    pub const JAW_SIDEWAYS_RIGHT: FaceExpression2FB = Self(26i32);
+    pub const JAW_THRUST: FaceExpression2FB = Self(27i32);
+    pub const LID_TIGHTENER_L: FaceExpression2FB = Self(28i32);
+    pub const LID_TIGHTENER_R: FaceExpression2FB = Self(29i32);
+    pub const LIP_CORNER_DEPRESSOR_L: FaceExpression2FB = Self(30i32);
+    pub const LIP_CORNER_DEPRESSOR_R: FaceExpression2FB = Self(31i32);
+    pub const LIP_CORNER_PULLER_L: FaceExpression2FB = Self(32i32);
+    pub const LIP_CORNER_PULLER_R: FaceExpression2FB = Self(33i32);
+    pub const LIP_FUNNELER_LB: FaceExpression2FB = Self(34i32);
+    pub const LIP_FUNNELER_LT: FaceExpression2FB = Self(35i32);
+    pub const LIP_FUNNELER_RB: FaceExpression2FB = Self(36i32);
+    pub const LIP_FUNNELER_RT: FaceExpression2FB = Self(37i32);
+    pub const LIP_PRESSOR_L: FaceExpression2FB = Self(38i32);
+    pub const LIP_PRESSOR_R: FaceExpression2FB = Self(39i32);
+    pub const LIP_PUCKER_L: FaceExpression2FB = Self(40i32);
+    pub const LIP_PUCKER_R: FaceExpression2FB = Self(41i32);
+    pub const LIP_STRETCHER_L: FaceExpression2FB = Self(42i32);
+    pub const LIP_STRETCHER_R: FaceExpression2FB = Self(43i32);
+    pub const LIP_SUCK_LB: FaceExpression2FB = Self(44i32);
+    pub const LIP_SUCK_LT: FaceExpression2FB = Self(45i32);
+    pub const LIP_SUCK_RB: FaceExpression2FB = Self(46i32);
+    pub const LIP_SUCK_RT: FaceExpression2FB = Self(47i32);
+    pub const LIP_TIGHTENER_L: FaceExpression2FB = Self(48i32);
+    pub const LIP_TIGHTENER_R: FaceExpression2FB = Self(49i32);
+    pub const LIPS_TOWARD: FaceExpression2FB = Self(50i32);
+    pub const LOWER_LIP_DEPRESSOR_L: FaceExpression2FB = Self(51i32);
+    pub const LOWER_LIP_DEPRESSOR_R: FaceExpression2FB = Self(52i32);
+    pub const MOUTH_LEFT: FaceExpression2FB = Self(53i32);
+    pub const MOUTH_RIGHT: FaceExpression2FB = Self(54i32);
+    pub const NOSE_WRINKLER_L: FaceExpression2FB = Self(55i32);
+    pub const NOSE_WRINKLER_R: FaceExpression2FB = Self(56i32);
+    pub const OUTER_BROW_RAISER_L: FaceExpression2FB = Self(57i32);
+    pub const OUTER_BROW_RAISER_R: FaceExpression2FB = Self(58i32);
+    pub const UPPER_LID_RAISER_L: FaceExpression2FB = Self(59i32);
+    pub const UPPER_LID_RAISER_R: FaceExpression2FB = Self(60i32);
+    pub const UPPER_LIP_RAISER_L: FaceExpression2FB = Self(61i32);
+    pub const UPPER_LIP_RAISER_R: FaceExpression2FB = Self(62i32);
+    pub const TONGUE_TIP_INTERDENTAL: FaceExpression2FB = Self(63i32);
+    pub const TONGUE_TIP_ALVEOLAR: FaceExpression2FB = Self(64i32);
+    pub const TONGUE_FRONT_DORSAL_PALATE: FaceExpression2FB = Self(65i32);
+    pub const TONGUE_MID_DORSAL_PALATE: FaceExpression2FB = Self(66i32);
+    pub const TONGUE_BACK_DORSAL_VELAR: FaceExpression2FB = Self(67i32);
+    pub const TONGUE_OUT: FaceExpression2FB = Self(68i32);
+    pub const TONGUE_RETREAT: FaceExpression2FB = Self(69i32);
+    pub const COUNT: FaceExpression2FB = Self(70i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceExpression2FB {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::BROW_LOWERER_L => Some("BROW_LOWERER_L"),
+            Self::BROW_LOWERER_R => Some("BROW_LOWERER_R"),
+            Self::CHEEK_PUFF_L => Some("CHEEK_PUFF_L"),
+            Self::CHEEK_PUFF_R => Some("CHEEK_PUFF_R"),
+            Self::CHEEK_RAISER_L => Some("CHEEK_RAISER_L"),
+            Self::CHEEK_RAISER_R => Some("CHEEK_RAISER_R"),
+            Self::CHEEK_SUCK_L => Some("CHEEK_SUCK_L"),
+            Self::CHEEK_SUCK_R => Some("CHEEK_SUCK_R"),
+            Self::CHIN_RAISER_B => Some("CHIN_RAISER_B"),
+            Self::CHIN_RAISER_T => Some("CHIN_RAISER_T"),
+            Self::DIMPLER_L => Some("DIMPLER_L"),
+            Self::DIMPLER_R => Some("DIMPLER_R"),
+            Self::EYES_CLOSED_L => Some("EYES_CLOSED_L"),
+            Self::EYES_CLOSED_R => Some("EYES_CLOSED_R"),
+            Self::EYES_LOOK_DOWN_L => Some("EYES_LOOK_DOWN_L"),
+            Self::EYES_LOOK_DOWN_R => Some("EYES_LOOK_DOWN_R"),
+            Self::EYES_LOOK_LEFT_L => Some("EYES_LOOK_LEFT_L"),
+            Self::EYES_LOOK_LEFT_R => Some("EYES_LOOK_LEFT_R"),
+            Self::EYES_LOOK_RIGHT_L => Some("EYES_LOOK_RIGHT_L"),
+            Self::EYES_LOOK_RIGHT_R => Some("EYES_LOOK_RIGHT_R"),
+            Self::EYES_LOOK_UP_L => Some("EYES_LOOK_UP_L"),
+            Self::EYES_LOOK_UP_R => Some("EYES_LOOK_UP_R"),
+            Self::INNER_BROW_RAISER_L => Some("INNER_BROW_RAISER_L"),
+            Self::INNER_BROW_RAISER_R => Some("INNER_BROW_RAISER_R"),
+            Self::JAW_DROP => Some("JAW_DROP"),
+            Self::JAW_SIDEWAYS_LEFT => Some("JAW_SIDEWAYS_LEFT"),
+            Self::JAW_SIDEWAYS_RIGHT => Some("JAW_SIDEWAYS_RIGHT"),
+            Self::JAW_THRUST => Some("JAW_THRUST"),
+            Self::LID_TIGHTENER_L => Some("LID_TIGHTENER_L"),
+            Self::LID_TIGHTENER_R => Some("LID_TIGHTENER_R"),
+            Self::LIP_CORNER_DEPRESSOR_L => Some("LIP_CORNER_DEPRESSOR_L"),
+            Self::LIP_CORNER_DEPRESSOR_R => Some("LIP_CORNER_DEPRESSOR_R"),
+            Self::LIP_CORNER_PULLER_L => Some("LIP_CORNER_PULLER_L"),
+            Self::LIP_CORNER_PULLER_R => Some("LIP_CORNER_PULLER_R"),
+            Self::LIP_FUNNELER_LB => Some("LIP_FUNNELER_LB"),
+            Self::LIP_FUNNELER_LT => Some("LIP_FUNNELER_LT"),
+            Self::LIP_FUNNELER_RB => Some("LIP_FUNNELER_RB"),
+            Self::LIP_FUNNELER_RT => Some("LIP_FUNNELER_RT"),
+            Self::LIP_PRESSOR_L => Some("LIP_PRESSOR_L"),
+            Self::LIP_PRESSOR_R => Some("LIP_PRESSOR_R"),
+            Self::LIP_PUCKER_L => Some("LIP_PUCKER_L"),
+            Self::LIP_PUCKER_R => Some("LIP_PUCKER_R"),
+            Self::LIP_STRETCHER_L => Some("LIP_STRETCHER_L"),
+            Self::LIP_STRETCHER_R => Some("LIP_STRETCHER_R"),
+            Self::LIP_SUCK_LB => Some("LIP_SUCK_LB"),
+            Self::LIP_SUCK_LT => Some("LIP_SUCK_LT"),
+            Self::LIP_SUCK_RB => Some("LIP_SUCK_RB"),
+            Self::LIP_SUCK_RT => Some("LIP_SUCK_RT"),
+            Self::LIP_TIGHTENER_L => Some("LIP_TIGHTENER_L"),
+            Self::LIP_TIGHTENER_R => Some("LIP_TIGHTENER_R"),
+            Self::LIPS_TOWARD => Some("LIPS_TOWARD"),
+            Self::LOWER_LIP_DEPRESSOR_L => Some("LOWER_LIP_DEPRESSOR_L"),
+            Self::LOWER_LIP_DEPRESSOR_R => Some("LOWER_LIP_DEPRESSOR_R"),
+            Self::MOUTH_LEFT => Some("MOUTH_LEFT"),
+            Self::MOUTH_RIGHT => Some("MOUTH_RIGHT"),
+            Self::NOSE_WRINKLER_L => Some("NOSE_WRINKLER_L"),
+            Self::NOSE_WRINKLER_R => Some("NOSE_WRINKLER_R"),
+            Self::OUTER_BROW_RAISER_L => Some("OUTER_BROW_RAISER_L"),
+            Self::OUTER_BROW_RAISER_R => Some("OUTER_BROW_RAISER_R"),
+            Self::UPPER_LID_RAISER_L => Some("UPPER_LID_RAISER_L"),
+            Self::UPPER_LID_RAISER_R => Some("UPPER_LID_RAISER_R"),
+            Self::UPPER_LIP_RAISER_L => Some("UPPER_LIP_RAISER_L"),
+            Self::UPPER_LIP_RAISER_R => Some("UPPER_LIP_RAISER_R"),
+            Self::TONGUE_TIP_INTERDENTAL => Some("TONGUE_TIP_INTERDENTAL"),
+            Self::TONGUE_TIP_ALVEOLAR => Some("TONGUE_TIP_ALVEOLAR"),
+            Self::TONGUE_FRONT_DORSAL_PALATE => Some("TONGUE_FRONT_DORSAL_PALATE"),
+            Self::TONGUE_MID_DORSAL_PALATE => Some("TONGUE_MID_DORSAL_PALATE"),
+            Self::TONGUE_BACK_DORSAL_VELAR => Some("TONGUE_BACK_DORSAL_VELAR"),
+            Self::TONGUE_OUT => Some("TONGUE_OUT"),
+            Self::TONGUE_RETREAT => Some("TONGUE_RETREAT"),
+            Self::COUNT => Some("COUNT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFaceExpressionSet2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceExpressionSet2FB)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct FaceExpressionSet2FB(i32);
+impl FaceExpressionSet2FB {
+    #[doc = "indicates that the created XrFaceTracker2FB tracks the set of blend shapes described by XrFaceExpression2FB enum, i.e. the xrGetFaceExpressionWeights2FB function returns an array of blend shapes with the count of XR_FACE_EXPRESSION2_COUNT_FB and can: be indexed using XrFaceExpression2FB."]
+    pub const DEFAULT: FaceExpressionSet2FB = Self(0i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceExpressionSet2FB {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DEFAULT => Some("DEFAULT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFaceTrackingDataSource2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceTrackingDataSource2FB)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct FaceTrackingDataSource2FB(i32);
+impl FaceTrackingDataSource2FB {
+    #[doc = "face tracking uses visual data to estimate expressions. Face tracking may use audio to further improve the quality of face tracking."]
+    pub const VISUAL: FaceTrackingDataSource2FB = Self(0i32);
+    #[doc = "face tracking uses audio data to estimate expressions."]
+    pub const AUDIO: FaceTrackingDataSource2FB = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceTrackingDataSource2FB {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::VISUAL => Some("VISUAL"),
+            Self::AUDIO => Some("AUDIO"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFaceConfidence2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceConfidence2FB)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct FaceConfidence2FB(i32);
+impl FaceConfidence2FB {
+    pub const LOWER_FACE: FaceConfidence2FB = Self(0i32);
+    pub const UPPER_FACE: FaceConfidence2FB = Self(1i32);
+    pub const COUNT: FaceConfidence2FB = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceConfidence2FB {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let name = match *self {
             Self::LOWER_FACE => Some("LOWER_FACE"),
@@ -4652,6 +4962,8 @@ impl SemanticLabelsSupportFlagsFB {
     pub const MULTIPLE_SEMANTIC_LABELS: SemanticLabelsSupportFlagsFB = Self(1 << 0u64);
     #[doc = "If set, and the runtime reports the extensionVersion as 3 or greater, the runtime must: return \"TABLE\" instead of \"DESK\" as a semantic label to the application. Otherwise, the runtime must: return \"DESK\" instead of \"TABLE\" as a semantic label to the application, when applicable."]
     pub const ACCEPT_DESK_TO_TABLE_MIGRATION: SemanticLabelsSupportFlagsFB = Self(1 << 1u64);
+    #[doc = "If set, and the runtime reports the extensionVersion as 4 or greater, the runtime may: return \"INVISIBLE_WALL_FACE\" instead of \"WALL_FACE\" as a semantic label to the application in order to represent an invisible wall used to conceptually separate a space (e.g., separate a living space from a kitchen space in an open floor plan house even though there is no real wall between the two spaces) instead of a real wall. Otherwise, the runtime must: return \"WALL_FACE\" as a semantic label to the application in order to represent both an invisible and real wall, when applicable."]
+    pub const ACCEPT_INVISIBLE_WALL_FACE: SemanticLabelsSupportFlagsFB = Self(1 << 2u64);
 }
 bitmask!(SemanticLabelsSupportFlagsFB);
 #[doc = "See [XrHandTrackingAimFlagsFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrHandTrackingAimFlagsFB)"]
@@ -4747,6 +5059,8 @@ impl CompositionLayerSettingsFlagsFB {
     pub const NORMAL_SHARPENING: CompositionLayerSettingsFlagsFB = Self(1 << 2u64);
     #[doc = "Indicates compositor may: use high quality layer texture sharpening."]
     pub const QUALITY_SHARPENING: CompositionLayerSettingsFlagsFB = Self(1 << 3u64);
+    #[doc = "Indicates compositor may: automatically toggle a texture filtering mechanism to improve visual quality of layer. This must: not be the only bit set. (Added by XR_META_automatic_layer_filter)"]
+    pub const AUTO_LAYER_FILTER: CompositionLayerSettingsFlagsFB = Self(1 << 5u64);
 }
 bitmask!(CompositionLayerSettingsFlagsFB);
 #[doc = "See [XrExternalCameraStatusFlagsOCULUS](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExternalCameraStatusFlagsOCULUS)"]
@@ -4964,6 +5278,11 @@ handle!(PassthroughHTC);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct FaceTrackerFB(u64);
 handle!(FaceTrackerFB);
+#[doc = "See [XrFaceTracker2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceTracker2FB)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct FaceTracker2FB(u64);
+handle!(FaceTracker2FB);
 #[doc = "See [XrBodyTrackerFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrBodyTrackerFB)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -5122,6 +5441,64 @@ pub struct Extent2Di {
 pub struct Rect2Di {
     pub offset: Offset2Di,
     pub extent: Extent2Di,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[doc = "See [XrNegotiateLoaderInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrNegotiateLoaderInfo)"]
+pub struct NegotiateLoaderInfo {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub min_interface_version: u32,
+    pub max_interface_version: u32,
+    pub min_api_version: Version,
+    pub max_api_version: Version,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[doc = "See [XrNegotiateApiLayerRequest](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrNegotiateApiLayerRequest)"]
+pub struct NegotiateApiLayerRequest {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub layer_interface_version: u32,
+    pub layer_api_version: Version,
+    pub get_instance_proc_addr: Option<pfn::GetInstanceProcAddr>,
+    pub create_api_layer_instance: Option<pfn::CreateApiLayerInstance>,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[doc = "See [XrNegotiateRuntimeRequest](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrNegotiateRuntimeRequest)"]
+pub struct NegotiateRuntimeRequest {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub runtime_interface_version: u32,
+    pub runtime_api_version: Version,
+    pub get_instance_proc_addr: Option<pfn::GetInstanceProcAddr>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrApiLayerNextInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApiLayerNextInfo)"]
+pub struct ApiLayerNextInfo {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub layer_name: [c_char; MAX_API_LAYER_NAME_SIZE],
+    pub next_get_instance_proc_addr: Option<pfn::GetInstanceProcAddr>,
+    pub next_create_api_layer_instance: Option<pfn::CreateApiLayerInstance>,
+    pub next: *mut ApiLayerNextInfo,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+#[doc = "See [XrApiLayerCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrApiLayerCreateInfo)"]
+pub struct ApiLayerCreateInfo {
+    pub struct_type: LoaderInterfaceStructs,
+    pub struct_version: u32,
+    pub struct_size: usize,
+    pub loader_instance: *mut c_void,
+    pub settings_file_location: [c_char; API_LAYER_MAX_SETTINGS_PATH_SIZE],
+    pub next_info: *mut ApiLayerNextInfo,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -5403,6 +5780,7 @@ pub struct GraphicsBindingVulkanKHR {
 impl GraphicsBindingVulkanKHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_VULKAN_KHR;
 }
+pub type GraphicsBindingVulkan2KHR = GraphicsBindingVulkanKHR;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSessionCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSessionCreateInfo)"]
@@ -5521,6 +5899,7 @@ impl SwapchainImageVulkanKHR {
         x
     }
 }
+pub type SwapchainImageVulkan2KHR = SwapchainImageVulkanKHR;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSwapchainImageD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSwapchainImageD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
@@ -6540,6 +6919,7 @@ impl GraphicsRequirementsVulkanKHR {
         x
     }
 }
+pub type GraphicsRequirementsVulkan2KHR = GraphicsRequirementsVulkanKHR;
 #[repr(C)]
 #[derive(Copy, Clone)]
 #[doc = "See [XrGraphicsRequirementsD3D11KHR](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrGraphicsRequirementsD3D11KHR) - defined by [XR_KHR_D3D11_enable](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D11_enable)"]
@@ -7150,6 +7530,84 @@ pub struct FaceExpressionWeightsFB {
 }
 impl FaceExpressionWeightsFB {
     pub const TYPE: StructureType = StructureType::FACE_EXPRESSION_WEIGHTS_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemFaceTrackingProperties2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemFaceTrackingProperties2FB) - defined by [XR_FB_face_tracking2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_face_tracking2)"]
+pub struct SystemFaceTrackingProperties2FB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_visual_face_tracking: Bool32,
+    pub supports_audio_face_tracking: Bool32,
+}
+impl SystemFaceTrackingProperties2FB {
+    pub const TYPE: StructureType = StructureType::SYSTEM_FACE_TRACKING_PROPERTIES2_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFaceTrackerCreateInfo2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceTrackerCreateInfo2FB) - defined by [XR_FB_face_tracking2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_face_tracking2)"]
+pub struct FaceTrackerCreateInfo2FB {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub face_expression_set: FaceExpressionSet2FB,
+    pub requested_data_source_count: u32,
+    pub requested_data_sources: *mut FaceTrackingDataSource2FB,
+}
+impl FaceTrackerCreateInfo2FB {
+    pub const TYPE: StructureType = StructureType::FACE_TRACKER_CREATE_INFO2_FB;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFaceExpressionInfo2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceExpressionInfo2FB) - defined by [XR_FB_face_tracking2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_face_tracking2)"]
+pub struct FaceExpressionInfo2FB {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub time: Time,
+}
+impl FaceExpressionInfo2FB {
+    pub const TYPE: StructureType = StructureType::FACE_EXPRESSION_INFO2_FB;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFaceExpressionWeights2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrFaceExpressionWeights2FB) - defined by [XR_FB_face_tracking2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_face_tracking2)"]
+pub struct FaceExpressionWeights2FB {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub weight_count: u32,
+    pub weights: *mut f32,
+    pub confidence_count: u32,
+    pub confidences: *mut f32,
+    pub is_valid: Bool32,
+    pub is_eye_following_blendshapes_valid: Bool32,
+    pub data_source: FaceTrackingDataSource2FB,
+    pub time: Time,
+}
+impl FaceExpressionWeights2FB {
+    pub const TYPE: StructureType = StructureType::FACE_EXPRESSION_WEIGHTS2_FB;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -8723,6 +9181,44 @@ impl SpaceContainerFB {
     pub const TYPE: StructureType = StructureType::SPACE_CONTAINER_FB;
 }
 #[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceTriangleMeshGetInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceTriangleMeshGetInfoMETA) - defined by [XR_META_spatial_entity_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_META_spatial_entity_mesh)"]
+pub struct SpaceTriangleMeshGetInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl SpaceTriangleMeshGetInfoMETA {
+    pub const TYPE: StructureType = StructureType::SPACE_TRIANGLE_MESH_GET_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceTriangleMeshMETA](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceTriangleMeshMETA) - defined by [XR_META_spatial_entity_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_META_spatial_entity_mesh)"]
+pub struct SpaceTriangleMeshMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub vertex_capacity_input: u32,
+    pub vertex_count_output: u32,
+    pub vertices: *mut Vector3f,
+    pub index_capacity_input: u32,
+    pub index_count_output: u32,
+    pub indices: *mut u32,
+}
+impl SpaceTriangleMeshMETA {
+    pub const TYPE: StructureType = StructureType::SPACE_TRIANGLE_MESH_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrExtent3DfFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrExtent3DfFB) - defined by [XR_FB_scene](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_scene)"]
 pub struct Extent3DfFB {
@@ -9829,6 +10325,7 @@ impl DevicePcmSampleRateStateFB {
         x
     }
 }
+pub type DevicePcmSampleRateGetInfoFB = DevicePcmSampleRateStateFB;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpaceUserCreateInfoFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceUserCreateInfoFB) - defined by [XR_FB_spatial_entity_user](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_spatial_entity_user)"]
@@ -10500,6 +10997,77 @@ pub struct MarkerSpaceCreateInfoML {
 impl MarkerSpaceCreateInfoML {
     pub const TYPE: StructureType = StructureType::MARKER_SPACE_CREATE_INFO_ML;
 }
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRecommendedLayerResolutionMETA](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRecommendedLayerResolutionMETA) - defined by [XR_META_recommended_layer_resolution](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_META_recommended_layer_resolution)"]
+pub struct RecommendedLayerResolutionMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub recommended_image_dimensions: Extent2Di,
+    pub is_valid: Bool32,
+}
+impl RecommendedLayerResolutionMETA {
+    pub const TYPE: StructureType = StructureType::RECOMMENDED_LAYER_RESOLUTION_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRecommendedLayerResolutionGetInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrRecommendedLayerResolutionGetInfoMETA) - defined by [XR_META_recommended_layer_resolution](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_META_recommended_layer_resolution)"]
+pub struct RecommendedLayerResolutionGetInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub layer: *const CompositionLayerBaseHeader,
+    pub predicted_display_time: Time,
+}
+impl RecommendedLayerResolutionGetInfoMETA {
+    pub const TYPE: StructureType = StructureType::RECOMMENDED_LAYER_RESOLUTION_GET_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemUserPresencePropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSystemUserPresencePropertiesEXT) - defined by [XR_EXT_user_presence](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_user_presence)"]
+pub struct SystemUserPresencePropertiesEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_user_presence: Bool32,
+}
+impl SystemUserPresencePropertiesEXT {
+    pub const TYPE: StructureType = StructureType::SYSTEM_USER_PRESENCE_PROPERTIES_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataUserPresenceChangedEXT](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrEventDataUserPresenceChangedEXT) - defined by [XR_EXT_user_presence](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_user_presence)"]
+pub struct EventDataUserPresenceChangedEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub session: Session,
+    pub is_user_present: Bool32,
+}
+impl EventDataUserPresenceChangedEXT {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_USER_PRESENCE_CHANGED_EXT;
+}
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
     use super::*;
@@ -10511,6 +11079,23 @@ pub mod pfn {
         *const DebugUtilsMessengerCallbackDataEXT,
         *mut c_void,
     ) -> Bool32;
+    #[doc = "See [xrNegotiateLoaderRuntimeInterface](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrNegotiateLoaderRuntimeInterface)"]
+    pub type NegotiateLoaderRuntimeInterface = unsafe extern "system" fn(
+        loader_info: *const NegotiateLoaderInfo,
+        runtime_request: *mut NegotiateRuntimeRequest,
+    ) -> Result;
+    #[doc = "See [xrNegotiateLoaderApiLayerInterface](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrNegotiateLoaderApiLayerInterface)"]
+    pub type NegotiateLoaderApiLayerInterface = unsafe extern "system" fn(
+        loader_info: *const NegotiateLoaderInfo,
+        layer_name: *const c_char,
+        api_layer_request: *mut NegotiateApiLayerRequest,
+    ) -> Result;
+    #[doc = "See [xrCreateApiLayerInstance](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateApiLayerInstance)"]
+    pub type CreateApiLayerInstance = unsafe extern "system" fn(
+        info: *const InstanceCreateInfo,
+        layer_info: *const ApiLayerCreateInfo,
+        instance: *mut Instance,
+    ) -> Result;
     #[doc = "See [xrGetInstanceProcAddr](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetInstanceProcAddr)"]
     pub type GetInstanceProcAddr = unsafe extern "system" fn(
         instance: Instance,
@@ -11086,6 +11671,21 @@ pub mod pfn {
         expression_info: *const FaceExpressionInfoFB,
         expression_weights: *mut FaceExpressionWeightsFB,
     ) -> Result;
+    #[doc = "See [xrCreateFaceTracker2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateFaceTracker2FB) - defined by [XR_FB_face_tracking2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_face_tracking2)"]
+    pub type CreateFaceTracker2FB = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const FaceTrackerCreateInfo2FB,
+        face_tracker: *mut FaceTracker2FB,
+    ) -> Result;
+    #[doc = "See [xrDestroyFaceTracker2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroyFaceTracker2FB) - defined by [XR_FB_face_tracking2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_face_tracking2)"]
+    pub type DestroyFaceTracker2FB =
+        unsafe extern "system" fn(face_tracker: FaceTracker2FB) -> Result;
+    #[doc = "See [xrGetFaceExpressionWeights2FB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetFaceExpressionWeights2FB) - defined by [XR_FB_face_tracking2](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_face_tracking2)"]
+    pub type GetFaceExpressionWeights2FB = unsafe extern "system" fn(
+        face_tracker: FaceTracker2FB,
+        expression_info: *const FaceExpressionInfo2FB,
+        expression_weights: *mut FaceExpressionWeights2FB,
+    ) -> Result;
     #[doc = "See [xrCreateBodyTrackerFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrCreateBodyTrackerFB) - defined by [XR_FB_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_body_tracking)"]
     pub type CreateBodyTrackerFB = unsafe extern "system" fn(
         session: Session,
@@ -11418,6 +12018,12 @@ pub mod pfn {
         space: Space,
         space_container_output: *mut SpaceContainerFB,
     ) -> Result;
+    #[doc = "See [xrGetSpaceTriangleMeshMETA](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetSpaceTriangleMeshMETA) - defined by [XR_META_spatial_entity_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_META_spatial_entity_mesh)"]
+    pub type GetSpaceTriangleMeshMETA = unsafe extern "system" fn(
+        space: Space,
+        get_info: *const SpaceTriangleMeshGetInfoMETA,
+        triangle_mesh_output: *mut SpaceTriangleMeshMETA,
+    ) -> Result;
     #[doc = "See [xrGetSpaceBoundingBox2DFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetSpaceBoundingBox2DFB) - defined by [XR_FB_scene](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_scene)"]
     pub type GetSpaceBoundingBox2DFB = unsafe extern "system" fn(
         session: Session,
@@ -11641,6 +12247,12 @@ pub mod pfn {
         unsafe extern "system" fn(user: SpaceUserFB, user_id: *mut SpaceUserIdFB) -> Result;
     #[doc = "See [xrDestroySpaceUserFB](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrDestroySpaceUserFB) - defined by [XR_FB_spatial_entity_user](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_FB_spatial_entity_user)"]
     pub type DestroySpaceUserFB = unsafe extern "system" fn(user: SpaceUserFB) -> Result;
+    #[doc = "See [xrGetRecommendedLayerResolutionMETA](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrGetRecommendedLayerResolutionMETA) - defined by [XR_META_recommended_layer_resolution](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_META_recommended_layer_resolution)"]
+    pub type GetRecommendedLayerResolutionMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const RecommendedLayerResolutionGetInfoMETA,
+        resolution: *mut RecommendedLayerResolutionMETA,
+    ) -> Result;
     #[doc = "See [xrApplyForceFeedbackCurlMNDX](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#xrApplyForceFeedbackCurlMNDX) - defined by [XR_MNDX_force_feedback_curl](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MNDX_force_feedback_curl)"]
     pub type ApplyForceFeedbackCurlMNDX = unsafe extern "system" fn(
         hand_tracker: HandTrackerEXT,
@@ -11899,6 +12511,8 @@ pub const EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_hand_tracking_data_source\0";
 pub const EXT_plane_detection_SPEC_VERSION: u32 = 1u32;
 pub const EXT_PLANE_DETECTION_EXTENSION_NAME: &[u8] = b"XR_EXT_plane_detection\0";
+pub const EXT_user_presence_SPEC_VERSION: u32 = 1u32;
+pub const EXT_USER_PRESENCE_EXTENSION_NAME: &[u8] = b"XR_EXT_user_presence\0";
 pub const FB_composition_layer_image_layout_SPEC_VERSION: u32 = 1u32;
 pub const FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME: &[u8] =
     b"XR_FB_composition_layer_image_layout\0";
@@ -11927,7 +12541,7 @@ pub const FB_hand_tracking_aim_SPEC_VERSION: u32 = 2u32;
 pub const FB_HAND_TRACKING_AIM_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_aim\0";
 pub const FB_hand_tracking_capsules_SPEC_VERSION: u32 = 3u32;
 pub const FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_capsules\0";
-pub const FB_spatial_entity_SPEC_VERSION: u32 = 2u32;
+pub const FB_spatial_entity_SPEC_VERSION: u32 = 3u32;
 pub const FB_SPATIAL_ENTITY_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity\0";
 pub const FB_foveation_SPEC_VERSION: u32 = 1u32;
 pub const FB_FOVEATION_EXTENSION_NAME: &[u8] = b"XR_FB_foveation\0";
@@ -11966,7 +12580,7 @@ pub const FB_space_warp_SPEC_VERSION: u32 = 2u32;
 pub const FB_SPACE_WARP_EXTENSION_NAME: &[u8] = b"XR_FB_space_warp\0";
 pub const FB_haptic_amplitude_envelope_SPEC_VERSION: u32 = 1u32;
 pub const FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME: &[u8] = b"XR_FB_haptic_amplitude_envelope\0";
-pub const FB_scene_SPEC_VERSION: u32 = 3u32;
+pub const FB_scene_SPEC_VERSION: u32 = 4u32;
 pub const FB_SCENE_EXTENSION_NAME: &[u8] = b"XR_FB_scene\0";
 pub const FB_scene_capture_SPEC_VERSION: u32 = 1u32;
 pub const FB_SCENE_CAPTURE_EXTENSION_NAME: &[u8] = b"XR_FB_scene_capture\0";
@@ -11995,6 +12609,8 @@ pub const FB_SPATIAL_ENTITY_STORAGE_BATCH_EXTENSION_NAME: &[u8] =
     b"XR_FB_spatial_entity_storage_batch\0";
 pub const FB_spatial_entity_user_SPEC_VERSION: u32 = 1u32;
 pub const FB_SPATIAL_ENTITY_USER_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity_user\0";
+pub const FB_face_tracking2_SPEC_VERSION: u32 = 1u32;
+pub const FB_FACE_TRACKING2_EXTENSION_NAME: &[u8] = b"XR_FB_face_tracking2\0";
 pub const HTC_vive_cosmos_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HTC_vive_cosmos_controller_interaction\0";
@@ -12018,7 +12634,7 @@ pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HUAWEI_controller_interaction\0";
 #[cfg(target_os = "android")]
-pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 5u32;
+pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 6u32;
 #[cfg(target_os = "android")]
 pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_KHR_android_thread_settings\0";
 #[cfg(target_os = "android")]
@@ -12098,10 +12714,17 @@ pub const META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME: &[u8] =
     b"XR_META_vulkan_swapchain_create_info\0";
 pub const META_performance_metrics_SPEC_VERSION: u32 = 2u32;
 pub const META_PERFORMANCE_METRICS_EXTENSION_NAME: &[u8] = b"XR_META_performance_metrics\0";
-pub const META_headset_id_SPEC_VERSION: u32 = 1u32;
+pub const META_headset_id_SPEC_VERSION: u32 = 2u32;
 pub const META_HEADSET_ID_EXTENSION_NAME: &[u8] = b"XR_META_headset_id\0";
+pub const META_recommended_layer_resolution_SPEC_VERSION: u32 = 1u32;
+pub const META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME: &[u8] =
+    b"XR_META_recommended_layer_resolution\0";
 pub const META_passthrough_color_lut_SPEC_VERSION: u32 = 1u32;
 pub const META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME: &[u8] = b"XR_META_passthrough_color_lut\0";
+pub const META_spatial_entity_mesh_SPEC_VERSION: u32 = 1u32;
+pub const META_SPATIAL_ENTITY_MESH_EXTENSION_NAME: &[u8] = b"XR_META_spatial_entity_mesh\0";
+pub const META_automatic_layer_filter_SPEC_VERSION: u32 = 1u32;
+pub const META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME: &[u8] = b"XR_META_automatic_layer_filter\0";
 pub const META_touch_controller_plus_SPEC_VERSION: u32 = 1u32;
 pub const META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME: &[u8] = b"XR_META_touch_controller_plus\0";
 pub const ML_ml2_controller_interaction_SPEC_VERSION: u32 = 1u32;
@@ -12198,11 +12821,14 @@ pub const VARJO_marker_tracking_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_MARKER_TRACKING_EXTENSION_NAME: &[u8] = b"XR_VARJO_marker_tracking\0";
 pub const VARJO_view_offset_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_VIEW_OFFSET_EXTENSION_NAME: &[u8] = b"XR_VARJO_view_offset\0";
+pub const VARJO_xr4_controller_interaction_SPEC_VERSION: u32 = 1u32;
+pub const VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
+    b"XR_VARJO_xr4_controller_interaction\0";
 pub const YVR_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const YVR_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_YVR_controller_interaction\0";
 pub const EXTX_overlay_SPEC_VERSION: u32 = 5u32;
 pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
-pub const MNDX_egl_enable_SPEC_VERSION: u32 = 1u32;
+pub const MNDX_egl_enable_SPEC_VERSION: u32 = 2u32;
 pub const MNDX_EGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_MNDX_egl_enable\0";
 pub const MNDX_force_feedback_curl_SPEC_VERSION: u32 = 1u32;
 pub const MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME: &[u8] = b"XR_MNDX_force_feedback_curl\0";
@@ -12211,6 +12837,23 @@ pub const HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HTCX_vive_tracker_interaction\0";
 #[cfg(feature = "linked")]
 extern "system" {
+    #[link_name = "xrNegotiateLoaderRuntimeInterface"]
+    pub fn negotiate_loader_runtime_interface(
+        loader_info: *const NegotiateLoaderInfo,
+        runtime_request: *mut NegotiateRuntimeRequest,
+    ) -> Result;
+    #[link_name = "xrNegotiateLoaderApiLayerInterface"]
+    pub fn negotiate_loader_api_layer_interface(
+        loader_info: *const NegotiateLoaderInfo,
+        layer_name: *const c_char,
+        api_layer_request: *mut NegotiateApiLayerRequest,
+    ) -> Result;
+    #[link_name = "xrCreateApiLayerInstance"]
+    pub fn create_api_layer_instance(
+        info: *const InstanceCreateInfo,
+        layer_info: *const ApiLayerCreateInfo,
+        instance: *mut Instance,
+    ) -> Result;
     #[link_name = "xrGetInstanceProcAddr"]
     pub fn get_instance_proc_addr(
         instance: Instance,

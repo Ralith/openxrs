@@ -1115,6 +1115,13 @@ impl Parser {
             } else {
                 quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
             };
+            let aliases = self.struct_aliases.iter().map(|(alias, alias_to)| {
+                if alias_to != name {
+                    return quote! {};
+                }
+                let alias_ident = xr_ty_name(alias);
+                quote! { pub type #alias_ident = #ident; }
+            });
             quote! {
                 #[repr(C)]
                 #derives
@@ -1124,6 +1131,7 @@ impl Parser {
                     #(#members)*
                 }
                 #ty
+                #(#aliases)*
             }
         });
 
@@ -1253,8 +1261,13 @@ impl Parser {
     /// Generate high-level code
     #[allow(clippy::cognitive_complexity)] // TODO
     fn generate_hl(&self) -> TokenStream {
+        const BLACKLISTED_COMMANDS: [&str; 3] = [
+            "xrNegotiateLoaderRuntimeInterface",
+            "xrNegotiateLoaderApiLayerInterface",
+            "xrCreateApiLayerInstance",
+        ];
         let (instance_pfn_fields, instance_pfn_inits) = self.commands.iter().map(|(name, command)| {
-            if command.extension.is_some() {
+            if command.extension.is_some() || BLACKLISTED_COMMANDS.contains(&name.as_str()) {
                 return (quote! {}, quote! {});
             }
             let pfn_ident = xr_command_name(name);
@@ -2145,7 +2158,7 @@ fn xr_ty_name(raw: &str) -> Ident {
 }
 
 fn split_ty_ext(name: &str) -> (&str, &str) {
-    let ext = name.rfind(|x: char| x.is_lowercase()).unwrap() + 1;
+    let ext = name.rfind(|x: char| !x.is_uppercase()).unwrap() + 1;
     name.split_at(ext)
 }
 
@@ -2222,6 +2235,7 @@ fn xr_var_ty(api_aliases: &[(String, String)], member: &Member) -> TokenStream {
             "uint32_t" => "u32",
             "uint16_t" => "u16",
             "uint8_t" => "u8",
+            "size_t" => "usize",
             "char" => "c_char",
             "int64_t" => "i64",
             "int32_t" => "i32",
