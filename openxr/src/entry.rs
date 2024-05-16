@@ -236,7 +236,7 @@ impl Entry {
                 application_version: app_info.application_version,
                 engine_name: [0; sys::MAX_ENGINE_NAME_SIZE],
                 engine_version: app_info.engine_version,
-                api_version: CURRENT_API_VERSION,
+                api_version: app_info.api_version,
             },
             enabled_api_layer_count: layer_ptrs.len() as _,
             enabled_api_layer_names: layer_ptrs.as_ptr(),
@@ -346,12 +346,25 @@ impl std::error::Error for LoadError {
     }
 }
 
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone)]
 pub struct ApplicationInfo<'a> {
     pub application_name: &'a str,
     pub application_version: u32,
     pub engine_name: &'a str,
     pub engine_version: u32,
+    pub api_version: Version,
+}
+
+impl<'a> Default for ApplicationInfo<'a> {
+    fn default() -> Self {
+        Self {
+            application_name: Default::default(),
+            application_version: Default::default(),
+            engine_name: Default::default(),
+            engine_version: Default::default(),
+            api_version: Version::new(1, 0, 0),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

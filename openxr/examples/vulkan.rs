@@ -68,6 +68,7 @@ pub fn main() {
                 application_version: 0,
                 engine_name: "openxrs example",
                 engine_version: 0,
+                api_version: xr::Version::new(1, 0, 0),
             },
             &enabled_extensions,
             &[],
