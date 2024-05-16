@@ -3360,7 +3360,6 @@ pub mod raw {
         pub sync_actions: pfn::SyncActions,
         pub enumerate_bound_sources_for_action: pfn::EnumerateBoundSourcesForAction,
         pub get_input_source_localized_name: pfn::GetInputSourceLocalizedName,
-        pub locate_spaces: pfn::LocateSpaces,
     }
     impl Instance {
         #[doc = r" Load the core function pointer table"]
@@ -3597,10 +3596,6 @@ pub mod raw {
                 get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetInputSourceLocalizedName\0"),
-                )?),
-                locate_spaces: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLocateSpaces\0"),
                 )?),
             })
         }

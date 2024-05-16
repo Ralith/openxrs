@@ -111,7 +111,7 @@ impl Parser {
                         self.parse_commands();
                     }
                     "feature" => {
-                        self.parse_feature();
+                        self.parse_feature(&attributes);
                     }
                     "extensions" => {
                         self.parse_extensions();
@@ -165,13 +165,14 @@ impl Parser {
         }
     }
 
-    fn parse_feature(&mut self) {
+    fn parse_feature(&mut self, attrs: &[OwnedAttribute]) {
+        let feature_name = Rc::<str>::from(attr(attrs, "name").unwrap());
         loop {
             use XmlEvent::*;
             match self.reader.next().expect("failed to parse XML") {
                 StartElement { name, .. } => match &name.local_name[..] {
                     "require" => {
-                        self.parse_required(None, None);
+                        self.parse_required(None, None, Some(&feature_name));
                     }
                     _ => {
                         eprintln!("unimplemented feature element: {}", name.local_name);
@@ -235,7 +236,7 @@ impl Parser {
     fn parse_extension_required(&mut self, attrs: &[OwnedAttribute]) {
         let ext_name = Rc::<str>::from(attr(attrs, "name").unwrap());
         let ext_number = attr(attrs, "number").unwrap().parse::<i32>().unwrap();
-        let (ext_version, commands) = self.parse_required(Some(&ext_name), Some(ext_number));
+        let (ext_version, commands) = self.parse_required(Some(&ext_name), Some(ext_number), None);
         if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
             self.disabled_exts.insert(ext_name);
         } else {
@@ -267,8 +268,10 @@ impl Parser {
         &mut self,
         ext_name: Option<&Rc<str>>,
         ext_number: Option<i32>,
+        feature_name: Option<&Rc<str>>,
     ) -> (Option<u32>, Vec<String>) {
         assert_eq!(ext_name.is_some(), ext_number.is_some());
+        assert_ne!(ext_name.is_some(), feature_name.is_some());
         let mut ext_version = None;
         let mut commands = Vec::new();
         loop {
@@ -282,6 +285,11 @@ impl Parser {
                         if let Some(ext_name) = ext_name {
                             if let Some(command) = self.commands.get_mut(cmd) {
                                 command.extension = Some(ext_name.clone());
+                            }
+                        }
+                        if let Some(feature_name) = feature_name {
+                            if let Some(command) = self.commands.get_mut(cmd) {
+                                command.feature = Some(feature_name.clone());
                             }
                         }
                         commands.push(cmd.into());
@@ -477,6 +485,7 @@ impl Parser {
                 Command {
                     params,
                     extension: None,
+                    feature: None,
                 },
             );
         } else {
@@ -1308,13 +1317,11 @@ impl Parser {
     /// Generate high-level code
     #[allow(clippy::cognitive_complexity)] // TODO
     fn generate_hl(&self) -> TokenStream {
-        const BLACKLISTED_COMMANDS: [&str; 3] = [
-            "xrNegotiateLoaderRuntimeInterface",
-            "xrNegotiateLoaderApiLayerInterface",
-            "xrCreateApiLayerInstance",
-        ];
         let (instance_pfn_fields, instance_pfn_inits) = self.commands.iter().map(|(name, command)| {
-            if command.extension.is_some() || BLACKLISTED_COMMANDS.contains(&name.as_str()) {
+            // We only want commands from xr version 1.0 here because these commands are always loaded.
+            if command.feature.as_ref().map_or(true, |feature|
+                feature.as_ref() != "XR_VERSION_1_0"
+            ) {
                 return (quote! {}, quote! {});
             }
             let pfn_ident = xr_command_name(name);
@@ -2141,6 +2148,7 @@ struct Tag {
 struct Command {
     params: Vec<Member>,
     extension: Option<Rc<str>>,
+    feature: Option<Rc<str>>,
 }
 
 #[derive(Debug)]
