@@ -113,7 +113,7 @@ pub fn main() {
     unsafe {
         let vk_entry = ash::Entry::load().unwrap();
 
-        let vk_app_info = vk::ApplicationInfo::builder()
+        let vk_app_info = vk::ApplicationInfo::default()
             .application_version(0)
             .engine_version(0)
             .api_version(vk_target_version);
@@ -123,7 +123,7 @@ pub fn main() {
                 .create_vulkan_instance(
                     system,
                     std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
-                    &vk::InstanceCreateInfo::builder().application_info(&vk_app_info) as *const _
+                    &vk::InstanceCreateInfo::default().application_info(&vk_app_info) as *const _
                         as *const _,
                 )
                 .expect("XR error creating Vulkan instance")
@@ -166,11 +166,10 @@ pub fn main() {
                     system,
                     std::mem::transmute(vk_entry.static_fn().get_instance_proc_addr),
                     vk_physical_device.as_raw() as _,
-                    &vk::DeviceCreateInfo::builder()
-                        .queue_create_infos(&[vk::DeviceQueueCreateInfo::builder()
+                    &vk::DeviceCreateInfo::default()
+                        .queue_create_infos(&[vk::DeviceQueueCreateInfo::default()
                             .queue_family_index(queue_family_index)
-                            .queue_priorities(&[1.0])
-                            .build()])
+                            .queue_priorities(&[1.0])])
                         .push_next(&mut vk::PhysicalDeviceMultiviewFeatures {
                             multiview: vk::TRUE,
                             ..Default::default()
@@ -188,7 +187,7 @@ pub fn main() {
         let view_mask = !(!0 << VIEW_COUNT);
         let render_pass = vk_device
             .create_render_pass(
-                &vk::RenderPassCreateInfo::builder()
+                &vk::RenderPassCreateInfo::default()
                     .attachments(&[vk::AttachmentDescription {
                         format: COLOR_FORMAT,
                         samples: vk::SampleCountFlags::TYPE_1,
@@ -198,13 +197,12 @@ pub fn main() {
                         final_layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
                         ..Default::default()
                     }])
-                    .subpasses(&[vk::SubpassDescription::builder()
+                    .subpasses(&[vk::SubpassDescription::default()
                         .color_attachments(&[vk::AttachmentReference {
                             attachment: 0,
                             layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
                         }])
-                        .pipeline_bind_point(vk::PipelineBindPoint::GRAPHICS)
-                        .build()])
+                        .pipeline_bind_point(vk::PipelineBindPoint::GRAPHICS)])
                     .dependencies(&[vk::SubpassDependency {
                         src_subpass: vk::SUBPASS_EXTERNAL,
                         dst_subpass: 0,
@@ -214,7 +212,7 @@ pub fn main() {
                         ..Default::default()
                     }])
                     .push_next(
-                        &mut vk::RenderPassMultiviewCreateInfo::builder()
+                        &mut vk::RenderPassMultiviewCreateInfo::default()
                             .view_masks(&[view_mask])
                             .correlation_masks(&[view_mask]),
                     ),
@@ -228,15 +226,15 @@ pub fn main() {
         ))
         .unwrap();
         let vert = vk_device
-            .create_shader_module(&vk::ShaderModuleCreateInfo::builder().code(&vert), None)
+            .create_shader_module(&vk::ShaderModuleCreateInfo::default().code(&vert), None)
             .unwrap();
         let frag = vk_device
-            .create_shader_module(&vk::ShaderModuleCreateInfo::builder().code(&frag), None)
+            .create_shader_module(&vk::ShaderModuleCreateInfo::default().code(&frag), None)
             .unwrap();
 
         let pipeline_layout = vk_device
             .create_pipeline_layout(
-                &vk::PipelineLayoutCreateInfo::builder().set_layouts(&[]),
+                &vk::PipelineLayoutCreateInfo::default().set_layouts(&[]),
                 None,
             )
             .unwrap();
@@ -252,7 +250,7 @@ pub fn main() {
         let pipeline = vk_device
             .create_graphics_pipelines(
                 vk::PipelineCache::null(),
-                &[vk::GraphicsPipelineCreateInfo::builder()
+                &[vk::GraphicsPipelineCreateInfo::default()
                     .stages(&[
                         vk::PipelineShaderStageCreateInfo {
                             stage: vk::ShaderStageFlags::VERTEX,
@@ -269,33 +267,33 @@ pub fn main() {
                     ])
                     .vertex_input_state(&vk::PipelineVertexInputStateCreateInfo::default())
                     .input_assembly_state(
-                        &vk::PipelineInputAssemblyStateCreateInfo::builder()
+                        &vk::PipelineInputAssemblyStateCreateInfo::default()
                             .topology(vk::PrimitiveTopology::TRIANGLE_LIST),
                     )
                     .viewport_state(
-                        &vk::PipelineViewportStateCreateInfo::builder()
+                        &vk::PipelineViewportStateCreateInfo::default()
                             .scissor_count(1)
                             .viewport_count(1),
                     )
                     .rasterization_state(
-                        &vk::PipelineRasterizationStateCreateInfo::builder()
+                        &vk::PipelineRasterizationStateCreateInfo::default()
                             .cull_mode(vk::CullModeFlags::NONE)
                             .polygon_mode(vk::PolygonMode::FILL)
                             .line_width(1.0),
                     )
                     .multisample_state(
-                        &vk::PipelineMultisampleStateCreateInfo::builder()
+                        &vk::PipelineMultisampleStateCreateInfo::default()
                             .rasterization_samples(vk::SampleCountFlags::TYPE_1),
                     )
                     .depth_stencil_state(
-                        &vk::PipelineDepthStencilStateCreateInfo::builder()
+                        &vk::PipelineDepthStencilStateCreateInfo::default()
                             .depth_test_enable(false)
                             .depth_write_enable(false)
                             .front(noop_stencil_state)
                             .back(noop_stencil_state),
                     )
                     .color_blend_state(
-                        &vk::PipelineColorBlendStateCreateInfo::builder().attachments(&[
+                        &vk::PipelineColorBlendStateCreateInfo::default().attachments(&[
                             vk::PipelineColorBlendAttachmentState {
                                 blend_enable: vk::TRUE,
                                 src_color_blend_factor: vk::BlendFactor::ONE,
@@ -309,15 +307,14 @@ pub fn main() {
                         ]),
                     )
                     .dynamic_state(
-                        &vk::PipelineDynamicStateCreateInfo::builder().dynamic_states(&[
+                        &vk::PipelineDynamicStateCreateInfo::default().dynamic_states(&[
                             vk::DynamicState::VIEWPORT,
                             vk::DynamicState::SCISSOR,
                         ]),
                     )
                     .layout(pipeline_layout)
                     .render_pass(render_pass)
-                    .subpass(0)
-                    .build()],
+                    .subpass(0)],
                 None,
             )
             .unwrap()[0];
@@ -398,7 +395,7 @@ pub fn main() {
 
         let cmd_pool = vk_device
             .create_command_pool(
-                &vk::CommandPoolCreateInfo::builder()
+                &vk::CommandPoolCreateInfo::default()
                     .queue_family_index(queue_family_index)
                     .flags(
                         vk::CommandPoolCreateFlags::RESET_COMMAND_BUFFER
@@ -409,7 +406,7 @@ pub fn main() {
             .unwrap();
         let cmds = vk_device
             .allocate_command_buffers(
-                &vk::CommandBufferAllocateInfo::builder()
+                &vk::CommandBufferAllocateInfo::default()
                     .command_pool(cmd_pool)
                     .command_buffer_count(PIPELINE_DEPTH),
             )
@@ -418,7 +415,7 @@ pub fn main() {
             .map(|_| {
                 vk_device
                     .create_fence(
-                        &vk::FenceCreateInfo::builder().flags(vk::FenceCreateFlags::SIGNALED),
+                        &vk::FenceCreateInfo::default().flags(vk::FenceCreateFlags::SIGNALED),
                         None,
                     )
                     .unwrap()
@@ -551,7 +548,7 @@ pub fn main() {
                             let color_image = vk::Image::from_raw(color_image);
                             let color = vk_device
                                 .create_image_view(
-                                    &vk::ImageViewCreateInfo::builder()
+                                    &vk::ImageViewCreateInfo::default()
                                         .image(color_image)
                                         .view_type(vk::ImageViewType::TYPE_2D_ARRAY)
                                         .format(COLOR_FORMAT)
@@ -567,7 +564,7 @@ pub fn main() {
                                 .unwrap();
                             let framebuffer = vk_device
                                 .create_framebuffer(
-                                    &vk::FramebufferCreateInfo::builder()
+                                    &vk::FramebufferCreateInfo::default()
                                         .render_pass(render_pass)
                                         .width(resolution.width)
                                         .height(resolution.height)
@@ -596,13 +593,13 @@ pub fn main() {
             vk_device
                 .begin_command_buffer(
                     cmd,
-                    &vk::CommandBufferBeginInfo::builder()
+                    &vk::CommandBufferBeginInfo::default()
                         .flags(vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT),
                 )
                 .unwrap();
             vk_device.cmd_begin_render_pass(
                 cmd,
-                &vk::RenderPassBeginInfo::builder()
+                &vk::RenderPassBeginInfo::default()
                     .render_pass(render_pass)
                     .framebuffer(swapchain.buffers[image_index as usize].framebuffer)
                     .render_area(vk::Rect2D {
@@ -693,7 +690,7 @@ pub fn main() {
             vk_device
                 .queue_submit(
                     queue,
-                    &[vk::SubmitInfo::builder().command_buffers(&[cmd]).build()],
+                    &[vk::SubmitInfo::default().command_buffers(&[cmd])],
                     fences[frame],
                 )
                 .unwrap();
