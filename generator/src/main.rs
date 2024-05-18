@@ -1518,6 +1518,7 @@ impl Parser {
                             #(#ext_set_inits)*
                             bytes => {
                                 if let Ok(name) = std::str::from_utf8(bytes) {
+                                    // This is probably always true but we check just to be sure.
                                     if bytes.last() == Some(&0) {
                                         out.other.push(name[0..(bytes.len() - 1)].into());
                                     } else {
