@@ -2,6 +2,7 @@
 #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
 use crate::*;
 use std::borrow::Cow;
+use std::ffi::CStr;
 use std::mem::MaybeUninit;
 pub use sys::platform::{
     EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
@@ -686,13 +687,10 @@ impl ExtensionSet {
                     out.htcx_vive_tracker_interaction = true;
                 }
                 bytes => {
-                    if let Ok(name) = std::str::from_utf8(bytes) {
-                        if bytes.last() == Some(&0) {
-                            out.other.push(name[0..(bytes.len() - 1)].into());
-                        } else {
-                            out.other.push(name.into());
-                        }
-                    }
+                    let cstr = CStr::from_bytes_with_nul(bytes)
+                        .expect("extension names should be null terminated strings");
+                    let string = String::from_utf8_lossy(cstr.to_bytes()).to_string();
+                    out.other.push(string);
                 }
             }
         }
