@@ -245,91 +245,87 @@ impl Parser {
             match self.reader.next().expect("failed to parse XML") {
                 StartElement {
                     name, attributes, ..
-                } => {
-                    match &name.local_name[..] {
-                        "command" => {
-                            let cmd = attr(&attributes, "name").unwrap();
-                            if let Some(command) = self.commands.get_mut(cmd) {
-                                command.extension = Some(ext_name.clone());
-                            }
-                            commands.push(cmd.into());
+                } => match &name.local_name[..] {
+                    "command" => {
+                        let cmd = attr(&attributes, "name").unwrap();
+                        if let Some(command) = self.commands.get_mut(cmd) {
+                            command.extension = Some(ext_name.clone());
                         }
-                        "enum" => {
-                            let name = attr(&attributes, "name").unwrap();
-                            if let Some(extends) = attr(&attributes, "extends") {
-                                const EXT_BASE: i32 = 1_000_000_000;
-                                const EXT_BLOCK_SIZE: i32 = 1000;
-
-                                let value = if let Some(offset) = attr(&attributes, "offset") {
-                                    let offset = offset.parse::<i32>().unwrap();
-                                    let sign =
-                                        if attr(&attributes, "dir").map_or(false, |x| x == "-") {
-                                            -1
-                                        } else {
-                                            1
-                                        };
-                                    ConstantValue::Literal(
-                                        sign * (EXT_BASE
-                                            + (ext_number - 1) * EXT_BLOCK_SIZE
-                                            + offset),
-                                    )
-                                } else if let Some(bitpos) = attr(&attributes, "bitpos") {
-                                    ConstantValue::Literal(bitpos.parse::<i32>().unwrap())
-                                } else {
-                                    ConstantValue::Alias(attr(&attributes, "alias").unwrap().into())
-                                };
-                                let bitmasks = &mut self.bitmasks;
-                                if let Some(e) = self.enums.get_mut(extends) {
-                                    e.values.push(Constant {
-                                        name: name.into(),
-                                        value,
-                                        comment: attr(&attributes, "comment")
-                                            .and_then(tidy_comment),
-                                    });
-                                } else if let Some(e) = self
-                                    .bitvalues
-                                    .get(extends)
-                                    .and_then(|x| bitmasks.get_mut(x))
-                                {
-                                    e.values.push(Constant {
-                                        name: name.into(),
-                                        value: match value {
-                                            ConstantValue::Literal(x) => {
-                                                ConstantValue::Literal(x as u64)
-                                            }
-                                            ConstantValue::Alias(x) => ConstantValue::Alias(x),
-                                        },
-                                        comment: attr(&attributes, "comment")
-                                            .and_then(tidy_comment),
-                                    });
-                                } else {
-                                    eprintln!("extension to unrecognized type {}", extends);
-                                }
-                            } else if let Some(alias) = attr(&attributes, "alias") {
-                                self.api_aliases.push((name.into(), alias.into()));
-                            } else if name.ends_with("SPEC_VERSION") {
-                                let value = attr(&attributes, "value").unwrap();
-                                ext_version = Some(value.parse().unwrap());
-                            } else if name.ends_with("EXTENSION_NAME") {
-                                let value = attr(&attributes, "value").unwrap();
-                                assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
-                            } else if let Some(value) = attr(&attributes, "value") {
-                                self.api_constants
-                                    .push((name.into(), value.parse().unwrap()));
-                            }
-                        }
-                        "type" => {
-                            let ty = attr(&attributes, "name").unwrap();
-                            if let Some(s) = self.structs.get_mut(ty) {
-                                s.extension = Some(ext_name.clone());
-                            }
-                        }
-                        _ => {
-                            eprintln!("unimplemented require element: {}", name.local_name);
-                        }
+                        commands.push(cmd.into());
+                        self.finish_element();
                     }
-                    self.finish_element();
-                }
+                    "enum" => {
+                        let name = attr(&attributes, "name").unwrap();
+                        if let Some(extends) = attr(&attributes, "extends") {
+                            const EXT_BASE: i32 = 1_000_000_000;
+                            const EXT_BLOCK_SIZE: i32 = 1000;
+
+                            let value = if let Some(offset) = attr(&attributes, "offset") {
+                                let offset = offset.parse::<i32>().unwrap();
+                                let sign = if attr(&attributes, "dir").map_or(false, |x| x == "-") {
+                                    -1
+                                } else {
+                                    1
+                                };
+                                ConstantValue::Literal(
+                                    sign * (EXT_BASE + (ext_number - 1) * EXT_BLOCK_SIZE + offset),
+                                )
+                            } else if let Some(bitpos) = attr(&attributes, "bitpos") {
+                                ConstantValue::Literal(bitpos.parse::<i32>().unwrap())
+                            } else {
+                                ConstantValue::Alias(attr(&attributes, "alias").unwrap().into())
+                            };
+                            let bitmasks = &mut self.bitmasks;
+                            if let Some(e) = self.enums.get_mut(extends) {
+                                e.values.push(Constant {
+                                    name: name.into(),
+                                    value,
+                                    comment: attr(&attributes, "comment").and_then(tidy_comment),
+                                });
+                            } else if let Some(e) = self
+                                .bitvalues
+                                .get(extends)
+                                .and_then(|x| bitmasks.get_mut(x))
+                            {
+                                e.values.push(Constant {
+                                    name: name.into(),
+                                    value: match value {
+                                        ConstantValue::Literal(x) => {
+                                            ConstantValue::Literal(x as u64)
+                                        }
+                                        ConstantValue::Alias(x) => ConstantValue::Alias(x),
+                                    },
+                                    comment: attr(&attributes, "comment").and_then(tidy_comment),
+                                });
+                            } else {
+                                eprintln!("extension to unrecognized type {}", extends);
+                            }
+                        } else if let Some(alias) = attr(&attributes, "alias") {
+                            self.api_aliases.push((name.into(), alias.into()));
+                        } else if name.ends_with("SPEC_VERSION") {
+                            let value = attr(&attributes, "value").unwrap();
+                            ext_version = Some(value.parse().unwrap());
+                        } else if name.ends_with("EXTENSION_NAME") {
+                            let value = attr(&attributes, "value").unwrap();
+                            assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
+                        } else if let Some(value) = attr(&attributes, "value") {
+                            self.api_constants
+                                .push((name.into(), value.parse().unwrap()));
+                        }
+                        self.finish_element();
+                    }
+                    "type" => {
+                        let ty = attr(&attributes, "name").unwrap();
+                        if let Some(s) = self.structs.get_mut(ty) {
+                            s.extension = Some(ext_name.clone());
+                        }
+                        self.finish_element();
+                    }
+                    _ => {
+                        eprintln!("unimplemented require element: {}", name.local_name);
+                        self.finish_element();
+                    }
+                },
                 EndElement { name } => {
                     if name.local_name == "require" {
                         break;
