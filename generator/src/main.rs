@@ -110,6 +110,9 @@ impl Parser {
                     "commands" => {
                         self.parse_commands();
                     }
+                    "feature" => {
+                        self.parse_feature();
+                    }
                     "extensions" => {
                         self.parse_extensions();
                     }
@@ -150,6 +153,33 @@ impl Parser {
                 },
                 EndElement { name } => {
                     if name.local_name == "tags" {
+                        break;
+                    }
+                    eprintln!("unexpected end element: {}", name);
+                }
+                EndDocument => {
+                    panic!("unexpected end of document");
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn parse_feature(&mut self) {
+        loop {
+            use XmlEvent::*;
+            match self.reader.next().expect("failed to parse XML") {
+                StartElement { name, .. } => match &name.local_name[..] {
+                    "require" => {
+                        self.parse_required(None, None);
+                    }
+                    _ => {
+                        eprintln!("unimplemented feature element: {}", name.local_name);
+                        self.finish_element();
+                    }
+                },
+                EndElement { name } => {
+                    if name.local_name == "feature" {
                         break;
                     }
                     eprintln!("unexpected end element: {}", name);
@@ -205,7 +235,7 @@ impl Parser {
     fn parse_extension_required(&mut self, attrs: &[OwnedAttribute]) {
         let ext_name = Rc::<str>::from(attr(attrs, "name").unwrap());
         let ext_number = attr(attrs, "number").unwrap().parse::<i32>().unwrap();
-        let (ext_version, commands) = self.parse_required(&ext_name, ext_number);
+        let (ext_version, commands) = self.parse_required(Some(&ext_name), Some(ext_number));
         if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
             self.disabled_exts.insert(ext_name);
         } else {
@@ -235,9 +265,10 @@ impl Parser {
 
     fn parse_required(
         &mut self,
-        ext_name: &Rc<str>,
-        ext_number: i32,
+        ext_name: Option<&Rc<str>>,
+        ext_number: Option<i32>,
     ) -> (Option<u32>, Vec<String>) {
+        assert_eq!(ext_name.is_some(), ext_number.is_some());
         let mut ext_version = None;
         let mut commands = Vec::new();
         loop {
@@ -248,8 +279,10 @@ impl Parser {
                 } => match &name.local_name[..] {
                     "command" => {
                         let cmd = attr(&attributes, "name").unwrap();
-                        if let Some(command) = self.commands.get_mut(cmd) {
-                            command.extension = Some(ext_name.clone());
+                        if let Some(ext_name) = ext_name {
+                            if let Some(command) = self.commands.get_mut(cmd) {
+                                command.extension = Some(ext_name.clone());
+                            }
                         }
                         commands.push(cmd.into());
                         self.finish_element();
@@ -259,6 +292,12 @@ impl Parser {
                         if let Some(extends) = attr(&attributes, "extends") {
                             const EXT_BASE: i32 = 1_000_000_000;
                             const EXT_BLOCK_SIZE: i32 = 1000;
+                            let ext_number = ext_number.unwrap_or_else(|| {
+                                attr(&attributes, "extnumber")
+                                    .unwrap()
+                                    .parse::<i32>()
+                                    .unwrap()
+                            });
 
                             let value = if let Some(offset) = attr(&attributes, "offset") {
                                 let offset = offset.parse::<i32>().unwrap();
@@ -307,7 +346,7 @@ impl Parser {
                             ext_version = Some(value.parse().unwrap());
                         } else if name.ends_with("EXTENSION_NAME") {
                             let value = attr(&attributes, "value").unwrap();
-                            assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
+                            assert_eq!(&ext_name.unwrap()[..], &value[1..value.len() - 1]);
                         } else if let Some(value) = attr(&attributes, "value") {
                             self.api_constants
                                 .push((name.into(), value.parse().unwrap()));
@@ -315,11 +354,15 @@ impl Parser {
                         self.finish_element();
                     }
                     "type" => {
-                        let ty = attr(&attributes, "name").unwrap();
-                        if let Some(s) = self.structs.get_mut(ty) {
-                            s.extension = Some(ext_name.clone());
+                        if let Some(ext_name) = ext_name {
+                            let ty = attr(&attributes, "name").unwrap();
+                            if let Some(s) = self.structs.get_mut(ty) {
+                                s.extension = Some(ext_name.clone());
+                            }
+                            self.finish_element();
+                        } else {
+                            self.parse_type(&attributes);
                         }
-                        self.finish_element();
                     }
                     _ => {
                         eprintln!("unimplemented require element: {}", name.local_name);
