@@ -1495,6 +1495,7 @@ impl Parser {
 
             #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
             use std::borrow::Cow;
+            use std::ffi::CStr;
             use std::mem::MaybeUninit;
             pub use sys::{#(#reexports),*};
             pub use sys::platform::{EGLenum, VkFilter, VkSamplerMipmapMode, VkSamplerAddressMode, VkComponentSwizzle};
@@ -1517,9 +1518,13 @@ impl Parser {
                         match crate::fixed_str_bytes(&ext.extension_name) {
                             #(#ext_set_inits)*
                             bytes => {
-                                if let Ok(name) = std::str::from_utf8(bytes) {
-                                    out.other.push(name.into());
-                                }
+                                let cstr = CStr::from_bytes_with_nul(bytes)
+                                    .expect("extension names should be null terminated strings");
+                                let string = cstr
+                                    .to_str()
+                                    .expect("extension names should be valid UTF-8")
+                                    .to_string();
+                                out.other.push(string);
                             }
                         }
                     }
