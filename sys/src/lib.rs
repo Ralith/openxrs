@@ -149,7 +149,7 @@ wrapper! {
 }
 
 wrapper! {
-    #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     Version(u64)
 }
 
@@ -182,6 +182,12 @@ impl From<(u16, u16, u32)> for Version {
 }
 
 impl fmt::Display for Version {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "{}.{}.{}", self.major(), self.minor(), self.patch())
+    }
+}
+
+impl fmt::Debug for Version {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "{}.{}.{}", self.major(), self.minor(), self.patch())
     }
@@ -238,3 +244,4 @@ pub const EYE_POSITION_COUNT_FB: usize = 2;
 pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992;
 
 pub type SpaceUserIdFB = u64;
+pub type FutureEXT = u64;

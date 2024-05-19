@@ -7,7 +7,7 @@
 
 Rust bindings for the OpenXR virtual/augmented reality runtime
 API. Refer to [the
-specification](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html)
+specification](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html)
 for detailed documentation on individual API calls.
 
 ## `openxr` 

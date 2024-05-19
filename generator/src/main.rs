@@ -110,6 +110,9 @@ impl Parser {
                     "commands" => {
                         self.parse_commands();
                     }
+                    "feature" => {
+                        self.parse_feature(&attributes);
+                    }
                     "extensions" => {
                         self.parse_extensions();
                     }
@@ -150,6 +153,34 @@ impl Parser {
                 },
                 EndElement { name } => {
                     if name.local_name == "tags" {
+                        break;
+                    }
+                    eprintln!("unexpected end element: {}", name);
+                }
+                EndDocument => {
+                    panic!("unexpected end of document");
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn parse_feature(&mut self, attrs: &[OwnedAttribute]) {
+        let feature_name = Rc::<str>::from(attr(attrs, "name").unwrap());
+        loop {
+            use XmlEvent::*;
+            match self.reader.next().expect("failed to parse XML") {
+                StartElement { name, .. } => match &name.local_name[..] {
+                    "require" => {
+                        self.parse_required(None, None, Some(&feature_name));
+                    }
+                    _ => {
+                        eprintln!("unimplemented feature element: {}", name.local_name);
+                        self.finish_element();
+                    }
+                },
+                EndElement { name } => {
+                    if name.local_name == "feature" {
                         break;
                     }
                     eprintln!("unexpected end element: {}", name);
@@ -205,111 +236,7 @@ impl Parser {
     fn parse_extension_required(&mut self, attrs: &[OwnedAttribute]) {
         let ext_name = Rc::<str>::from(attr(attrs, "name").unwrap());
         let ext_number = attr(attrs, "number").unwrap().parse::<i32>().unwrap();
-        let mut ext_version = None;
-        let mut commands = Vec::new();
-        loop {
-            use XmlEvent::*;
-            match self.reader.next().expect("failed to parse XML") {
-                StartElement {
-                    name, attributes, ..
-                } => {
-                    match &name.local_name[..] {
-                        "command" => {
-                            let cmd = attr(&attributes, "name").unwrap();
-                            if let Some(command) = self.commands.get_mut(cmd) {
-                                command.extension = Some(ext_name.clone());
-                            }
-                            commands.push(cmd.into());
-                        }
-                        "enum" => {
-                            let name = attr(&attributes, "name").unwrap();
-                            if let Some(extends) = attr(&attributes, "extends") {
-                                const EXT_BASE: i32 = 1_000_000_000;
-                                const EXT_BLOCK_SIZE: i32 = 1000;
-
-                                let value = if let Some(offset) = attr(&attributes, "offset") {
-                                    let offset = offset.parse::<i32>().unwrap();
-                                    let sign =
-                                        if attr(&attributes, "dir").map_or(false, |x| x == "-") {
-                                            -1
-                                        } else {
-                                            1
-                                        };
-                                    ConstantValue::Literal(
-                                        sign * (EXT_BASE
-                                            + (ext_number - 1) * EXT_BLOCK_SIZE
-                                            + offset),
-                                    )
-                                } else if let Some(bitpos) = attr(&attributes, "bitpos") {
-                                    ConstantValue::Literal(bitpos.parse::<i32>().unwrap())
-                                } else {
-                                    ConstantValue::Alias(attr(&attributes, "alias").unwrap().into())
-                                };
-                                let bitmasks = &mut self.bitmasks;
-                                if let Some(e) = self.enums.get_mut(extends) {
-                                    e.values.push(Constant {
-                                        name: name.into(),
-                                        value,
-                                        comment: attr(&attributes, "comment")
-                                            .and_then(tidy_comment),
-                                    });
-                                } else if let Some(e) = self
-                                    .bitvalues
-                                    .get(extends)
-                                    .and_then(|x| bitmasks.get_mut(x))
-                                {
-                                    e.values.push(Constant {
-                                        name: name.into(),
-                                        value: match value {
-                                            ConstantValue::Literal(x) => {
-                                                ConstantValue::Literal(x as u64)
-                                            }
-                                            ConstantValue::Alias(x) => ConstantValue::Alias(x),
-                                        },
-                                        comment: attr(&attributes, "comment")
-                                            .and_then(tidy_comment),
-                                    });
-                                } else {
-                                    eprintln!("extension to unrecognized type {}", extends);
-                                }
-                            } else if let Some(alias) = attr(&attributes, "alias") {
-                                self.api_aliases.push((name.into(), alias.into()));
-                            } else if name.ends_with("SPEC_VERSION") {
-                                let value = attr(&attributes, "value").unwrap();
-                                ext_version = Some(value.parse().unwrap());
-                            } else if name.ends_with("EXTENSION_NAME") {
-                                let value = attr(&attributes, "value").unwrap();
-                                assert_eq!(&ext_name[..], &value[1..value.len() - 1]);
-                            } else {
-                                let value = attr(&attributes, "value").unwrap();
-                                self.api_constants
-                                    .push((name.into(), value.parse().unwrap()));
-                            }
-                        }
-                        "type" => {
-                            let ty = attr(&attributes, "name").unwrap();
-                            if let Some(s) = self.structs.get_mut(ty) {
-                                s.extension = Some(ext_name.clone());
-                            }
-                        }
-                        _ => {
-                            eprintln!("unimplemented extension element: {}", name.local_name);
-                        }
-                    }
-                    self.finish_element();
-                }
-                EndElement { name } => {
-                    if name.local_name == "require" {
-                        break;
-                    }
-                    eprintln!("unexpected end element: {}", name);
-                }
-                EndDocument => {
-                    panic!("unexpected end of document");
-                }
-                _ => {}
-            }
-        }
+        let (ext_version, commands) = self.parse_required(Some(&ext_name), Some(ext_number), None);
         if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
             self.disabled_exts.insert(ext_name);
         } else {
@@ -335,6 +262,134 @@ impl Parser {
                 eprintln!("ignoring extension with unlisted tag: {}", ext_name);
             }
         }
+    }
+
+    fn parse_required(
+        &mut self,
+        ext_name: Option<&Rc<str>>,
+        ext_number: Option<i32>,
+        feature_name: Option<&Rc<str>>,
+    ) -> (Option<u32>, Vec<String>) {
+        assert_eq!(ext_name.is_some(), ext_number.is_some());
+        assert_ne!(ext_name.is_some(), feature_name.is_some());
+        let mut ext_version = None;
+        let mut commands = Vec::new();
+        loop {
+            use XmlEvent::*;
+            match self.reader.next().expect("failed to parse XML") {
+                StartElement {
+                    name, attributes, ..
+                } => match &name.local_name[..] {
+                    "command" => {
+                        let cmd = attr(&attributes, "name").unwrap();
+                        if let Some(ext_name) = ext_name {
+                            if let Some(command) = self.commands.get_mut(cmd) {
+                                command.extension = Some(ext_name.clone());
+                            }
+                        }
+                        if let Some(feature_name) = feature_name {
+                            if let Some(command) = self.commands.get_mut(cmd) {
+                                command.feature = Some(feature_name.clone());
+                            }
+                        }
+                        commands.push(cmd.into());
+                        self.finish_element();
+                    }
+                    "enum" => {
+                        let name = attr(&attributes, "name").unwrap();
+                        if let Some(extends) = attr(&attributes, "extends") {
+                            const EXT_BASE: i32 = 1_000_000_000;
+                            const EXT_BLOCK_SIZE: i32 = 1000;
+                            let ext_number = ext_number.unwrap_or_else(|| {
+                                attr(&attributes, "extnumber")
+                                    .unwrap()
+                                    .parse::<i32>()
+                                    .unwrap()
+                            });
+
+                            let value = if let Some(offset) = attr(&attributes, "offset") {
+                                let offset = offset.parse::<i32>().unwrap();
+                                let sign = if attr(&attributes, "dir").map_or(false, |x| x == "-") {
+                                    -1
+                                } else {
+                                    1
+                                };
+                                ConstantValue::Literal(
+                                    sign * (EXT_BASE + (ext_number - 1) * EXT_BLOCK_SIZE + offset),
+                                )
+                            } else if let Some(bitpos) = attr(&attributes, "bitpos") {
+                                ConstantValue::Literal(bitpos.parse::<i32>().unwrap())
+                            } else {
+                                ConstantValue::Alias(attr(&attributes, "alias").unwrap().into())
+                            };
+                            let bitmasks = &mut self.bitmasks;
+                            if let Some(e) = self.enums.get_mut(extends) {
+                                e.values.push(Constant {
+                                    name: name.into(),
+                                    value,
+                                    comment: attr(&attributes, "comment").and_then(tidy_comment),
+                                });
+                            } else if let Some(e) = self
+                                .bitvalues
+                                .get(extends)
+                                .and_then(|x| bitmasks.get_mut(x))
+                            {
+                                e.values.push(Constant {
+                                    name: name.into(),
+                                    value: match value {
+                                        ConstantValue::Literal(x) => {
+                                            ConstantValue::Literal(x as u64)
+                                        }
+                                        ConstantValue::Alias(x) => ConstantValue::Alias(x),
+                                    },
+                                    comment: attr(&attributes, "comment").and_then(tidy_comment),
+                                });
+                            } else {
+                                eprintln!("extension to unrecognized type {}", extends);
+                            }
+                        } else if let Some(alias) = attr(&attributes, "alias") {
+                            self.api_aliases.push((name.into(), alias.into()));
+                        } else if name.ends_with("SPEC_VERSION") {
+                            let value = attr(&attributes, "value").unwrap();
+                            ext_version = Some(value.parse().unwrap());
+                        } else if name.ends_with("EXTENSION_NAME") {
+                            let value = attr(&attributes, "value").unwrap();
+                            assert_eq!(&ext_name.unwrap()[..], &value[1..value.len() - 1]);
+                        } else if let Some(value) = attr(&attributes, "value") {
+                            self.api_constants
+                                .push((name.into(), value.parse().unwrap()));
+                        }
+                        self.finish_element();
+                    }
+                    "type" => {
+                        if let Some(ext_name) = ext_name {
+                            let ty = attr(&attributes, "name").unwrap();
+                            if let Some(s) = self.structs.get_mut(ty) {
+                                s.extension = Some(ext_name.clone());
+                            }
+                            self.finish_element();
+                        } else {
+                            self.parse_type(&attributes);
+                        }
+                    }
+                    _ => {
+                        eprintln!("unimplemented require element: {}", name.local_name);
+                        self.finish_element();
+                    }
+                },
+                EndElement { name } => {
+                    if name.local_name == "require" {
+                        break;
+                    }
+                    eprintln!("unexpected end element: {}", name);
+                }
+                EndDocument => {
+                    panic!("unexpected end of document");
+                }
+                _ => {}
+            }
+        }
+        (ext_version, commands)
     }
 
     fn parse_commands(&mut self) {
@@ -430,6 +485,7 @@ impl Parser {
                 Command {
                     params,
                     extension: None,
+                    feature: None,
                 },
             );
         } else {
@@ -1261,13 +1317,11 @@ impl Parser {
     /// Generate high-level code
     #[allow(clippy::cognitive_complexity)] // TODO
     fn generate_hl(&self) -> TokenStream {
-        const BLACKLISTED_COMMANDS: [&str; 3] = [
-            "xrNegotiateLoaderRuntimeInterface",
-            "xrNegotiateLoaderApiLayerInterface",
-            "xrCreateApiLayerInstance",
-        ];
         let (instance_pfn_fields, instance_pfn_inits) = self.commands.iter().map(|(name, command)| {
-            if command.extension.is_some() || BLACKLISTED_COMMANDS.contains(&name.as_str()) {
+            // We only want commands from xr version 1.0 here because these commands are always loaded.
+            if command.feature.as_ref().map_or(true, |feature|
+                feature.as_ref() != "XR_VERSION_1_0"
+            ) {
                 return (quote! {}, quote! {});
             }
             let pfn_ident = xr_command_name(name);
@@ -1776,6 +1830,10 @@ impl Parser {
                 quote! {}
             };
             let (ty, init) = match &m.ty[..] {
+                "XrResult" => (
+                    quote! { sys::Result },
+                    quote! { self.inner.#ident = value; },
+                ),
                 "XrBool32" => (
                     quote! { bool },
                     quote! { self.inner.#ident = value.into(); },
@@ -2095,6 +2153,7 @@ struct Tag {
 struct Command {
     params: Vec<Member>,
     extension: Option<Rc<str>>,
+    feature: Option<Rc<str>>,
 }
 
 #[derive(Debug)]
