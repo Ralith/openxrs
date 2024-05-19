@@ -689,7 +689,10 @@ impl ExtensionSet {
                 bytes => {
                     let cstr = CStr::from_bytes_with_nul(bytes)
                         .expect("extension names should be null terminated strings");
-                    let string = String::from_utf8_lossy(cstr.to_bytes()).to_string();
+                    let string = cstr
+                        .to_str()
+                        .expect("extension names should be valid UTF-8")
+                        .to_string();
                     out.other.push(string);
                 }
             }
