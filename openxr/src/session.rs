@@ -1,7 +1,7 @@
 use std::mem::MaybeUninit;
 use std::{marker::PhantomData, ptr, sync::Arc};
 
-use sys::{RenderModelKeyFB, RenderModelLoadInfoFB};
+pub use sys::{RenderModelKeyFB, RenderModelLoadInfoFB};
 
 use crate::*;
 
