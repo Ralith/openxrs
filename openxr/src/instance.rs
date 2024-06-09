@@ -150,6 +150,23 @@ impl Instance {
     }
 
     #[inline]
+    pub fn supports_render_model_loading(&self, system: SystemId) -> Result<bool> {
+        unsafe {
+            let mut render_model = sys::SystemRenderModelPropertiesFB::out(ptr::null_mut());
+            let mut p = sys::SystemProperties::out(&mut render_model as *mut _ as _);
+            cvt((self.fp().get_system_properties)(
+                self.as_raw(),
+                system,
+                p.as_mut_ptr(),
+            ))?;
+            Ok(render_model
+                .assume_init()
+                .supports_render_model_loading
+                .into())
+        }
+    }
+
+    #[inline]
     pub fn supports_hand_tracking(&self, system: SystemId) -> Result<bool> {
         unsafe {
             let mut hand = sys::SystemHandTrackingPropertiesEXT::out(ptr::null_mut());
@@ -681,6 +698,12 @@ impl Instance {
             .khr_visibility_mask
             .as_ref()
             .expect("KHR_visibility_mask not loaded")
+    }
+    pub(crate) fn render_model_fb(&self) -> &raw::RenderModelFB {
+        self.exts()
+            .fb_render_model
+            .as_ref()
+            .expect("FB_render_model not loaded")
     }
 }
 

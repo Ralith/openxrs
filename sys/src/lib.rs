@@ -143,6 +143,10 @@ wrapper! {
     RenderModelKeyFB(u64)
 }
 
+impl RenderModelKeyFB {
+    pub const NULL: RenderModelKeyFB = RenderModelKeyFB(0);
+}
+
 wrapper! {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     MarkerML(u64)
