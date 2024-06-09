@@ -359,6 +359,12 @@ impl<G> Session<G> {
     }
 
     pub fn load_render_model_fb(&self, model_key: RenderModelKeyFB) -> Result<Vec<u8>> {
+        let load_info = RenderModelLoadInfoFB {
+            ty: RenderModelLoadInfoFB::TYPE,
+            next: ptr::null_mut(),
+            model_key,
+        };
+
         let mut buffer = sys::RenderModelBufferFB {
             ty: sys::RenderModelBufferFB::TYPE,
             next: ptr::null_mut(),
@@ -366,44 +372,18 @@ impl<G> Session<G> {
             buffer_count_output: 0,
             buffer: ptr::null_mut(),
         };
-        unsafe {
-            cvt((self.instance().render_model_fb().load_render_model)(
+
+        get_arr(|cap, count, buf: *mut u8| unsafe {
+            buffer.buffer_capacity_input = cap;
+            buffer.buffer = buf;
+            let res = (self.instance().render_model_fb().load_render_model)(
                 self.as_raw(),
-                &RenderModelLoadInfoFB {
-                    ty: RenderModelLoadInfoFB::TYPE,
-                    next: ptr::null_mut(),
-                    model_key,
-                },
+                &load_info,
                 &mut buffer,
-            ))?;
-            let mut out = Vec::with_capacity(buffer.buffer_count_output as usize);
-            loop {
-                buffer.buffer = out.as_mut_ptr();
-                buffer.buffer_capacity_input = out.capacity() as u32;
-                match cvt((self.instance().render_model_fb().load_render_model)(
-                    self.as_raw(),
-                    &RenderModelLoadInfoFB {
-                        ty: RenderModelLoadInfoFB::TYPE,
-                        next: ptr::null_mut(),
-                        model_key,
-                    },
-                    &mut buffer,
-                )) {
-                    Ok(_) => {
-                        out.set_len(buffer.buffer_count_output as usize);
-                        return Ok(out);
-                    }
-                    Err(sys::Result::ERROR_SIZE_INSUFFICIENT) => {
-                        out.reserve(
-                            (buffer.buffer_count_output as usize).saturating_sub(out.capacity()),
-                        );
-                    }
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            }
-        }
+            );
+            *count = buffer.buffer_count_output;
+            res
+        })
     }
 
     #[inline]
