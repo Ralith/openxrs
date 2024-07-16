@@ -16,13 +16,13 @@ fn main() {
         );
         println!("cargo:rustc-link-lib=static=openxr_loader");
 
-        if cfg!(any(target_os = "macos", target_os = "freebsd")) {
+        let target_os = std::env::var_os("CARGO_CFG_TARGET_OS")
+            .expect("missing CARGO_CFG_TARGET_OS environment variable");
+
+        if target_os == "macos" || target_os == "freebsd" {
             println!("cargo:rustc-link-lib=c++");
-        } else if cfg!(target_os = "windows") {
-            println!("cargo:rustc-link-lib=pathcch");
-        } else {
+        } else if target_os != "windows" {
             println!("cargo:rustc-link-lib=stdc++");
-            println!("cargo:rustc-link-lib=stdc++fs");
         }
     }
     #[cfg(all(not(feature = "static"), feature = "linked"))]
