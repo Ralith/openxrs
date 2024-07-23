@@ -45,8 +45,9 @@ pub use localization_map_ml::*;
 
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
-    CompositionLayerEquirectKHR, CompositionLayerProjection, CompositionLayerProjectionView,
-    CompositionLayerQuad, HapticBase, HapticPcmVibrationFB, HapticVibration, SwapchainSubImage,
+    CompositionLayerEquirect2KHR, CompositionLayerEquirectKHR, CompositionLayerProjection,
+    CompositionLayerProjectionView, CompositionLayerQuad, HapticBase, HapticPcmVibrationFB,
+    HapticVibration, SwapchainSubImage,
 };
 
 pub type Result<T, E = sys::Result> = std::result::Result<T, E>;
