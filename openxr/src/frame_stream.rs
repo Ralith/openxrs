@@ -107,7 +107,7 @@ impl<G: Graphics> FrameStream<G> {
         environment_blend_mode: EnvironmentBlendMode,
         layers: &[&CompositionLayerBase<'_, G>],
     ) -> Result<()> {
-        assert!(layers.len() <= u32::MAX as usize);
+        self.assert_layers_validity(layers);
         let info = sys::FrameEndInfo {
             ty: sys::FrameEndInfo::TYPE,
             next: ptr::null(),
@@ -139,8 +139,8 @@ impl<G: Graphics> FrameStream<G> {
         layers: &[&CompositionLayerBase<'_, G>],
         secondary_info: SecondaryEndInfo<'_, '_, '_, G>,
     ) -> Result<()> {
-        assert!(layers.len() <= u32::MAX as usize);
-        assert!(secondary_info.layers.len() <= u32::MAX as usize);
+        self.assert_layers_validity(layers);
+        self.assert_layers_validity(secondary_info.layers);
         let single_secondary_info = [sys::SecondaryViewConfigurationLayerInfoMSFT {
             ty: sys::SecondaryViewConfigurationLayerInfoMSFT::TYPE,
             next: ptr::null(),
@@ -173,5 +173,115 @@ impl<G: Graphics> FrameStream<G> {
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.session.instance().fp()
+    }
+
+    /// Check the invariants of the passed `layers`.
+    /// The lifetimes guarantee the validity of non-null handles.
+    fn assert_layers_validity(&self, layers: &[&CompositionLayerBase<'_, G>]) {
+        // TODO `space` and `swapchain` must be from the same session (only in the spec for cube)
+        assert!(layers.len() <= u32::MAX as usize);
+        for &layer in layers {
+            match layer.as_raw().ty {
+                sys::CompositionLayerProjection::TYPE => {
+                    let layer = unsafe {
+                        std::mem::transmute::<
+                            &CompositionLayerBase<G>,
+                            &CompositionLayerProjection<G>,
+                        >(layer)
+                    }
+                    .as_raw();
+                    assert_ne!(layer.space, sys::Space::NULL);
+                    assert!(layer.view_count > 0);
+                    let views = unsafe {
+                        std::slice::from_raw_parts(layer.views, layer.view_count as usize)
+                    };
+                    for view in views {
+                        assert_ne!(view.sub_image.swapchain, sys::Swapchain::NULL);
+                    }
+                }
+                sys::CompositionLayerQuad::TYPE => {
+                    let layer = unsafe {
+                        std::mem::transmute::<&CompositionLayerBase<G>, &CompositionLayerQuad<G>>(
+                            layer,
+                        )
+                    }
+                    .as_raw();
+                    assert_ne!(layer.space, sys::Space::NULL);
+                    assert_ne!(layer.sub_image.swapchain, sys::Swapchain::NULL);
+                }
+                sys::CompositionLayerCylinderKHR::TYPE => {
+                    assert!(self
+                        .session
+                        .instance()
+                        .exts()
+                        .khr_composition_layer_cylinder
+                        .is_some());
+                    let layer = unsafe {
+                        std::mem::transmute::<
+                            &CompositionLayerBase<G>,
+                            &CompositionLayerCylinderKHR<G>,
+                        >(layer)
+                    }
+                    .as_raw();
+                    assert_ne!(layer.space, sys::Space::NULL);
+                    assert_ne!(layer.sub_image.swapchain, sys::Swapchain::NULL);
+                }
+                sys::CompositionLayerCubeKHR::TYPE => {
+                    assert!(self
+                        .session
+                        .instance()
+                        .exts()
+                        .khr_composition_layer_cube
+                        .is_some());
+                    let layer =
+                        unsafe {
+                            std::mem::transmute::<
+                                &CompositionLayerBase<G>,
+                                &CompositionLayerCubeKHR<G>,
+                            >(layer)
+                        }
+                        .as_raw();
+                    assert_ne!(layer.space, sys::Space::NULL);
+                    assert_ne!(layer.swapchain, sys::Swapchain::NULL);
+                }
+                sys::CompositionLayerEquirectKHR::TYPE => {
+                    assert!(self
+                        .session
+                        .instance()
+                        .exts()
+                        .khr_composition_layer_equirect
+                        .is_some());
+                    let layer = unsafe {
+                        std::mem::transmute::<
+                            &CompositionLayerBase<G>,
+                            &CompositionLayerEquirectKHR<G>,
+                        >(layer)
+                    }
+                    .as_raw();
+                    assert_ne!(layer.space, sys::Space::NULL);
+                    assert_ne!(layer.sub_image.swapchain, sys::Swapchain::NULL);
+                }
+                sys::CompositionLayerEquirect2KHR::TYPE => {
+                    assert!(self
+                        .session
+                        .instance()
+                        .exts()
+                        .khr_composition_layer_equirect2
+                        .is_some());
+                    let layer = unsafe {
+                        std::mem::transmute::<
+                            &CompositionLayerBase<G>,
+                            &CompositionLayerEquirect2KHR<G>,
+                        >(layer)
+                    }
+                    .as_raw();
+                    assert_ne!(layer.space, sys::Space::NULL);
+                    assert_ne!(layer.sub_image.swapchain, sys::Swapchain::NULL);
+                }
+                ty => {
+                    panic!("unsupported layer type: {:?}", ty)
+                }
+            }
+        }
     }
 }

@@ -6731,8 +6731,14 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct CompositionLayerBase<'a, G: Graphics> {
-        _inner: sys::CompositionLayerBaseHeader,
+        inner: sys::CompositionLayerBaseHeader,
         _marker: PhantomData<&'a G>,
+    }
+    impl<'a, G: Graphics> CompositionLayerBase<'a, G> {
+        #[inline]
+        pub(crate) fn as_raw(&self) -> &sys::CompositionLayerBaseHeader {
+            &self.inner
+        }
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
@@ -7243,8 +7249,14 @@ pub(crate) mod builder {
     }
     #[repr(transparent)]
     pub struct HapticBase<'a> {
-        _inner: sys::HapticBaseHeader,
+        inner: sys::HapticBaseHeader,
         _marker: PhantomData<&'a ()>,
+    }
+    impl<'a> HapticBase<'a> {
+        #[inline]
+        pub(crate) fn as_raw(&self) -> &sys::HapticBaseHeader {
+            &self.inner
+        }
     }
     #[derive(Copy, Clone)]
     #[repr(transparent)]

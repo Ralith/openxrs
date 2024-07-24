@@ -128,6 +128,8 @@ impl Action<Haptic> {
         subaction_path: Path,
         event: &HapticBase,
     ) -> Result<()> {
+        self.assert_event_validity(event);
+
         let info = sys::HapticActionInfo {
             ty: sys::HapticActionInfo::TYPE,
             next: ptr::null(),
@@ -142,6 +144,28 @@ impl Action<Haptic> {
             ))?;
         }
         Ok(())
+    }
+
+    /// Check the invariants of the passed haptic `event`.
+    /// The lifetime guarantees the validity of the non-null pointers.
+    fn assert_event_validity(&self, event: &HapticBase) {
+        match event.as_raw().ty {
+            sys::HapticVibration::TYPE => {
+                // nothing to check
+            }
+            sys::HapticPcmVibrationFB::TYPE => {
+                assert!(self.instance().exts().fb_haptic_pcm.is_some());
+                let event =
+                    unsafe { std::mem::transmute::<&HapticBase, &HapticPcmVibrationFB>(event) }
+                        .as_raw();
+                assert!(event.buffer_size > 0);
+                assert_ne!(event.buffer, ptr::null());
+                assert_ne!(event.samples_consumed, ptr::null_mut());
+            }
+            ty => {
+                panic!("unsupported haptic type: {:?}", ty)
+            }
+        }
     }
 
     pub fn stop_feedback<G>(&self, session: &Session<G>, subaction_path: Path) -> Result<()> {

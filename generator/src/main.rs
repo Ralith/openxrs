@@ -1813,8 +1813,14 @@ impl Parser {
         quote! {
             #[repr(transparent)]
             pub struct #base_ident #type_params {
-                _inner: sys::#sys_ident,
+                inner: sys::#sys_ident,
                 #marker
+            }
+            impl #type_params #base_ident #type_args {
+                #[inline]
+                pub(crate) fn as_raw(&self) -> &sys::#sys_ident {
+                    &self.inner
+                }
             }
             #(#builders)*
         }
