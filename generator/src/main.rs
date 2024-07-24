@@ -1517,14 +1517,37 @@ impl Parser {
             struct_meta.insert(name, self.compute_meta(name, s));
         }
 
+        let polymorphic_whitelist = [
+            "XrCompositionLayerBaseHeader",
+            "XrCompositionLayerProjection",
+            "XrCompositionLayerQuad",
+            "XrCompositionLayerCylinderKHR",
+            "XrCompositionLayerCubeKHR",
+            "XrCompositionLayerEquirectKHR",
+            "XrCompositionLayerEquirect2KHR",
+            "XrHapticBaseHeader",
+            "XrHapticVibration",
+            "XrHapticPcmVibrationFB",
+        ]
+        .iter()
+        .cloned()
+        .collect::<HashSet<&str>>();
         let polymorphic_builders = self.base_headers.iter().filter_map(|(name, children)| {
-            if name == "XrSwapchainImageBaseHeader"
-                || name == "XrEventDataBaseHeader"
-                || name == "XrLoaderInitInfoBaseHeaderKHR"
-            {
-                return None;
+            if polymorphic_whitelist.contains(&name[..]) {
+                let children = children
+                    .iter()
+                    .filter(|name| polymorphic_whitelist.contains(&name[..]))
+                    .cloned()
+                    .collect::<Vec<_>>();
+                Some(self.generate_polymorphic_builders(
+                    &struct_meta,
+                    &simple_structs,
+                    name,
+                    &children,
+                ))
+            } else {
+                None
             }
-            Some(self.generate_polymorphic_builders(&struct_meta, &simple_structs, name, children))
         });
 
         let whitelist = [
@@ -1717,10 +1740,6 @@ impl Parser {
 
         let (type_params, type_args, marker, marker_init) = base_meta.type_params();
         let builders = children.iter().map(|name| {
-            if name == "XrCompositionLayerPassthroughHTC" {
-                // XrCompositionLayerPassthroughHTC has problems with its setters so we skip for now.
-                return quote! {};
-            }
             let ident = xr_ty_name(name);
             let s = self.structs.get(name).unwrap();
             let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
