@@ -487,6 +487,7 @@ impl<G: Graphics> Session<G> {
 
     #[inline]
     pub fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
+        assert!(info.face_count == 1 || info.face_count == 6);
         let mut out = sys::Swapchain::NULL;
         let info = sys::SwapchainCreateInfo {
             ty: sys::SwapchainCreateInfo::TYPE,
@@ -503,7 +504,7 @@ impl<G: Graphics> Session<G> {
         };
         unsafe {
             cvt((self.fp().create_swapchain)(self.as_raw(), &info, &mut out))?;
-            Ok(Swapchain::from_raw(self.clone(), out))
+            Ok(Swapchain::from_raw(self.clone(), out, info.face_count))
         }
     }
 

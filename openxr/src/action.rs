@@ -126,9 +126,9 @@ impl Action<Haptic> {
         &self,
         session: &Session<G>,
         subaction_path: Path,
-        event: &HapticBase,
+        data: HapticData,
     ) -> Result<()> {
-        self.assert_event_validity(event);
+        self.assert_event_validity(&data);
 
         let info = sys::HapticActionInfo {
             ty: sys::HapticActionInfo::TYPE,
@@ -140,7 +140,8 @@ impl Action<Haptic> {
             cvt((self.fp().apply_haptic_feedback)(
                 session.as_raw(),
                 &info,
-                event as *const _ as _,
+                // TODO `samples_consumed` pointer is not set
+                data.as_raw().as_base(),
             ))?;
         }
         Ok(())
@@ -148,22 +149,17 @@ impl Action<Haptic> {
 
     /// Check the invariants of the passed haptic `event`.
     /// The lifetime guarantees the validity of the non-null pointers.
-    fn assert_event_validity(&self, event: &HapticBase) {
-        match event.as_raw().ty {
-            sys::HapticVibration::TYPE => {
+    fn assert_event_validity(&self, data: &HapticData) {
+        match data {
+            HapticData::Vibration { .. } => {
                 // nothing to check
             }
-            sys::HapticPcmVibrationFB::TYPE => {
-                assert!(self.instance().exts().fb_haptic_pcm.is_some());
-                let event =
-                    unsafe { std::mem::transmute::<&HapticBase, &HapticPcmVibrationFB>(event) }
-                        .as_raw();
-                assert!(event.buffer_size > 0);
-                assert_ne!(event.buffer, ptr::null());
-                assert_ne!(event.samples_consumed, ptr::null_mut());
-            }
-            ty => {
-                panic!("unsupported haptic type: {:?}", ty)
+            HapticData::PcmVibrationFB { buffer, .. } => {
+                assert!(
+                    self.instance().exts().fb_haptic_pcm.is_some(),
+                    "XR_FB_haptic_pcm not loaded"
+                );
+                assert!(!buffer.is_empty(), "PCM Vibration buffer can't be empty");
             }
         }
     }

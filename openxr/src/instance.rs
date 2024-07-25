@@ -616,15 +616,16 @@ impl Instance {
         localized_name: &str,
         priority: u32,
     ) -> Result<ActionSet> {
-        let info = builder::ActionSetCreateInfo::new()
-            .action_set_name(name)
-            .localized_action_set_name(localized_name)
-            .priority(priority);
+        let info = builder::ActionSetCreateInfo {
+            action_set_name: name,
+            localized_action_set_name: localized_name,
+            priority,
+        };
         unsafe {
             let mut out = sys::ActionSet::NULL;
             cvt((self.fp().create_action_set)(
                 self.as_raw(),
-                info.as_raw(),
+                &info.as_raw(),
                 &mut out,
             ))?;
             Ok(ActionSet::from_raw(self.clone(), out))

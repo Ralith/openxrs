@@ -46,16 +46,17 @@ impl ActionSet {
         localized_name: &str,
         subaction_paths: &[Path],
     ) -> Result<Action<T>> {
-        let info = builder::ActionCreateInfo::new()
-            .action_name(name)
-            .localized_action_name(localized_name)
-            .subaction_paths(subaction_paths)
-            .action_type(T::TYPE);
+        let info = builder::ActionCreateInfo {
+            action_name: name,
+            localized_action_name: localized_name,
+            subaction_paths,
+            action_type: T::TYPE,
+        };
         unsafe {
             let mut out = sys::Action::NULL;
             cvt((self.fp().create_action)(
                 self.as_raw(),
-                info.as_raw(),
+                &info.as_raw(),
                 &mut out,
             ))?;
             Ok(Action::from_raw(self.clone(), out))

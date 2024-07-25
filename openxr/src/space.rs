@@ -53,6 +53,11 @@ impl Space {
         &self.session.instance
     }
 
+    #[inline]
+    pub(crate) fn session_handle(&self) -> sys::Session {
+        self.session.handle
+    }
+
     /// Set the debug name of this `Space`, if `XR_EXT_debug_utils` is loaded
     #[inline]
     pub fn set_name(&mut self, name: &str) -> Result<()> {
