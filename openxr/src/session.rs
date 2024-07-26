@@ -485,8 +485,12 @@ impl<G: Graphics> Session<G> {
         Ok(raw.into_iter().map(G::raise_format).collect())
     }
 
+    /// # Safety
+    ///
+    /// `sample_count`, `width`, `height`, `array_size`, and `mip_count` in `info`
+    /// must not be 0 or greater than the graphics API's maximum limit
     #[inline]
-    pub fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
+    pub unsafe fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
         assert!(info.face_count == 1 || info.face_count == 6);
         let mut out = sys::Swapchain::NULL;
         let info = sys::SwapchainCreateInfo {
