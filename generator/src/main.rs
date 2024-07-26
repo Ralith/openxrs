@@ -1809,10 +1809,11 @@ impl Parser {
 
         let mut variants = Vec::new();
         let mut as_raw = Vec::new();
+        let mut as_ref_possible = true;
         let mut raw_variants = Vec::new();
 
         // all variants can be interpreted as the base header struct
-        raw_variants.push(quote!(base: sys::#sys_ident));
+        raw_variants.push(quote!(pub(crate) base: sys::#sys_ident));
 
         for name in children {
             let ident = xr_ty_name(name);
@@ -1837,19 +1838,37 @@ impl Parser {
                 Span::call_site(),
             );
 
-            let inits = inits.chain(fields_as_raw);
-            as_raw.push(quote! {
-                #base_ident::#variant_ident {
-                    #(#fields_ident),*
-                } => #raw_ident {
-                    #snake_case_variant_ident: sys::#ident {
-                        #(#inits),*
+            if let Some(fields_as_raw) = fields_as_raw {
+                let inits = inits.chain(fields_as_raw);
+                as_raw.push(quote! {
+                    #base_ident::#variant_ident {
+                        #(#fields_ident),*
+                    } => #raw_ident {
+                        #snake_case_variant_ident: sys::#ident {
+                            #(#inits),*
+                        }
+                    }
+                });
+            } else {
+                as_ref_possible = false;
+            }
+
+            raw_variants.push(quote! { pub(crate) #snake_case_variant_ident: sys::#ident });
+        }
+
+        let as_ref_impl = if as_ref_possible {
+            quote! {
+                impl #type_params #base_ident #type_args {
+                    pub(crate) fn as_raw(&self) -> #raw_ident {
+                        match self {
+                            #(#as_raw),*
+                        }
                     }
                 }
-            });
-
-            raw_variants.push(quote! { #snake_case_variant_ident: sys::#ident });
-        }
+            }
+        } else {
+            quote! {}
+        };
 
         quote! {
             #[non_exhaustive]
@@ -1857,13 +1876,7 @@ impl Parser {
                 #(#variants),*
             }
 
-            impl #type_params #base_ident #type_args {
-                pub(crate) fn as_raw(&self) -> #raw_ident {
-                    match self {
-                        #(#as_raw),*
-                    }
-                }
-            }
+            #as_ref_impl
 
             #[repr(C)]
             pub(crate) union #raw_ident {
@@ -1883,7 +1896,7 @@ impl Parser {
         meta: &HashMap<&str, StructMeta>,
         simple: &IndexSet<&str>,
         s: &Struct,
-    ) -> (Vec<Ident>, Vec<TokenStream>, Vec<TokenStream>) {
+    ) -> (Vec<Ident>, Vec<TokenStream>, Option<Vec<TokenStream>>) {
         let lens = s
             .members
             .iter()
@@ -1895,6 +1908,7 @@ impl Parser {
         let mut fields_ident = Vec::new();
         let mut fields_defs = Vec::new();
         let mut fields_as_raw = Vec::new();
+        let mut as_ref_possible = true;
 
         for m in &s.members {
             if m.name == "type" || m.name == "next" || lens.contains(&m.name[..]) {
@@ -1957,13 +1971,12 @@ impl Parser {
                                 quote! { #ident: *#ident },
                             )
                         } else {
+                            // going from `&&mut T` to `*mut T` is not sound,
+                            // so don't generate an ´as_ref` implementation
+                            as_ref_possible = false;
                             (
                                 quote! { #ident: &'a mut #ty #type_args },
-                                // TODO not sound
-                                //  https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=630c7d6aaac22feb47abba7913ad5ed9
-                                //  is this still invalid when passed through FFI? -> probably yes
-                                // quote! { #ident: *#ident as *const _ as *mut _ },
-                                quote! { #ident: std::ptr::null_mut() },
+                                quote! { /* not possible */ },
                             )
                         }
                     } else if self.structs.contains_key(&m.ty) && !simple.contains(&m.ty[..]) {
@@ -1986,7 +1999,11 @@ impl Parser {
             fields_as_raw.push(as_raw);
         }
 
-        (fields_ident, fields_defs, fields_as_raw)
+        (
+            fields_ident,
+            fields_defs,
+            as_ref_possible.then_some(fields_as_raw),
+        )
     }
 
     fn generate_inits<'a>(&self, s: &'a Struct) -> impl Iterator<Item = TokenStream> + 'a {
@@ -2013,9 +2030,25 @@ impl Parser {
         let (fields_ident, fields_defs, fields_as_raw) = self.generate_member_data(meta, simple, s);
         let ident = xr_ty_name(name);
         let (type_params, type_args) = meta.get(name).unwrap().type_params();
-        let inits = self.generate_inits(s).chain(fields_as_raw);
         let conds = conditions(name, s.extension.as_ref().map(|x| &x[..]));
-        let conds2 = conds.clone();
+        let as_ref_impl = if let Some(fields_as_raw) = fields_as_raw {
+            let inits = self.generate_inits(s).chain(fields_as_raw);
+            let conds2 = conds.clone();
+            quote! {
+                #conds2
+                #[allow(clippy::needless_lifetimes)]impl #type_params #ident #type_args {
+                    #[inline]
+                    pub fn as_raw(&self) -> sys::#ident {
+                        let Self { #(#fields_ident),* } = self;
+                        sys::#ident {
+                            #(#inits),*
+                        }
+                    }
+                }
+            }
+        } else {
+            quote! {}
+        };
         quote! {
             #[derive(Copy, Clone)]
             #conds
@@ -2023,17 +2056,7 @@ impl Parser {
                 #(pub #fields_defs),*
             }
 
-            #conds2
-            #[allow(clippy::needless_lifetimes)]
-            impl #type_params #ident #type_args {
-                #[inline]
-                pub fn as_raw(&self) -> sys::#ident {
-                    let Self { #(#fields_ident),* } = self;
-                    sys::#ident {
-                        #(#inits),*
-                    }
-                }
-            }
+            #as_ref_impl
         }
     }
 
