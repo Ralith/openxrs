@@ -1,6 +1,8 @@
 use std::mem::MaybeUninit;
 use std::{marker::PhantomData, ptr, sync::Arc};
 
+pub use sys::{RenderModelKeyFB, RenderModelLoadInfoFB};
+
 use crate::*;
 
 pub(crate) type DropGuard = Box<dyn std::any::Any + Send + Sync>;
@@ -308,6 +310,82 @@ impl<G> Session<G> {
         }
     }
 
+    /// Enumerates valid render model paths supported by the runtime that can be used in `Session::get_render_model_properties_fb`.
+    ///
+    /// Requires FB_render_model
+    pub fn enumerate_render_model_paths_fb(&self) -> Result<Vec<Path>> {
+        let raw = get_arr(|cap, count, buf| unsafe {
+            (self
+                .instance()
+                .render_model_fb()
+                .enumerate_render_model_paths)(self.as_raw(), cap, count, buf)
+        })?;
+        Ok(raw.into_iter().map(|path_info| path_info.path).collect())
+    }
+
+    #[inline]
+    /// Gets information for a render model using a path retrived from `Session::enumerate_render_model_paths_fb`
+    ///
+    /// Requires FB_render_model
+    pub fn get_render_model_properties_fb(
+        &self,
+        path: Path,
+        flags: RenderModelFlagsFB,
+    ) -> Result<RenderModelPropertiesFB> {
+        let out = unsafe {
+            let mut capabilities = sys::RenderModelCapabilitiesRequestFB {
+                ty: sys::RenderModelCapabilitiesRequestFB::TYPE,
+                next: ptr::null_mut(),
+                flags,
+            };
+            let mut out = sys::RenderModelPropertiesFB::out(&mut capabilities as *mut _ as _);
+            cvt((self
+                .instance()
+                .render_model_fb()
+                .get_render_model_properties)(
+                self.as_raw(),
+                path,
+                out.as_mut_ptr(),
+            ))?;
+            out.assume_init()
+        };
+        Ok(RenderModelPropertiesFB {
+            vendor_id: out.vendor_id,
+            model_name: unsafe { fixed_str(&out.model_name).into() },
+            model_key: out.model_key,
+            model_version: out.model_version,
+            flags: out.flags,
+        })
+    }
+
+    pub fn load_render_model_fb(&self, model_key: RenderModelKeyFB) -> Result<Vec<u8>> {
+        let load_info = RenderModelLoadInfoFB {
+            ty: RenderModelLoadInfoFB::TYPE,
+            next: ptr::null_mut(),
+            model_key,
+        };
+
+        let mut buffer = sys::RenderModelBufferFB {
+            ty: sys::RenderModelBufferFB::TYPE,
+            next: ptr::null_mut(),
+            buffer_capacity_input: 0,
+            buffer_count_output: 0,
+            buffer: ptr::null_mut(),
+        };
+
+        get_arr(|cap, count, buf: *mut u8| unsafe {
+            buffer.buffer_capacity_input = cap;
+            buffer.buffer = buf;
+            let res = (self.instance().render_model_fb().load_render_model)(
+                self.as_raw(),
+                &load_info,
+                &mut buffer,
+            );
+            *count = buffer.buffer_count_output;
+            res
+        })
+    }
+
     #[inline]
     /// Create a hand tracker
     ///
@@ -462,6 +540,16 @@ impl<G: Graphics> Session<G> {
 pub struct VisibilityMask {
     pub vertices: Vec<Vector2f>,
     pub indices: Vec<u32>,
+}
+
+/// Render model properties obtained from `Session::get_render_model_properties_fb`
+#[derive(Debug, Clone)]
+pub struct RenderModelPropertiesFB {
+    pub vendor_id: u32,
+    pub model_name: String,
+    pub model_key: RenderModelKeyFB,
+    pub model_version: u32,
+    pub flags: RenderModelFlagsFB,
 }
 
 impl<G> Clone for Session<G> {
