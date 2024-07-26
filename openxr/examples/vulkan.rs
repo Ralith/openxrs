@@ -710,28 +710,30 @@ pub fn main() {
                 .end(
                     xr_frame_state.predicted_display_time,
                     environment_blend_mode,
-                    &[
-                        &xr::CompositionLayerProjection::new().space(&stage).views(&[
-                            xr::CompositionLayerProjectionView::new()
-                                .pose(views[0].pose)
-                                .fov(views[0].fov)
-                                .sub_image(
-                                    xr::SwapchainSubImage::new()
-                                        .swapchain(&swapchain.handle)
-                                        .image_array_index(0)
-                                        .image_rect(rect),
-                                ),
-                            xr::CompositionLayerProjectionView::new()
-                                .pose(views[1].pose)
-                                .fov(views[1].fov)
-                                .sub_image(
-                                    xr::SwapchainSubImage::new()
-                                        .swapchain(&swapchain.handle)
-                                        .image_array_index(1)
-                                        .image_rect(rect),
-                                ),
-                        ]),
-                    ],
+                    &[&xr::CompositionLayer::Projection {
+                        layer_flags: Default::default(),
+                        space: &stage,
+                        views: &[
+                            xr::CompositionLayerProjectionView {
+                                pose: views[0].pose,
+                                fov: views[0].fov,
+                                sub_image: xr::SwapchainSubImage {
+                                    swapchain: &swapchain.handle,
+                                    image_array_index: 0,
+                                    image_rect: rect,
+                                },
+                            },
+                            xr::CompositionLayerProjectionView {
+                                pose: views[1].pose,
+                                fov: views[1].fov,
+                                sub_image: xr::SwapchainSubImage {
+                                    swapchain: &swapchain.handle,
+                                    image_array_index: 1,
+                                    image_rect: rect,
+                                },
+                            },
+                        ],
+                    }],
                 )
                 .unwrap();
             frame = (frame + 1) % PIPELINE_DEPTH as usize;
