@@ -6768,12 +6768,12 @@ pub(crate) mod builder {
     }
     #[repr(C)]
     pub(crate) union CompositionLayerRaw {
-        projection: sys::CompositionLayerProjection,
-        quad: sys::CompositionLayerQuad,
-        cylinder_khr: sys::CompositionLayerCylinderKHR,
-        cube_khr: sys::CompositionLayerCubeKHR,
-        equirect_khr: sys::CompositionLayerEquirectKHR,
-        equirect2_khr: sys::CompositionLayerEquirect2KHR,
+        pub(crate) projection: sys::CompositionLayerProjection,
+        pub(crate) quad: sys::CompositionLayerQuad,
+        pub(crate) cylinder_khr: sys::CompositionLayerCylinderKHR,
+        pub(crate) cube_khr: sys::CompositionLayerCubeKHR,
+        pub(crate) equirect_khr: sys::CompositionLayerEquirectKHR,
+        pub(crate) equirect2_khr: sys::CompositionLayerEquirect2KHR,
     }
     impl CompositionLayerRaw {
         pub(crate) fn as_base(&self) -> *const sys::CompositionLayerBaseHeader {
@@ -6794,45 +6794,10 @@ pub(crate) mod builder {
             samples_consumed: &'a mut u32,
         },
     }
-    impl<'a> HapticData<'a> {
-        pub(crate) fn as_raw(&self) -> HapticDataRaw {
-            match self {
-                HapticData::Vibration {
-                    duration,
-                    frequency,
-                    amplitude,
-                } => HapticDataRaw {
-                    vibration: sys::HapticVibration {
-                        ty: sys::StructureType::HAPTIC_VIBRATION,
-                        next: std::ptr::null_mut(),
-                        duration: *duration,
-                        frequency: *frequency,
-                        amplitude: *amplitude,
-                    },
-                },
-                HapticData::PcmVibrationFB {
-                    buffer,
-                    sample_rate,
-                    append,
-                    samples_consumed,
-                } => HapticDataRaw {
-                    pcm_vibration_fb: sys::HapticPcmVibrationFB {
-                        ty: sys::StructureType::HAPTIC_PCM_VIBRATION_FB,
-                        next: std::ptr::null_mut(),
-                        buffer_size: buffer.len() as _,
-                        buffer: buffer.as_ptr() as _,
-                        sample_rate: *sample_rate,
-                        append: (*append).into(),
-                        samples_consumed: std::ptr::null_mut(),
-                    },
-                },
-            }
-        }
-    }
     #[repr(C)]
     pub(crate) union HapticDataRaw {
-        vibration: sys::HapticVibration,
-        pcm_vibration_fb: sys::HapticPcmVibrationFB,
+        pub(crate) vibration: sys::HapticVibration,
+        pub(crate) pcm_vibration_fb: sys::HapticPcmVibrationFB,
     }
     impl HapticDataRaw {
         pub(crate) fn as_base(&self) -> *const sys::HapticBaseHeader {

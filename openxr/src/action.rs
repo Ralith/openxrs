@@ -130,6 +130,40 @@ impl Action<Haptic> {
     ) -> Result<()> {
         self.assert_event_validity(&data);
 
+        // There is no generated `as_raw` function because `samples_consumed` is a mut reference,
+        // which can't be safely converted to `*mut u32` though a `&HapticData`.
+        let data = match data {
+            HapticData::Vibration {
+                duration,
+                frequency,
+                amplitude,
+            } => builder::HapticDataRaw {
+                vibration: sys::HapticVibration {
+                    ty: sys::HapticVibration::TYPE,
+                    next: ptr::null_mut(),
+                    duration,
+                    frequency,
+                    amplitude,
+                },
+            },
+            HapticData::PcmVibrationFB {
+                buffer,
+                sample_rate,
+                append,
+                samples_consumed,
+            } => builder::HapticDataRaw {
+                pcm_vibration_fb: sys::HapticPcmVibrationFB {
+                    ty: sys::HapticPcmVibrationFB::TYPE,
+                    next: ptr::null_mut(),
+                    buffer_size: buffer.len() as _,
+                    buffer: buffer.as_ptr(),
+                    sample_rate,
+                    append: append.into(),
+                    samples_consumed,
+                },
+            },
+        };
+
         let info = sys::HapticActionInfo {
             ty: sys::HapticActionInfo::TYPE,
             next: ptr::null(),
@@ -140,8 +174,7 @@ impl Action<Haptic> {
             cvt((self.fp().apply_haptic_feedback)(
                 session.as_raw(),
                 &info,
-                // TODO `samples_consumed` pointer is not set
-                data.as_raw().as_base(),
+                data.as_base(),
             ))?;
         }
         Ok(())
