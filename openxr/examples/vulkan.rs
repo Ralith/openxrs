@@ -111,6 +111,7 @@ pub fn main() {
         );
     }
 
+    #[allow(clippy::missing_transmute_annotations)]
     unsafe {
         let vk_entry = ash::Entry::load().unwrap();
 
