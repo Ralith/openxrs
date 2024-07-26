@@ -1547,7 +1547,7 @@ impl Parser {
         quote! {
             //! Automatically generated code; do not edit!
 
-            #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr)]
+            #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr, clippy::missing_transmute_annotations)]
             use std::borrow::Cow;
             use std::ffi::CStr;
             use std::mem::MaybeUninit;

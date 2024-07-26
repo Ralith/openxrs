@@ -107,7 +107,7 @@ impl<G: Graphics> FrameStream<G> {
         environment_blend_mode: EnvironmentBlendMode,
         layers: &[&CompositionLayerBase<'_, G>],
     ) -> Result<()> {
-        assert!(layers.len() <= u32::max_value() as usize);
+        assert!(layers.len() <= u32::MAX as usize);
         let info = sys::FrameEndInfo {
             ty: sys::FrameEndInfo::TYPE,
             next: ptr::null(),
@@ -139,8 +139,8 @@ impl<G: Graphics> FrameStream<G> {
         layers: &[&CompositionLayerBase<'_, G>],
         secondary_info: SecondaryEndInfo<'_, '_, '_, G>,
     ) -> Result<()> {
-        assert!(layers.len() <= u32::max_value() as usize);
-        assert!(secondary_info.layers.len() <= u32::max_value() as usize);
+        assert!(layers.len() <= u32::MAX as usize);
+        assert!(secondary_info.layers.len() <= u32::MAX as usize);
         let single_secondary_info = [sys::SecondaryViewConfigurationLayerInfoMSFT {
             ty: sys::SecondaryViewConfigurationLayerInfoMSFT::TYPE,
             next: ptr::null(),

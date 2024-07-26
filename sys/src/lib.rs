@@ -83,7 +83,7 @@ impl Duration {
 
 impl Duration {
     pub const NONE: Self = Self(0);
-    pub const INFINITE: Self = Self(i64::max_value());
+    pub const INFINITE: Self = Self(i64::MAX);
     pub const MIN_HAPTIC: Self = Self(-1);
 }
 
