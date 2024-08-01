@@ -49,3 +49,6 @@ pub use opengl::OpenGL;
 
 pub mod opengles;
 pub use opengles::OpenGlEs;
+
+pub mod headless;
+pub use headless::Headless;
