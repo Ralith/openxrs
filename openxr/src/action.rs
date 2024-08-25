@@ -79,7 +79,7 @@ impl Action<Posef> {
     /// Creates a `Space` relative to this action
     pub fn create_space<G>(
         &self,
-        session: Session<G>,
+        session: &Session<G>,
         subaction_path: Path,
         pose_in_action_space: Posef,
     ) -> Result<Space> {
@@ -97,7 +97,7 @@ impl Action<Posef> {
                 &info,
                 &mut out,
             ))?;
-            Ok(Space::action_from_raw(self.clone(), session, out))
+            Ok(Space::action_from_raw(self.clone(), session.clone(), out))
         }
     }
 

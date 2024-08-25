@@ -382,10 +382,10 @@ pub fn main() {
 
         // Create an action space for each device we want to locate
         let right_space = right_action
-            .create_space(session.clone(), xr::Path::NULL, xr::Posef::IDENTITY)
+            .create_space(&session, xr::Path::NULL, xr::Posef::IDENTITY)
             .unwrap();
         let left_space = left_action
-            .create_space(session.clone(), xr::Path::NULL, xr::Posef::IDENTITY)
+            .create_space(&session, xr::Path::NULL, xr::Posef::IDENTITY)
             .unwrap();
 
         // OpenXR uses a couple different types of reference frames for positioning content; we need
