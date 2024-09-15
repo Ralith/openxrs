@@ -151,6 +151,9 @@ impl Instance {
 
     #[inline]
     pub fn supports_render_model_loading(&self, system: SystemId) -> Result<bool> {
+        if self.exts().fb_render_model.is_none() {
+            return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
+        }
         unsafe {
             let mut render_model = sys::SystemRenderModelPropertiesFB::out(ptr::null_mut());
             let mut p = sys::SystemProperties::out(&mut render_model as *mut _ as _);
@@ -168,6 +171,9 @@ impl Instance {
 
     #[inline]
     pub fn supports_hand_tracking(&self, system: SystemId) -> Result<bool> {
+        if self.exts().ext_hand_interaction.is_none() {
+            return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
+        }
         unsafe {
             let mut hand = sys::SystemHandTrackingPropertiesEXT::out(ptr::null_mut());
             let mut p = sys::SystemProperties::out(&mut hand as *mut _ as _);
