@@ -171,7 +171,7 @@ impl Instance {
 
     #[inline]
     pub fn supports_hand_tracking(&self, system: SystemId) -> Result<bool> {
-        if self.exts().ext_hand_interaction.is_none() {
+        if self.exts().ext_hand_tracking.is_none() {
             return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
         }
         unsafe {
