@@ -32,6 +32,11 @@ pub trait Graphics: Sized {
     #[doc(hidden)]
     fn enumerate_swapchain_images(swapchain: &Swapchain<Self>)
         -> Result<Vec<Self::SwapchainImage>>;
+
+    #[doc(hidden)]
+    fn enumerate_depth_environment_swapchain_images(
+        swapchain: &EnvironmentDepthSwapchain<Self>,
+    ) -> Result<Vec<Self::SwapchainImage>>;
 }
 
 #[cfg(windows)]

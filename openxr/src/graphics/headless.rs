@@ -53,6 +53,12 @@ impl Graphics for Headless {
         // enumerate 0 formats, and so it's not possible to create a swapchain
         unreachable!();
     }
+
+    fn enumerate_depth_environment_swapchain_images(
+        _swapchain: &EnvironmentDepthSwapchain<Self>,
+    ) -> Result<Vec<Self::SwapchainImage>> {
+        unreachable!();
+    }
 }
 
 #[derive(Clone, Copy)]
