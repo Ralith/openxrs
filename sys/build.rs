@@ -7,6 +7,7 @@ fn main() {
             .define("OpenGL_GL_PREFERENCE", "GLVND")
             .define("DYNAMIC_LOADER", "OFF")
             .define("CMAKE_INSTALL_LIBDIR", "lib")
+            .define("BUILD_WITH_SYSTEM_JSONCPP", "OFF") // See https://github.com/KhronosGroup/OpenXR-SDK-Source/issues/481
             .profile("Release")
             .build();
 
