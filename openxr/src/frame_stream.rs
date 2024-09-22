@@ -46,34 +46,36 @@ use crate::*;
 ///     .end(
 ///         state.predicted_display_time,
 ///         openxr::EnvironmentBlendMode::OPAQUE,
-///         &[&openxr::CompositionLayerProjection::new()
-///             .space(world_space)
-///             .views(&[
-///                 openxr::CompositionLayerProjectionView::new()
-///                     .pose(views[0].pose)
-///                     .fov(views[0].fov)
-///                     .sub_image(
-///                         openxr::SwapchainSubImage::new()
-///                             .swapchain(swapchain)
-///                             .image_array_index(0)
-///                             .image_rect(openxr::Rect2Di {
-///                                 offset: openxr::Offset2Di { x: 0, y: 0 },
-///                                 extent: view_resolution[0],
-///                             }),
-///                     ),
-///                 openxr::CompositionLayerProjectionView::new()
-///                     .pose(views[1].pose)
-///                     .fov(views[1].fov)
-///                     .sub_image(
-///                         openxr::SwapchainSubImage::new()
-///                             .swapchain(swapchain)
-///                             .image_array_index(1)
-///                             .image_rect(openxr::Rect2Di {
-///                                 offset: openxr::Offset2Di { x: 0, y: 0 },
-///                                 extent: view_resolution[1],
-///                             }),
-///                     ),
-///             ])],
+///         &[&openxr::CompositionLayer::Projection {
+///             layer_flags: Default::default(),
+///             space: world_space,
+///             views: &[
+///                 openxr::CompositionLayerProjectionView {
+///                     pose: views[0].pose,
+///                     fov: views[0].fov,
+///                     sub_image: openxr::SwapchainSubImage {
+///                         swapchain,
+///                         image_array_index: 0,
+///                         image_rect: openxr::Rect2Di {
+///                             offset: openxr::Offset2Di { x: 0, y: 0 },
+///                             extent: view_resolution[0],
+///                         },
+///                     },
+///                 },
+///                 openxr::CompositionLayerProjectionView {
+///                     pose: views[1].pose,
+///                     fov: views[1].fov,
+///                     sub_image: openxr::SwapchainSubImage {
+///                         swapchain,
+///                         image_array_index: 1,
+///                         image_rect: openxr::Rect2Di {
+///                             offset: openxr::Offset2Di { x: 0, y: 0 },
+///                             extent: view_resolution[1],
+///                         },
+///                     },
+///                 },
+///             ],
+///         }],
 ///     )
 ///     .unwrap();
 /// # }
@@ -105,8 +107,13 @@ impl<G: Graphics> FrameStream<G> {
         &mut self,
         display_time: Time,
         environment_blend_mode: EnvironmentBlendMode,
-        layers: &[&CompositionLayerBase<'_, G>],
+        layers: &[&CompositionLayer<'_, G>],
     ) -> Result<()> {
+        let layers = layers
+            .iter()
+            .inspect(|layer| self.assert_layer_validity(layer))
+            .map(|layer| layer.as_raw())
+            .collect::<Vec<_>>();
         assert!(layers.len() <= u32::MAX as usize);
         let info = sys::FrameEndInfo {
             ty: sys::FrameEndInfo::TYPE,
@@ -136,18 +143,29 @@ impl<G: Graphics> FrameStream<G> {
         &mut self,
         display_time: Time,
         environment_blend_mode: EnvironmentBlendMode,
-        layers: &[&CompositionLayerBase<'_, G>],
+        layers: &[&CompositionLayer<'_, G>],
         secondary_info: SecondaryEndInfo<'_, '_, '_, G>,
     ) -> Result<()> {
+        let layers = layers
+            .iter()
+            .inspect(|layer| self.assert_layer_validity(layer))
+            .map(|layer| layer.as_raw())
+            .collect::<Vec<_>>();
         assert!(layers.len() <= u32::MAX as usize);
-        assert!(secondary_info.layers.len() <= u32::MAX as usize);
+        let secondary_layers = secondary_info
+            .layers
+            .iter()
+            .inspect(|layer| self.assert_layer_validity(layer))
+            .map(|layer| layer.as_raw())
+            .collect::<Vec<_>>();
+        assert!(secondary_layers.len() <= u32::MAX as usize);
         let single_secondary_info = [sys::SecondaryViewConfigurationLayerInfoMSFT {
             ty: sys::SecondaryViewConfigurationLayerInfoMSFT::TYPE,
             next: ptr::null(),
             view_configuration_type: secondary_info.ty,
             environment_blend_mode: secondary_info.environment_blend_mode,
-            layer_count: secondary_info.layers.len() as u32,
-            layers: secondary_info.layers.as_ptr() as *const _,
+            layer_count: secondary_layers.len() as u32,
+            layers: secondary_layers.as_ptr() as *const _,
         }];
         let secondary_info = sys::SecondaryViewConfigurationFrameEndInfoMSFT {
             ty: sys::SecondaryViewConfigurationFrameEndInfoMSFT::TYPE,
@@ -173,5 +191,78 @@ impl<G: Graphics> FrameStream<G> {
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.session.instance().fp()
+    }
+
+    /// Check the invariants of the passed `layer`.
+    /// The lifetimes guarantee the validity of non-null handles.
+    fn assert_layer_validity(&self, layer: &CompositionLayer<'_, G>) {
+        match layer {
+            CompositionLayer::Projection { space, views, .. } => {
+                assert!(!views.is_empty());
+                assert_eq!(self.session.as_raw(), space.session_handle());
+                for CompositionLayerProjectionView { sub_image, .. } in *views {
+                    assert_eq!(self.session.as_raw(), sub_image.swapchain.session_handle());
+                }
+            }
+            CompositionLayer::Quad {
+                space, sub_image, ..
+            } => {
+                assert_eq!(space.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+            CompositionLayer::CylinderKHR {
+                space, sub_image, ..
+            } => {
+                assert!(self
+                    .session
+                    .instance()
+                    .exts()
+                    .khr_composition_layer_cylinder
+                    .is_some());
+                assert_eq!(space.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+            CompositionLayer::CubeKHR {
+                space, swapchain, ..
+            } => {
+                assert!(self
+                    .session
+                    .instance()
+                    .exts()
+                    .khr_composition_layer_cube
+                    .is_some());
+                assert_eq!(space.session_handle(), self.session.as_raw());
+                assert_eq!(swapchain.session_handle(), self.session.as_raw());
+                assert_eq!(swapchain.face_count(), 6);
+            }
+            CompositionLayer::EquirectKHR {
+                space, sub_image, ..
+            } => {
+                assert!(self
+                    .session
+                    .instance()
+                    .exts()
+                    .khr_composition_layer_equirect
+                    .is_some());
+                assert_eq!(space.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+            CompositionLayer::Equirect2KHR {
+                space, sub_image, ..
+            } => {
+                assert!(self
+                    .session
+                    .instance()
+                    .exts()
+                    .khr_composition_layer_equirect2
+                    .is_some());
+                assert_eq!(space.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+        }
     }
 }
