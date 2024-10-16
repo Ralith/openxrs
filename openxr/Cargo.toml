@@ -58,7 +58,7 @@ theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen"
 config_changes = "density|keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|uiMode"
 launch_mode = "singleTask"
 orientation = "landscape"
-resizeable_activity = "false"
+resizeable_activity = false
 
 [[package.metadata.android.application.activity.intent_filter]]
 actions = ["android.intent.action.MAIN"]
