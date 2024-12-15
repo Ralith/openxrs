@@ -29,6 +29,9 @@ libloading = { version = "0.8", optional = true }
 ash = { version = "0.38", default-features = false, features = ["loaded"] }
 ctrlc = "3.1.5"
 
+[target.'cfg(target_os = "android")'.dev-dependencies]
+ndk-glue = "0.7"
+
 [target.'cfg(target_os = "android")'.dependencies]
 ndk-context = "0.1"
 
