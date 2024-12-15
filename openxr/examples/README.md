@@ -10,10 +10,13 @@ Display a head-locked gradient spanning both eyes. Controllers position is repor
 
 ## `vulkan-android`
 
-Same as `vulkan` but it can run on Android, specifically on the Oculus Quest and Quest 2. It shares the same source file.  
+Same as `vulkan` but it can run on Android, specifically on the Oculus Quest and Quest 2. It shares the same source file.
 
 * Install [cargo-apk](https://crates.io/crates/cargo-apk)
-* Get `libopenxr_loader.so` from the Oculus OpenXR Mobile SDK and add it to `openxr/examples/libs/arm64-v8a`
+* Download Android SDK version 30, set `$ANDROID_HOME` to its path
+* Download Android NDK version 23, set `$ANDROID_NDK_ROOT` to its path
+* Copy `arm64-v8a` folder from "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/libs/" into "openxr/examples/libs/"
+* Get `libopenxr_loader.so` from the Oculus OpenXR Mobile SDK and add it to "openxr/examples/libs/arm64-v8a"
 * Run:
 
     ```sh
