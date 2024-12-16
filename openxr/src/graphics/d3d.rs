@@ -85,6 +85,27 @@ impl Graphics for D3D11 {
         )?;
         Ok(images.into_iter().map(|x| x.texture).collect())
     }
+
+    fn enumerate_depth_environment_swapchain_images(
+        swapchain: &EnvironmentDepthSwapchain<Self>,
+    ) -> Result<Vec<Self::SwapchainImage>> {
+        let images = get_arr_init(
+            sys::SwapchainImageD3D11KHR {
+                ty: sys::SwapchainImageD3D11KHR::TYPE,
+                next: ptr::null_mut(),
+                texture: ptr::null_mut(),
+            },
+            |capacity, count, buf| unsafe {
+                (swapchain.fp().enumerate_environment_depth_swapchain_images)(
+                    swapchain.handle,
+                    capacity,
+                    count,
+                    buf as *mut _,
+                )
+            },
+        )?;
+        Ok(images.into_iter().map(|x| x.texture as _).collect())
+    }
 }
 
 /// The D3D12 graphics API
@@ -168,6 +189,27 @@ impl Graphics for D3D12 {
             },
         )?;
         Ok(images.into_iter().map(|x| x.texture).collect())
+    }
+
+    fn enumerate_depth_environment_swapchain_images(
+        swapchain: &EnvironmentDepthSwapchain<Self>,
+    ) -> Result<Vec<Self::SwapchainImage>> {
+        let images = get_arr_init(
+            sys::SwapchainImageD3D12KHR {
+                ty: sys::SwapchainImageD3D12KHR::TYPE,
+                next: ptr::null_mut(),
+                texture: ptr::null_mut(),
+            },
+            |capacity, count, buf| unsafe {
+                (swapchain.fp().enumerate_environment_depth_swapchain_images)(
+                    swapchain.handle,
+                    capacity,
+                    count,
+                    buf as *mut _,
+                )
+            },
+        )?;
+        Ok(images.into_iter().map(|x| x.texture as _).collect())
     }
 }
 
