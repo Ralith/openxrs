@@ -44,10 +44,7 @@ mod localization_map_ml;
 pub use localization_map_ml::*;
 
 pub use builder::{
-    CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
-    CompositionLayerEquirect2KHR, CompositionLayerEquirectKHR, CompositionLayerProjection,
-    CompositionLayerProjectionView, CompositionLayerQuad, HapticBase, HapticPcmVibrationFB,
-    HapticVibration, SwapchainSubImage,
+    CompositionLayer, CompositionLayerProjectionView, HapticData, SwapchainSubImage,
 };
 
 pub type Result<T, E = sys::Result> = std::result::Result<T, E>;
@@ -80,6 +77,12 @@ fn place_cstr(out: &mut [c_char], s: &str) {
         *o = i as c_char;
     }
     out[s.len()] = 0;
+}
+
+fn str_into_array<const LENGTH: usize>(s: &str) -> [c_char; LENGTH] {
+    let mut out = [0; LENGTH];
+    place_cstr(&mut out, s);
+    out
 }
 
 unsafe fn fixed_str(x: &[c_char]) -> &str {

@@ -126,8 +126,44 @@ impl Action<Haptic> {
         &self,
         session: &Session<G>,
         subaction_path: Path,
-        event: &HapticBase,
+        data: HapticData,
     ) -> Result<()> {
+        self.assert_event_validity(&data);
+
+        // There is no generated `as_raw` function because `samples_consumed` is a mut reference,
+        // which can't be safely converted to `*mut u32` though a `&HapticData`.
+        let data = match data {
+            HapticData::Vibration {
+                duration,
+                frequency,
+                amplitude,
+            } => builder::HapticDataRaw {
+                vibration: sys::HapticVibration {
+                    ty: sys::HapticVibration::TYPE,
+                    next: ptr::null_mut(),
+                    duration,
+                    frequency,
+                    amplitude,
+                },
+            },
+            HapticData::PcmVibrationFB {
+                buffer,
+                sample_rate,
+                append,
+                samples_consumed,
+            } => builder::HapticDataRaw {
+                pcm_vibration_fb: sys::HapticPcmVibrationFB {
+                    ty: sys::HapticPcmVibrationFB::TYPE,
+                    next: ptr::null_mut(),
+                    buffer_size: buffer.len() as _,
+                    buffer: buffer.as_ptr(),
+                    sample_rate,
+                    append: append.into(),
+                    samples_consumed,
+                },
+            },
+        };
+
         let info = sys::HapticActionInfo {
             ty: sys::HapticActionInfo::TYPE,
             next: ptr::null(),
@@ -138,10 +174,27 @@ impl Action<Haptic> {
             cvt((self.fp().apply_haptic_feedback)(
                 session.as_raw(),
                 &info,
-                event as *const _ as _,
+                data.as_base(),
             ))?;
         }
         Ok(())
+    }
+
+    /// Check the invariants of the passed haptic `event`.
+    /// The lifetime guarantees the validity of the non-null pointers.
+    fn assert_event_validity(&self, data: &HapticData) {
+        match data {
+            HapticData::Vibration { .. } => {
+                // nothing to check
+            }
+            HapticData::PcmVibrationFB { buffer, .. } => {
+                assert!(
+                    self.instance().exts().fb_haptic_pcm.is_some(),
+                    "XR_FB_haptic_pcm not loaded"
+                );
+                assert!(!buffer.is_empty(), "PCM Vibration buffer can't be empty");
+            }
+        }
     }
 
     pub fn stop_feedback<G>(&self, session: &Session<G>, subaction_path: Path) -> Result<()> {

@@ -9,6 +9,8 @@ pub struct Swapchain<G: Graphics> {
     _marker: PhantomData<G>,
     /// Whether `wait_image` was called more recently than `release_image`
     waited: bool,
+    /// Required for validation when submitting layers
+    face_count: u32,
 }
 
 impl<G: Graphics> Swapchain<G> {
@@ -18,12 +20,13 @@ impl<G: Graphics> Swapchain<G> {
     ///
     /// `handle` must be a valid swapchain handle associated with `session` and created with `flags`.
     #[inline]
-    pub unsafe fn from_raw(session: Session<G>, handle: sys::Swapchain) -> Self {
+    pub unsafe fn from_raw(session: Session<G>, handle: sys::Swapchain, face_count: u32) -> Self {
         Self {
             session,
             handle,
             _marker: PhantomData,
             waited: false,
+            face_count,
         }
     }
 
@@ -37,6 +40,16 @@ impl<G: Graphics> Swapchain<G> {
     #[inline]
     pub fn instance(&self) -> &Instance {
         self.session.instance()
+    }
+
+    #[inline]
+    pub(crate) fn session_handle(&self) -> sys::Session {
+        self.session.as_raw()
+    }
+
+    #[inline]
+    pub(crate) fn face_count(&self) -> u32 {
+        self.face_count
     }
 
     /// Set the debug name of this `Swapchain`, if `XR_EXT_debug_utils` is loaded

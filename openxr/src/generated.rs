@@ -6489,1741 +6489,319 @@ pub(crate) mod builder {
     use crate::*;
     use std::{marker::PhantomData, mem, ops::Deref};
     #[derive(Copy, Clone)]
-    #[repr(transparent)]
     pub struct SwapchainSubImage<'a, G: Graphics> {
-        inner: sys::SwapchainSubImage,
-        _marker: PhantomData<&'a G>,
+        pub swapchain: &'a Swapchain<G>,
+        pub image_rect: Rect2Di,
+        pub image_array_index: u32,
     }
     impl<'a, G: Graphics> SwapchainSubImage<'a, G> {
         #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SwapchainSubImage {
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
+        pub fn as_raw(&self) -> sys::SwapchainSubImage {
+            let Self {
+                swapchain,
+                image_rect,
+                image_array_index,
+            } = self;
+            sys::SwapchainSubImage {
+                swapchain: swapchain.as_raw(),
+                image_rect: *image_rect,
+                image_array_index: *image_array_index,
             }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SwapchainSubImage) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SwapchainSubImage {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SwapchainSubImage {
-            &self.inner
-        }
-        #[inline]
-        pub fn swapchain(mut self, value: &'a Swapchain<G>) -> Self {
-            self.inner.swapchain = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn image_rect(mut self, value: Rect2Di) -> Self {
-            self.inner.image_rect = value;
-            self
-        }
-        #[inline]
-        pub fn image_array_index(mut self, value: u32) -> Self {
-            self.inner.image_array_index = value;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Default for SwapchainSubImage<'a, G> {
-        fn default() -> Self {
-            Self::new()
         }
     }
     #[derive(Copy, Clone)]
-    #[repr(transparent)]
     pub struct CompositionLayerProjectionView<'a, G: Graphics> {
-        inner: sys::CompositionLayerProjectionView,
-        _marker: PhantomData<&'a G>,
+        pub pose: Posef,
+        pub fov: Fovf,
+        pub sub_image: SwapchainSubImage<'a, G>,
     }
     impl<'a, G: Graphics> CompositionLayerProjectionView<'a, G> {
         #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::CompositionLayerProjectionView {
-                    ty: sys::StructureType::COMPOSITION_LAYER_PROJECTION_VIEW,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
+        pub fn as_raw(&self) -> sys::CompositionLayerProjectionView {
+            let Self {
+                pose,
+                fov,
+                sub_image,
+            } = self;
+            sys::CompositionLayerProjectionView {
+                ty: sys::StructureType::COMPOSITION_LAYER_PROJECTION_VIEW,
+                next: std::ptr::null_mut(),
+                pose: *pose,
+                fov: *fov,
+                sub_image: sub_image.as_raw(),
             }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::CompositionLayerProjectionView) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::CompositionLayerProjectionView {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::CompositionLayerProjectionView {
-            &self.inner
-        }
-        #[inline]
-        pub fn pose(mut self, value: Posef) -> Self {
-            self.inner.pose = value;
-            self
-        }
-        #[inline]
-        pub fn fov(mut self, value: Fovf) -> Self {
-            self.inner.fov = value;
-            self
-        }
-        #[inline]
-        pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
-            self.inner.sub_image = value.inner;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Default for CompositionLayerProjectionView<'a, G> {
-        fn default() -> Self {
-            Self::new()
         }
     }
     #[derive(Copy, Clone)]
-    #[repr(transparent)]
     pub struct ActionSetCreateInfo<'a> {
-        inner: sys::ActionSetCreateInfo,
-        _marker: PhantomData<&'a ()>,
+        pub action_set_name: &'a str,
+        pub localized_action_set_name: &'a str,
+        pub priority: u32,
     }
     impl<'a> ActionSetCreateInfo<'a> {
         #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::ActionSetCreateInfo {
-                    ty: sys::StructureType::ACTION_SET_CREATE_INFO,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
+        pub fn as_raw(&self) -> sys::ActionSetCreateInfo {
+            let Self {
+                action_set_name,
+                localized_action_set_name,
+                priority,
+            } = self;
+            sys::ActionSetCreateInfo {
+                ty: sys::StructureType::ACTION_SET_CREATE_INFO,
+                next: std::ptr::null_mut(),
+                action_set_name: str_into_array(action_set_name),
+                localized_action_set_name: str_into_array(localized_action_set_name),
+                priority: *priority,
             }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::ActionSetCreateInfo) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::ActionSetCreateInfo {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::ActionSetCreateInfo {
-            &self.inner
-        }
-        #[inline]
-        pub fn action_set_name(mut self, value: &str) -> Self {
-            place_cstr(&mut self.inner.action_set_name, value);
-            self
-        }
-        #[inline]
-        pub fn localized_action_set_name(mut self, value: &str) -> Self {
-            place_cstr(&mut self.inner.localized_action_set_name, value);
-            self
-        }
-        #[inline]
-        pub fn priority(mut self, value: u32) -> Self {
-            self.inner.priority = value;
-            self
-        }
-    }
-    impl<'a> Default for ActionSetCreateInfo<'a> {
-        fn default() -> Self {
-            Self::new()
         }
     }
     #[derive(Copy, Clone)]
-    #[repr(transparent)]
     pub struct ActionCreateInfo<'a> {
-        inner: sys::ActionCreateInfo,
-        _marker: PhantomData<&'a ()>,
+        pub action_name: &'a str,
+        pub action_type: ActionType,
+        pub subaction_paths: &'a [Path],
+        pub localized_action_name: &'a str,
     }
     impl<'a> ActionCreateInfo<'a> {
         #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::ActionCreateInfo {
-                    ty: sys::StructureType::ACTION_CREATE_INFO,
-                    ..unsafe { mem::zeroed() }
+        pub fn as_raw(&self) -> sys::ActionCreateInfo {
+            let Self {
+                action_name,
+                action_type,
+                subaction_paths,
+                localized_action_name,
+            } = self;
+            sys::ActionCreateInfo {
+                ty: sys::StructureType::ACTION_CREATE_INFO,
+                next: std::ptr::null_mut(),
+                action_name: str_into_array(action_name),
+                action_type: *action_type,
+                count_subaction_paths: subaction_paths.len() as _,
+                subaction_paths: subaction_paths.as_ptr() as _,
+                localized_action_name: str_into_array(localized_action_name),
+            }
+        }
+    }
+    #[non_exhaustive]
+    pub enum CompositionLayer<'a, G: Graphics> {
+        Projection {
+            layer_flags: CompositionLayerFlags,
+            space: &'a Space,
+            views: &'a [CompositionLayerProjectionView<'a, G>],
+        },
+        Quad {
+            layer_flags: CompositionLayerFlags,
+            space: &'a Space,
+            eye_visibility: EyeVisibility,
+            sub_image: SwapchainSubImage<'a, G>,
+            pose: Posef,
+            size: Extent2Df,
+        },
+        CylinderKHR {
+            layer_flags: CompositionLayerFlags,
+            space: &'a Space,
+            eye_visibility: EyeVisibility,
+            sub_image: SwapchainSubImage<'a, G>,
+            pose: Posef,
+            radius: f32,
+            central_angle: f32,
+            aspect_ratio: f32,
+        },
+        CubeKHR {
+            layer_flags: CompositionLayerFlags,
+            space: &'a Space,
+            eye_visibility: EyeVisibility,
+            swapchain: &'a Swapchain<G>,
+            image_array_index: u32,
+            orientation: Quaternionf,
+        },
+        EquirectKHR {
+            layer_flags: CompositionLayerFlags,
+            space: &'a Space,
+            eye_visibility: EyeVisibility,
+            sub_image: SwapchainSubImage<'a, G>,
+            pose: Posef,
+            radius: f32,
+            scale: Vector2f,
+            bias: Vector2f,
+        },
+        Equirect2KHR {
+            layer_flags: CompositionLayerFlags,
+            space: &'a Space,
+            eye_visibility: EyeVisibility,
+            sub_image: SwapchainSubImage<'a, G>,
+            pose: Posef,
+            radius: f32,
+            central_horizontal_angle: f32,
+            upper_vertical_angle: f32,
+            lower_vertical_angle: f32,
+        },
+    }
+    impl<'a, G: Graphics> CompositionLayer<'a, G> {
+        pub(crate) fn as_raw(&self) -> CompositionLayerRaw {
+            match self {
+                CompositionLayer::Projection {
+                    layer_flags,
+                    space,
+                    views,
+                } => CompositionLayerRaw {
+                    projection: sys::CompositionLayerProjection {
+                        ty: sys::StructureType::COMPOSITION_LAYER_PROJECTION,
+                        next: std::ptr::null_mut(),
+                        layer_flags: *layer_flags,
+                        space: space.as_raw(),
+                        view_count: views.len() as _,
+                        views: views.as_ptr() as _,
+                    },
                 },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::ActionCreateInfo) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::ActionCreateInfo {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::ActionCreateInfo {
-            &self.inner
-        }
-        #[inline]
-        pub fn action_name(mut self, value: &str) -> Self {
-            place_cstr(&mut self.inner.action_name, value);
-            self
-        }
-        #[inline]
-        pub fn action_type(mut self, value: ActionType) -> Self {
-            self.inner.action_type = value;
-            self
-        }
-        #[inline]
-        pub fn subaction_paths(mut self, value: &'a [Path]) -> Self {
-            self.inner.subaction_paths = value.as_ptr() as *const _ as _;
-            self.inner.count_subaction_paths = value.len() as u32;
-            self
-        }
-        #[inline]
-        pub fn localized_action_name(mut self, value: &str) -> Self {
-            place_cstr(&mut self.inner.localized_action_name, value);
-            self
-        }
-    }
-    impl<'a> Default for ActionCreateInfo<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[repr(transparent)]
-    pub struct CompositionLayerBase<'a, G: Graphics> {
-        _inner: sys::CompositionLayerBaseHeader,
-        _marker: PhantomData<&'a G>,
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct CompositionLayerProjection<'a, G: Graphics> {
-        inner: sys::CompositionLayerProjection,
-        _marker: PhantomData<&'a G>,
-    }
-    impl<'a, G: Graphics> CompositionLayerProjection<'a, G> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::CompositionLayerProjection {
-                    ty: sys::StructureType::COMPOSITION_LAYER_PROJECTION,
-                    ..unsafe { mem::zeroed() }
+                CompositionLayer::Quad {
+                    layer_flags,
+                    space,
+                    eye_visibility,
+                    sub_image,
+                    pose,
+                    size,
+                } => CompositionLayerRaw {
+                    quad: sys::CompositionLayerQuad {
+                        ty: sys::StructureType::COMPOSITION_LAYER_QUAD,
+                        next: std::ptr::null_mut(),
+                        layer_flags: *layer_flags,
+                        space: space.as_raw(),
+                        eye_visibility: *eye_visibility,
+                        sub_image: sub_image.as_raw(),
+                        pose: *pose,
+                        size: *size,
+                    },
                 },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::CompositionLayerProjection) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::CompositionLayerProjection {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::CompositionLayerProjection {
-            &self.inner
-        }
-        #[inline]
-        pub fn layer_flags(mut self, value: CompositionLayerFlags) -> Self {
-            self.inner.layer_flags = value;
-            self
-        }
-        #[inline]
-        pub fn space(mut self, value: &'a Space) -> Self {
-            self.inner.space = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn views(mut self, value: &'a [CompositionLayerProjectionView<'a, G>]) -> Self {
-            self.inner.views = value.as_ptr() as *const _ as _;
-            self.inner.view_count = value.len() as u32;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Deref for CompositionLayerProjection<'a, G> {
-        type Target = CompositionLayerBase<'a, G>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a, G: Graphics> Default for CompositionLayerProjection<'a, G> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct CompositionLayerQuad<'a, G: Graphics> {
-        inner: sys::CompositionLayerQuad,
-        _marker: PhantomData<&'a G>,
-    }
-    impl<'a, G: Graphics> CompositionLayerQuad<'a, G> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::CompositionLayerQuad {
-                    ty: sys::StructureType::COMPOSITION_LAYER_QUAD,
-                    ..unsafe { mem::zeroed() }
+                CompositionLayer::CylinderKHR {
+                    layer_flags,
+                    space,
+                    eye_visibility,
+                    sub_image,
+                    pose,
+                    radius,
+                    central_angle,
+                    aspect_ratio,
+                } => CompositionLayerRaw {
+                    cylinder_khr: sys::CompositionLayerCylinderKHR {
+                        ty: sys::StructureType::COMPOSITION_LAYER_CYLINDER_KHR,
+                        next: std::ptr::null_mut(),
+                        layer_flags: *layer_flags,
+                        space: space.as_raw(),
+                        eye_visibility: *eye_visibility,
+                        sub_image: sub_image.as_raw(),
+                        pose: *pose,
+                        radius: *radius,
+                        central_angle: *central_angle,
+                        aspect_ratio: *aspect_ratio,
+                    },
                 },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::CompositionLayerQuad) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::CompositionLayerQuad {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::CompositionLayerQuad {
-            &self.inner
-        }
-        #[inline]
-        pub fn layer_flags(mut self, value: CompositionLayerFlags) -> Self {
-            self.inner.layer_flags = value;
-            self
-        }
-        #[inline]
-        pub fn space(mut self, value: &'a Space) -> Self {
-            self.inner.space = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn eye_visibility(mut self, value: EyeVisibility) -> Self {
-            self.inner.eye_visibility = value;
-            self
-        }
-        #[inline]
-        pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
-            self.inner.sub_image = value.inner;
-            self
-        }
-        #[inline]
-        pub fn pose(mut self, value: Posef) -> Self {
-            self.inner.pose = value;
-            self
-        }
-        #[inline]
-        pub fn size(mut self, value: Extent2Df) -> Self {
-            self.inner.size = value;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Deref for CompositionLayerQuad<'a, G> {
-        type Target = CompositionLayerBase<'a, G>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a, G: Graphics> Default for CompositionLayerQuad<'a, G> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct CompositionLayerCylinderKHR<'a, G: Graphics> {
-        inner: sys::CompositionLayerCylinderKHR,
-        _marker: PhantomData<&'a G>,
-    }
-    impl<'a, G: Graphics> CompositionLayerCylinderKHR<'a, G> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::CompositionLayerCylinderKHR {
-                    ty: sys::StructureType::COMPOSITION_LAYER_CYLINDER_KHR,
-                    ..unsafe { mem::zeroed() }
+                CompositionLayer::CubeKHR {
+                    layer_flags,
+                    space,
+                    eye_visibility,
+                    swapchain,
+                    image_array_index,
+                    orientation,
+                } => CompositionLayerRaw {
+                    cube_khr: sys::CompositionLayerCubeKHR {
+                        ty: sys::StructureType::COMPOSITION_LAYER_CUBE_KHR,
+                        next: std::ptr::null_mut(),
+                        layer_flags: *layer_flags,
+                        space: space.as_raw(),
+                        eye_visibility: *eye_visibility,
+                        swapchain: swapchain.as_raw(),
+                        image_array_index: *image_array_index,
+                        orientation: *orientation,
+                    },
                 },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::CompositionLayerCylinderKHR) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::CompositionLayerCylinderKHR {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::CompositionLayerCylinderKHR {
-            &self.inner
-        }
-        #[inline]
-        pub fn layer_flags(mut self, value: CompositionLayerFlags) -> Self {
-            self.inner.layer_flags = value;
-            self
-        }
-        #[inline]
-        pub fn space(mut self, value: &'a Space) -> Self {
-            self.inner.space = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn eye_visibility(mut self, value: EyeVisibility) -> Self {
-            self.inner.eye_visibility = value;
-            self
-        }
-        #[inline]
-        pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
-            self.inner.sub_image = value.inner;
-            self
-        }
-        #[inline]
-        pub fn pose(mut self, value: Posef) -> Self {
-            self.inner.pose = value;
-            self
-        }
-        #[inline]
-        pub fn radius(mut self, value: f32) -> Self {
-            self.inner.radius = value;
-            self
-        }
-        #[inline]
-        pub fn central_angle(mut self, value: f32) -> Self {
-            self.inner.central_angle = value;
-            self
-        }
-        #[inline]
-        pub fn aspect_ratio(mut self, value: f32) -> Self {
-            self.inner.aspect_ratio = value;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Deref for CompositionLayerCylinderKHR<'a, G> {
-        type Target = CompositionLayerBase<'a, G>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a, G: Graphics> Default for CompositionLayerCylinderKHR<'a, G> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct CompositionLayerCubeKHR<'a, G: Graphics> {
-        inner: sys::CompositionLayerCubeKHR,
-        _marker: PhantomData<&'a G>,
-    }
-    impl<'a, G: Graphics> CompositionLayerCubeKHR<'a, G> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::CompositionLayerCubeKHR {
-                    ty: sys::StructureType::COMPOSITION_LAYER_CUBE_KHR,
-                    ..unsafe { mem::zeroed() }
+                CompositionLayer::EquirectKHR {
+                    layer_flags,
+                    space,
+                    eye_visibility,
+                    sub_image,
+                    pose,
+                    radius,
+                    scale,
+                    bias,
+                } => CompositionLayerRaw {
+                    equirect_khr: sys::CompositionLayerEquirectKHR {
+                        ty: sys::StructureType::COMPOSITION_LAYER_EQUIRECT_KHR,
+                        next: std::ptr::null_mut(),
+                        layer_flags: *layer_flags,
+                        space: space.as_raw(),
+                        eye_visibility: *eye_visibility,
+                        sub_image: sub_image.as_raw(),
+                        pose: *pose,
+                        radius: *radius,
+                        scale: *scale,
+                        bias: *bias,
+                    },
                 },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::CompositionLayerCubeKHR) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::CompositionLayerCubeKHR {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::CompositionLayerCubeKHR {
-            &self.inner
-        }
-        #[inline]
-        pub fn layer_flags(mut self, value: CompositionLayerFlags) -> Self {
-            self.inner.layer_flags = value;
-            self
-        }
-        #[inline]
-        pub fn space(mut self, value: &'a Space) -> Self {
-            self.inner.space = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn eye_visibility(mut self, value: EyeVisibility) -> Self {
-            self.inner.eye_visibility = value;
-            self
-        }
-        #[inline]
-        pub fn swapchain(mut self, value: &'a Swapchain<G>) -> Self {
-            self.inner.swapchain = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn image_array_index(mut self, value: u32) -> Self {
-            self.inner.image_array_index = value;
-            self
-        }
-        #[inline]
-        pub fn orientation(mut self, value: Quaternionf) -> Self {
-            self.inner.orientation = value;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Deref for CompositionLayerCubeKHR<'a, G> {
-        type Target = CompositionLayerBase<'a, G>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a, G: Graphics> Default for CompositionLayerCubeKHR<'a, G> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct CompositionLayerEquirectKHR<'a, G: Graphics> {
-        inner: sys::CompositionLayerEquirectKHR,
-        _marker: PhantomData<&'a G>,
-    }
-    impl<'a, G: Graphics> CompositionLayerEquirectKHR<'a, G> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::CompositionLayerEquirectKHR {
-                    ty: sys::StructureType::COMPOSITION_LAYER_EQUIRECT_KHR,
-                    ..unsafe { mem::zeroed() }
+                CompositionLayer::Equirect2KHR {
+                    layer_flags,
+                    space,
+                    eye_visibility,
+                    sub_image,
+                    pose,
+                    radius,
+                    central_horizontal_angle,
+                    upper_vertical_angle,
+                    lower_vertical_angle,
+                } => CompositionLayerRaw {
+                    equirect2_khr: sys::CompositionLayerEquirect2KHR {
+                        ty: sys::StructureType::COMPOSITION_LAYER_EQUIRECT2_KHR,
+                        next: std::ptr::null_mut(),
+                        layer_flags: *layer_flags,
+                        space: space.as_raw(),
+                        eye_visibility: *eye_visibility,
+                        sub_image: sub_image.as_raw(),
+                        pose: *pose,
+                        radius: *radius,
+                        central_horizontal_angle: *central_horizontal_angle,
+                        upper_vertical_angle: *upper_vertical_angle,
+                        lower_vertical_angle: *lower_vertical_angle,
+                    },
                 },
-                _marker: PhantomData,
             }
         }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::CompositionLayerEquirectKHR) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::CompositionLayerEquirectKHR {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::CompositionLayerEquirectKHR {
-            &self.inner
-        }
-        #[inline]
-        pub fn layer_flags(mut self, value: CompositionLayerFlags) -> Self {
-            self.inner.layer_flags = value;
-            self
-        }
-        #[inline]
-        pub fn space(mut self, value: &'a Space) -> Self {
-            self.inner.space = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn eye_visibility(mut self, value: EyeVisibility) -> Self {
-            self.inner.eye_visibility = value;
-            self
-        }
-        #[inline]
-        pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
-            self.inner.sub_image = value.inner;
-            self
-        }
-        #[inline]
-        pub fn pose(mut self, value: Posef) -> Self {
-            self.inner.pose = value;
-            self
-        }
-        #[inline]
-        pub fn radius(mut self, value: f32) -> Self {
-            self.inner.radius = value;
-            self
-        }
-        #[inline]
-        pub fn scale(mut self, value: Vector2f) -> Self {
-            self.inner.scale = value;
-            self
-        }
-        #[inline]
-        pub fn bias(mut self, value: Vector2f) -> Self {
-            self.inner.bias = value;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Deref for CompositionLayerEquirectKHR<'a, G> {
-        type Target = CompositionLayerBase<'a, G>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a, G: Graphics> Default for CompositionLayerEquirectKHR<'a, G> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct CompositionLayerEquirect2KHR<'a, G: Graphics> {
-        inner: sys::CompositionLayerEquirect2KHR,
-        _marker: PhantomData<&'a G>,
-    }
-    impl<'a, G: Graphics> CompositionLayerEquirect2KHR<'a, G> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::CompositionLayerEquirect2KHR {
-                    ty: sys::StructureType::COMPOSITION_LAYER_EQUIRECT2_KHR,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::CompositionLayerEquirect2KHR) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::CompositionLayerEquirect2KHR {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::CompositionLayerEquirect2KHR {
-            &self.inner
-        }
-        #[inline]
-        pub fn layer_flags(mut self, value: CompositionLayerFlags) -> Self {
-            self.inner.layer_flags = value;
-            self
-        }
-        #[inline]
-        pub fn space(mut self, value: &'a Space) -> Self {
-            self.inner.space = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn eye_visibility(mut self, value: EyeVisibility) -> Self {
-            self.inner.eye_visibility = value;
-            self
-        }
-        #[inline]
-        pub fn sub_image(mut self, value: SwapchainSubImage<'a, G>) -> Self {
-            self.inner.sub_image = value.inner;
-            self
-        }
-        #[inline]
-        pub fn pose(mut self, value: Posef) -> Self {
-            self.inner.pose = value;
-            self
-        }
-        #[inline]
-        pub fn radius(mut self, value: f32) -> Self {
-            self.inner.radius = value;
-            self
-        }
-        #[inline]
-        pub fn central_horizontal_angle(mut self, value: f32) -> Self {
-            self.inner.central_horizontal_angle = value;
-            self
-        }
-        #[inline]
-        pub fn upper_vertical_angle(mut self, value: f32) -> Self {
-            self.inner.upper_vertical_angle = value;
-            self
-        }
-        #[inline]
-        pub fn lower_vertical_angle(mut self, value: f32) -> Self {
-            self.inner.lower_vertical_angle = value;
-            self
-        }
-    }
-    impl<'a, G: Graphics> Deref for CompositionLayerEquirect2KHR<'a, G> {
-        type Target = CompositionLayerBase<'a, G>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a, G: Graphics> Default for CompositionLayerEquirect2KHR<'a, G> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[repr(transparent)]
-    pub struct HapticBase<'a> {
-        _inner: sys::HapticBaseHeader,
-        _marker: PhantomData<&'a ()>,
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct HapticVibration<'a> {
-        inner: sys::HapticVibration,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> HapticVibration<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::HapticVibration {
-                    ty: sys::StructureType::HAPTIC_VIBRATION,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::HapticVibration) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::HapticVibration {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::HapticVibration {
-            &self.inner
-        }
-        #[inline]
-        pub fn duration(mut self, value: Duration) -> Self {
-            self.inner.duration = value;
-            self
-        }
-        #[inline]
-        pub fn frequency(mut self, value: f32) -> Self {
-            self.inner.frequency = value;
-            self
-        }
-        #[inline]
-        pub fn amplitude(mut self, value: f32) -> Self {
-            self.inner.amplitude = value;
-            self
-        }
-    }
-    impl<'a> Deref for HapticVibration<'a> {
-        type Target = HapticBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for HapticVibration<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct HapticAmplitudeEnvelopeVibrationFB<'a> {
-        inner: sys::HapticAmplitudeEnvelopeVibrationFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> HapticAmplitudeEnvelopeVibrationFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::HapticAmplitudeEnvelopeVibrationFB {
-                    ty: sys::StructureType::HAPTIC_AMPLITUDE_ENVELOPE_VIBRATION_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::HapticAmplitudeEnvelopeVibrationFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::HapticAmplitudeEnvelopeVibrationFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::HapticAmplitudeEnvelopeVibrationFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn duration(mut self, value: Duration) -> Self {
-            self.inner.duration = value;
-            self
-        }
-        #[inline]
-        pub fn amplitudes(mut self, value: &'a [f32]) -> Self {
-            self.inner.amplitudes = value.as_ptr() as *const _ as _;
-            self.inner.amplitude_count = value.len() as u32;
-            self
-        }
-    }
-    impl<'a> Deref for HapticAmplitudeEnvelopeVibrationFB<'a> {
-        type Target = HapticBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for HapticAmplitudeEnvelopeVibrationFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct HapticPcmVibrationFB<'a> {
-        inner: sys::HapticPcmVibrationFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> HapticPcmVibrationFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::HapticPcmVibrationFB {
-                    ty: sys::StructureType::HAPTIC_PCM_VIBRATION_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::HapticPcmVibrationFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::HapticPcmVibrationFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::HapticPcmVibrationFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn buffer(mut self, value: &'a [f32]) -> Self {
-            self.inner.buffer = value.as_ptr() as *const _ as _;
-            self.inner.buffer_size = value.len() as u32;
-            self
-        }
-        #[inline]
-        pub fn sample_rate(mut self, value: f32) -> Self {
-            self.inner.sample_rate = value;
-            self
-        }
-        #[inline]
-        pub fn append(mut self, value: bool) -> Self {
-            self.inner.append = value.into();
-            self
-        }
-        #[inline]
-        pub fn samples_consumed(mut self, value: &'a mut u32) -> Self {
-            self.inner.samples_consumed = value as *mut _ as _;
-            self
-        }
-    }
-    impl<'a> Deref for HapticPcmVibrationFB<'a> {
-        type Target = HapticBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for HapticPcmVibrationFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[repr(transparent)]
-    pub struct BindingModificationBase<'a> {
-        _inner: sys::BindingModificationBaseHeaderKHR,
-        _marker: PhantomData<&'a ()>,
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct InteractionProfileDpadBindingEXT<'a> {
-        inner: sys::InteractionProfileDpadBindingEXT,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> InteractionProfileDpadBindingEXT<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::InteractionProfileDpadBindingEXT {
-                    ty: sys::StructureType::INTERACTION_PROFILE_DPAD_BINDING_EXT,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::InteractionProfileDpadBindingEXT) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::InteractionProfileDpadBindingEXT {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::InteractionProfileDpadBindingEXT {
-            &self.inner
-        }
-        #[inline]
-        pub fn binding(mut self, value: Path) -> Self {
-            self.inner.binding = value;
-            self
-        }
-        #[inline]
-        pub fn action_set(mut self, value: &'a ActionSet) -> Self {
-            self.inner.action_set = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn force_threshold(mut self, value: f32) -> Self {
-            self.inner.force_threshold = value;
-            self
-        }
-        #[inline]
-        pub fn force_threshold_released(mut self, value: f32) -> Self {
-            self.inner.force_threshold_released = value;
-            self
-        }
-        #[inline]
-        pub fn center_region(mut self, value: f32) -> Self {
-            self.inner.center_region = value;
-            self
-        }
-        #[inline]
-        pub fn wedge_angle(mut self, value: f32) -> Self {
-            self.inner.wedge_angle = value;
-            self
-        }
-        #[inline]
-        pub fn is_sticky(mut self, value: bool) -> Self {
-            self.inner.is_sticky = value.into();
-            self
-        }
-        #[inline]
-        pub fn on_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
-            self.inner.on_haptic = value as *const _ as _;
-            self
-        }
-        #[inline]
-        pub fn off_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
-            self.inner.off_haptic = value as *const _ as _;
-            self
-        }
-    }
-    impl<'a> Deref for InteractionProfileDpadBindingEXT<'a> {
-        type Target = BindingModificationBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for InteractionProfileDpadBindingEXT<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct InteractionProfileAnalogThresholdVALVE<'a> {
-        inner: sys::InteractionProfileAnalogThresholdVALVE,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> InteractionProfileAnalogThresholdVALVE<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::InteractionProfileAnalogThresholdVALVE {
-                    ty: sys::StructureType::INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::InteractionProfileAnalogThresholdVALVE) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::InteractionProfileAnalogThresholdVALVE {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::InteractionProfileAnalogThresholdVALVE {
-            &self.inner
-        }
-        #[inline]
-        pub fn action<ATY: ActionTy>(mut self, value: &'a Action<ATY>) -> Self {
-            self.inner.action = value.as_raw();
-            self
-        }
-        #[inline]
-        pub fn binding(mut self, value: Path) -> Self {
-            self.inner.binding = value;
-            self
-        }
-        #[inline]
-        pub fn on_threshold(mut self, value: f32) -> Self {
-            self.inner.on_threshold = value;
-            self
-        }
-        #[inline]
-        pub fn off_threshold(mut self, value: f32) -> Self {
-            self.inner.off_threshold = value;
-            self
-        }
-        #[inline]
-        pub fn on_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
-            self.inner.on_haptic = value as *const _ as _;
-            self
-        }
-        #[inline]
-        pub fn off_haptic(mut self, value: &'a HapticBase<'a>) -> Self {
-            self.inner.off_haptic = value as *const _ as _;
-            self
-        }
-    }
-    impl<'a> Deref for InteractionProfileAnalogThresholdVALVE<'a> {
-        type Target = BindingModificationBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for InteractionProfileAnalogThresholdVALVE<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[repr(transparent)]
-    pub struct SwapchainStateBase<'a> {
-        _inner: sys::SwapchainStateBaseHeaderFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    #[cfg(target_os = "android")]
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct SwapchainStateAndroidSurfaceDimensionsFB<'a> {
-        inner: sys::SwapchainStateAndroidSurfaceDimensionsFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    #[cfg(target_os = "android")]
-    impl<'a> SwapchainStateAndroidSurfaceDimensionsFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SwapchainStateAndroidSurfaceDimensionsFB {
-                    ty: sys::StructureType::SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SwapchainStateAndroidSurfaceDimensionsFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SwapchainStateAndroidSurfaceDimensionsFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SwapchainStateAndroidSurfaceDimensionsFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn width(mut self, value: u32) -> Self {
-            self.inner.width = value;
-            self
-        }
-        #[inline]
-        pub fn height(mut self, value: u32) -> Self {
-            self.inner.height = value;
-            self
-        }
-    }
-    #[cfg(target_os = "android")]
-    impl<'a> Deref for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
-        type Target = SwapchainStateBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    #[cfg(target_os = "android")]
-    impl<'a> Default for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct SwapchainStateSamplerOpenGLESFB<'a> {
-        inner: sys::SwapchainStateSamplerOpenGLESFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> SwapchainStateSamplerOpenGLESFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SwapchainStateSamplerOpenGLESFB {
-                    ty: sys::StructureType::SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SwapchainStateSamplerOpenGLESFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SwapchainStateSamplerOpenGLESFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SwapchainStateSamplerOpenGLESFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn min_filter(mut self, value: EGLenum) -> Self {
-            self.inner.min_filter = value;
-            self
-        }
-        #[inline]
-        pub fn mag_filter(mut self, value: EGLenum) -> Self {
-            self.inner.mag_filter = value;
-            self
-        }
-        #[inline]
-        pub fn wrap_mode_s(mut self, value: EGLenum) -> Self {
-            self.inner.wrap_mode_s = value;
-            self
-        }
-        #[inline]
-        pub fn wrap_mode_t(mut self, value: EGLenum) -> Self {
-            self.inner.wrap_mode_t = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_red(mut self, value: EGLenum) -> Self {
-            self.inner.swizzle_red = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_green(mut self, value: EGLenum) -> Self {
-            self.inner.swizzle_green = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_blue(mut self, value: EGLenum) -> Self {
-            self.inner.swizzle_blue = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_alpha(mut self, value: EGLenum) -> Self {
-            self.inner.swizzle_alpha = value;
-            self
-        }
-        #[inline]
-        pub fn max_anisotropy(mut self, value: f32) -> Self {
-            self.inner.max_anisotropy = value;
-            self
-        }
-        #[inline]
-        pub fn border_color(mut self, value: Color4f) -> Self {
-            self.inner.border_color = value;
-            self
-        }
-    }
-    impl<'a> Deref for SwapchainStateSamplerOpenGLESFB<'a> {
-        type Target = SwapchainStateBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for SwapchainStateSamplerOpenGLESFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct SwapchainStateSamplerVulkanFB<'a> {
-        inner: sys::SwapchainStateSamplerVulkanFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> SwapchainStateSamplerVulkanFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SwapchainStateSamplerVulkanFB {
-                    ty: sys::StructureType::SWAPCHAIN_STATE_SAMPLER_VULKAN_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SwapchainStateSamplerVulkanFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SwapchainStateSamplerVulkanFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SwapchainStateSamplerVulkanFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn min_filter(mut self, value: VkFilter) -> Self {
-            self.inner.min_filter = value;
-            self
-        }
-        #[inline]
-        pub fn mag_filter(mut self, value: VkFilter) -> Self {
-            self.inner.mag_filter = value;
-            self
-        }
-        #[inline]
-        pub fn mipmap_mode(mut self, value: VkSamplerMipmapMode) -> Self {
-            self.inner.mipmap_mode = value;
-            self
-        }
-        #[inline]
-        pub fn wrap_mode_s(mut self, value: VkSamplerAddressMode) -> Self {
-            self.inner.wrap_mode_s = value;
-            self
-        }
-        #[inline]
-        pub fn wrap_mode_t(mut self, value: VkSamplerAddressMode) -> Self {
-            self.inner.wrap_mode_t = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_red(mut self, value: VkComponentSwizzle) -> Self {
-            self.inner.swizzle_red = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_green(mut self, value: VkComponentSwizzle) -> Self {
-            self.inner.swizzle_green = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_blue(mut self, value: VkComponentSwizzle) -> Self {
-            self.inner.swizzle_blue = value;
-            self
-        }
-        #[inline]
-        pub fn swizzle_alpha(mut self, value: VkComponentSwizzle) -> Self {
-            self.inner.swizzle_alpha = value;
-            self
-        }
-        #[inline]
-        pub fn max_anisotropy(mut self, value: f32) -> Self {
-            self.inner.max_anisotropy = value;
-            self
-        }
-        #[inline]
-        pub fn border_color(mut self, value: Color4f) -> Self {
-            self.inner.border_color = value;
-            self
-        }
-    }
-    impl<'a> Deref for SwapchainStateSamplerVulkanFB<'a> {
-        type Target = SwapchainStateBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for SwapchainStateSamplerVulkanFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct SwapchainStateFoveationFB<'a> {
-        inner: sys::SwapchainStateFoveationFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> SwapchainStateFoveationFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SwapchainStateFoveationFB {
-                    ty: sys::StructureType::SWAPCHAIN_STATE_FOVEATION_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SwapchainStateFoveationFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SwapchainStateFoveationFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SwapchainStateFoveationFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn flags(mut self, value: SwapchainStateFoveationFlagsFB) -> Self {
-            self.inner.flags = value;
-            self
-        }
-        #[inline]
-        pub fn profile(mut self, value: &'a FoveationProfileFB) -> Self {
-            self.inner.profile = value.as_raw();
-            self
-        }
-    }
-    impl<'a> Deref for SwapchainStateFoveationFB<'a> {
-        type Target = SwapchainStateBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for SwapchainStateFoveationFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[repr(transparent)]
-    pub struct SpaceQueryInfoBase<'a> {
-        _inner: sys::SpaceQueryInfoBaseHeaderFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct SpaceQueryInfoFB<'a> {
-        inner: sys::SpaceQueryInfoFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> SpaceQueryInfoFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SpaceQueryInfoFB {
-                    ty: sys::StructureType::SPACE_QUERY_INFO_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SpaceQueryInfoFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SpaceQueryInfoFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SpaceQueryInfoFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn query_action(mut self, value: SpaceQueryActionFB) -> Self {
-            self.inner.query_action = value;
-            self
-        }
-        #[inline]
-        pub fn max_result_count(mut self, value: u32) -> Self {
-            self.inner.max_result_count = value;
-            self
-        }
-        #[inline]
-        pub fn timeout(mut self, value: Duration) -> Self {
-            self.inner.timeout = value;
-            self
-        }
-        #[inline]
-        pub fn filter(mut self, value: &'a SpaceFilterInfoBase<'a>) -> Self {
-            self.inner.filter = value as *const _ as _;
-            self
-        }
-        #[inline]
-        pub fn exclude_filter(mut self, value: &'a SpaceFilterInfoBase<'a>) -> Self {
-            self.inner.exclude_filter = value as *const _ as _;
-            self
-        }
-    }
-    impl<'a> Deref for SpaceQueryInfoFB<'a> {
-        type Target = SpaceQueryInfoBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for SpaceQueryInfoFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[repr(transparent)]
-    pub struct SpaceFilterInfoBase<'a> {
-        _inner: sys::SpaceFilterInfoBaseHeaderFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct SpaceUuidFilterInfoFB<'a> {
-        inner: sys::SpaceUuidFilterInfoFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> SpaceUuidFilterInfoFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SpaceUuidFilterInfoFB {
-                    ty: sys::StructureType::SPACE_UUID_FILTER_INFO_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SpaceUuidFilterInfoFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SpaceUuidFilterInfoFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SpaceUuidFilterInfoFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn uuids(mut self, value: &'a [UuidEXT]) -> Self {
-            self.inner.uuids = value.as_ptr() as *const _ as _;
-            self.inner.uuid_count = value.len() as u32;
-            self
-        }
-    }
-    impl<'a> Deref for SpaceUuidFilterInfoFB<'a> {
-        type Target = SpaceFilterInfoBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for SpaceUuidFilterInfoFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct SpaceComponentFilterInfoFB<'a> {
-        inner: sys::SpaceComponentFilterInfoFB,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> SpaceComponentFilterInfoFB<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::SpaceComponentFilterInfoFB {
-                    ty: sys::StructureType::SPACE_COMPONENT_FILTER_INFO_FB,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::SpaceComponentFilterInfoFB) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::SpaceComponentFilterInfoFB {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::SpaceComponentFilterInfoFB {
-            &self.inner
-        }
-        #[inline]
-        pub fn component_type(mut self, value: SpaceComponentTypeFB) -> Self {
-            self.inner.component_type = value;
-            self
-        }
-    }
-    impl<'a> Deref for SpaceComponentFilterInfoFB<'a> {
-        type Target = SpaceFilterInfoBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
-    }
-    impl<'a> Default for SpaceComponentFilterInfoFB<'a> {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-    #[repr(transparent)]
-    pub struct FutureCompletionBase<'a> {
-        _inner: sys::FutureCompletionBaseHeaderEXT,
-        _marker: PhantomData<&'a ()>,
-    }
-    #[derive(Copy, Clone)]
-    #[repr(transparent)]
-    pub struct FutureCompletionEXT<'a> {
-        inner: sys::FutureCompletionEXT,
-        _marker: PhantomData<&'a ()>,
-    }
-    impl<'a> FutureCompletionEXT<'a> {
-        #[inline]
-        pub fn new() -> Self {
-            Self {
-                inner: sys::FutureCompletionEXT {
-                    ty: sys::StructureType::FUTURE_COMPLETION_EXT,
-                    ..unsafe { mem::zeroed() }
-                },
-                _marker: PhantomData,
-            }
-        }
-        #[doc = r" Initialize with the supplied raw values"]
-        #[doc = r""]
-        #[doc = r" # Safety"]
-        #[doc = r""]
-        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
-        #[doc = r" preserved."]
-        #[inline]
-        pub unsafe fn from_raw(inner: sys::FutureCompletionEXT) -> Self {
-            Self {
-                inner,
-                _marker: PhantomData,
-            }
-        }
-        #[inline]
-        pub fn into_raw(self) -> sys::FutureCompletionEXT {
-            self.inner
-        }
-        #[inline]
-        pub fn as_raw(&self) -> &sys::FutureCompletionEXT {
-            &self.inner
-        }
-        #[inline]
-        pub fn future_result(mut self, value: sys::Result) -> Self {
-            self.inner.future_result = value;
-            self
-        }
-    }
-    impl<'a> Deref for FutureCompletionEXT<'a> {
-        type Target = FutureCompletionBase<'a>;
-        #[inline]
-        fn deref(&self) -> &Self::Target {
-            unsafe { mem::transmute(&self.inner) }
-        }
     }
-    impl<'a> Default for FutureCompletionEXT<'a> {
-        fn default() -> Self {
-            Self::new()
+    #[repr(C)]
+    pub(crate) union CompositionLayerRaw {
+        pub(crate) projection: sys::CompositionLayerProjection,
+        pub(crate) quad: sys::CompositionLayerQuad,
+        pub(crate) cylinder_khr: sys::CompositionLayerCylinderKHR,
+        pub(crate) cube_khr: sys::CompositionLayerCubeKHR,
+        pub(crate) equirect_khr: sys::CompositionLayerEquirectKHR,
+        pub(crate) equirect2_khr: sys::CompositionLayerEquirect2KHR,
+    }
+    impl CompositionLayerRaw {
+        pub(crate) fn as_base(&self) -> *const sys::CompositionLayerBaseHeader {
+            &self as *const _ as _
+        }
+    }
+    #[non_exhaustive]
+    pub enum HapticData<'a> {
+        Vibration {
+            duration: Duration,
+            frequency: f32,
+            amplitude: f32,
+        },
+        PcmVibrationFB {
+            buffer: &'a [f32],
+            sample_rate: f32,
+            append: bool,
+            samples_consumed: &'a mut u32,
+        },
+    }
+    #[repr(C)]
+    pub(crate) union HapticDataRaw {
+        pub(crate) vibration: sys::HapticVibration,
+        pub(crate) pcm_vibration_fb: sys::HapticPcmVibrationFB,
+    }
+    impl HapticDataRaw {
+        pub(crate) fn as_base(&self) -> *const sys::HapticBaseHeader {
+            &self as *const _ as _
         }
     }
 }
