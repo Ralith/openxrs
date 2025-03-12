@@ -1838,8 +1838,7 @@ impl Parser {
                     quote! { bool },
                     quote! { self.inner.#ident = value.into(); },
                 ),
-                x if self.handles.contains(x) => {
-                    assert!(m.len.is_none());
+                x if self.handles.contains(x) && m.len.is_none() => {
                     let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                     (
                         quote! { &'a #ty #type_args },
