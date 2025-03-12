@@ -89,6 +89,7 @@ pub struct ExtensionSet {
     pub ext_plane_detection: bool,
     pub ext_future: bool,
     pub ext_user_presence: bool,
+    pub ext_composition_layer_inverted_alpha: bool,
     pub fb_composition_layer_image_layout: bool,
     pub fb_composition_layer_alpha_blend: bool,
     #[cfg(target_os = "android")]
@@ -159,6 +160,8 @@ pub struct ExtensionSet {
     pub khr_d3d11_enable: bool,
     #[cfg(windows)]
     pub khr_d3d12_enable: bool,
+    #[cfg(target_vendor = "apple")]
+    pub khr_metal_enable: bool,
     pub khr_visibility_mask: bool,
     pub khr_composition_layer_color_scale_bias: bool,
     #[cfg(windows)]
@@ -309,6 +312,9 @@ impl ExtensionSet {
                 }
                 raw::UserPresenceEXT::NAME => {
                     out.ext_user_presence = true;
+                }
+                raw::CompositionLayerInvertedAlphaEXT::NAME => {
+                    out.ext_composition_layer_inverted_alpha = true;
                 }
                 raw::CompositionLayerImageLayoutFB::NAME => {
                     out.fb_composition_layer_image_layout = true;
@@ -505,6 +511,10 @@ impl ExtensionSet {
                 #[cfg(windows)]
                 raw::D3d12EnableKHR::NAME => {
                     out.khr_d3d12_enable = true;
+                }
+                #[cfg(target_vendor = "apple")]
+                raw::MetalEnableKHR::NAME => {
+                    out.khr_metal_enable = true;
                 }
                 raw::VisibilityMaskKHR::NAME => {
                     out.khr_visibility_mask = true;
@@ -843,6 +853,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.ext_composition_layer_inverted_alpha {
+                out.push(raw::CompositionLayerInvertedAlphaEXT::NAME.into());
+            }
+        }
+        {
             if self.fb_composition_layer_image_layout {
                 out.push(raw::CompositionLayerImageLayoutFB::NAME.into());
             }
@@ -1162,6 +1177,12 @@ impl ExtensionSet {
         {
             if self.khr_d3d12_enable {
                 out.push(raw::D3d12EnableKHR::NAME.into());
+            }
+        }
+        #[cfg(target_vendor = "apple")]
+        {
+            if self.khr_metal_enable {
+                out.push(raw::MetalEnableKHR::NAME.into());
             }
         }
         {
@@ -1531,6 +1552,7 @@ pub struct InstanceExtensions {
     pub ext_plane_detection: Option<raw::PlaneDetectionEXT>,
     pub ext_future: Option<raw::FutureEXT>,
     pub ext_user_presence: Option<raw::UserPresenceEXT>,
+    pub ext_composition_layer_inverted_alpha: Option<raw::CompositionLayerInvertedAlphaEXT>,
     pub fb_composition_layer_image_layout: Option<raw::CompositionLayerImageLayoutFB>,
     pub fb_composition_layer_alpha_blend: Option<raw::CompositionLayerAlphaBlendFB>,
     #[cfg(target_os = "android")]
@@ -1602,6 +1624,8 @@ pub struct InstanceExtensions {
     pub khr_d3d11_enable: Option<raw::D3d11EnableKHR>,
     #[cfg(windows)]
     pub khr_d3d12_enable: Option<raw::D3d12EnableKHR>,
+    #[cfg(target_vendor = "apple")]
+    pub khr_metal_enable: Option<raw::MetalEnableKHR>,
     pub khr_visibility_mask: Option<raw::VisibilityMaskKHR>,
     pub khr_composition_layer_color_scale_bias: Option<raw::CompositionLayerColorScaleBiasKHR>,
     #[cfg(windows)]
@@ -1804,6 +1828,11 @@ impl InstanceExtensions {
             },
             ext_user_presence: if required.ext_user_presence {
                 Some(raw::UserPresenceEXT {})
+            } else {
+                None
+            },
+            ext_composition_layer_inverted_alpha: if required.ext_composition_layer_inverted_alpha {
+                Some(raw::CompositionLayerInvertedAlphaEXT {})
             } else {
                 None
             },
@@ -2132,6 +2161,12 @@ impl InstanceExtensions {
             #[cfg(windows)]
             khr_d3d12_enable: if required.khr_d3d12_enable {
                 Some(raw::D3d12EnableKHR::load(entry, instance)?)
+            } else {
+                None
+            },
+            #[cfg(target_vendor = "apple")]
+            khr_metal_enable: if required.khr_metal_enable {
+                Some(raw::MetalEnableKHR::load(entry, instance)?)
             } else {
                 None
             },
@@ -3974,6 +4009,12 @@ pub mod raw {
         pub const NAME: &'static [u8] = sys::EXT_USER_PRESENCE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
+    pub struct CompositionLayerInvertedAlphaEXT {}
+    impl CompositionLayerInvertedAlphaEXT {
+        pub const VERSION: u32 = sys::EXT_composition_layer_inverted_alpha_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct CompositionLayerImageLayoutFB {}
     impl CompositionLayerImageLayoutFB {
         pub const VERSION: u32 = sys::FB_composition_layer_image_layout_SPEC_VERSION;
@@ -5174,6 +5215,29 @@ pub mod raw {
                 get_d3d12_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetD3D12GraphicsRequirementsKHR\0"),
+                )?),
+            })
+        }
+    }
+    #[cfg(target_vendor = "apple")]
+    #[derive(Copy, Clone)]
+    pub struct MetalEnableKHR {
+        pub get_metal_graphics_requirements: pfn::GetMetalGraphicsRequirementsKHR,
+    }
+    #[cfg(target_vendor = "apple")]
+    impl MetalEnableKHR {
+        pub const VERSION: u32 = sys::KHR_metal_enable_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::KHR_METAL_ENABLE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            Ok(Self {
+                get_metal_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                    instance,
+                    CStr::from_bytes_with_nul_unchecked(b"xrGetMetalGraphicsRequirementsKHR\0"),
                 )?),
             })
         }
@@ -7237,6 +7301,72 @@ pub(crate) mod builder {
         }
     }
     impl<'a, G: Graphics> Default for CompositionLayerEquirect2KHR<'a, G> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct CompositionLayerPassthroughFB<'a, G: Graphics> {
+        inner: sys::CompositionLayerPassthroughFB,
+        _marker: PhantomData<&'a G>,
+    }
+    impl<'a, G: Graphics> CompositionLayerPassthroughFB<'a, G> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::CompositionLayerPassthroughFB {
+                    ty: sys::StructureType::COMPOSITION_LAYER_PASSTHROUGH_FB,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::CompositionLayerPassthroughFB) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::CompositionLayerPassthroughFB {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::CompositionLayerPassthroughFB {
+            &self.inner
+        }
+        #[inline]
+        pub fn flags(mut self, value: CompositionLayerFlags) -> Self {
+            self.inner.flags = value;
+            self
+        }
+        #[inline]
+        pub fn space(mut self, value: &'a Space) -> Self {
+            self.inner.space = value.as_raw();
+            self
+        }
+        #[inline]
+        pub fn layer_handle(mut self, value: &'a PassthroughLayerFB) -> Self {
+            self.inner.layer_handle = value.as_raw();
+            self
+        }
+    }
+    impl<'a, G: Graphics> Deref for CompositionLayerPassthroughFB<'a, G> {
+        type Target = CompositionLayerBase<'a, G>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    impl<'a, G: Graphics> Default for CompositionLayerPassthroughFB<'a, G> {
         fn default() -> Self {
             Self::new()
         }
