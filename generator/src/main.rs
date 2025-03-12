@@ -2358,6 +2358,9 @@ fn conditions(name: &str, ext: Option<&str>) -> TokenStream {
     if name.contains("android") {
         conditions.push(quote! { target_os = "android" });
     }
+    if name.contains("metal") {
+        conditions.push(quote! { target_vendor = "apple" });
+    }
     match conditions.len() {
         0 => quote! {},
         1 => quote! { #[cfg(#(#conditions)*)] },
