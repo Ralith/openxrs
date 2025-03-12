@@ -1164,7 +1164,7 @@ impl Parser {
             let meta = self.compute_meta(name, s);
             let derives = if (meta.has_pointer || meta.has_array) && meta.has_unprintable {
                 quote! { #[derive(Copy, Clone)] }
-            } else if meta.has_pointer || meta.has_array {
+            } else if meta.has_pointer || meta.has_array && name != "XrUuid" {
                 quote! { #[derive(Copy, Clone, Debug)] }
             } else if meta.has_non_default {
                 quote! { #[derive(Copy, Clone, Debug, PartialEq)] }
