@@ -1164,7 +1164,7 @@ impl Parser {
             let meta = self.compute_meta(name, s);
             let derives = if (meta.has_pointer || meta.has_array) && meta.has_unprintable {
                 quote! { #[derive(Copy, Clone)] }
-            } else if meta.has_pointer || meta.has_array {
+            } else if meta.has_pointer || meta.has_array && name != "XrUuid" {
                 quote! { #[derive(Copy, Clone, Debug)] }
             } else if meta.has_non_default {
                 quote! { #[derive(Copy, Clone, Debug, PartialEq)] }
@@ -1838,8 +1838,7 @@ impl Parser {
                     quote! { bool },
                     quote! { self.inner.#ident = value.into(); },
                 ),
-                x if self.handles.contains(x) => {
-                    assert!(m.len.is_none());
+                x if self.handles.contains(x) && m.len.is_none() => {
                     let ty = xr_var_ty(self.api_aliases.as_ref(), m);
                     (
                         quote! { &'a #ty #type_args },
@@ -2358,6 +2357,9 @@ fn conditions(name: &str, ext: Option<&str>) -> TokenStream {
     }
     if name.contains("android") {
         conditions.push(quote! { target_os = "android" });
+    }
+    if name.contains("metal") {
+        conditions.push(quote! { target_vendor = "apple" });
     }
     match conditions.len() {
         0 => quote! {},

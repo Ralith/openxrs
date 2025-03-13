@@ -13,7 +13,6 @@ use crate::{
 };
 use std::ptr;
 use std::sync::Arc;
-use sys::PassthroughLayerFB;
 
 /// A [passthrough feature].
 ///
@@ -88,12 +87,12 @@ impl Drop for Passthrough {
 ///
 /// [`XR_FB_passthrough`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_passthrough
 /// [passthrough layer]: https://developer.oculus.com/documentation/native/android/mobile-passthrough/#create-and-start-a-passthrough-layer
-pub struct PassthroughLayer {
+pub struct PassthroughLayerFB {
     pub(crate) session: Arc<session::SessionInner>,
     handle: sys::PassthroughLayerFB,
 }
 
-impl PassthroughLayer {
+impl PassthroughLayerFB {
     /// [Create](https://www.khronos.org/registry/OpenXR/specs/1.0/man/html/openxr.html#xrCreatePassthroughLayerFB)
     /// a passthrough layer.
     pub(crate) fn create<G>(
@@ -118,7 +117,7 @@ impl PassthroughLayer {
                 &mut handle,
             ))?;
         }
-        Ok(PassthroughLayer {
+        Ok(PassthroughLayerFB {
             session: session.inner.clone(),
             handle,
         })
@@ -144,12 +143,16 @@ impl PassthroughLayer {
         Ok(())
     }
 
-    pub fn inner(&self) -> &PassthroughLayerFB {
+    pub fn inner(&self) -> &sys::PassthroughLayerFB {
         &self.handle
+    }
+
+    pub fn as_raw(&self) -> sys::PassthroughLayerFB {
+        self.handle
     }
 }
 
-impl Drop for PassthroughLayer {
+impl Drop for PassthroughLayerFB {
     fn drop(&mut self) {
         unsafe {
             (fp(&self.session).destroy_passthrough_layer)(self.handle);

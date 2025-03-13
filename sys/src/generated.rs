@@ -13,7 +13,7 @@ use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 1u16, 36u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 1u16, 40u32);
 pub const EXTENSION_ENUM_BASE: usize = 1000000000usize;
 pub const EXTENSION_ENUM_STRIDE: usize = 1000usize;
 pub const NULL_PATH: usize = 0usize;
@@ -187,6 +187,9 @@ impl StructureType {
     pub const GRAPHICS_BINDING_D3D12_KHR: StructureType = Self(1000028000i32);
     pub const SWAPCHAIN_IMAGE_D3D12_KHR: StructureType = Self(1000028001i32);
     pub const GRAPHICS_REQUIREMENTS_D3D12_KHR: StructureType = Self(1000028002i32);
+    pub const GRAPHICS_BINDING_METAL_KHR: StructureType = Self(1000029000i32);
+    pub const SWAPCHAIN_IMAGE_METAL_KHR: StructureType = Self(1000029001i32);
+    pub const GRAPHICS_REQUIREMENTS_METAL_KHR: StructureType = Self(1000029002i32);
     pub const SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT: StructureType = Self(1000030000i32);
     pub const EYE_GAZE_SAMPLE_TIME_EXT: StructureType = Self(1000030001i32);
     pub const VISIBILITY_MASK_KHR: StructureType = Self(1000031000i32);
@@ -587,6 +590,9 @@ impl fmt::Debug for StructureType {
             Self::GRAPHICS_BINDING_D3D12_KHR => Some("GRAPHICS_BINDING_D3D12_KHR"),
             Self::SWAPCHAIN_IMAGE_D3D12_KHR => Some("SWAPCHAIN_IMAGE_D3D12_KHR"),
             Self::GRAPHICS_REQUIREMENTS_D3D12_KHR => Some("GRAPHICS_REQUIREMENTS_D3D12_KHR"),
+            Self::GRAPHICS_BINDING_METAL_KHR => Some("GRAPHICS_BINDING_METAL_KHR"),
+            Self::SWAPCHAIN_IMAGE_METAL_KHR => Some("SWAPCHAIN_IMAGE_METAL_KHR"),
+            Self::GRAPHICS_REQUIREMENTS_METAL_KHR => Some("GRAPHICS_REQUIREMENTS_METAL_KHR"),
             Self::SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT => {
                 Some("SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT")
             }
@@ -4845,6 +4851,8 @@ impl CompositionLayerFlags {
     pub const BLEND_TEXTURE_SOURCE_ALPHA: CompositionLayerFlags = Self(1 << 1u64);
     #[doc = "Indicates the texture color channels have not been premultiplied by the texture alpha channel."]
     pub const UNPREMULTIPLIED_ALPHA: CompositionLayerFlags = Self(1 << 2u64);
+    #[doc = "Indicates that the texture alpha channel stores transparency instead of opacity, and is to be inverted before layer blending."]
+    pub const INVERTED_ALPHA: CompositionLayerFlags = Self(1 << 3u64);
 }
 bitmask!(CompositionLayerFlags);
 #[doc = "See [XrSpaceLocationFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceLocationFlagBits)"]
@@ -5099,9 +5107,9 @@ pub struct KeyboardTrackingFlagsFB(u64);
 impl KeyboardTrackingFlagsFB {
     #[doc = "indicates that the system has a physically tracked keyboard to report.  If not set then no other bits should be considered to be valid or meaningful.  If set either XR_KEYBOARD_TRACKING_LOCAL_BIT_FB or XR_KEYBOARD_TRACKING_REMOTE_BIT_FB must also be set."]
     pub const EXISTS: KeyboardTrackingFlagsFB = Self(1 << 0u64);
-    #[doc = "indicates that the physically tracked keyboard is intended to be used in a local pairing with the system.  Mutally exclusive with XR_KEYBOARD_TRACKING_REMOTE_BIT_FB."]
+    #[doc = "indicates that the physically tracked keyboard is intended to be used in a local pairing with the system.  Mutually exclusive with XR_KEYBOARD_TRACKING_REMOTE_BIT_FB."]
     pub const LOCAL: KeyboardTrackingFlagsFB = Self(1 << 1u64);
-    #[doc = "indicates that the physically tracked keyboard is intended to be used while paired to a separate remote computing device. Mutally exclusive with XR_KEYBOARD_TRACKING_LOCAL_BIT_FB."]
+    #[doc = "indicates that the physically tracked keyboard is intended to be used while paired to a separate remote computing device. Mutually exclusive with XR_KEYBOARD_TRACKING_LOCAL_BIT_FB."]
     pub const REMOTE: KeyboardTrackingFlagsFB = Self(1 << 2u64);
     #[doc = "indicates that the physically tracked keyboard is actively connected to the headset and capable of sending key data"]
     pub const CONNECTED: KeyboardTrackingFlagsFB = Self(1 << 3u64);
@@ -5112,9 +5120,9 @@ bitmask!(KeyboardTrackingFlagsFB);
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct KeyboardTrackingQueryFlagsFB(u64);
 impl KeyboardTrackingQueryFlagsFB {
-    #[doc = "indicates the query is for the physically tracked keyboard that is intended to be used in a local pairing with the System. Mutally exclusive with XR_KEYBOARD_TRACKING_QUERY_REMOTE_BIT_FB."]
+    #[doc = "indicates the query is for the physically tracked keyboard that is intended to be used in a local pairing with the System. Mutually exclusive with XR_KEYBOARD_TRACKING_QUERY_REMOTE_BIT_FB."]
     pub const LOCAL: KeyboardTrackingQueryFlagsFB = Self(1 << 1u64);
-    #[doc = "indicates the query is for the physically tracked keyboard that may be connected to a separate remote computing device. Mutally exclusive with XR_KEYBOARD_TRACKING_QUERY_LOCAL_BIT_FB."]
+    #[doc = "indicates the query is for the physically tracked keyboard that may be connected to a separate remote computing device. Mutually exclusive with XR_KEYBOARD_TRACKING_QUERY_LOCAL_BIT_FB."]
     pub const REMOTE: KeyboardTrackingQueryFlagsFB = Self(1 << 2u64);
 }
 bitmask!(KeyboardTrackingQueryFlagsFB);
@@ -5898,6 +5906,19 @@ impl GraphicsBindingVulkanKHR {
 pub type GraphicsBindingVulkan2KHR = GraphicsBindingVulkanKHR;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrGraphicsBindingMetalKHR](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrGraphicsBindingMetalKHR) - defined by [XR_KHR_metal_enable](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_metal_enable)"]
+#[cfg(target_vendor = "apple")]
+pub struct GraphicsBindingMetalKHR {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub command_queue: *mut c_void,
+}
+#[cfg(target_vendor = "apple")]
+impl GraphicsBindingMetalKHR {
+    pub const TYPE: StructureType = StructureType::GRAPHICS_BINDING_METAL_KHR;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSessionCreateInfo](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSessionCreateInfo)"]
 pub struct SessionCreateInfo {
     pub ty: StructureType,
@@ -6064,6 +6085,19 @@ impl SwapchainImageD3D12KHR {
         }
         x
     }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSwapchainImageMetalKHR](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSwapchainImageMetalKHR) - defined by [XR_KHR_metal_enable](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_metal_enable)"]
+#[cfg(target_vendor = "apple")]
+pub struct SwapchainImageMetalKHR {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub texture: *mut c_void,
+}
+#[cfg(target_vendor = "apple")]
+impl SwapchainImageMetalKHR {
+    pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_METAL_KHR;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7074,6 +7108,31 @@ pub struct GraphicsRequirementsD3D12KHR {
 #[cfg(windows)]
 impl GraphicsRequirementsD3D12KHR {
     pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_D3D12_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrGraphicsRequirementsMetalKHR](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrGraphicsRequirementsMetalKHR) - defined by [XR_KHR_metal_enable](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_metal_enable)"]
+#[cfg(target_vendor = "apple")]
+pub struct GraphicsRequirementsMetalKHR {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub metal_device: *mut c_void,
+}
+#[cfg(target_vendor = "apple")]
+impl GraphicsRequirementsMetalKHR {
+    pub const TYPE: StructureType = StructureType::GRAPHICS_REQUIREMENTS_METAL_KHR;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -11145,7 +11204,7 @@ pub struct Frustumf {
 }
 pub type FrustumfKHR = Frustumf;
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrUuid](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrUuid)"]
 pub struct Uuid {
     pub data: [u8; UUID_SIZE],
@@ -11894,6 +11953,13 @@ pub mod pfn {
         instance: Instance,
         system_id: SystemId,
         graphics_requirements: *mut GraphicsRequirementsD3D12KHR,
+    ) -> Result;
+    #[cfg(target_vendor = "apple")]
+    #[doc = "See [xrGetMetalGraphicsRequirementsKHR](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetMetalGraphicsRequirementsKHR) - defined by [XR_KHR_metal_enable](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_metal_enable)"]
+    pub type GetMetalGraphicsRequirementsKHR = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        graphics_requirements: *mut GraphicsRequirementsMetalKHR,
     ) -> Result;
     #[doc = "See [xrPerfSettingsSetPerformanceLevelEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPerfSettingsSetPerformanceLevelEXT) - defined by [XR_EXT_performance_settings](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_performance_settings)"]
     pub type PerfSettingsSetPerformanceLevelEXT = unsafe extern "system" fn(
@@ -13014,16 +13080,19 @@ pub const EXT_LOCAL_FLOOR_EXTENSION_NAME: &[u8] = b"XR_EXT_local_floor\0";
 pub const EXT_hand_tracking_data_source_SPEC_VERSION: u32 = 1u32;
 pub const EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_hand_tracking_data_source\0";
-pub const EXT_plane_detection_SPEC_VERSION: u32 = 1u32;
+pub const EXT_plane_detection_SPEC_VERSION: u32 = 2u32;
 pub const EXT_PLANE_DETECTION_EXTENSION_NAME: &[u8] = b"XR_EXT_plane_detection\0";
 pub const EXT_future_SPEC_VERSION: u32 = 1u32;
 pub const EXT_FUTURE_EXTENSION_NAME: &[u8] = b"XR_EXT_future\0";
 pub const EXT_user_presence_SPEC_VERSION: u32 = 1u32;
 pub const EXT_USER_PRESENCE_EXTENSION_NAME: &[u8] = b"XR_EXT_user_presence\0";
+pub const EXT_composition_layer_inverted_alpha_SPEC_VERSION: u32 = 1u32;
+pub const EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_composition_layer_inverted_alpha\0";
 pub const FB_composition_layer_image_layout_SPEC_VERSION: u32 = 1u32;
 pub const FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME: &[u8] =
     b"XR_FB_composition_layer_image_layout\0";
-pub const FB_composition_layer_alpha_blend_SPEC_VERSION: u32 = 2u32;
+pub const FB_composition_layer_alpha_blend_SPEC_VERSION: u32 = 3u32;
 pub const FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME: &[u8] =
     b"XR_FB_composition_layer_alpha_blend\0";
 #[cfg(target_os = "android")]
@@ -13058,7 +13127,7 @@ pub const FB_keyboard_tracking_SPEC_VERSION: u32 = 1u32;
 pub const FB_KEYBOARD_TRACKING_EXTENSION_NAME: &[u8] = b"XR_FB_keyboard_tracking\0";
 pub const FB_triangle_mesh_SPEC_VERSION: u32 = 2u32;
 pub const FB_TRIANGLE_MESH_EXTENSION_NAME: &[u8] = b"XR_FB_triangle_mesh\0";
-pub const FB_passthrough_SPEC_VERSION: u32 = 3u32;
+pub const FB_passthrough_SPEC_VERSION: u32 = 4u32;
 pub const FB_PASSTHROUGH_EXTENSION_NAME: &[u8] = b"XR_FB_passthrough\0";
 pub const FB_render_model_SPEC_VERSION: u32 = 4u32;
 pub const FB_RENDER_MODEL_EXTENSION_NAME: &[u8] = b"XR_FB_render_model\0";
@@ -13180,6 +13249,10 @@ pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D11_enable\0";
 pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 9u32;
 #[cfg(windows)]
 pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D12_enable\0";
+#[cfg(target_vendor = "apple")]
+pub const KHR_metal_enable_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_vendor = "apple")]
+pub const KHR_METAL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_metal_enable\0";
 pub const KHR_visibility_mask_SPEC_VERSION: u32 = 2u32;
 pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &[u8] = b"XR_KHR_visibility_mask\0";
 pub const KHR_composition_layer_color_scale_bias_SPEC_VERSION: u32 = 5u32;
@@ -13320,7 +13393,7 @@ pub const ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME: &[u8] =
     b"XR_ULTRALEAP_hand_tracking_forearm\0";
 pub const VALVE_analog_threshold_SPEC_VERSION: u32 = 2u32;
 pub const VALVE_ANALOG_THRESHOLD_EXTENSION_NAME: &[u8] = b"XR_VALVE_analog_threshold\0";
-pub const VARJO_quad_views_SPEC_VERSION: u32 = 1u32;
+pub const VARJO_quad_views_SPEC_VERSION: u32 = 2u32;
 pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &[u8] = b"XR_VARJO_quad_views\0";
 pub const VARJO_foveated_rendering_SPEC_VERSION: u32 = 3u32;
 pub const VARJO_FOVEATED_RENDERING_EXTENSION_NAME: &[u8] = b"XR_VARJO_foveated_rendering\0";

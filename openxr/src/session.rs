@@ -530,8 +530,8 @@ impl<G: Graphics> Session<G> {
         passthrough: &Passthrough,
         flags: PassthroughFlagsFB,
         purpose: PassthroughLayerPurposeFB,
-    ) -> Result<PassthroughLayer> {
-        PassthroughLayer::create(self, passthrough, flags, purpose)
+    ) -> Result<PassthroughLayerFB> {
+        PassthroughLayerFB::create(self, passthrough, flags, purpose)
     }
 }
 
