@@ -1330,8 +1330,18 @@ impl Parser {
                 pub #field_ident: pfn::#pfn_ident,
             };
             let c_name = c_name(name);
-            let init = quote! {
-                #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+
+            let init = if name != "xrEnumerateApiLayerProperties" {
+                quote! {
+                    #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+                }
+            } else {
+                quote! {
+                    #field_ident: entry
+                        .get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))
+                        .map(|s| unsafe { mem::transmute(s) })
+                        .unwrap_or(crate::stub_enumerate_api_layer_properties),
+                }
             };
             (field, init)
         }).unzip::<_, _, Vec<_>, Vec<_>>();

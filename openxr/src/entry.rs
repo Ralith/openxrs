@@ -86,9 +86,10 @@ impl Entry {
                     enumerate_instance_extension_properties: *lib
                         .get(b"xrEnumerateInstanceExtensionProperties\0")
                         .map_err(LoadError)?,
-                    enumerate_api_layer_properties: *lib
+                    enumerate_api_layer_properties: lib
                         .get(b"xrEnumerateApiLayerProperties\0")
-                        .map_err(LoadError)?,
+                        .map(|s| *s)
+                        .unwrap_or(crate::stub_enumerate_api_layer_properties),
                 },
                 _lib_guard: Some(lib),
             }),
@@ -123,11 +124,13 @@ impl Entry {
                             ),
                         )?,
                     ),
-                    enumerate_api_layer_properties: mem::transmute(get_instance_proc_addr_helper(
+                    enumerate_api_layer_properties: get_instance_proc_addr_helper(
                         get_instance_proc_addr,
                         sys::Instance::NULL,
                         CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
-                    )?),
+                    )
+                    .map(|s| unsafe { mem::transmute(s) })
+                    .unwrap_or(crate::stub_enumerate_api_layer_properties),
                 },
                 #[cfg(feature = "loaded")]
                 _lib_guard: None,
