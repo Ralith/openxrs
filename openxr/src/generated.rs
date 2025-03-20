@@ -3417,10 +3417,13 @@ pub mod raw {
                     instance,
                     CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProcAddr\0"),
                 )?),
-                enumerate_api_layer_properties: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
-                )?),
+                enumerate_api_layer_properties: entry
+                    .get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
+                    )
+                    .map(|s| unsafe { mem::transmute(s) })
+                    .unwrap_or(crate::stub_enumerate_api_layer_properties),
                 enumerate_instance_extension_properties: mem::transmute(
                     entry.get_instance_proc_addr(
                         instance,

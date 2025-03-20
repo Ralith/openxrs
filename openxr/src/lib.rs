@@ -59,6 +59,19 @@ pub const USER_HEAD: &str = "/user/head";
 pub const USER_GAMEPAD: &str = "/user/gamepad";
 pub const USER_TREADMILL: &str = "/user/treadmill";
 
+/// Stub for the `xrEnumerateApiLayerProperties` entry point when it's not provided by the runtime.
+///
+/// # Safety
+///
+/// No this is actually safe but we need the type to match.
+unsafe extern "system" fn stub_enumerate_api_layer_properties(
+    _a: u32,
+    _b: *mut u32,
+    _c: *mut sys::ApiLayerProperties,
+) -> sys::Result {
+    panic!("Runtime didn't provide a xrEnumerateApiLayers entry point");
+}
+
 // FFI helpers
 fn cvt(x: sys::Result) -> Result<sys::Result> {
     if x.into_raw() >= 0 {
