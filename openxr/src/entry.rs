@@ -8,6 +8,7 @@ use std::{
 #[cfg(feature = "loaded")]
 use std::{fmt, path::Path};
 
+use crate::sys::Handle as _;
 use crate::*;
 
 /// Entry point to the API. Start here.

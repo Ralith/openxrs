@@ -1,3 +1,4 @@
+use crate::sys::Handle as _;
 use crate::*;
 
 /// Used to create a session without graphics.
