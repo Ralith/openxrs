@@ -1,5 +1,6 @@
 use std::{ptr, sync::Arc};
 
+use crate::sys::Handle as _;
 use crate::*;
 
 pub use sys::HandEXT as Hand;
@@ -67,6 +68,13 @@ impl HandTracker {
             .ext_hand_tracking
             .as_ref()
             .expect("Somehow created HandTracker without XR_EXT_hand_tracking being enabled")
+    }
+}
+
+impl AsHandle for HandTracker {
+    type Handle = sys::HandTrackerEXT;
+    fn as_handle(&self) -> Self::Handle {
+        self.handle
     }
 }
 

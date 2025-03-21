@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use crate::sys::Handle as _;
 use crate::*;
 
 #[derive(Clone)]
@@ -28,6 +29,13 @@ impl FoveationProfileFB {
 
     #[inline]
     pub fn as_raw(&self) -> sys::FoveationProfileFB {
+        self.inner.handle
+    }
+}
+
+impl AsHandle for FoveationProfileFB {
+    type Handle = sys::FoveationProfileFB;
+    fn as_handle(&self) -> Self::Handle {
         self.inner.handle
     }
 }

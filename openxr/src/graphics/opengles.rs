@@ -1,7 +1,7 @@
 use std::ptr;
 
 #[cfg(target_os = "android")]
-use sys::platform::*;
+use sys::{platform::*, Handle as _};
 
 use crate::*;
 

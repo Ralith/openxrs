@@ -1,5 +1,6 @@
 use std::{ffi::CString, mem::MaybeUninit, ptr, sync::Arc};
 
+use crate::sys::Handle as _;
 use crate::*;
 
 pub struct Space {
@@ -208,6 +209,13 @@ impl Space {
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.session.instance.fp()
+    }
+}
+
+impl AsHandle for Space {
+    type Handle = sys::Space;
+    fn as_handle(&self) -> Self::Handle {
+        self.handle
     }
 }
 

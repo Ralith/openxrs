@@ -3,6 +3,7 @@ use std::{marker::PhantomData, ptr, sync::Arc};
 
 pub use sys::{RenderModelKeyFB, RenderModelLoadInfoFB};
 
+use crate::sys::Handle as _;
 use crate::*;
 
 pub(crate) type DropGuard = Box<dyn std::any::Any + Send + Sync>;
@@ -558,6 +559,13 @@ impl<G> Clone for Session<G> {
             inner: self.inner.clone(),
             _marker: PhantomData,
         }
+    }
+}
+
+impl<G> AsHandle for Session<G> {
+    type Handle = sys::Session;
+    fn as_handle(&self) -> Self::Handle {
+        self.inner.handle
     }
 }
 

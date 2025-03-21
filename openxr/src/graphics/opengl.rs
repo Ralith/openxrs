@@ -2,6 +2,7 @@ use std::ptr;
 
 use sys::platform::*;
 
+use crate::sys::Handle as _;
 use crate::*;
 
 /// The OpenGL graphics API

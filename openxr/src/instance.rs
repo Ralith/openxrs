@@ -8,6 +8,7 @@ use std::{
 
 use sys::platform::*;
 
+use crate::sys::Handle as _;
 use crate::*;
 
 /// Root object mediating an application's interaction with OpenXR
@@ -710,6 +711,13 @@ impl Instance {
             .fb_render_model
             .as_ref()
             .expect("FB_render_model not loaded")
+    }
+}
+
+impl AsHandle for Instance {
+    type Handle = sys::Instance;
+    fn as_handle(&self) -> Self::Handle {
+        self.inner.handle
     }
 }
 

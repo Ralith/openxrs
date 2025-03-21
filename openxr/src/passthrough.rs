@@ -8,8 +8,8 @@
 //!
 //! Not all features are currently implemented. Execution control features are implemented, style-oriented features are not.
 use crate::{
-    cvt, raw, session, sys, PassthroughFlagsFB, PassthroughLayerPurposeFB, Result, Session,
-    SessionInner,
+    cvt, raw, session, sys, sys::Handle as _, AsHandle, PassthroughFlagsFB,
+    PassthroughLayerPurposeFB, Result, Session, SessionInner,
 };
 use std::ptr;
 use std::sync::Arc;
@@ -148,6 +148,13 @@ impl PassthroughLayerFB {
     }
 
     pub fn as_raw(&self) -> sys::PassthroughLayerFB {
+        self.handle
+    }
+}
+
+impl AsHandle for PassthroughLayerFB {
+    type Handle = sys::PassthroughLayerFB;
+    fn as_handle(&self) -> Self::Handle {
         self.handle
     }
 }
