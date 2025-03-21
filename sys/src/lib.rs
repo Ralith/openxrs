@@ -9,6 +9,12 @@ pub mod platform;
 #[cfg(feature = "mint")]
 mod mint_impls;
 
+pub trait Handle: Copy {
+    const NULL: Self;
+    fn into_raw(self) -> u64;
+    fn from_raw(handle: u64) -> Self;
+}
+
 // Hand-written bindings for cases which are too few or weird to bother automating
 
 wrapper! {

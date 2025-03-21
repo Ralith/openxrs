@@ -1,5 +1,6 @@
 use std::{ffi::CString, marker::PhantomData, ptr};
 
+use crate::sys::Handle as _;
 use crate::*;
 
 /// A set of images to be rendered to using a particular graphics API `G`
@@ -121,6 +122,13 @@ impl<G: Graphics> Swapchain<G> {
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.session.instance().fp()
+    }
+}
+
+impl<G: Graphics> AsHandle for Swapchain<G> {
+    type Handle = sys::Swapchain;
+    fn as_handle(&self) -> Self::Handle {
+        self.handle
     }
 }
 

@@ -72,6 +72,12 @@ unsafe extern "system" fn stub_enumerate_api_layer_properties(
     panic!("Runtime didn't provide a xrEnumerateApiLayers entry point");
 }
 
+// Helper traits
+pub trait AsHandle {
+    type Handle: sys::Handle;
+    fn as_handle(&self) -> Self::Handle;
+}
+
 // FFI helpers
 fn cvt(x: sys::Result) -> Result<sys::Result> {
     if x.into_raw() >= 0 {

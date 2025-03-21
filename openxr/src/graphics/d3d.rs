@@ -1,6 +1,6 @@
 use std::ptr;
 
-use sys::platform::*;
+use sys::{platform::*, Handle as _};
 
 use crate::*;
 
