@@ -1624,7 +1624,8 @@ impl Parser {
                     }
                 }
 
-                pub(crate) fn names(&self) -> Vec<&[u8]> {
+                /// Return names of supported extensions, as a `Vec` of nul terminated byte slices.
+                pub fn names(&self) -> Vec<&[u8]> {
                     let mut out = Vec::new();
                     #(#ext_set_names)*
                     out.extend(self.other.iter().map(|x| x.as_slice()));

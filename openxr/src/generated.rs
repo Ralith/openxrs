@@ -1256,7 +1256,8 @@ impl ExtensionSet {
                 .collect(),
         }
     }
-    pub(crate) fn names(&self) -> Vec<&[u8]> {
+    #[doc = r" Return names of supported extensions, as a `Vec` of nul terminated byte slices."]
+    pub fn names(&self) -> Vec<&[u8]> {
         let mut out = Vec::new();
         {
             if self.almalence_digital_lens_control {
