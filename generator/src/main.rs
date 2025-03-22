@@ -1353,6 +1353,7 @@ impl Parser {
         let mut ext_set_fields = Vec::new();
         let mut ext_set_inits = Vec::new();
         let mut ext_diff_fields = Vec::new();
+        let mut ext_intersection_fields = Vec::new();
         for (tag_name, tag) in &self.extensions {
             for ext in &tag.extensions {
                 if self.disabled_exts.contains(&ext.name) {
@@ -1450,6 +1451,10 @@ impl Parser {
                 ext_diff_fields.push(quote! {
                     #conds
                     #field_ident: self.#field_ident && !other.#field_ident,
+                });
+                ext_intersection_fields.push(quote! {
+                    #conds
+                    #field_ident: self.#field_ident && other.#field_ident,
                 });
             }
         }
@@ -1606,6 +1611,20 @@ impl Parser {
                             .iter()
                             .collect::<std::collections::HashSet<_>>()
                             .difference(&other.other.iter().collect())
+                            .map(ToString::to_string)
+                            .collect(),
+                    }
+                }
+
+                #[doc = "Return the intersection of `self` and `other`, i.e. fields set in both"]
+                #[inline]
+                pub fn intersection(&self, other: &Self) -> Self {
+                    Self {
+                        #(#ext_intersection_fields)*
+                        other: self.other
+                            .iter()
+                            .collect::<std::collections::HashSet<_>>()
+                            .intersection(&other.other.iter().collect())
                             .map(ToString::to_string)
                             .collect(),
                     }
