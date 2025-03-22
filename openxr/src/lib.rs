@@ -169,8 +169,8 @@ fn get_arr_init<T: Copy>(
     }
 }
 
-impl generated::ExtensionSet {
-    pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+impl<'a> From<&'a [sys::ExtensionProperties]> for generated::ExtensionSet {
+    fn from(properties: &'a [sys::ExtensionProperties]) -> Self {
         properties
             .iter()
             .map(|ext| {
@@ -200,6 +200,46 @@ mod tests {
             raw::Maintenance1KHR::NAME,
         ];
         let set: ExtensionSet = IntoIterator::into_iter(extensions).collect();
+        assert!(set.fb_passthrough);
+        assert!(set.htc_passthrough);
+        assert!(set.khr_maintenance1);
+
+        let _: [&[u8]; 3] = set.names().as_slice().try_into().unwrap();
+    }
+
+    #[test]
+    fn extension_set_from_properties() {
+        use crate::generated::{raw, ExtensionSet};
+        use std::convert::TryInto;
+        const EXTENSION_PROP_INIT: sys::ExtensionProperties = sys::ExtensionProperties {
+            extension_name: [0; sys::MAX_EXTENSION_NAME_SIZE],
+            ty: sys::ExtensionProperties::TYPE,
+            next: std::ptr::null_mut(),
+            extension_version: 0,
+        };
+        let extensions = [
+            raw::PassthroughFB::NAME,
+            raw::PassthroughHTC::NAME,
+            raw::Maintenance1KHR::NAME,
+        ];
+        let mut props = [EXTENSION_PROP_INIT; 3];
+        for i in 0..extensions.len() {
+            // Safety: All extension names is less than `sys::MAX_EXTENSION_NAME_SIZE` bytes
+            // long. And casting from `*const u8` to `*const c_char` is safe because they have
+            // the same size, alignment, and representation. `props` can't overlap with constants
+            // because they are in the stack.
+            unsafe {
+                props[i]
+                    .extension_name
+                    .as_mut_slice()
+                    .as_mut_ptr()
+                    .copy_from_nonoverlapping(
+                        extensions[i].as_ptr() as *const _,
+                        extensions[i].len(),
+                    );
+            }
+        }
+        let set: ExtensionSet = (&props[..]).into();
         assert!(set.fb_passthrough);
         assert!(set.htc_passthrough);
         assert!(set.khr_maintenance1);
