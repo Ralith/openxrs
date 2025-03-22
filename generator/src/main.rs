@@ -1352,6 +1352,7 @@ impl Parser {
         let mut ext_set_names = Vec::new();
         let mut ext_set_fields = Vec::new();
         let mut ext_set_inits = Vec::new();
+        let mut ext_diff_fields = Vec::new();
         for (tag_name, tag) in &self.extensions {
             for ext in &tag.extensions {
                 if self.disabled_exts.contains(&ext.name) {
@@ -1387,12 +1388,7 @@ impl Parser {
                     Span::call_site(),
                 );
                 let conds = conditions(&ext.name, Some(&ext.name));
-                let conds2 = conds.clone();
-                let conds3 = conds.clone();
-                let conds4 = conds.clone();
-                let conds5 = conds.clone();
-                let conds6 = conds.clone();
-                let conds7 = conds.clone();
+                let conds = &conds;
                 let load = if ext.commands.is_empty() {
                     quote! {}
                 } else {
@@ -1416,7 +1412,7 @@ impl Parser {
                         #(#pfns,)*
                     }
 
-                    #conds2
+                    #conds
                     impl #ty_ident {
                         pub const #version_ident: u32 = sys::#version_const;
                         pub const #name_ident: &'static [u8] = sys::#name_const;
@@ -1425,31 +1421,35 @@ impl Parser {
                 });
                 let field_ident = Ident::new(&trimmed.to_snake_case(), Span::call_site());
                 ext_fields.push(quote! {
-                    #conds3
+                    #conds
                     pub #field_ident: Option<raw::#ty_ident>,
                 });
                 ext_field_inits.push(if ext.commands.is_empty() {
                     quote! {
-                        #conds4
+                        #conds
                         #field_ident: if required.#field_ident { Some(raw::#ty_ident {}) } else { None },
                     }
                 } else {
                     quote! {
-                        #conds4
+                        #conds
                         #field_ident: if required.#field_ident { Some(raw::#ty_ident::load(entry, instance)?) } else { None },
                     }
                 });
                 ext_set_names.push(quote! {
-                    #conds5
+                    #conds
                     { if self.#field_ident { out.push(raw::#ty_ident::NAME.into()); } }
                 });
                 ext_set_inits.push(quote! {
-                    #conds6
+                    #conds
                     raw::#ty_ident::NAME => { out.#field_ident = true; }
                 });
                 ext_set_fields.push(quote! {
-                    #conds7
+                    #conds
                     pub #field_ident: bool,
+                });
+                ext_diff_fields.push(quote! {
+                    #conds
+                    #field_ident: self.#field_ident && !other.#field_ident,
                 });
             }
         }
@@ -1597,6 +1597,20 @@ impl Parser {
             }
 
             impl ExtensionSet {
+                #[doc = "Return `self` without the members set in `other`."]
+                #[inline]
+                pub fn difference(&self, other: &Self) -> Self {
+                    Self {
+                        #(#ext_diff_fields)*
+                        other: self.other
+                            .iter()
+                            .collect::<std::collections::HashSet<_>>()
+                            .difference(&other.other.iter().collect())
+                            .map(ToString::to_string)
+                            .collect(),
+                    }
+                }
+
                 pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
                     properties
                         .iter()
