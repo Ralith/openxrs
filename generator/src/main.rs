@@ -1601,6 +1601,22 @@ impl Parser {
                 }
             }
 
+            impl<'a> From<&'a [sys::ExtensionProperties]> for ExtensionSet {
+                fn from(properties: &'a [sys::ExtensionProperties]) -> Self {
+                    properties
+                        .iter()
+                        .map(|ext| {
+                            // Safety: c_char is always 1 byte so it's legal to cast it to u8.
+                            let name = unsafe {
+                                &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
+                            };
+                            CStr::from_bytes_until_nul(name)
+                                .expect("extension names should be null terminated strings")
+                        })
+                        .collect()
+                }
+            }
+
             impl ExtensionSet {
                 #[doc = "Return `self` without the members set in `other`."]
                 #[inline]
@@ -1631,17 +1647,7 @@ impl Parser {
                 }
 
                 pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
-                    properties
-                        .iter()
-                        .map(|ext| {
-                            // Safety: c_char is always 1 byte so it's legal to cast it to u8.
-                            let name = unsafe {
-                                &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
-                            };
-                            CStr::from_bytes_until_nul(name)
-                                .expect("extension names should be null terminated strings")
-                        })
-                        .collect()
+                    properties.into()
                 }
 
                 pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {

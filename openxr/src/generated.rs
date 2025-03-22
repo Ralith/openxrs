@@ -730,6 +730,20 @@ impl<'a> FromIterator<&'a CStr> for ExtensionSet {
         out
     }
 }
+impl<'a> From<&'a [sys::ExtensionProperties]> for ExtensionSet {
+    fn from(properties: &'a [sys::ExtensionProperties]) -> Self {
+        properties
+            .iter()
+            .map(|ext| {
+                let name = unsafe {
+                    &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
+                };
+                CStr::from_bytes_until_nul(name)
+                    .expect("extension names should be null terminated strings")
+            })
+            .collect()
+    }
+}
 impl ExtensionSet {
     #[doc = "Return `self` without the members set in `other`."]
     #[inline]
@@ -1262,16 +1276,7 @@ impl ExtensionSet {
         }
     }
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
-        properties
-            .iter()
-            .map(|ext| {
-                let name = unsafe {
-                    &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
-                };
-                CStr::from_bytes_until_nul(name)
-                    .expect("extension names should be null terminated strings")
-            })
-            .collect()
+        properties.into()
     }
     pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
         let mut out = Vec::new();
