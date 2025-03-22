@@ -9,6 +9,17 @@ pub mod platform;
 #[cfg(feature = "mint")]
 mod mint_impls;
 
+/// # Safety
+///
+/// No this is actually safe but we need the type to match.
+pub unsafe extern "system" fn stub_enumerate_api_layer_properties(
+    _a: u32,
+    _b: *mut u32,
+    _c: *mut ApiLayerProperties,
+) -> Result {
+    panic!("Runtime didn't provide a xrEnumerateApiLayers entry point");
+}
+
 // Hand-written bindings for cases which are too few or weird to bother automating
 
 wrapper! {
