@@ -1650,7 +1650,7 @@ impl Parser {
                     properties.into()
                 }
 
-                pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
+                pub fn names(&self) -> Vec<Cow<'static, [u8]>> {
                     let mut out = Vec::new();
                     #(#ext_set_names)*
                     for name in &self.other {

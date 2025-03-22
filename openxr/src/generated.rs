@@ -1278,7 +1278,7 @@ impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
         properties.into()
     }
-    pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
+    pub fn names(&self) -> Vec<Cow<'static, [u8]>> {
         let mut out = Vec::new();
         {
             if self.almalence_digital_lens_control {
