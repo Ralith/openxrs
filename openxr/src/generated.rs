@@ -6,7 +6,8 @@
 )]
 use crate::*;
 use std::borrow::Cow;
-use std::ffi::CStr;
+use std::ffi::{c_char, CStr};
+use std::iter::FromIterator;
 use std::mem::MaybeUninit;
 pub use sys::platform::{
     EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
@@ -235,11 +236,14 @@ pub struct ExtensionSet {
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<String>,
 }
-impl ExtensionSet {
-    pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+impl<'a> FromIterator<&'a CStr> for ExtensionSet {
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = &'a CStr>,
+    {
         let mut out = Self::default();
-        for ext in properties {
-            match crate::fixed_str_bytes(&ext.extension_name) {
+        for name in iter {
+            match name.to_bytes_with_nul() {
                 raw::DigitalLensControlALMALENCE::NAME => {
                     out.almalence_digital_lens_control = true;
                 }
@@ -716,18 +720,28 @@ impl ExtensionSet {
                 raw::ViveTrackerInteractionHTCX::NAME => {
                     out.htcx_vive_tracker_interaction = true;
                 }
-                bytes => {
-                    let cstr = CStr::from_bytes_with_nul(bytes)
-                        .expect("extension names should be null terminated strings");
-                    let string = cstr
-                        .to_str()
+                _ => out.other.push(
+                    name.to_str()
                         .expect("extension names should be valid UTF-8")
-                        .to_string();
-                    out.other.push(string);
-                }
+                        .to_string(),
+                ),
             }
         }
         out
+    }
+}
+impl ExtensionSet {
+    pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+        properties
+            .iter()
+            .map(|ext| {
+                let name = unsafe {
+                    &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
+                };
+                CStr::from_bytes_until_nul(name)
+                    .expect("extension names should be null terminated strings")
+            })
+            .collect()
     }
     pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
         let mut out = Vec::new();

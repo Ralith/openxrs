@@ -86,12 +86,6 @@ unsafe fn fixed_str(x: &[c_char]) -> &str {
     std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
 }
 
-/// Includes null for convenience of comparison with C string constants
-fn fixed_str_bytes(x: &[c_char]) -> &[u8] {
-    let end = x.iter().position(|&x| x == 0).unwrap();
-    unsafe { std::mem::transmute(&x[..=end]) }
-}
-
 fn get_str(mut getter: impl FnMut(u32, &mut u32, *mut c_char) -> sys::Result) -> Result<String> {
     let mut bytes = get_arr(|x, y, z| getter(x, y, z as _))?;
     // Truncate at first null byte
