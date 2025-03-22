@@ -276,7 +276,7 @@ impl Entry {
                 },
             )?;
             // https://github.com/rust-lang/rust/issues/63569
-            Ok(ExtensionSet::from_properties(mem::transmute::<
+            Ok(ExtensionSet::from(mem::transmute::<
                 &[std::mem::MaybeUninit<sys::ExtensionProperties>],
                 &[sys::ExtensionProperties],
             >(&exts[..])))
