@@ -111,14 +111,14 @@ macro_rules! bitmask {
 
 macro_rules! handle {
     ($name:ident) => {
-        impl $name {
-            pub const NULL: Self = Self(0);
+        impl $crate::Handle for $name {
+            const NULL: Self = Self(0);
             #[inline]
-            pub fn from_raw(x: u64) -> Self {
+            fn from_raw(x: u64) -> Self {
                 Self(x)
             }
             #[inline]
-            pub fn into_raw(self) -> u64 {
+            fn into_raw(self) -> u64 {
                 self.0
             }
         }

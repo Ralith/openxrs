@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use crate::sys::Handle as _;
 use crate::*;
 
 #[derive(Clone)]
@@ -73,6 +74,13 @@ impl ActionSet {
         Self {
             inner: self.inner.clone(),
         }
+    }
+}
+
+impl XrObject for ActionSet {
+    type Handle = sys::ActionSet;
+    fn handle(&self) -> Self::Handle {
+        self.inner.handle
     }
 }
 

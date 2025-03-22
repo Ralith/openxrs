@@ -1,5 +1,6 @@
 use std::{marker::PhantomData, ptr, sync::Arc};
 
+use crate::sys::Handle as _;
 use crate::*;
 
 pub struct Action<T: ActionTy> {
@@ -56,6 +57,13 @@ impl<T: ActionTy> Action<T> {
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.instance().fp()
+    }
+}
+
+impl<T: ActionTy> XrObject for Action<T> {
+    type Handle = sys::Action;
+    fn handle(&self) -> Self::Handle {
+        self.inner.handle
     }
 }
 

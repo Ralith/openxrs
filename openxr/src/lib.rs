@@ -59,6 +59,12 @@ pub const USER_HEAD: &str = "/user/head";
 pub const USER_GAMEPAD: &str = "/user/gamepad";
 pub const USER_TREADMILL: &str = "/user/treadmill";
 
+// Helper traits
+pub trait XrObject {
+    type Handle: sys::Handle;
+    fn handle(&self) -> Self::Handle;
+}
+
 // FFI helpers
 fn cvt(x: sys::Result) -> Result<sys::Result> {
     if x.into_raw() >= 0 {
