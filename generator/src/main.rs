@@ -1745,6 +1745,7 @@ impl Parser {
                     #marker
                 }
                 #conds
+                #[allow(clippy::needless_lifetimes)]
                 impl #type_params #ident #type_args {
                     #[inline]
                     pub fn new() -> Self {
@@ -1784,6 +1785,7 @@ impl Parser {
                     #setters
                 }
                 #conds
+                #[allow(clippy::needless_lifetimes)]
                 impl #type_params Deref for #ident #type_args {
                     type Target = #base_ident #type_args;
 
@@ -1793,6 +1795,7 @@ impl Parser {
                     }
                 }
                 #conds
+                #[allow(clippy::needless_lifetimes)]
                 impl #type_params Default for #ident #type_args {
                     fn default() -> Self {
                         Self::new()
@@ -1967,6 +1970,7 @@ impl Parser {
                 #marker
             }
             #conds2
+            #[allow(clippy::needless_lifetimes)]
             impl #type_params #ident #type_args {
                 #[inline]
                 pub fn new() -> Self {
@@ -2006,6 +2010,7 @@ impl Parser {
                 #setters
             }
 
+            #[allow(clippy::needless_lifetimes)]
             impl #type_params Default for #ident #type_args {
                 fn default() -> Self {
                     Self::new()
