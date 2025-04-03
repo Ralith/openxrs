@@ -237,10 +237,10 @@ impl Parser {
         let ext_name = Rc::<str>::from(attr(attrs, "name").unwrap());
         let ext_number = attr(attrs, "number").unwrap().parse::<i32>().unwrap();
         let (ext_version, commands) = self.parse_required(Some(&ext_name), Some(ext_number), None);
-        if attr(attrs, "supported").map_or(false, |x| x == "disabled") {
+        if attr(attrs, "supported") == Some("disabled") {
             self.disabled_exts.insert(ext_name);
         } else {
-            let provisional = attr(attrs, "provisional").map_or(false, |x| x == "true");
+            let provisional = attr(attrs, "provisional") == Some("true");
 
             let (tag_name, _) = split_ext_tag(&ext_name);
             let ext = Extension {
@@ -309,7 +309,7 @@ impl Parser {
 
                             let value = if let Some(offset) = attr(&attributes, "offset") {
                                 let offset = offset.parse::<i32>().unwrap();
-                                let sign = if attr(&attributes, "dir").map_or(false, |x| x == "-") {
+                                let sign = if attr(&attributes, "dir") == Some("-") {
                                     -1
                                 } else {
                                     1
@@ -1319,7 +1319,7 @@ impl Parser {
     fn generate_hl(&self) -> TokenStream {
         let (instance_pfn_fields, instance_pfn_inits) = self.commands.iter().map(|(name, command)| {
             // We only want commands from xr version 1.0 here because these commands are always loaded.
-            if command.feature.as_ref().map_or(true, |feature|
+            if command.feature.as_ref().is_none_or(|feature|
                 feature.as_ref() != "XR_VERSION_1_0"
             ) {
                 return (quote! {}, quote! {});
@@ -1460,7 +1460,7 @@ impl Parser {
             .filter_map(|(name, s)| {
                 if s.extension
                     .as_ref()
-                    .map_or(false, |ext| self.disabled_exts.contains(ext))
+                    .is_some_and(|ext| self.disabled_exts.contains(ext))
                 {
                     return None;
                 }
@@ -2096,7 +2096,7 @@ impl Parser {
                 && self
                     .structs
                     .get(&x.ty)
-                    .map_or(true, |x| self.is_simple_struct(x))
+                    .is_none_or(|x| self.is_simple_struct(x))
                 && !self.handles.contains(&x.ty)
         })
     }
