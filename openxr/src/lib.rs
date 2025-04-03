@@ -105,12 +105,6 @@ unsafe fn fixed_str(x: &[c_char]) -> &str {
     std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
 }
 
-/// Includes null for convenience of comparison with C string constants
-fn fixed_str_bytes(x: &[c_char]) -> &[u8] {
-    let end = x.iter().position(|&x| x == 0).unwrap();
-    unsafe { std::mem::transmute(&x[..=end]) }
-}
-
 fn get_str(mut getter: impl FnMut(u32, &mut u32, *mut c_char) -> sys::Result) -> Result<String> {
     let mut bytes = get_arr(|x, y, z| getter(x, y, z as _))?;
     // Truncate at first null byte
@@ -172,5 +166,44 @@ fn get_arr_init<T: Copy>(
                 return Err(e);
             }
         }
+    }
+}
+
+impl generated::ExtensionSet {
+    pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+        properties
+            .iter()
+            .map(|ext| {
+                // Safety: `c_char` and `u8` has the same size, alignment, and representation.
+                let name = unsafe {
+                    &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
+                };
+                let nul = name
+                    .iter()
+                    .position(|&x| x == 0)
+                    .expect("extension name must be nul terminated strings");
+                &name[..=nul]
+            })
+            .collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn extension_set_from_iter() {
+        use crate::generated::{raw, ExtensionSet};
+        use std::convert::TryInto;
+        let extensions = [
+            raw::PassthroughFB::NAME,
+            raw::PassthroughHTC::NAME,
+            raw::Maintenance1KHR::NAME,
+        ];
+        let set: ExtensionSet = IntoIterator::into_iter(extensions).collect();
+        assert!(set.fb_passthrough);
+        assert!(set.htc_passthrough);
+        assert!(set.khr_maintenance1);
+
+        let _: [&[u8]; 3] = set.names().as_slice().try_into().unwrap();
     }
 }

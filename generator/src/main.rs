@@ -1387,12 +1387,6 @@ impl Parser {
                     Span::call_site(),
                 );
                 let conds = conditions(&ext.name, Some(&ext.name));
-                let conds2 = conds.clone();
-                let conds3 = conds.clone();
-                let conds4 = conds.clone();
-                let conds5 = conds.clone();
-                let conds6 = conds.clone();
-                let conds7 = conds.clone();
                 let load = if ext.commands.is_empty() {
                     quote! {}
                 } else {
@@ -1416,7 +1410,7 @@ impl Parser {
                         #(#pfns,)*
                     }
 
-                    #conds2
+                    #conds
                     impl #ty_ident {
                         pub const #version_ident: u32 = sys::#version_const;
                         pub const #name_ident: &'static [u8] = sys::#name_const;
@@ -1425,30 +1419,30 @@ impl Parser {
                 });
                 let field_ident = Ident::new(&trimmed.to_snake_case(), Span::call_site());
                 ext_fields.push(quote! {
-                    #conds3
+                    #conds
                     pub #field_ident: Option<raw::#ty_ident>,
                 });
                 ext_field_inits.push(if ext.commands.is_empty() {
                     quote! {
-                        #conds4
+                        #conds
                         #field_ident: if required.#field_ident { Some(raw::#ty_ident {}) } else { None },
                     }
                 } else {
                     quote! {
-                        #conds4
+                        #conds
                         #field_ident: if required.#field_ident { Some(raw::#ty_ident::load(entry, instance)?) } else { None },
                     }
                 });
                 ext_set_names.push(quote! {
-                    #conds5
+                    #conds
                     { if self.#field_ident { out.push(raw::#ty_ident::NAME); } }
                 });
                 ext_set_inits.push(quote! {
-                    #conds6
+                    #conds
                     raw::#ty_ident::NAME => { out.#field_ident = true; }
                 });
                 ext_set_fields.push(quote! {
-                    #conds7
+                    #conds
                     pub #field_ident: bool,
                 });
             }
@@ -1559,6 +1553,7 @@ impl Parser {
 
             #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr, clippy::missing_transmute_annotations)]
             use std::mem::MaybeUninit;
+            use std::iter::FromIterator;
             pub use sys::{#(#reexports),*};
             pub use sys::platform::{EGLenum, VkFilter, VkSamplerMipmapMode, VkSamplerAddressMode, VkComponentSwizzle};
 
@@ -1573,18 +1568,24 @@ impl Parser {
                 pub other: Vec<Vec<u8>>,
             }
 
-            impl ExtensionSet {
-                pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+            /// Create a ExtensionSet from a list of nul-terminated extension names
+            impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
+                fn from_iter<I>(iter: I) -> Self
+                where
+                    I: IntoIterator<Item = &'a [u8]>,
+                {
                     let mut out = Self::default();
-                    for ext in properties {
-                        match crate::fixed_str_bytes(&ext.extension_name) {
+                    for name in iter {
+                        match name {
                             #(#ext_set_inits)*
                             bytes => out.other.push(bytes.to_vec()),
                         }
                     }
                     out
                 }
+            }
 
+            impl ExtensionSet {
                 pub(crate) fn names(&self) -> Vec<&[u8]> {
                     let mut out = Vec::new();
                     #(#ext_set_names)*
