@@ -5,8 +5,6 @@
     clippy::missing_transmute_annotations
 )]
 use crate::*;
-use std::borrow::Cow;
-use std::ffi::CStr;
 use std::mem::MaybeUninit;
 pub use sys::platform::{
     EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
@@ -233,7 +231,7 @@ pub struct ExtensionSet {
     pub mndx_force_feedback_curl: bool,
     pub htcx_vive_tracker_interaction: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
-    pub other: Vec<String>,
+    pub other: Vec<Vec<u8>>,
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
@@ -716,811 +714,798 @@ impl ExtensionSet {
                 raw::ViveTrackerInteractionHTCX::NAME => {
                     out.htcx_vive_tracker_interaction = true;
                 }
-                bytes => {
-                    let cstr = CStr::from_bytes_with_nul(bytes)
-                        .expect("extension names should be null terminated strings");
-                    let string = cstr
-                        .to_str()
-                        .expect("extension names should be valid UTF-8")
-                        .to_string();
-                    out.other.push(string);
-                }
+                bytes => out.other.push(bytes.to_vec()),
             }
         }
         out
     }
-    pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
+    pub(crate) fn names(&self) -> Vec<&[u8]> {
         let mut out = Vec::new();
         {
             if self.almalence_digital_lens_control {
-                out.push(raw::DigitalLensControlALMALENCE::NAME.into());
+                out.push(raw::DigitalLensControlALMALENCE::NAME);
             }
         }
         {
             if self.bd_controller_interaction {
-                out.push(raw::ControllerInteractionBD::NAME.into());
+                out.push(raw::ControllerInteractionBD::NAME);
             }
         }
         {
             if self.epic_view_configuration_fov {
-                out.push(raw::ViewConfigurationFovEPIC::NAME.into());
+                out.push(raw::ViewConfigurationFovEPIC::NAME);
             }
         }
         {
             if self.ext_performance_settings {
-                out.push(raw::PerformanceSettingsEXT::NAME.into());
+                out.push(raw::PerformanceSettingsEXT::NAME);
             }
         }
         {
             if self.ext_thermal_query {
-                out.push(raw::ThermalQueryEXT::NAME.into());
+                out.push(raw::ThermalQueryEXT::NAME);
             }
         }
         {
             if self.ext_debug_utils {
-                out.push(raw::DebugUtilsEXT::NAME.into());
+                out.push(raw::DebugUtilsEXT::NAME);
             }
         }
         {
             if self.ext_eye_gaze_interaction {
-                out.push(raw::EyeGazeInteractionEXT::NAME.into());
+                out.push(raw::EyeGazeInteractionEXT::NAME);
             }
         }
         {
             if self.ext_view_configuration_depth_range {
-                out.push(raw::ViewConfigurationDepthRangeEXT::NAME.into());
+                out.push(raw::ViewConfigurationDepthRangeEXT::NAME);
             }
         }
         {
             if self.ext_conformance_automation {
-                out.push(raw::ConformanceAutomationEXT::NAME.into());
+                out.push(raw::ConformanceAutomationEXT::NAME);
             }
         }
         {
             if self.ext_hand_tracking {
-                out.push(raw::HandTrackingEXT::NAME.into());
+                out.push(raw::HandTrackingEXT::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.ext_win32_appcontainer_compatible {
-                out.push(raw::Win32AppcontainerCompatibleEXT::NAME.into());
+                out.push(raw::Win32AppcontainerCompatibleEXT::NAME);
             }
         }
         {
             if self.ext_dpad_binding {
-                out.push(raw::DpadBindingEXT::NAME.into());
+                out.push(raw::DpadBindingEXT::NAME);
             }
         }
         {
             if self.ext_hand_joints_motion_range {
-                out.push(raw::HandJointsMotionRangeEXT::NAME.into());
+                out.push(raw::HandJointsMotionRangeEXT::NAME);
             }
         }
         {
             if self.ext_samsung_odyssey_controller {
-                out.push(raw::SamsungOdysseyControllerEXT::NAME.into());
+                out.push(raw::SamsungOdysseyControllerEXT::NAME);
             }
         }
         {
             if self.ext_hp_mixed_reality_controller {
-                out.push(raw::HpMixedRealityControllerEXT::NAME.into());
+                out.push(raw::HpMixedRealityControllerEXT::NAME);
             }
         }
         {
             if self.ext_palm_pose {
-                out.push(raw::PalmPoseEXT::NAME.into());
+                out.push(raw::PalmPoseEXT::NAME);
             }
         }
         {
             if self.ext_uuid {
-                out.push(raw::UuidEXT::NAME.into());
+                out.push(raw::UuidEXT::NAME);
             }
         }
         {
             if self.ext_hand_interaction {
-                out.push(raw::HandInteractionEXT::NAME.into());
+                out.push(raw::HandInteractionEXT::NAME);
             }
         }
         {
             if self.ext_active_action_set_priority {
-                out.push(raw::ActiveActionSetPriorityEXT::NAME.into());
+                out.push(raw::ActiveActionSetPriorityEXT::NAME);
             }
         }
         {
             if self.ext_local_floor {
-                out.push(raw::LocalFloorEXT::NAME.into());
+                out.push(raw::LocalFloorEXT::NAME);
             }
         }
         {
             if self.ext_hand_tracking_data_source {
-                out.push(raw::HandTrackingDataSourceEXT::NAME.into());
+                out.push(raw::HandTrackingDataSourceEXT::NAME);
             }
         }
         {
             if self.ext_plane_detection {
-                out.push(raw::PlaneDetectionEXT::NAME.into());
+                out.push(raw::PlaneDetectionEXT::NAME);
             }
         }
         {
             if self.ext_future {
-                out.push(raw::FutureEXT::NAME.into());
+                out.push(raw::FutureEXT::NAME);
             }
         }
         {
             if self.ext_user_presence {
-                out.push(raw::UserPresenceEXT::NAME.into());
+                out.push(raw::UserPresenceEXT::NAME);
             }
         }
         {
             if self.ext_composition_layer_inverted_alpha {
-                out.push(raw::CompositionLayerInvertedAlphaEXT::NAME.into());
+                out.push(raw::CompositionLayerInvertedAlphaEXT::NAME);
             }
         }
         {
             if self.fb_composition_layer_image_layout {
-                out.push(raw::CompositionLayerImageLayoutFB::NAME.into());
+                out.push(raw::CompositionLayerImageLayoutFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_alpha_blend {
-                out.push(raw::CompositionLayerAlphaBlendFB::NAME.into());
+                out.push(raw::CompositionLayerAlphaBlendFB::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.fb_android_surface_swapchain_create {
-                out.push(raw::AndroidSurfaceSwapchainCreateFB::NAME.into());
+                out.push(raw::AndroidSurfaceSwapchainCreateFB::NAME);
             }
         }
         {
             if self.fb_swapchain_update_state {
-                out.push(raw::SwapchainUpdateStateFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_secure_content {
-                out.push(raw::CompositionLayerSecureContentFB::NAME.into());
+                out.push(raw::CompositionLayerSecureContentFB::NAME);
             }
         }
         {
             if self.fb_body_tracking {
-                out.push(raw::BodyTrackingFB::NAME.into());
+                out.push(raw::BodyTrackingFB::NAME);
             }
         }
         {
             if self.fb_display_refresh_rate {
-                out.push(raw::DisplayRefreshRateFB::NAME.into());
+                out.push(raw::DisplayRefreshRateFB::NAME);
             }
         }
         {
             if self.fb_color_space {
-                out.push(raw::ColorSpaceFB::NAME.into());
+                out.push(raw::ColorSpaceFB::NAME);
             }
         }
         {
             if self.fb_hand_tracking_mesh {
-                out.push(raw::HandTrackingMeshFB::NAME.into());
+                out.push(raw::HandTrackingMeshFB::NAME);
             }
         }
         {
             if self.fb_hand_tracking_aim {
-                out.push(raw::HandTrackingAimFB::NAME.into());
+                out.push(raw::HandTrackingAimFB::NAME);
             }
         }
         {
             if self.fb_hand_tracking_capsules {
-                out.push(raw::HandTrackingCapsulesFB::NAME.into());
+                out.push(raw::HandTrackingCapsulesFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity {
-                out.push(raw::SpatialEntityFB::NAME.into());
+                out.push(raw::SpatialEntityFB::NAME);
             }
         }
         {
             if self.fb_foveation {
-                out.push(raw::FoveationFB::NAME.into());
+                out.push(raw::FoveationFB::NAME);
             }
         }
         {
             if self.fb_foveation_configuration {
-                out.push(raw::FoveationConfigurationFB::NAME.into());
+                out.push(raw::FoveationConfigurationFB::NAME);
             }
         }
         {
             if self.fb_keyboard_tracking {
-                out.push(raw::KeyboardTrackingFB::NAME.into());
+                out.push(raw::KeyboardTrackingFB::NAME);
             }
         }
         {
             if self.fb_triangle_mesh {
-                out.push(raw::TriangleMeshFB::NAME.into());
+                out.push(raw::TriangleMeshFB::NAME);
             }
         }
         {
             if self.fb_passthrough {
-                out.push(raw::PassthroughFB::NAME.into());
+                out.push(raw::PassthroughFB::NAME);
             }
         }
         {
             if self.fb_render_model {
-                out.push(raw::RenderModelFB::NAME.into());
+                out.push(raw::RenderModelFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_query {
-                out.push(raw::SpatialEntityQueryFB::NAME.into());
+                out.push(raw::SpatialEntityQueryFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_storage {
-                out.push(raw::SpatialEntityStorageFB::NAME.into());
+                out.push(raw::SpatialEntityStorageFB::NAME);
             }
         }
         {
             if self.fb_foveation_vulkan {
-                out.push(raw::FoveationVulkanFB::NAME.into());
+                out.push(raw::FoveationVulkanFB::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.fb_swapchain_update_state_android_surface {
-                out.push(raw::SwapchainUpdateStateAndroidSurfaceFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateAndroidSurfaceFB::NAME);
             }
         }
         {
             if self.fb_swapchain_update_state_opengl_es {
-                out.push(raw::SwapchainUpdateStateOpenglEsFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateOpenglEsFB::NAME);
             }
         }
         {
             if self.fb_swapchain_update_state_vulkan {
-                out.push(raw::SwapchainUpdateStateVulkanFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateVulkanFB::NAME);
             }
         }
         {
             if self.fb_touch_controller_pro {
-                out.push(raw::TouchControllerProFB::NAME.into());
+                out.push(raw::TouchControllerProFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_sharing {
-                out.push(raw::SpatialEntitySharingFB::NAME.into());
+                out.push(raw::SpatialEntitySharingFB::NAME);
             }
         }
         {
             if self.fb_space_warp {
-                out.push(raw::SpaceWarpFB::NAME.into());
+                out.push(raw::SpaceWarpFB::NAME);
             }
         }
         {
             if self.fb_haptic_amplitude_envelope {
-                out.push(raw::HapticAmplitudeEnvelopeFB::NAME.into());
+                out.push(raw::HapticAmplitudeEnvelopeFB::NAME);
             }
         }
         {
             if self.fb_scene {
-                out.push(raw::SceneFB::NAME.into());
+                out.push(raw::SceneFB::NAME);
             }
         }
         {
             if self.fb_scene_capture {
-                out.push(raw::SceneCaptureFB::NAME.into());
+                out.push(raw::SceneCaptureFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_container {
-                out.push(raw::SpatialEntityContainerFB::NAME.into());
+                out.push(raw::SpatialEntityContainerFB::NAME);
             }
         }
         {
             if self.fb_face_tracking {
-                out.push(raw::FaceTrackingFB::NAME.into());
+                out.push(raw::FaceTrackingFB::NAME);
             }
         }
         {
             if self.fb_eye_tracking_social {
-                out.push(raw::EyeTrackingSocialFB::NAME.into());
+                out.push(raw::EyeTrackingSocialFB::NAME);
             }
         }
         {
             if self.fb_passthrough_keyboard_hands {
-                out.push(raw::PassthroughKeyboardHandsFB::NAME.into());
+                out.push(raw::PassthroughKeyboardHandsFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_settings {
-                out.push(raw::CompositionLayerSettingsFB::NAME.into());
+                out.push(raw::CompositionLayerSettingsFB::NAME);
             }
         }
         {
             if self.fb_touch_controller_proximity {
-                out.push(raw::TouchControllerProximityFB::NAME.into());
+                out.push(raw::TouchControllerProximityFB::NAME);
             }
         }
         {
             if self.fb_haptic_pcm {
-                out.push(raw::HapticPcmFB::NAME.into());
+                out.push(raw::HapticPcmFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_depth_test {
-                out.push(raw::CompositionLayerDepthTestFB::NAME.into());
+                out.push(raw::CompositionLayerDepthTestFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_storage_batch {
-                out.push(raw::SpatialEntityStorageBatchFB::NAME.into());
+                out.push(raw::SpatialEntityStorageBatchFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_user {
-                out.push(raw::SpatialEntityUserFB::NAME.into());
+                out.push(raw::SpatialEntityUserFB::NAME);
             }
         }
         {
             if self.fb_face_tracking2 {
-                out.push(raw::FaceTracking2FB::NAME.into());
+                out.push(raw::FaceTracking2FB::NAME);
             }
         }
         {
             if self.htc_vive_cosmos_controller_interaction {
-                out.push(raw::ViveCosmosControllerInteractionHTC::NAME.into());
+                out.push(raw::ViveCosmosControllerInteractionHTC::NAME);
             }
         }
         {
             if self.htc_facial_tracking {
-                out.push(raw::FacialTrackingHTC::NAME.into());
+                out.push(raw::FacialTrackingHTC::NAME);
             }
         }
         {
             if self.htc_vive_focus3_controller_interaction {
-                out.push(raw::ViveFocus3ControllerInteractionHTC::NAME.into());
+                out.push(raw::ViveFocus3ControllerInteractionHTC::NAME);
             }
         }
         {
             if self.htc_hand_interaction {
-                out.push(raw::HandInteractionHTC::NAME.into());
+                out.push(raw::HandInteractionHTC::NAME);
             }
         }
         {
             if self.htc_vive_wrist_tracker_interaction {
-                out.push(raw::ViveWristTrackerInteractionHTC::NAME.into());
+                out.push(raw::ViveWristTrackerInteractionHTC::NAME);
             }
         }
         {
             if self.htc_passthrough {
-                out.push(raw::PassthroughHTC::NAME.into());
+                out.push(raw::PassthroughHTC::NAME);
             }
         }
         {
             if self.htc_foveation {
-                out.push(raw::FoveationHTC::NAME.into());
+                out.push(raw::FoveationHTC::NAME);
             }
         }
         {
             if self.htc_anchor {
-                out.push(raw::AnchorHTC::NAME.into());
+                out.push(raw::AnchorHTC::NAME);
             }
         }
         {
             if self.huawei_controller_interaction {
-                out.push(raw::ControllerInteractionHUAWEI::NAME.into());
+                out.push(raw::ControllerInteractionHUAWEI::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_thread_settings {
-                out.push(raw::AndroidThreadSettingsKHR::NAME.into());
+                out.push(raw::AndroidThreadSettingsKHR::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_surface_swapchain {
-                out.push(raw::AndroidSurfaceSwapchainKHR::NAME.into());
+                out.push(raw::AndroidSurfaceSwapchainKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_cube {
-                out.push(raw::CompositionLayerCubeKHR::NAME.into());
+                out.push(raw::CompositionLayerCubeKHR::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_create_instance {
-                out.push(raw::AndroidCreateInstanceKHR::NAME.into());
+                out.push(raw::AndroidCreateInstanceKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_depth {
-                out.push(raw::CompositionLayerDepthKHR::NAME.into());
+                out.push(raw::CompositionLayerDepthKHR::NAME);
             }
         }
         {
             if self.khr_vulkan_swapchain_format_list {
-                out.push(raw::VulkanSwapchainFormatListKHR::NAME.into());
+                out.push(raw::VulkanSwapchainFormatListKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_cylinder {
-                out.push(raw::CompositionLayerCylinderKHR::NAME.into());
+                out.push(raw::CompositionLayerCylinderKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_equirect {
-                out.push(raw::CompositionLayerEquirectKHR::NAME.into());
+                out.push(raw::CompositionLayerEquirectKHR::NAME);
             }
         }
         {
             if self.khr_opengl_enable {
-                out.push(raw::OpenglEnableKHR::NAME.into());
+                out.push(raw::OpenglEnableKHR::NAME);
             }
         }
         {
             if self.khr_opengl_es_enable {
-                out.push(raw::OpenglEsEnableKHR::NAME.into());
+                out.push(raw::OpenglEsEnableKHR::NAME);
             }
         }
         {
             if self.khr_vulkan_enable {
-                out.push(raw::VulkanEnableKHR::NAME.into());
+                out.push(raw::VulkanEnableKHR::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.khr_d3d11_enable {
-                out.push(raw::D3d11EnableKHR::NAME.into());
+                out.push(raw::D3d11EnableKHR::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.khr_d3d12_enable {
-                out.push(raw::D3d12EnableKHR::NAME.into());
+                out.push(raw::D3d12EnableKHR::NAME);
             }
         }
         #[cfg(target_vendor = "apple")]
         {
             if self.khr_metal_enable {
-                out.push(raw::MetalEnableKHR::NAME.into());
+                out.push(raw::MetalEnableKHR::NAME);
             }
         }
         {
             if self.khr_visibility_mask {
-                out.push(raw::VisibilityMaskKHR::NAME.into());
+                out.push(raw::VisibilityMaskKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_color_scale_bias {
-                out.push(raw::CompositionLayerColorScaleBiasKHR::NAME.into());
+                out.push(raw::CompositionLayerColorScaleBiasKHR::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.khr_win32_convert_performance_counter_time {
-                out.push(raw::Win32ConvertPerformanceCounterTimeKHR::NAME.into());
+                out.push(raw::Win32ConvertPerformanceCounterTimeKHR::NAME);
             }
         }
         {
             if self.khr_convert_timespec_time {
-                out.push(raw::ConvertTimespecTimeKHR::NAME.into());
+                out.push(raw::ConvertTimespecTimeKHR::NAME);
             }
         }
         {
             if self.khr_loader_init {
-                out.push(raw::LoaderInitKHR::NAME.into());
+                out.push(raw::LoaderInitKHR::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_loader_init_android {
-                out.push(raw::LoaderInitAndroidKHR::NAME.into());
+                out.push(raw::LoaderInitAndroidKHR::NAME);
             }
         }
         {
             if self.khr_vulkan_enable2 {
-                out.push(raw::VulkanEnable2KHR::NAME.into());
+                out.push(raw::VulkanEnable2KHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_equirect2 {
-                out.push(raw::CompositionLayerEquirect2KHR::NAME.into());
+                out.push(raw::CompositionLayerEquirect2KHR::NAME);
             }
         }
         {
             if self.khr_binding_modification {
-                out.push(raw::BindingModificationKHR::NAME.into());
+                out.push(raw::BindingModificationKHR::NAME);
             }
         }
         {
             if self.khr_swapchain_usage_input_attachment_bit {
-                out.push(raw::SwapchainUsageInputAttachmentBitKHR::NAME.into());
+                out.push(raw::SwapchainUsageInputAttachmentBitKHR::NAME);
             }
         }
         {
             if self.khr_locate_spaces {
-                out.push(raw::LocateSpacesKHR::NAME.into());
+                out.push(raw::LocateSpacesKHR::NAME);
             }
         }
         {
             if self.khr_maintenance1 {
-                out.push(raw::Maintenance1KHR::NAME.into());
+                out.push(raw::Maintenance1KHR::NAME);
             }
         }
         {
             if self.meta_foveation_eye_tracked {
-                out.push(raw::FoveationEyeTrackedMETA::NAME.into());
+                out.push(raw::FoveationEyeTrackedMETA::NAME);
             }
         }
         {
             if self.meta_local_dimming {
-                out.push(raw::LocalDimmingMETA::NAME.into());
+                out.push(raw::LocalDimmingMETA::NAME);
             }
         }
         {
             if self.meta_passthrough_preferences {
-                out.push(raw::PassthroughPreferencesMETA::NAME.into());
+                out.push(raw::PassthroughPreferencesMETA::NAME);
             }
         }
         {
             if self.meta_virtual_keyboard {
-                out.push(raw::VirtualKeyboardMETA::NAME.into());
+                out.push(raw::VirtualKeyboardMETA::NAME);
             }
         }
         {
             if self.meta_vulkan_swapchain_create_info {
-                out.push(raw::VulkanSwapchainCreateInfoMETA::NAME.into());
+                out.push(raw::VulkanSwapchainCreateInfoMETA::NAME);
             }
         }
         {
             if self.meta_performance_metrics {
-                out.push(raw::PerformanceMetricsMETA::NAME.into());
+                out.push(raw::PerformanceMetricsMETA::NAME);
             }
         }
         {
             if self.meta_headset_id {
-                out.push(raw::HeadsetIdMETA::NAME.into());
+                out.push(raw::HeadsetIdMETA::NAME);
             }
         }
         {
             if self.meta_recommended_layer_resolution {
-                out.push(raw::RecommendedLayerResolutionMETA::NAME.into());
+                out.push(raw::RecommendedLayerResolutionMETA::NAME);
             }
         }
         {
             if self.meta_passthrough_color_lut {
-                out.push(raw::PassthroughColorLutMETA::NAME.into());
+                out.push(raw::PassthroughColorLutMETA::NAME);
             }
         }
         {
             if self.meta_spatial_entity_mesh {
-                out.push(raw::SpatialEntityMeshMETA::NAME.into());
+                out.push(raw::SpatialEntityMeshMETA::NAME);
             }
         }
         {
             if self.meta_automatic_layer_filter {
-                out.push(raw::AutomaticLayerFilterMETA::NAME.into());
+                out.push(raw::AutomaticLayerFilterMETA::NAME);
             }
         }
         {
             if self.meta_touch_controller_plus {
-                out.push(raw::TouchControllerPlusMETA::NAME.into());
+                out.push(raw::TouchControllerPlusMETA::NAME);
             }
         }
         {
             if self.meta_environment_depth {
-                out.push(raw::EnvironmentDepthMETA::NAME.into());
+                out.push(raw::EnvironmentDepthMETA::NAME);
             }
         }
         {
             if self.ml_ml2_controller_interaction {
-                out.push(raw::Ml2ControllerInteractionML::NAME.into());
+                out.push(raw::Ml2ControllerInteractionML::NAME);
             }
         }
         {
             if self.ml_frame_end_info {
-                out.push(raw::FrameEndInfoML::NAME.into());
+                out.push(raw::FrameEndInfoML::NAME);
             }
         }
         {
             if self.ml_global_dimmer {
-                out.push(raw::GlobalDimmerML::NAME.into());
+                out.push(raw::GlobalDimmerML::NAME);
             }
         }
         {
             if self.ml_compat {
-                out.push(raw::CompatML::NAME.into());
+                out.push(raw::CompatML::NAME);
             }
         }
         {
             if self.ml_marker_understanding {
-                out.push(raw::MarkerUnderstandingML::NAME.into());
+                out.push(raw::MarkerUnderstandingML::NAME);
             }
         }
         {
             if self.ml_localization_map {
-                out.push(raw::LocalizationMapML::NAME.into());
+                out.push(raw::LocalizationMapML::NAME);
             }
         }
         {
             if self.ml_user_calibration {
-                out.push(raw::UserCalibrationML::NAME.into());
+                out.push(raw::UserCalibrationML::NAME);
             }
         }
         {
             if self.mnd_headless {
-                out.push(raw::HeadlessMND::NAME.into());
+                out.push(raw::HeadlessMND::NAME);
             }
         }
         {
             if self.mnd_swapchain_usage_input_attachment_bit {
-                out.push(raw::SwapchainUsageInputAttachmentBitMND::NAME.into());
+                out.push(raw::SwapchainUsageInputAttachmentBitMND::NAME);
             }
         }
         {
             if self.msft_unbounded_reference_space {
-                out.push(raw::UnboundedReferenceSpaceMSFT::NAME.into());
+                out.push(raw::UnboundedReferenceSpaceMSFT::NAME);
             }
         }
         {
             if self.msft_spatial_anchor {
-                out.push(raw::SpatialAnchorMSFT::NAME.into());
+                out.push(raw::SpatialAnchorMSFT::NAME);
             }
         }
         {
             if self.msft_spatial_graph_bridge {
-                out.push(raw::SpatialGraphBridgeMSFT::NAME.into());
+                out.push(raw::SpatialGraphBridgeMSFT::NAME);
             }
         }
         {
             if self.msft_hand_interaction {
-                out.push(raw::HandInteractionMSFT::NAME.into());
+                out.push(raw::HandInteractionMSFT::NAME);
             }
         }
         {
             if self.msft_hand_tracking_mesh {
-                out.push(raw::HandTrackingMeshMSFT::NAME.into());
+                out.push(raw::HandTrackingMeshMSFT::NAME);
             }
         }
         {
             if self.msft_secondary_view_configuration {
-                out.push(raw::SecondaryViewConfigurationMSFT::NAME.into());
+                out.push(raw::SecondaryViewConfigurationMSFT::NAME);
             }
         }
         {
             if self.msft_first_person_observer {
-                out.push(raw::FirstPersonObserverMSFT::NAME.into());
+                out.push(raw::FirstPersonObserverMSFT::NAME);
             }
         }
         {
             if self.msft_controller_model {
-                out.push(raw::ControllerModelMSFT::NAME.into());
+                out.push(raw::ControllerModelMSFT::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.msft_perception_anchor_interop {
-                out.push(raw::PerceptionAnchorInteropMSFT::NAME.into());
+                out.push(raw::PerceptionAnchorInteropMSFT::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.msft_holographic_window_attachment {
-                out.push(raw::HolographicWindowAttachmentMSFT::NAME.into());
+                out.push(raw::HolographicWindowAttachmentMSFT::NAME);
             }
         }
         {
             if self.msft_composition_layer_reprojection {
-                out.push(raw::CompositionLayerReprojectionMSFT::NAME.into());
+                out.push(raw::CompositionLayerReprojectionMSFT::NAME);
             }
         }
         {
             if self.msft_spatial_anchor_persistence {
-                out.push(raw::SpatialAnchorPersistenceMSFT::NAME.into());
+                out.push(raw::SpatialAnchorPersistenceMSFT::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.oculus_android_session_state_enable {
-                out.push(raw::AndroidSessionStateEnableOCULUS::NAME.into());
+                out.push(raw::AndroidSessionStateEnableOCULUS::NAME);
             }
         }
         {
             if self.oculus_audio_device_guid {
-                out.push(raw::AudioDeviceGuidOCULUS::NAME.into());
+                out.push(raw::AudioDeviceGuidOCULUS::NAME);
             }
         }
         {
             if self.oculus_external_camera {
-                out.push(raw::ExternalCameraOCULUS::NAME.into());
+                out.push(raw::ExternalCameraOCULUS::NAME);
             }
         }
         {
             if self.oppo_controller_interaction {
-                out.push(raw::ControllerInteractionOPPO::NAME.into());
+                out.push(raw::ControllerInteractionOPPO::NAME);
             }
         }
         {
             if self.qcom_tracking_optimization_settings {
-                out.push(raw::TrackingOptimizationSettingsQCOM::NAME.into());
+                out.push(raw::TrackingOptimizationSettingsQCOM::NAME);
             }
         }
         {
             if self.ultraleap_hand_tracking_forearm {
-                out.push(raw::HandTrackingForearmULTRALEAP::NAME.into());
+                out.push(raw::HandTrackingForearmULTRALEAP::NAME);
             }
         }
         {
             if self.valve_analog_threshold {
-                out.push(raw::AnalogThresholdVALVE::NAME.into());
+                out.push(raw::AnalogThresholdVALVE::NAME);
             }
         }
         {
             if self.varjo_quad_views {
-                out.push(raw::QuadViewsVARJO::NAME.into());
+                out.push(raw::QuadViewsVARJO::NAME);
             }
         }
         {
             if self.varjo_foveated_rendering {
-                out.push(raw::FoveatedRenderingVARJO::NAME.into());
+                out.push(raw::FoveatedRenderingVARJO::NAME);
             }
         }
         {
             if self.varjo_composition_layer_depth_test {
-                out.push(raw::CompositionLayerDepthTestVARJO::NAME.into());
+                out.push(raw::CompositionLayerDepthTestVARJO::NAME);
             }
         }
         {
             if self.varjo_environment_depth_estimation {
-                out.push(raw::EnvironmentDepthEstimationVARJO::NAME.into());
+                out.push(raw::EnvironmentDepthEstimationVARJO::NAME);
             }
         }
         {
             if self.varjo_marker_tracking {
-                out.push(raw::MarkerTrackingVARJO::NAME.into());
+                out.push(raw::MarkerTrackingVARJO::NAME);
             }
         }
         {
             if self.varjo_view_offset {
-                out.push(raw::ViewOffsetVARJO::NAME.into());
+                out.push(raw::ViewOffsetVARJO::NAME);
             }
         }
         {
             if self.varjo_xr4_controller_interaction {
-                out.push(raw::Xr4ControllerInteractionVARJO::NAME.into());
+                out.push(raw::Xr4ControllerInteractionVARJO::NAME);
             }
         }
         {
             if self.yvr_controller_interaction {
-                out.push(raw::ControllerInteractionYVR::NAME.into());
+                out.push(raw::ControllerInteractionYVR::NAME);
             }
         }
         {
             if self.extx_overlay {
-                out.push(raw::OverlayEXTX::NAME.into());
+                out.push(raw::OverlayEXTX::NAME);
             }
         }
         {
             if self.mndx_egl_enable {
-                out.push(raw::EglEnableMNDX::NAME.into());
+                out.push(raw::EglEnableMNDX::NAME);
             }
         }
         {
             if self.mndx_force_feedback_curl {
-                out.push(raw::ForceFeedbackCurlMNDX::NAME.into());
+                out.push(raw::ForceFeedbackCurlMNDX::NAME);
             }
         }
         {
             if self.htcx_vive_tracker_interaction {
-                out.push(raw::ViveTrackerInteractionHTCX::NAME.into());
+                out.push(raw::ViveTrackerInteractionHTCX::NAME);
             }
         }
-        for name in &self.other {
-            let mut bytes = Vec::with_capacity(name.len() + 1);
-            bytes.extend_from_slice(name.as_bytes());
-            bytes.push(0);
-            out.push(bytes.into());
-        }
+        out.extend(self.other.iter().map(|x| x.as_slice()));
         out
     }
 }
