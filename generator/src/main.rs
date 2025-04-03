@@ -1352,6 +1352,7 @@ impl Parser {
         let mut ext_set_names = Vec::new();
         let mut ext_set_fields = Vec::new();
         let mut ext_set_inits = Vec::new();
+        let mut ext_diff_fields = Vec::new();
         for (tag_name, tag) in &self.extensions {
             for ext in &tag.extensions {
                 if self.disabled_exts.contains(&ext.name) {
@@ -1444,6 +1445,10 @@ impl Parser {
                 ext_set_fields.push(quote! {
                     #conds
                     pub #field_ident: bool,
+                });
+                ext_diff_fields.push(quote! {
+                    #conds
+                    #field_ident: self.#field_ident && !other.#field_ident,
                 });
             }
         }
@@ -1586,6 +1591,20 @@ impl Parser {
             }
 
             impl ExtensionSet {
+                /// Return `self` without the members set in `other`.
+                #[inline]
+                pub fn difference(&self, other: &Self) -> Self {
+                    Self {
+                        #(#ext_diff_fields)*
+                        other: self.other
+                            .iter()
+                            .collect::<std::collections::HashSet<_>>()
+                            .difference(&other.other.iter().collect())
+                            .map(|x| x.to_vec())
+                            .collect(),
+                    }
+                }
+
                 pub(crate) fn names(&self) -> Vec<&[u8]> {
                     let mut out = Vec::new();
                     #(#ext_set_names)*
