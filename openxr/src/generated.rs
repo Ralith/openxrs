@@ -6561,6 +6561,7 @@ pub(crate) mod builder {
         inner: sys::SwapchainSubImage,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> SwapchainSubImage<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -6608,6 +6609,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for SwapchainSubImage<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -6619,6 +6621,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerProjectionView,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerProjectionView<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -6667,6 +6670,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerProjectionView<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -6678,6 +6682,7 @@ pub(crate) mod builder {
         inner: sys::ActionSetCreateInfo,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> ActionSetCreateInfo<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -6726,6 +6731,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for ActionSetCreateInfo<'a> {
         fn default() -> Self {
             Self::new()
@@ -6737,6 +6743,7 @@ pub(crate) mod builder {
         inner: sys::ActionCreateInfo,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> ActionCreateInfo<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -6791,6 +6798,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for ActionCreateInfo<'a> {
         fn default() -> Self {
             Self::new()
@@ -6807,6 +6815,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerProjection,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerProjection<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -6856,6 +6865,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Deref for CompositionLayerProjection<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
         #[inline]
@@ -6863,6 +6873,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerProjection<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -6874,6 +6885,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerQuad,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerQuad<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -6937,6 +6949,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Deref for CompositionLayerQuad<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
         #[inline]
@@ -6944,6 +6957,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerQuad<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -6955,6 +6969,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerCylinderKHR,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerCylinderKHR<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -7028,6 +7043,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Deref for CompositionLayerCylinderKHR<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
         #[inline]
@@ -7035,6 +7051,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerCylinderKHR<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -7046,6 +7063,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerCubeKHR,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerCubeKHR<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -7109,6 +7127,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Deref for CompositionLayerCubeKHR<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
         #[inline]
@@ -7116,6 +7135,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerCubeKHR<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -7127,6 +7147,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerEquirectKHR,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerEquirectKHR<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -7200,6 +7221,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Deref for CompositionLayerEquirectKHR<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
         #[inline]
@@ -7207,6 +7229,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerEquirectKHR<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -7218,6 +7241,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerEquirect2KHR,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerEquirect2KHR<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -7296,6 +7320,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Deref for CompositionLayerEquirect2KHR<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
         #[inline]
@@ -7303,6 +7328,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerEquirect2KHR<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -7314,6 +7340,7 @@ pub(crate) mod builder {
         inner: sys::CompositionLayerPassthroughFB,
         _marker: PhantomData<&'a G>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> CompositionLayerPassthroughFB<'a, G> {
         #[inline]
         pub fn new() -> Self {
@@ -7362,6 +7389,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Deref for CompositionLayerPassthroughFB<'a, G> {
         type Target = CompositionLayerBase<'a, G>;
         #[inline]
@@ -7369,6 +7397,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a, G: Graphics> Default for CompositionLayerPassthroughFB<'a, G> {
         fn default() -> Self {
             Self::new()
@@ -7385,6 +7414,7 @@ pub(crate) mod builder {
         inner: sys::HapticVibration,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> HapticVibration<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -7433,6 +7463,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for HapticVibration<'a> {
         type Target = HapticBase<'a>;
         #[inline]
@@ -7440,6 +7471,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for HapticVibration<'a> {
         fn default() -> Self {
             Self::new()
@@ -7451,6 +7483,7 @@ pub(crate) mod builder {
         inner: sys::HapticAmplitudeEnvelopeVibrationFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> HapticAmplitudeEnvelopeVibrationFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -7495,6 +7528,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for HapticAmplitudeEnvelopeVibrationFB<'a> {
         type Target = HapticBase<'a>;
         #[inline]
@@ -7502,6 +7536,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for HapticAmplitudeEnvelopeVibrationFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -7513,6 +7548,7 @@ pub(crate) mod builder {
         inner: sys::HapticPcmVibrationFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> HapticPcmVibrationFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -7567,6 +7603,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for HapticPcmVibrationFB<'a> {
         type Target = HapticBase<'a>;
         #[inline]
@@ -7574,6 +7611,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for HapticPcmVibrationFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -7590,6 +7628,7 @@ pub(crate) mod builder {
         inner: sys::InteractionProfileDpadBindingEXT,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> InteractionProfileDpadBindingEXT<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -7668,6 +7707,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for InteractionProfileDpadBindingEXT<'a> {
         type Target = BindingModificationBase<'a>;
         #[inline]
@@ -7675,6 +7715,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for InteractionProfileDpadBindingEXT<'a> {
         fn default() -> Self {
             Self::new()
@@ -7686,6 +7727,7 @@ pub(crate) mod builder {
         inner: sys::InteractionProfileAnalogThresholdVALVE,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> InteractionProfileAnalogThresholdVALVE<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -7749,6 +7791,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for InteractionProfileAnalogThresholdVALVE<'a> {
         type Target = BindingModificationBase<'a>;
         #[inline]
@@ -7756,6 +7799,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for InteractionProfileAnalogThresholdVALVE<'a> {
         fn default() -> Self {
             Self::new()
@@ -7774,6 +7818,7 @@ pub(crate) mod builder {
         _marker: PhantomData<&'a ()>,
     }
     #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> SwapchainStateAndroidSurfaceDimensionsFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -7818,6 +7863,7 @@ pub(crate) mod builder {
         }
     }
     #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
         type Target = SwapchainStateBase<'a>;
         #[inline]
@@ -7826,6 +7872,7 @@ pub(crate) mod builder {
         }
     }
     #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SwapchainStateAndroidSurfaceDimensionsFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -7837,6 +7884,7 @@ pub(crate) mod builder {
         inner: sys::SwapchainStateSamplerOpenGLESFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> SwapchainStateSamplerOpenGLESFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -7920,6 +7968,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SwapchainStateSamplerOpenGLESFB<'a> {
         type Target = SwapchainStateBase<'a>;
         #[inline]
@@ -7927,6 +7976,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SwapchainStateSamplerOpenGLESFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -7938,6 +7988,7 @@ pub(crate) mod builder {
         inner: sys::SwapchainStateSamplerVulkanFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> SwapchainStateSamplerVulkanFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -8026,6 +8077,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SwapchainStateSamplerVulkanFB<'a> {
         type Target = SwapchainStateBase<'a>;
         #[inline]
@@ -8033,6 +8085,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SwapchainStateSamplerVulkanFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -8044,6 +8097,7 @@ pub(crate) mod builder {
         inner: sys::SwapchainStateFoveationFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> SwapchainStateFoveationFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -8087,6 +8141,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SwapchainStateFoveationFB<'a> {
         type Target = SwapchainStateBase<'a>;
         #[inline]
@@ -8094,6 +8149,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SwapchainStateFoveationFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -8110,6 +8166,7 @@ pub(crate) mod builder {
         inner: sys::SpaceQueryInfoFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> SpaceQueryInfoFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -8168,6 +8225,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SpaceQueryInfoFB<'a> {
         type Target = SpaceQueryInfoBase<'a>;
         #[inline]
@@ -8175,6 +8233,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SpaceQueryInfoFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -8191,6 +8250,7 @@ pub(crate) mod builder {
         inner: sys::SpaceUuidFilterInfoFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> SpaceUuidFilterInfoFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -8230,6 +8290,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SpaceUuidFilterInfoFB<'a> {
         type Target = SpaceFilterInfoBase<'a>;
         #[inline]
@@ -8237,6 +8298,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SpaceUuidFilterInfoFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -8248,6 +8310,7 @@ pub(crate) mod builder {
         inner: sys::SpaceComponentFilterInfoFB,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> SpaceComponentFilterInfoFB<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -8286,6 +8349,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SpaceComponentFilterInfoFB<'a> {
         type Target = SpaceFilterInfoBase<'a>;
         #[inline]
@@ -8293,6 +8357,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SpaceComponentFilterInfoFB<'a> {
         fn default() -> Self {
             Self::new()
@@ -8309,6 +8374,7 @@ pub(crate) mod builder {
         inner: sys::FutureCompletionEXT,
         _marker: PhantomData<&'a ()>,
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> FutureCompletionEXT<'a> {
         #[inline]
         pub fn new() -> Self {
@@ -8347,6 +8413,7 @@ pub(crate) mod builder {
             self
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for FutureCompletionEXT<'a> {
         type Target = FutureCompletionBase<'a>;
         #[inline]
@@ -8354,6 +8421,7 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
+    #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for FutureCompletionEXT<'a> {
         fn default() -> Self {
             Self::new()
