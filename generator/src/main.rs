@@ -1441,7 +1441,7 @@ impl Parser {
                 });
                 ext_set_names.push(quote! {
                     #conds5
-                    { if self.#field_ident { out.push(raw::#ty_ident::NAME.into()); } }
+                    { if self.#field_ident { out.push(raw::#ty_ident::NAME); } }
                 });
                 ext_set_inits.push(quote! {
                     #conds6
@@ -1558,8 +1558,6 @@ impl Parser {
             //! Automatically generated code; do not edit!
 
             #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr, clippy::missing_transmute_annotations)]
-            use std::borrow::Cow;
-            use std::ffi::CStr;
             use std::mem::MaybeUninit;
             pub use sys::{#(#reexports),*};
             pub use sys::platform::{EGLenum, VkFilter, VkSamplerMipmapMode, VkSamplerAddressMode, VkComponentSwizzle};
@@ -1572,7 +1570,7 @@ impl Parser {
             pub struct ExtensionSet {
                 #(#ext_set_fields)*
                 /// Extensions unknown to the high-level bindings
-                pub other: Vec<String>,
+                pub other: Vec<Vec<u8>>,
             }
 
             impl ExtensionSet {
@@ -1581,29 +1579,16 @@ impl Parser {
                     for ext in properties {
                         match crate::fixed_str_bytes(&ext.extension_name) {
                             #(#ext_set_inits)*
-                            bytes => {
-                                let cstr = CStr::from_bytes_with_nul(bytes)
-                                    .expect("extension names should be null terminated strings");
-                                let string = cstr
-                                    .to_str()
-                                    .expect("extension names should be valid UTF-8")
-                                    .to_string();
-                                out.other.push(string);
-                            }
+                            bytes => out.other.push(bytes.to_vec()),
                         }
                     }
                     out
                 }
 
-                pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
+                pub(crate) fn names(&self) -> Vec<&[u8]> {
                     let mut out = Vec::new();
                     #(#ext_set_names)*
-                    for name in &self.other {
-                        let mut bytes = Vec::with_capacity(name.len() + 1);
-                        bytes.extend_from_slice(name.as_bytes());
-                        bytes.push(0);
-                        out.push(bytes.into());
-                    }
+                    out.extend(self.other.iter().map(|x| x.as_slice()));
                     out
                 }
             }
