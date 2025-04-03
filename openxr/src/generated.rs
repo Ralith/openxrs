@@ -5,8 +5,6 @@
     clippy::missing_transmute_annotations
 )]
 use crate::*;
-use std::borrow::Cow;
-use std::ffi::CStr;
 use std::mem::MaybeUninit;
 pub use sys::platform::{
     EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
@@ -233,7 +231,7 @@ pub struct ExtensionSet {
     pub mndx_force_feedback_curl: bool,
     pub htcx_vive_tracker_interaction: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
-    pub other: Vec<String>,
+    pub other: Vec<Vec<u8>>,
 }
 impl ExtensionSet {
     pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
@@ -717,19 +715,13 @@ impl ExtensionSet {
                     out.htcx_vive_tracker_interaction = true;
                 }
                 bytes => {
-                    let cstr = CStr::from_bytes_with_nul(bytes)
-                        .expect("extension names should be null terminated strings");
-                    let string = cstr
-                        .to_str()
-                        .expect("extension names should be valid UTF-8")
-                        .to_string();
-                    out.other.push(string);
+                    out.other.push(bytes.to_vec());
                 }
             }
         }
         out
     }
-    pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
+    pub(crate) fn names(&self) -> Vec<&[u8]> {
         let mut out = Vec::new();
         {
             if self.almalence_digital_lens_control {
@@ -1515,12 +1507,7 @@ impl ExtensionSet {
                 out.push(raw::ViveTrackerInteractionHTCX::NAME.into());
             }
         }
-        for name in &self.other {
-            let mut bytes = Vec::with_capacity(name.len() + 1);
-            bytes.extend_from_slice(name.as_bytes());
-            bytes.push(0);
-            out.push(bytes.into());
-        }
+        out.extend(self.other.iter().map(|x| x.as_slice()));
         out
     }
 }
