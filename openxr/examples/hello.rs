@@ -17,6 +17,17 @@ fn main() {
     println!("supported extensions: {:#?}", extensions);
     let layers = entry.enumerate_layers().unwrap();
     println!("supported layers: {:?}", layers);
+    println!("layer extensions:");
+    for layer in layers {
+        let extensions = entry.enumerate_layer_extensions(&layer.layer_name).unwrap();
+        let extension_names = extensions.names();
+        if !extension_names.is_empty() {
+            println!("  - {}:", layer.layer_name);
+            for ext in extension_names {
+                println!("    - {}", String::from_utf8_lossy(ext));
+            }
+        }
+    }
     let instance = entry
         .create_instance(
             &xr::ApplicationInfo {

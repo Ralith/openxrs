@@ -308,6 +308,29 @@ impl Entry {
                 .collect())
         }
     }
+
+    /// Determine the set of extensions supported by a given OpenXR API layer
+    pub fn enumerate_layer_extensions(&self, api_layers: &str) -> Result<ExtensionSet> {
+        let c_str = CString::new(api_layers).map_err(|_| sys::Result::ERROR_API_LAYER_NOT_PRESENT)?;
+        unsafe {
+            let exts = get_arr_init(
+                sys::ExtensionProperties::out(ptr::null_mut()),
+                |cap, count, buf| {
+                    (self.fp().enumerate_instance_extension_properties)(
+                        c_str.as_ptr(),
+                        cap,
+                        count,
+                        buf as _,
+                    )
+                },
+            )?;
+            // https://github.com/rust-lang/rust/issues/63569
+            Ok(ExtensionSet::from(mem::transmute::<
+                &[std::mem::MaybeUninit<sys::ExtensionProperties>],
+                &[sys::ExtensionProperties],
+            >(&exts[..])))
+        }
+    }
 }
 
 #[inline]
