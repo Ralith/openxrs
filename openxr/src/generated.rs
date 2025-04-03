@@ -5,6 +5,7 @@
     clippy::missing_transmute_annotations
 )]
 use crate::*;
+use std::iter::FromIterator;
 use std::mem::MaybeUninit;
 pub use sys::platform::{
     EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
@@ -233,11 +234,15 @@ pub struct ExtensionSet {
     #[doc = r" Extensions unknown to the high-level bindings"]
     pub other: Vec<Vec<u8>>,
 }
-impl ExtensionSet {
-    pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+#[doc = r" Create a ExtensionSet from a list of nul-terminated extension names"]
+impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = &'a [u8]>,
+    {
         let mut out = Self::default();
-        for ext in properties {
-            match crate::fixed_str_bytes(&ext.extension_name) {
+        for name in iter {
+            match name {
                 raw::DigitalLensControlALMALENCE::NAME => {
                     out.almalence_digital_lens_control = true;
                 }
@@ -714,13 +719,13 @@ impl ExtensionSet {
                 raw::ViveTrackerInteractionHTCX::NAME => {
                     out.htcx_vive_tracker_interaction = true;
                 }
-                bytes => {
-                    out.other.push(bytes.to_vec());
-                }
+                bytes => out.other.push(bytes.to_vec()),
             }
         }
         out
     }
+}
+impl ExtensionSet {
     pub(crate) fn names(&self) -> Vec<&[u8]> {
         let mut out = Vec::new();
         {
