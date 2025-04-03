@@ -726,6 +726,271 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
     }
 }
 impl ExtensionSet {
+    #[doc = r" Return `self` without the members set in `other`."]
+    #[inline]
+    pub fn difference(&self, other: &Self) -> Self {
+        Self {
+            almalence_digital_lens_control: self.almalence_digital_lens_control
+                && !other.almalence_digital_lens_control,
+            bd_controller_interaction: self.bd_controller_interaction
+                && !other.bd_controller_interaction,
+            epic_view_configuration_fov: self.epic_view_configuration_fov
+                && !other.epic_view_configuration_fov,
+            ext_performance_settings: self.ext_performance_settings
+                && !other.ext_performance_settings,
+            ext_thermal_query: self.ext_thermal_query && !other.ext_thermal_query,
+            ext_debug_utils: self.ext_debug_utils && !other.ext_debug_utils,
+            ext_eye_gaze_interaction: self.ext_eye_gaze_interaction
+                && !other.ext_eye_gaze_interaction,
+            ext_view_configuration_depth_range: self.ext_view_configuration_depth_range
+                && !other.ext_view_configuration_depth_range,
+            ext_conformance_automation: self.ext_conformance_automation
+                && !other.ext_conformance_automation,
+            ext_hand_tracking: self.ext_hand_tracking && !other.ext_hand_tracking,
+            #[cfg(windows)]
+            ext_win32_appcontainer_compatible: self.ext_win32_appcontainer_compatible
+                && !other.ext_win32_appcontainer_compatible,
+            ext_dpad_binding: self.ext_dpad_binding && !other.ext_dpad_binding,
+            ext_hand_joints_motion_range: self.ext_hand_joints_motion_range
+                && !other.ext_hand_joints_motion_range,
+            ext_samsung_odyssey_controller: self.ext_samsung_odyssey_controller
+                && !other.ext_samsung_odyssey_controller,
+            ext_hp_mixed_reality_controller: self.ext_hp_mixed_reality_controller
+                && !other.ext_hp_mixed_reality_controller,
+            ext_palm_pose: self.ext_palm_pose && !other.ext_palm_pose,
+            ext_uuid: self.ext_uuid && !other.ext_uuid,
+            ext_hand_interaction: self.ext_hand_interaction && !other.ext_hand_interaction,
+            ext_active_action_set_priority: self.ext_active_action_set_priority
+                && !other.ext_active_action_set_priority,
+            ext_local_floor: self.ext_local_floor && !other.ext_local_floor,
+            ext_hand_tracking_data_source: self.ext_hand_tracking_data_source
+                && !other.ext_hand_tracking_data_source,
+            ext_plane_detection: self.ext_plane_detection && !other.ext_plane_detection,
+            ext_future: self.ext_future && !other.ext_future,
+            ext_user_presence: self.ext_user_presence && !other.ext_user_presence,
+            ext_composition_layer_inverted_alpha: self.ext_composition_layer_inverted_alpha
+                && !other.ext_composition_layer_inverted_alpha,
+            fb_composition_layer_image_layout: self.fb_composition_layer_image_layout
+                && !other.fb_composition_layer_image_layout,
+            fb_composition_layer_alpha_blend: self.fb_composition_layer_alpha_blend
+                && !other.fb_composition_layer_alpha_blend,
+            #[cfg(target_os = "android")]
+            fb_android_surface_swapchain_create: self.fb_android_surface_swapchain_create
+                && !other.fb_android_surface_swapchain_create,
+            fb_swapchain_update_state: self.fb_swapchain_update_state
+                && !other.fb_swapchain_update_state,
+            fb_composition_layer_secure_content: self.fb_composition_layer_secure_content
+                && !other.fb_composition_layer_secure_content,
+            fb_body_tracking: self.fb_body_tracking && !other.fb_body_tracking,
+            fb_display_refresh_rate: self.fb_display_refresh_rate && !other.fb_display_refresh_rate,
+            fb_color_space: self.fb_color_space && !other.fb_color_space,
+            fb_hand_tracking_mesh: self.fb_hand_tracking_mesh && !other.fb_hand_tracking_mesh,
+            fb_hand_tracking_aim: self.fb_hand_tracking_aim && !other.fb_hand_tracking_aim,
+            fb_hand_tracking_capsules: self.fb_hand_tracking_capsules
+                && !other.fb_hand_tracking_capsules,
+            fb_spatial_entity: self.fb_spatial_entity && !other.fb_spatial_entity,
+            fb_foveation: self.fb_foveation && !other.fb_foveation,
+            fb_foveation_configuration: self.fb_foveation_configuration
+                && !other.fb_foveation_configuration,
+            fb_keyboard_tracking: self.fb_keyboard_tracking && !other.fb_keyboard_tracking,
+            fb_triangle_mesh: self.fb_triangle_mesh && !other.fb_triangle_mesh,
+            fb_passthrough: self.fb_passthrough && !other.fb_passthrough,
+            fb_render_model: self.fb_render_model && !other.fb_render_model,
+            fb_spatial_entity_query: self.fb_spatial_entity_query && !other.fb_spatial_entity_query,
+            fb_spatial_entity_storage: self.fb_spatial_entity_storage
+                && !other.fb_spatial_entity_storage,
+            fb_foveation_vulkan: self.fb_foveation_vulkan && !other.fb_foveation_vulkan,
+            #[cfg(target_os = "android")]
+            fb_swapchain_update_state_android_surface: self
+                .fb_swapchain_update_state_android_surface
+                && !other.fb_swapchain_update_state_android_surface,
+            fb_swapchain_update_state_opengl_es: self.fb_swapchain_update_state_opengl_es
+                && !other.fb_swapchain_update_state_opengl_es,
+            fb_swapchain_update_state_vulkan: self.fb_swapchain_update_state_vulkan
+                && !other.fb_swapchain_update_state_vulkan,
+            fb_touch_controller_pro: self.fb_touch_controller_pro && !other.fb_touch_controller_pro,
+            fb_spatial_entity_sharing: self.fb_spatial_entity_sharing
+                && !other.fb_spatial_entity_sharing,
+            fb_space_warp: self.fb_space_warp && !other.fb_space_warp,
+            fb_haptic_amplitude_envelope: self.fb_haptic_amplitude_envelope
+                && !other.fb_haptic_amplitude_envelope,
+            fb_scene: self.fb_scene && !other.fb_scene,
+            fb_scene_capture: self.fb_scene_capture && !other.fb_scene_capture,
+            fb_spatial_entity_container: self.fb_spatial_entity_container
+                && !other.fb_spatial_entity_container,
+            fb_face_tracking: self.fb_face_tracking && !other.fb_face_tracking,
+            fb_eye_tracking_social: self.fb_eye_tracking_social && !other.fb_eye_tracking_social,
+            fb_passthrough_keyboard_hands: self.fb_passthrough_keyboard_hands
+                && !other.fb_passthrough_keyboard_hands,
+            fb_composition_layer_settings: self.fb_composition_layer_settings
+                && !other.fb_composition_layer_settings,
+            fb_touch_controller_proximity: self.fb_touch_controller_proximity
+                && !other.fb_touch_controller_proximity,
+            fb_haptic_pcm: self.fb_haptic_pcm && !other.fb_haptic_pcm,
+            fb_composition_layer_depth_test: self.fb_composition_layer_depth_test
+                && !other.fb_composition_layer_depth_test,
+            fb_spatial_entity_storage_batch: self.fb_spatial_entity_storage_batch
+                && !other.fb_spatial_entity_storage_batch,
+            fb_spatial_entity_user: self.fb_spatial_entity_user && !other.fb_spatial_entity_user,
+            fb_face_tracking2: self.fb_face_tracking2 && !other.fb_face_tracking2,
+            htc_vive_cosmos_controller_interaction: self.htc_vive_cosmos_controller_interaction
+                && !other.htc_vive_cosmos_controller_interaction,
+            htc_facial_tracking: self.htc_facial_tracking && !other.htc_facial_tracking,
+            htc_vive_focus3_controller_interaction: self.htc_vive_focus3_controller_interaction
+                && !other.htc_vive_focus3_controller_interaction,
+            htc_hand_interaction: self.htc_hand_interaction && !other.htc_hand_interaction,
+            htc_vive_wrist_tracker_interaction: self.htc_vive_wrist_tracker_interaction
+                && !other.htc_vive_wrist_tracker_interaction,
+            htc_passthrough: self.htc_passthrough && !other.htc_passthrough,
+            htc_foveation: self.htc_foveation && !other.htc_foveation,
+            htc_anchor: self.htc_anchor && !other.htc_anchor,
+            huawei_controller_interaction: self.huawei_controller_interaction
+                && !other.huawei_controller_interaction,
+            #[cfg(target_os = "android")]
+            khr_android_thread_settings: self.khr_android_thread_settings
+                && !other.khr_android_thread_settings,
+            #[cfg(target_os = "android")]
+            khr_android_surface_swapchain: self.khr_android_surface_swapchain
+                && !other.khr_android_surface_swapchain,
+            khr_composition_layer_cube: self.khr_composition_layer_cube
+                && !other.khr_composition_layer_cube,
+            #[cfg(target_os = "android")]
+            khr_android_create_instance: self.khr_android_create_instance
+                && !other.khr_android_create_instance,
+            khr_composition_layer_depth: self.khr_composition_layer_depth
+                && !other.khr_composition_layer_depth,
+            khr_vulkan_swapchain_format_list: self.khr_vulkan_swapchain_format_list
+                && !other.khr_vulkan_swapchain_format_list,
+            khr_composition_layer_cylinder: self.khr_composition_layer_cylinder
+                && !other.khr_composition_layer_cylinder,
+            khr_composition_layer_equirect: self.khr_composition_layer_equirect
+                && !other.khr_composition_layer_equirect,
+            khr_opengl_enable: self.khr_opengl_enable && !other.khr_opengl_enable,
+            khr_opengl_es_enable: self.khr_opengl_es_enable && !other.khr_opengl_es_enable,
+            khr_vulkan_enable: self.khr_vulkan_enable && !other.khr_vulkan_enable,
+            #[cfg(windows)]
+            khr_d3d11_enable: self.khr_d3d11_enable && !other.khr_d3d11_enable,
+            #[cfg(windows)]
+            khr_d3d12_enable: self.khr_d3d12_enable && !other.khr_d3d12_enable,
+            #[cfg(target_vendor = "apple")]
+            khr_metal_enable: self.khr_metal_enable && !other.khr_metal_enable,
+            khr_visibility_mask: self.khr_visibility_mask && !other.khr_visibility_mask,
+            khr_composition_layer_color_scale_bias: self.khr_composition_layer_color_scale_bias
+                && !other.khr_composition_layer_color_scale_bias,
+            #[cfg(windows)]
+            khr_win32_convert_performance_counter_time: self
+                .khr_win32_convert_performance_counter_time
+                && !other.khr_win32_convert_performance_counter_time,
+            khr_convert_timespec_time: self.khr_convert_timespec_time
+                && !other.khr_convert_timespec_time,
+            khr_loader_init: self.khr_loader_init && !other.khr_loader_init,
+            #[cfg(target_os = "android")]
+            khr_loader_init_android: self.khr_loader_init_android && !other.khr_loader_init_android,
+            khr_vulkan_enable2: self.khr_vulkan_enable2 && !other.khr_vulkan_enable2,
+            khr_composition_layer_equirect2: self.khr_composition_layer_equirect2
+                && !other.khr_composition_layer_equirect2,
+            khr_binding_modification: self.khr_binding_modification
+                && !other.khr_binding_modification,
+            khr_swapchain_usage_input_attachment_bit: self.khr_swapchain_usage_input_attachment_bit
+                && !other.khr_swapchain_usage_input_attachment_bit,
+            khr_locate_spaces: self.khr_locate_spaces && !other.khr_locate_spaces,
+            khr_maintenance1: self.khr_maintenance1 && !other.khr_maintenance1,
+            meta_foveation_eye_tracked: self.meta_foveation_eye_tracked
+                && !other.meta_foveation_eye_tracked,
+            meta_local_dimming: self.meta_local_dimming && !other.meta_local_dimming,
+            meta_passthrough_preferences: self.meta_passthrough_preferences
+                && !other.meta_passthrough_preferences,
+            meta_virtual_keyboard: self.meta_virtual_keyboard && !other.meta_virtual_keyboard,
+            meta_vulkan_swapchain_create_info: self.meta_vulkan_swapchain_create_info
+                && !other.meta_vulkan_swapchain_create_info,
+            meta_performance_metrics: self.meta_performance_metrics
+                && !other.meta_performance_metrics,
+            meta_headset_id: self.meta_headset_id && !other.meta_headset_id,
+            meta_recommended_layer_resolution: self.meta_recommended_layer_resolution
+                && !other.meta_recommended_layer_resolution,
+            meta_passthrough_color_lut: self.meta_passthrough_color_lut
+                && !other.meta_passthrough_color_lut,
+            meta_spatial_entity_mesh: self.meta_spatial_entity_mesh
+                && !other.meta_spatial_entity_mesh,
+            meta_automatic_layer_filter: self.meta_automatic_layer_filter
+                && !other.meta_automatic_layer_filter,
+            meta_touch_controller_plus: self.meta_touch_controller_plus
+                && !other.meta_touch_controller_plus,
+            meta_environment_depth: self.meta_environment_depth && !other.meta_environment_depth,
+            ml_ml2_controller_interaction: self.ml_ml2_controller_interaction
+                && !other.ml_ml2_controller_interaction,
+            ml_frame_end_info: self.ml_frame_end_info && !other.ml_frame_end_info,
+            ml_global_dimmer: self.ml_global_dimmer && !other.ml_global_dimmer,
+            ml_compat: self.ml_compat && !other.ml_compat,
+            ml_marker_understanding: self.ml_marker_understanding && !other.ml_marker_understanding,
+            ml_localization_map: self.ml_localization_map && !other.ml_localization_map,
+            ml_user_calibration: self.ml_user_calibration && !other.ml_user_calibration,
+            mnd_headless: self.mnd_headless && !other.mnd_headless,
+            mnd_swapchain_usage_input_attachment_bit: self.mnd_swapchain_usage_input_attachment_bit
+                && !other.mnd_swapchain_usage_input_attachment_bit,
+            msft_unbounded_reference_space: self.msft_unbounded_reference_space
+                && !other.msft_unbounded_reference_space,
+            msft_spatial_anchor: self.msft_spatial_anchor && !other.msft_spatial_anchor,
+            msft_spatial_graph_bridge: self.msft_spatial_graph_bridge
+                && !other.msft_spatial_graph_bridge,
+            msft_hand_interaction: self.msft_hand_interaction && !other.msft_hand_interaction,
+            msft_hand_tracking_mesh: self.msft_hand_tracking_mesh && !other.msft_hand_tracking_mesh,
+            msft_secondary_view_configuration: self.msft_secondary_view_configuration
+                && !other.msft_secondary_view_configuration,
+            msft_first_person_observer: self.msft_first_person_observer
+                && !other.msft_first_person_observer,
+            msft_controller_model: self.msft_controller_model && !other.msft_controller_model,
+            #[cfg(windows)]
+            msft_perception_anchor_interop: self.msft_perception_anchor_interop
+                && !other.msft_perception_anchor_interop,
+            #[cfg(windows)]
+            msft_holographic_window_attachment: self.msft_holographic_window_attachment
+                && !other.msft_holographic_window_attachment,
+            msft_composition_layer_reprojection: self.msft_composition_layer_reprojection
+                && !other.msft_composition_layer_reprojection,
+            msft_spatial_anchor_persistence: self.msft_spatial_anchor_persistence
+                && !other.msft_spatial_anchor_persistence,
+            #[cfg(target_os = "android")]
+            oculus_android_session_state_enable: self.oculus_android_session_state_enable
+                && !other.oculus_android_session_state_enable,
+            oculus_audio_device_guid: self.oculus_audio_device_guid
+                && !other.oculus_audio_device_guid,
+            oculus_external_camera: self.oculus_external_camera && !other.oculus_external_camera,
+            oppo_controller_interaction: self.oppo_controller_interaction
+                && !other.oppo_controller_interaction,
+            qcom_tracking_optimization_settings: self.qcom_tracking_optimization_settings
+                && !other.qcom_tracking_optimization_settings,
+            ultraleap_hand_tracking_forearm: self.ultraleap_hand_tracking_forearm
+                && !other.ultraleap_hand_tracking_forearm,
+            valve_analog_threshold: self.valve_analog_threshold && !other.valve_analog_threshold,
+            varjo_quad_views: self.varjo_quad_views && !other.varjo_quad_views,
+            varjo_foveated_rendering: self.varjo_foveated_rendering
+                && !other.varjo_foveated_rendering,
+            varjo_composition_layer_depth_test: self.varjo_composition_layer_depth_test
+                && !other.varjo_composition_layer_depth_test,
+            varjo_environment_depth_estimation: self.varjo_environment_depth_estimation
+                && !other.varjo_environment_depth_estimation,
+            varjo_marker_tracking: self.varjo_marker_tracking && !other.varjo_marker_tracking,
+            varjo_view_offset: self.varjo_view_offset && !other.varjo_view_offset,
+            varjo_xr4_controller_interaction: self.varjo_xr4_controller_interaction
+                && !other.varjo_xr4_controller_interaction,
+            yvr_controller_interaction: self.yvr_controller_interaction
+                && !other.yvr_controller_interaction,
+            extx_overlay: self.extx_overlay && !other.extx_overlay,
+            mndx_egl_enable: self.mndx_egl_enable && !other.mndx_egl_enable,
+            mndx_force_feedback_curl: self.mndx_force_feedback_curl
+                && !other.mndx_force_feedback_curl,
+            htcx_vive_tracker_interaction: self.htcx_vive_tracker_interaction
+                && !other.htcx_vive_tracker_interaction,
+            other: self
+                .other
+                .iter()
+                .collect::<std::collections::HashSet<_>>()
+                .difference(&other.other.iter().collect())
+                .map(|x| x.to_vec())
+                .collect(),
+        }
+    }
     pub(crate) fn names(&self) -> Vec<&[u8]> {
         let mut out = Vec::new();
         {
