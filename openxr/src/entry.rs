@@ -364,7 +364,7 @@ pub struct ApplicationInfo<'a> {
     pub api_version: Version,
 }
 
-impl<'a> Default for ApplicationInfo<'a> {
+impl Default for ApplicationInfo<'_> {
     fn default() -> Self {
         Self {
             application_name: Default::default(),
