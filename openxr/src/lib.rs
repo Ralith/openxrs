@@ -105,12 +105,6 @@ unsafe fn fixed_str(x: &[c_char]) -> &str {
     std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
 }
 
-/// Includes null for convenience of comparison with C string constants
-fn fixed_str_bytes(x: &[c_char]) -> &[u8] {
-    let end = x.iter().position(|&x| x == 0).unwrap();
-    unsafe { std::mem::transmute(&x[..=end]) }
-}
-
 fn get_str(mut getter: impl FnMut(u32, &mut u32, *mut c_char) -> sys::Result) -> Result<String> {
     let mut bytes = get_arr(|x, y, z| getter(x, y, z as _))?;
     // Truncate at first null byte
@@ -172,5 +166,23 @@ fn get_arr_init<T: Copy>(
                 return Err(e);
             }
         }
+    }
+}
+
+impl<'a> From<&'a [sys::ExtensionProperties]> for generated::ExtensionSet {
+    fn from(properties: &'a [sys::ExtensionProperties]) -> Self {
+        properties
+            .iter()
+            .map(|ext| {
+                // Safety: c_char and u8 have the same size, alignment, and representation.
+                let name = unsafe {
+                    &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
+                };
+                std::ffi::CStr::from_bytes_until_nul(name)
+                    .expect("extension names should be null terminated strings")
+                    .to_str()
+                    .expect("extension names should be valid UTF-8")
+            })
+            .collect()
     }
 }
