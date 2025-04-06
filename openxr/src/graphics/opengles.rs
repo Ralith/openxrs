@@ -98,6 +98,27 @@ impl Graphics for OpenGlEs {
         )?;
         Ok(images.into_iter().map(|x| x.image).collect())
     }
+
+    fn enumerate_depth_environment_swapchain_images(
+        swapchain: &EnvironmentDepthSwapchain<Self>,
+    ) -> Result<Vec<Self::SwapchainImage>> {
+        let images = get_arr_init(
+            sys::SwapchainImageOpenGLESKHR {
+                ty: sys::SwapchainImageOpenGLESKHR::TYPE,
+                next: ptr::null_mut(),
+                image: 0,
+            },
+            |capacity, count, buf| unsafe {
+                (swapchain.fp().enumerate_environment_depth_swapchain_images)(
+                    swapchain.handle,
+                    capacity,
+                    count,
+                    buf as *mut _,
+                )
+            },
+        )?;
+        Ok(images.into_iter().map(|x| x.image as _).collect())
+    }
 }
 
 #[derive(Copy, Clone)]
