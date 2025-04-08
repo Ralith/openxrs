@@ -5,8 +5,7 @@
     clippy::missing_transmute_annotations
 )]
 use crate::*;
-use std::borrow::Cow;
-use std::ffi::CStr;
+use std::iter::FromIterator;
 use std::mem::MaybeUninit;
 pub use sys::platform::{
     EGLenum, VkComponentSwizzle, VkFilter, VkSamplerAddressMode, VkSamplerMipmapMode,
@@ -233,13 +232,17 @@ pub struct ExtensionSet {
     pub mndx_force_feedback_curl: bool,
     pub htcx_vive_tracker_interaction: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
-    pub other: Vec<String>,
+    pub other: Vec<Vec<u8>>,
 }
-impl ExtensionSet {
-    pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+#[doc = r" Create a ExtensionSet from a list of nul-terminated extension names"]
+impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = &'a [u8]>,
+    {
         let mut out = Self::default();
-        for ext in properties {
-            match crate::fixed_str_bytes(&ext.extension_name) {
+        for name in iter {
+            match name {
                 raw::DigitalLensControlALMALENCE::NAME => {
                     out.almalence_digital_lens_control = true;
                 }
@@ -716,811 +719,1331 @@ impl ExtensionSet {
                 raw::ViveTrackerInteractionHTCX::NAME => {
                     out.htcx_vive_tracker_interaction = true;
                 }
-                bytes => {
-                    let cstr = CStr::from_bytes_with_nul(bytes)
-                        .expect("extension names should be null terminated strings");
-                    let string = cstr
-                        .to_str()
-                        .expect("extension names should be valid UTF-8")
-                        .to_string();
-                    out.other.push(string);
-                }
+                bytes => out.other.push(bytes.to_vec()),
             }
         }
         out
     }
-    pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
+}
+impl ExtensionSet {
+    #[doc = r" Return `self` without the members set in `other`."]
+    #[inline]
+    pub fn difference(&self, other: &Self) -> Self {
+        Self {
+            almalence_digital_lens_control: self.almalence_digital_lens_control
+                && !other.almalence_digital_lens_control,
+            bd_controller_interaction: self.bd_controller_interaction
+                && !other.bd_controller_interaction,
+            epic_view_configuration_fov: self.epic_view_configuration_fov
+                && !other.epic_view_configuration_fov,
+            ext_performance_settings: self.ext_performance_settings
+                && !other.ext_performance_settings,
+            ext_thermal_query: self.ext_thermal_query && !other.ext_thermal_query,
+            ext_debug_utils: self.ext_debug_utils && !other.ext_debug_utils,
+            ext_eye_gaze_interaction: self.ext_eye_gaze_interaction
+                && !other.ext_eye_gaze_interaction,
+            ext_view_configuration_depth_range: self.ext_view_configuration_depth_range
+                && !other.ext_view_configuration_depth_range,
+            ext_conformance_automation: self.ext_conformance_automation
+                && !other.ext_conformance_automation,
+            ext_hand_tracking: self.ext_hand_tracking && !other.ext_hand_tracking,
+            #[cfg(windows)]
+            ext_win32_appcontainer_compatible: self.ext_win32_appcontainer_compatible
+                && !other.ext_win32_appcontainer_compatible,
+            ext_dpad_binding: self.ext_dpad_binding && !other.ext_dpad_binding,
+            ext_hand_joints_motion_range: self.ext_hand_joints_motion_range
+                && !other.ext_hand_joints_motion_range,
+            ext_samsung_odyssey_controller: self.ext_samsung_odyssey_controller
+                && !other.ext_samsung_odyssey_controller,
+            ext_hp_mixed_reality_controller: self.ext_hp_mixed_reality_controller
+                && !other.ext_hp_mixed_reality_controller,
+            ext_palm_pose: self.ext_palm_pose && !other.ext_palm_pose,
+            ext_uuid: self.ext_uuid && !other.ext_uuid,
+            ext_hand_interaction: self.ext_hand_interaction && !other.ext_hand_interaction,
+            ext_active_action_set_priority: self.ext_active_action_set_priority
+                && !other.ext_active_action_set_priority,
+            ext_local_floor: self.ext_local_floor && !other.ext_local_floor,
+            ext_hand_tracking_data_source: self.ext_hand_tracking_data_source
+                && !other.ext_hand_tracking_data_source,
+            ext_plane_detection: self.ext_plane_detection && !other.ext_plane_detection,
+            ext_future: self.ext_future && !other.ext_future,
+            ext_user_presence: self.ext_user_presence && !other.ext_user_presence,
+            ext_composition_layer_inverted_alpha: self.ext_composition_layer_inverted_alpha
+                && !other.ext_composition_layer_inverted_alpha,
+            fb_composition_layer_image_layout: self.fb_composition_layer_image_layout
+                && !other.fb_composition_layer_image_layout,
+            fb_composition_layer_alpha_blend: self.fb_composition_layer_alpha_blend
+                && !other.fb_composition_layer_alpha_blend,
+            #[cfg(target_os = "android")]
+            fb_android_surface_swapchain_create: self.fb_android_surface_swapchain_create
+                && !other.fb_android_surface_swapchain_create,
+            fb_swapchain_update_state: self.fb_swapchain_update_state
+                && !other.fb_swapchain_update_state,
+            fb_composition_layer_secure_content: self.fb_composition_layer_secure_content
+                && !other.fb_composition_layer_secure_content,
+            fb_body_tracking: self.fb_body_tracking && !other.fb_body_tracking,
+            fb_display_refresh_rate: self.fb_display_refresh_rate && !other.fb_display_refresh_rate,
+            fb_color_space: self.fb_color_space && !other.fb_color_space,
+            fb_hand_tracking_mesh: self.fb_hand_tracking_mesh && !other.fb_hand_tracking_mesh,
+            fb_hand_tracking_aim: self.fb_hand_tracking_aim && !other.fb_hand_tracking_aim,
+            fb_hand_tracking_capsules: self.fb_hand_tracking_capsules
+                && !other.fb_hand_tracking_capsules,
+            fb_spatial_entity: self.fb_spatial_entity && !other.fb_spatial_entity,
+            fb_foveation: self.fb_foveation && !other.fb_foveation,
+            fb_foveation_configuration: self.fb_foveation_configuration
+                && !other.fb_foveation_configuration,
+            fb_keyboard_tracking: self.fb_keyboard_tracking && !other.fb_keyboard_tracking,
+            fb_triangle_mesh: self.fb_triangle_mesh && !other.fb_triangle_mesh,
+            fb_passthrough: self.fb_passthrough && !other.fb_passthrough,
+            fb_render_model: self.fb_render_model && !other.fb_render_model,
+            fb_spatial_entity_query: self.fb_spatial_entity_query && !other.fb_spatial_entity_query,
+            fb_spatial_entity_storage: self.fb_spatial_entity_storage
+                && !other.fb_spatial_entity_storage,
+            fb_foveation_vulkan: self.fb_foveation_vulkan && !other.fb_foveation_vulkan,
+            #[cfg(target_os = "android")]
+            fb_swapchain_update_state_android_surface: self
+                .fb_swapchain_update_state_android_surface
+                && !other.fb_swapchain_update_state_android_surface,
+            fb_swapchain_update_state_opengl_es: self.fb_swapchain_update_state_opengl_es
+                && !other.fb_swapchain_update_state_opengl_es,
+            fb_swapchain_update_state_vulkan: self.fb_swapchain_update_state_vulkan
+                && !other.fb_swapchain_update_state_vulkan,
+            fb_touch_controller_pro: self.fb_touch_controller_pro && !other.fb_touch_controller_pro,
+            fb_spatial_entity_sharing: self.fb_spatial_entity_sharing
+                && !other.fb_spatial_entity_sharing,
+            fb_space_warp: self.fb_space_warp && !other.fb_space_warp,
+            fb_haptic_amplitude_envelope: self.fb_haptic_amplitude_envelope
+                && !other.fb_haptic_amplitude_envelope,
+            fb_scene: self.fb_scene && !other.fb_scene,
+            fb_scene_capture: self.fb_scene_capture && !other.fb_scene_capture,
+            fb_spatial_entity_container: self.fb_spatial_entity_container
+                && !other.fb_spatial_entity_container,
+            fb_face_tracking: self.fb_face_tracking && !other.fb_face_tracking,
+            fb_eye_tracking_social: self.fb_eye_tracking_social && !other.fb_eye_tracking_social,
+            fb_passthrough_keyboard_hands: self.fb_passthrough_keyboard_hands
+                && !other.fb_passthrough_keyboard_hands,
+            fb_composition_layer_settings: self.fb_composition_layer_settings
+                && !other.fb_composition_layer_settings,
+            fb_touch_controller_proximity: self.fb_touch_controller_proximity
+                && !other.fb_touch_controller_proximity,
+            fb_haptic_pcm: self.fb_haptic_pcm && !other.fb_haptic_pcm,
+            fb_composition_layer_depth_test: self.fb_composition_layer_depth_test
+                && !other.fb_composition_layer_depth_test,
+            fb_spatial_entity_storage_batch: self.fb_spatial_entity_storage_batch
+                && !other.fb_spatial_entity_storage_batch,
+            fb_spatial_entity_user: self.fb_spatial_entity_user && !other.fb_spatial_entity_user,
+            fb_face_tracking2: self.fb_face_tracking2 && !other.fb_face_tracking2,
+            htc_vive_cosmos_controller_interaction: self.htc_vive_cosmos_controller_interaction
+                && !other.htc_vive_cosmos_controller_interaction,
+            htc_facial_tracking: self.htc_facial_tracking && !other.htc_facial_tracking,
+            htc_vive_focus3_controller_interaction: self.htc_vive_focus3_controller_interaction
+                && !other.htc_vive_focus3_controller_interaction,
+            htc_hand_interaction: self.htc_hand_interaction && !other.htc_hand_interaction,
+            htc_vive_wrist_tracker_interaction: self.htc_vive_wrist_tracker_interaction
+                && !other.htc_vive_wrist_tracker_interaction,
+            htc_passthrough: self.htc_passthrough && !other.htc_passthrough,
+            htc_foveation: self.htc_foveation && !other.htc_foveation,
+            htc_anchor: self.htc_anchor && !other.htc_anchor,
+            huawei_controller_interaction: self.huawei_controller_interaction
+                && !other.huawei_controller_interaction,
+            #[cfg(target_os = "android")]
+            khr_android_thread_settings: self.khr_android_thread_settings
+                && !other.khr_android_thread_settings,
+            #[cfg(target_os = "android")]
+            khr_android_surface_swapchain: self.khr_android_surface_swapchain
+                && !other.khr_android_surface_swapchain,
+            khr_composition_layer_cube: self.khr_composition_layer_cube
+                && !other.khr_composition_layer_cube,
+            #[cfg(target_os = "android")]
+            khr_android_create_instance: self.khr_android_create_instance
+                && !other.khr_android_create_instance,
+            khr_composition_layer_depth: self.khr_composition_layer_depth
+                && !other.khr_composition_layer_depth,
+            khr_vulkan_swapchain_format_list: self.khr_vulkan_swapchain_format_list
+                && !other.khr_vulkan_swapchain_format_list,
+            khr_composition_layer_cylinder: self.khr_composition_layer_cylinder
+                && !other.khr_composition_layer_cylinder,
+            khr_composition_layer_equirect: self.khr_composition_layer_equirect
+                && !other.khr_composition_layer_equirect,
+            khr_opengl_enable: self.khr_opengl_enable && !other.khr_opengl_enable,
+            khr_opengl_es_enable: self.khr_opengl_es_enable && !other.khr_opengl_es_enable,
+            khr_vulkan_enable: self.khr_vulkan_enable && !other.khr_vulkan_enable,
+            #[cfg(windows)]
+            khr_d3d11_enable: self.khr_d3d11_enable && !other.khr_d3d11_enable,
+            #[cfg(windows)]
+            khr_d3d12_enable: self.khr_d3d12_enable && !other.khr_d3d12_enable,
+            #[cfg(target_vendor = "apple")]
+            khr_metal_enable: self.khr_metal_enable && !other.khr_metal_enable,
+            khr_visibility_mask: self.khr_visibility_mask && !other.khr_visibility_mask,
+            khr_composition_layer_color_scale_bias: self.khr_composition_layer_color_scale_bias
+                && !other.khr_composition_layer_color_scale_bias,
+            #[cfg(windows)]
+            khr_win32_convert_performance_counter_time: self
+                .khr_win32_convert_performance_counter_time
+                && !other.khr_win32_convert_performance_counter_time,
+            khr_convert_timespec_time: self.khr_convert_timespec_time
+                && !other.khr_convert_timespec_time,
+            khr_loader_init: self.khr_loader_init && !other.khr_loader_init,
+            #[cfg(target_os = "android")]
+            khr_loader_init_android: self.khr_loader_init_android && !other.khr_loader_init_android,
+            khr_vulkan_enable2: self.khr_vulkan_enable2 && !other.khr_vulkan_enable2,
+            khr_composition_layer_equirect2: self.khr_composition_layer_equirect2
+                && !other.khr_composition_layer_equirect2,
+            khr_binding_modification: self.khr_binding_modification
+                && !other.khr_binding_modification,
+            khr_swapchain_usage_input_attachment_bit: self.khr_swapchain_usage_input_attachment_bit
+                && !other.khr_swapchain_usage_input_attachment_bit,
+            khr_locate_spaces: self.khr_locate_spaces && !other.khr_locate_spaces,
+            khr_maintenance1: self.khr_maintenance1 && !other.khr_maintenance1,
+            meta_foveation_eye_tracked: self.meta_foveation_eye_tracked
+                && !other.meta_foveation_eye_tracked,
+            meta_local_dimming: self.meta_local_dimming && !other.meta_local_dimming,
+            meta_passthrough_preferences: self.meta_passthrough_preferences
+                && !other.meta_passthrough_preferences,
+            meta_virtual_keyboard: self.meta_virtual_keyboard && !other.meta_virtual_keyboard,
+            meta_vulkan_swapchain_create_info: self.meta_vulkan_swapchain_create_info
+                && !other.meta_vulkan_swapchain_create_info,
+            meta_performance_metrics: self.meta_performance_metrics
+                && !other.meta_performance_metrics,
+            meta_headset_id: self.meta_headset_id && !other.meta_headset_id,
+            meta_recommended_layer_resolution: self.meta_recommended_layer_resolution
+                && !other.meta_recommended_layer_resolution,
+            meta_passthrough_color_lut: self.meta_passthrough_color_lut
+                && !other.meta_passthrough_color_lut,
+            meta_spatial_entity_mesh: self.meta_spatial_entity_mesh
+                && !other.meta_spatial_entity_mesh,
+            meta_automatic_layer_filter: self.meta_automatic_layer_filter
+                && !other.meta_automatic_layer_filter,
+            meta_touch_controller_plus: self.meta_touch_controller_plus
+                && !other.meta_touch_controller_plus,
+            meta_environment_depth: self.meta_environment_depth && !other.meta_environment_depth,
+            ml_ml2_controller_interaction: self.ml_ml2_controller_interaction
+                && !other.ml_ml2_controller_interaction,
+            ml_frame_end_info: self.ml_frame_end_info && !other.ml_frame_end_info,
+            ml_global_dimmer: self.ml_global_dimmer && !other.ml_global_dimmer,
+            ml_compat: self.ml_compat && !other.ml_compat,
+            ml_marker_understanding: self.ml_marker_understanding && !other.ml_marker_understanding,
+            ml_localization_map: self.ml_localization_map && !other.ml_localization_map,
+            ml_user_calibration: self.ml_user_calibration && !other.ml_user_calibration,
+            mnd_headless: self.mnd_headless && !other.mnd_headless,
+            mnd_swapchain_usage_input_attachment_bit: self.mnd_swapchain_usage_input_attachment_bit
+                && !other.mnd_swapchain_usage_input_attachment_bit,
+            msft_unbounded_reference_space: self.msft_unbounded_reference_space
+                && !other.msft_unbounded_reference_space,
+            msft_spatial_anchor: self.msft_spatial_anchor && !other.msft_spatial_anchor,
+            msft_spatial_graph_bridge: self.msft_spatial_graph_bridge
+                && !other.msft_spatial_graph_bridge,
+            msft_hand_interaction: self.msft_hand_interaction && !other.msft_hand_interaction,
+            msft_hand_tracking_mesh: self.msft_hand_tracking_mesh && !other.msft_hand_tracking_mesh,
+            msft_secondary_view_configuration: self.msft_secondary_view_configuration
+                && !other.msft_secondary_view_configuration,
+            msft_first_person_observer: self.msft_first_person_observer
+                && !other.msft_first_person_observer,
+            msft_controller_model: self.msft_controller_model && !other.msft_controller_model,
+            #[cfg(windows)]
+            msft_perception_anchor_interop: self.msft_perception_anchor_interop
+                && !other.msft_perception_anchor_interop,
+            #[cfg(windows)]
+            msft_holographic_window_attachment: self.msft_holographic_window_attachment
+                && !other.msft_holographic_window_attachment,
+            msft_composition_layer_reprojection: self.msft_composition_layer_reprojection
+                && !other.msft_composition_layer_reprojection,
+            msft_spatial_anchor_persistence: self.msft_spatial_anchor_persistence
+                && !other.msft_spatial_anchor_persistence,
+            #[cfg(target_os = "android")]
+            oculus_android_session_state_enable: self.oculus_android_session_state_enable
+                && !other.oculus_android_session_state_enable,
+            oculus_audio_device_guid: self.oculus_audio_device_guid
+                && !other.oculus_audio_device_guid,
+            oculus_external_camera: self.oculus_external_camera && !other.oculus_external_camera,
+            oppo_controller_interaction: self.oppo_controller_interaction
+                && !other.oppo_controller_interaction,
+            qcom_tracking_optimization_settings: self.qcom_tracking_optimization_settings
+                && !other.qcom_tracking_optimization_settings,
+            ultraleap_hand_tracking_forearm: self.ultraleap_hand_tracking_forearm
+                && !other.ultraleap_hand_tracking_forearm,
+            valve_analog_threshold: self.valve_analog_threshold && !other.valve_analog_threshold,
+            varjo_quad_views: self.varjo_quad_views && !other.varjo_quad_views,
+            varjo_foveated_rendering: self.varjo_foveated_rendering
+                && !other.varjo_foveated_rendering,
+            varjo_composition_layer_depth_test: self.varjo_composition_layer_depth_test
+                && !other.varjo_composition_layer_depth_test,
+            varjo_environment_depth_estimation: self.varjo_environment_depth_estimation
+                && !other.varjo_environment_depth_estimation,
+            varjo_marker_tracking: self.varjo_marker_tracking && !other.varjo_marker_tracking,
+            varjo_view_offset: self.varjo_view_offset && !other.varjo_view_offset,
+            varjo_xr4_controller_interaction: self.varjo_xr4_controller_interaction
+                && !other.varjo_xr4_controller_interaction,
+            yvr_controller_interaction: self.yvr_controller_interaction
+                && !other.yvr_controller_interaction,
+            extx_overlay: self.extx_overlay && !other.extx_overlay,
+            mndx_egl_enable: self.mndx_egl_enable && !other.mndx_egl_enable,
+            mndx_force_feedback_curl: self.mndx_force_feedback_curl
+                && !other.mndx_force_feedback_curl,
+            htcx_vive_tracker_interaction: self.htcx_vive_tracker_interaction
+                && !other.htcx_vive_tracker_interaction,
+            other: self
+                .other
+                .iter()
+                .collect::<std::collections::HashSet<_>>()
+                .difference(&other.other.iter().collect())
+                .map(|x| x.to_vec())
+                .collect(),
+        }
+    }
+    #[doc = r" Return the intersection of `self` and `other`, i.e. fields set in both"]
+    #[inline]
+    pub fn intersection(&self, other: &Self) -> Self {
+        Self {
+            almalence_digital_lens_control: self.almalence_digital_lens_control
+                && other.almalence_digital_lens_control,
+            bd_controller_interaction: self.bd_controller_interaction
+                && other.bd_controller_interaction,
+            epic_view_configuration_fov: self.epic_view_configuration_fov
+                && other.epic_view_configuration_fov,
+            ext_performance_settings: self.ext_performance_settings
+                && other.ext_performance_settings,
+            ext_thermal_query: self.ext_thermal_query && other.ext_thermal_query,
+            ext_debug_utils: self.ext_debug_utils && other.ext_debug_utils,
+            ext_eye_gaze_interaction: self.ext_eye_gaze_interaction
+                && other.ext_eye_gaze_interaction,
+            ext_view_configuration_depth_range: self.ext_view_configuration_depth_range
+                && other.ext_view_configuration_depth_range,
+            ext_conformance_automation: self.ext_conformance_automation
+                && other.ext_conformance_automation,
+            ext_hand_tracking: self.ext_hand_tracking && other.ext_hand_tracking,
+            #[cfg(windows)]
+            ext_win32_appcontainer_compatible: self.ext_win32_appcontainer_compatible
+                && other.ext_win32_appcontainer_compatible,
+            ext_dpad_binding: self.ext_dpad_binding && other.ext_dpad_binding,
+            ext_hand_joints_motion_range: self.ext_hand_joints_motion_range
+                && other.ext_hand_joints_motion_range,
+            ext_samsung_odyssey_controller: self.ext_samsung_odyssey_controller
+                && other.ext_samsung_odyssey_controller,
+            ext_hp_mixed_reality_controller: self.ext_hp_mixed_reality_controller
+                && other.ext_hp_mixed_reality_controller,
+            ext_palm_pose: self.ext_palm_pose && other.ext_palm_pose,
+            ext_uuid: self.ext_uuid && other.ext_uuid,
+            ext_hand_interaction: self.ext_hand_interaction && other.ext_hand_interaction,
+            ext_active_action_set_priority: self.ext_active_action_set_priority
+                && other.ext_active_action_set_priority,
+            ext_local_floor: self.ext_local_floor && other.ext_local_floor,
+            ext_hand_tracking_data_source: self.ext_hand_tracking_data_source
+                && other.ext_hand_tracking_data_source,
+            ext_plane_detection: self.ext_plane_detection && other.ext_plane_detection,
+            ext_future: self.ext_future && other.ext_future,
+            ext_user_presence: self.ext_user_presence && other.ext_user_presence,
+            ext_composition_layer_inverted_alpha: self.ext_composition_layer_inverted_alpha
+                && other.ext_composition_layer_inverted_alpha,
+            fb_composition_layer_image_layout: self.fb_composition_layer_image_layout
+                && other.fb_composition_layer_image_layout,
+            fb_composition_layer_alpha_blend: self.fb_composition_layer_alpha_blend
+                && other.fb_composition_layer_alpha_blend,
+            #[cfg(target_os = "android")]
+            fb_android_surface_swapchain_create: self.fb_android_surface_swapchain_create
+                && other.fb_android_surface_swapchain_create,
+            fb_swapchain_update_state: self.fb_swapchain_update_state
+                && other.fb_swapchain_update_state,
+            fb_composition_layer_secure_content: self.fb_composition_layer_secure_content
+                && other.fb_composition_layer_secure_content,
+            fb_body_tracking: self.fb_body_tracking && other.fb_body_tracking,
+            fb_display_refresh_rate: self.fb_display_refresh_rate && other.fb_display_refresh_rate,
+            fb_color_space: self.fb_color_space && other.fb_color_space,
+            fb_hand_tracking_mesh: self.fb_hand_tracking_mesh && other.fb_hand_tracking_mesh,
+            fb_hand_tracking_aim: self.fb_hand_tracking_aim && other.fb_hand_tracking_aim,
+            fb_hand_tracking_capsules: self.fb_hand_tracking_capsules
+                && other.fb_hand_tracking_capsules,
+            fb_spatial_entity: self.fb_spatial_entity && other.fb_spatial_entity,
+            fb_foveation: self.fb_foveation && other.fb_foveation,
+            fb_foveation_configuration: self.fb_foveation_configuration
+                && other.fb_foveation_configuration,
+            fb_keyboard_tracking: self.fb_keyboard_tracking && other.fb_keyboard_tracking,
+            fb_triangle_mesh: self.fb_triangle_mesh && other.fb_triangle_mesh,
+            fb_passthrough: self.fb_passthrough && other.fb_passthrough,
+            fb_render_model: self.fb_render_model && other.fb_render_model,
+            fb_spatial_entity_query: self.fb_spatial_entity_query && other.fb_spatial_entity_query,
+            fb_spatial_entity_storage: self.fb_spatial_entity_storage
+                && other.fb_spatial_entity_storage,
+            fb_foveation_vulkan: self.fb_foveation_vulkan && other.fb_foveation_vulkan,
+            #[cfg(target_os = "android")]
+            fb_swapchain_update_state_android_surface: self
+                .fb_swapchain_update_state_android_surface
+                && other.fb_swapchain_update_state_android_surface,
+            fb_swapchain_update_state_opengl_es: self.fb_swapchain_update_state_opengl_es
+                && other.fb_swapchain_update_state_opengl_es,
+            fb_swapchain_update_state_vulkan: self.fb_swapchain_update_state_vulkan
+                && other.fb_swapchain_update_state_vulkan,
+            fb_touch_controller_pro: self.fb_touch_controller_pro && other.fb_touch_controller_pro,
+            fb_spatial_entity_sharing: self.fb_spatial_entity_sharing
+                && other.fb_spatial_entity_sharing,
+            fb_space_warp: self.fb_space_warp && other.fb_space_warp,
+            fb_haptic_amplitude_envelope: self.fb_haptic_amplitude_envelope
+                && other.fb_haptic_amplitude_envelope,
+            fb_scene: self.fb_scene && other.fb_scene,
+            fb_scene_capture: self.fb_scene_capture && other.fb_scene_capture,
+            fb_spatial_entity_container: self.fb_spatial_entity_container
+                && other.fb_spatial_entity_container,
+            fb_face_tracking: self.fb_face_tracking && other.fb_face_tracking,
+            fb_eye_tracking_social: self.fb_eye_tracking_social && other.fb_eye_tracking_social,
+            fb_passthrough_keyboard_hands: self.fb_passthrough_keyboard_hands
+                && other.fb_passthrough_keyboard_hands,
+            fb_composition_layer_settings: self.fb_composition_layer_settings
+                && other.fb_composition_layer_settings,
+            fb_touch_controller_proximity: self.fb_touch_controller_proximity
+                && other.fb_touch_controller_proximity,
+            fb_haptic_pcm: self.fb_haptic_pcm && other.fb_haptic_pcm,
+            fb_composition_layer_depth_test: self.fb_composition_layer_depth_test
+                && other.fb_composition_layer_depth_test,
+            fb_spatial_entity_storage_batch: self.fb_spatial_entity_storage_batch
+                && other.fb_spatial_entity_storage_batch,
+            fb_spatial_entity_user: self.fb_spatial_entity_user && other.fb_spatial_entity_user,
+            fb_face_tracking2: self.fb_face_tracking2 && other.fb_face_tracking2,
+            htc_vive_cosmos_controller_interaction: self.htc_vive_cosmos_controller_interaction
+                && other.htc_vive_cosmos_controller_interaction,
+            htc_facial_tracking: self.htc_facial_tracking && other.htc_facial_tracking,
+            htc_vive_focus3_controller_interaction: self.htc_vive_focus3_controller_interaction
+                && other.htc_vive_focus3_controller_interaction,
+            htc_hand_interaction: self.htc_hand_interaction && other.htc_hand_interaction,
+            htc_vive_wrist_tracker_interaction: self.htc_vive_wrist_tracker_interaction
+                && other.htc_vive_wrist_tracker_interaction,
+            htc_passthrough: self.htc_passthrough && other.htc_passthrough,
+            htc_foveation: self.htc_foveation && other.htc_foveation,
+            htc_anchor: self.htc_anchor && other.htc_anchor,
+            huawei_controller_interaction: self.huawei_controller_interaction
+                && other.huawei_controller_interaction,
+            #[cfg(target_os = "android")]
+            khr_android_thread_settings: self.khr_android_thread_settings
+                && other.khr_android_thread_settings,
+            #[cfg(target_os = "android")]
+            khr_android_surface_swapchain: self.khr_android_surface_swapchain
+                && other.khr_android_surface_swapchain,
+            khr_composition_layer_cube: self.khr_composition_layer_cube
+                && other.khr_composition_layer_cube,
+            #[cfg(target_os = "android")]
+            khr_android_create_instance: self.khr_android_create_instance
+                && other.khr_android_create_instance,
+            khr_composition_layer_depth: self.khr_composition_layer_depth
+                && other.khr_composition_layer_depth,
+            khr_vulkan_swapchain_format_list: self.khr_vulkan_swapchain_format_list
+                && other.khr_vulkan_swapchain_format_list,
+            khr_composition_layer_cylinder: self.khr_composition_layer_cylinder
+                && other.khr_composition_layer_cylinder,
+            khr_composition_layer_equirect: self.khr_composition_layer_equirect
+                && other.khr_composition_layer_equirect,
+            khr_opengl_enable: self.khr_opengl_enable && other.khr_opengl_enable,
+            khr_opengl_es_enable: self.khr_opengl_es_enable && other.khr_opengl_es_enable,
+            khr_vulkan_enable: self.khr_vulkan_enable && other.khr_vulkan_enable,
+            #[cfg(windows)]
+            khr_d3d11_enable: self.khr_d3d11_enable && other.khr_d3d11_enable,
+            #[cfg(windows)]
+            khr_d3d12_enable: self.khr_d3d12_enable && other.khr_d3d12_enable,
+            #[cfg(target_vendor = "apple")]
+            khr_metal_enable: self.khr_metal_enable && other.khr_metal_enable,
+            khr_visibility_mask: self.khr_visibility_mask && other.khr_visibility_mask,
+            khr_composition_layer_color_scale_bias: self.khr_composition_layer_color_scale_bias
+                && other.khr_composition_layer_color_scale_bias,
+            #[cfg(windows)]
+            khr_win32_convert_performance_counter_time: self
+                .khr_win32_convert_performance_counter_time
+                && other.khr_win32_convert_performance_counter_time,
+            khr_convert_timespec_time: self.khr_convert_timespec_time
+                && other.khr_convert_timespec_time,
+            khr_loader_init: self.khr_loader_init && other.khr_loader_init,
+            #[cfg(target_os = "android")]
+            khr_loader_init_android: self.khr_loader_init_android && other.khr_loader_init_android,
+            khr_vulkan_enable2: self.khr_vulkan_enable2 && other.khr_vulkan_enable2,
+            khr_composition_layer_equirect2: self.khr_composition_layer_equirect2
+                && other.khr_composition_layer_equirect2,
+            khr_binding_modification: self.khr_binding_modification
+                && other.khr_binding_modification,
+            khr_swapchain_usage_input_attachment_bit: self.khr_swapchain_usage_input_attachment_bit
+                && other.khr_swapchain_usage_input_attachment_bit,
+            khr_locate_spaces: self.khr_locate_spaces && other.khr_locate_spaces,
+            khr_maintenance1: self.khr_maintenance1 && other.khr_maintenance1,
+            meta_foveation_eye_tracked: self.meta_foveation_eye_tracked
+                && other.meta_foveation_eye_tracked,
+            meta_local_dimming: self.meta_local_dimming && other.meta_local_dimming,
+            meta_passthrough_preferences: self.meta_passthrough_preferences
+                && other.meta_passthrough_preferences,
+            meta_virtual_keyboard: self.meta_virtual_keyboard && other.meta_virtual_keyboard,
+            meta_vulkan_swapchain_create_info: self.meta_vulkan_swapchain_create_info
+                && other.meta_vulkan_swapchain_create_info,
+            meta_performance_metrics: self.meta_performance_metrics
+                && other.meta_performance_metrics,
+            meta_headset_id: self.meta_headset_id && other.meta_headset_id,
+            meta_recommended_layer_resolution: self.meta_recommended_layer_resolution
+                && other.meta_recommended_layer_resolution,
+            meta_passthrough_color_lut: self.meta_passthrough_color_lut
+                && other.meta_passthrough_color_lut,
+            meta_spatial_entity_mesh: self.meta_spatial_entity_mesh
+                && other.meta_spatial_entity_mesh,
+            meta_automatic_layer_filter: self.meta_automatic_layer_filter
+                && other.meta_automatic_layer_filter,
+            meta_touch_controller_plus: self.meta_touch_controller_plus
+                && other.meta_touch_controller_plus,
+            meta_environment_depth: self.meta_environment_depth && other.meta_environment_depth,
+            ml_ml2_controller_interaction: self.ml_ml2_controller_interaction
+                && other.ml_ml2_controller_interaction,
+            ml_frame_end_info: self.ml_frame_end_info && other.ml_frame_end_info,
+            ml_global_dimmer: self.ml_global_dimmer && other.ml_global_dimmer,
+            ml_compat: self.ml_compat && other.ml_compat,
+            ml_marker_understanding: self.ml_marker_understanding && other.ml_marker_understanding,
+            ml_localization_map: self.ml_localization_map && other.ml_localization_map,
+            ml_user_calibration: self.ml_user_calibration && other.ml_user_calibration,
+            mnd_headless: self.mnd_headless && other.mnd_headless,
+            mnd_swapchain_usage_input_attachment_bit: self.mnd_swapchain_usage_input_attachment_bit
+                && other.mnd_swapchain_usage_input_attachment_bit,
+            msft_unbounded_reference_space: self.msft_unbounded_reference_space
+                && other.msft_unbounded_reference_space,
+            msft_spatial_anchor: self.msft_spatial_anchor && other.msft_spatial_anchor,
+            msft_spatial_graph_bridge: self.msft_spatial_graph_bridge
+                && other.msft_spatial_graph_bridge,
+            msft_hand_interaction: self.msft_hand_interaction && other.msft_hand_interaction,
+            msft_hand_tracking_mesh: self.msft_hand_tracking_mesh && other.msft_hand_tracking_mesh,
+            msft_secondary_view_configuration: self.msft_secondary_view_configuration
+                && other.msft_secondary_view_configuration,
+            msft_first_person_observer: self.msft_first_person_observer
+                && other.msft_first_person_observer,
+            msft_controller_model: self.msft_controller_model && other.msft_controller_model,
+            #[cfg(windows)]
+            msft_perception_anchor_interop: self.msft_perception_anchor_interop
+                && other.msft_perception_anchor_interop,
+            #[cfg(windows)]
+            msft_holographic_window_attachment: self.msft_holographic_window_attachment
+                && other.msft_holographic_window_attachment,
+            msft_composition_layer_reprojection: self.msft_composition_layer_reprojection
+                && other.msft_composition_layer_reprojection,
+            msft_spatial_anchor_persistence: self.msft_spatial_anchor_persistence
+                && other.msft_spatial_anchor_persistence,
+            #[cfg(target_os = "android")]
+            oculus_android_session_state_enable: self.oculus_android_session_state_enable
+                && other.oculus_android_session_state_enable,
+            oculus_audio_device_guid: self.oculus_audio_device_guid
+                && other.oculus_audio_device_guid,
+            oculus_external_camera: self.oculus_external_camera && other.oculus_external_camera,
+            oppo_controller_interaction: self.oppo_controller_interaction
+                && other.oppo_controller_interaction,
+            qcom_tracking_optimization_settings: self.qcom_tracking_optimization_settings
+                && other.qcom_tracking_optimization_settings,
+            ultraleap_hand_tracking_forearm: self.ultraleap_hand_tracking_forearm
+                && other.ultraleap_hand_tracking_forearm,
+            valve_analog_threshold: self.valve_analog_threshold && other.valve_analog_threshold,
+            varjo_quad_views: self.varjo_quad_views && other.varjo_quad_views,
+            varjo_foveated_rendering: self.varjo_foveated_rendering
+                && other.varjo_foveated_rendering,
+            varjo_composition_layer_depth_test: self.varjo_composition_layer_depth_test
+                && other.varjo_composition_layer_depth_test,
+            varjo_environment_depth_estimation: self.varjo_environment_depth_estimation
+                && other.varjo_environment_depth_estimation,
+            varjo_marker_tracking: self.varjo_marker_tracking && other.varjo_marker_tracking,
+            varjo_view_offset: self.varjo_view_offset && other.varjo_view_offset,
+            varjo_xr4_controller_interaction: self.varjo_xr4_controller_interaction
+                && other.varjo_xr4_controller_interaction,
+            yvr_controller_interaction: self.yvr_controller_interaction
+                && other.yvr_controller_interaction,
+            extx_overlay: self.extx_overlay && other.extx_overlay,
+            mndx_egl_enable: self.mndx_egl_enable && other.mndx_egl_enable,
+            mndx_force_feedback_curl: self.mndx_force_feedback_curl
+                && other.mndx_force_feedback_curl,
+            htcx_vive_tracker_interaction: self.htcx_vive_tracker_interaction
+                && other.htcx_vive_tracker_interaction,
+            other: self
+                .other
+                .iter()
+                .collect::<std::collections::HashSet<_>>()
+                .intersection(&other.other.iter().collect())
+                .map(|x| x.to_vec())
+                .collect(),
+        }
+    }
+    #[doc = r" Return names of supported extensions, as a `Vec` of nul terminated byte slices."]
+    pub fn names(&self) -> Vec<&[u8]> {
         let mut out = Vec::new();
         {
             if self.almalence_digital_lens_control {
-                out.push(raw::DigitalLensControlALMALENCE::NAME.into());
+                out.push(raw::DigitalLensControlALMALENCE::NAME);
             }
         }
         {
             if self.bd_controller_interaction {
-                out.push(raw::ControllerInteractionBD::NAME.into());
+                out.push(raw::ControllerInteractionBD::NAME);
             }
         }
         {
             if self.epic_view_configuration_fov {
-                out.push(raw::ViewConfigurationFovEPIC::NAME.into());
+                out.push(raw::ViewConfigurationFovEPIC::NAME);
             }
         }
         {
             if self.ext_performance_settings {
-                out.push(raw::PerformanceSettingsEXT::NAME.into());
+                out.push(raw::PerformanceSettingsEXT::NAME);
             }
         }
         {
             if self.ext_thermal_query {
-                out.push(raw::ThermalQueryEXT::NAME.into());
+                out.push(raw::ThermalQueryEXT::NAME);
             }
         }
         {
             if self.ext_debug_utils {
-                out.push(raw::DebugUtilsEXT::NAME.into());
+                out.push(raw::DebugUtilsEXT::NAME);
             }
         }
         {
             if self.ext_eye_gaze_interaction {
-                out.push(raw::EyeGazeInteractionEXT::NAME.into());
+                out.push(raw::EyeGazeInteractionEXT::NAME);
             }
         }
         {
             if self.ext_view_configuration_depth_range {
-                out.push(raw::ViewConfigurationDepthRangeEXT::NAME.into());
+                out.push(raw::ViewConfigurationDepthRangeEXT::NAME);
             }
         }
         {
             if self.ext_conformance_automation {
-                out.push(raw::ConformanceAutomationEXT::NAME.into());
+                out.push(raw::ConformanceAutomationEXT::NAME);
             }
         }
         {
             if self.ext_hand_tracking {
-                out.push(raw::HandTrackingEXT::NAME.into());
+                out.push(raw::HandTrackingEXT::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.ext_win32_appcontainer_compatible {
-                out.push(raw::Win32AppcontainerCompatibleEXT::NAME.into());
+                out.push(raw::Win32AppcontainerCompatibleEXT::NAME);
             }
         }
         {
             if self.ext_dpad_binding {
-                out.push(raw::DpadBindingEXT::NAME.into());
+                out.push(raw::DpadBindingEXT::NAME);
             }
         }
         {
             if self.ext_hand_joints_motion_range {
-                out.push(raw::HandJointsMotionRangeEXT::NAME.into());
+                out.push(raw::HandJointsMotionRangeEXT::NAME);
             }
         }
         {
             if self.ext_samsung_odyssey_controller {
-                out.push(raw::SamsungOdysseyControllerEXT::NAME.into());
+                out.push(raw::SamsungOdysseyControllerEXT::NAME);
             }
         }
         {
             if self.ext_hp_mixed_reality_controller {
-                out.push(raw::HpMixedRealityControllerEXT::NAME.into());
+                out.push(raw::HpMixedRealityControllerEXT::NAME);
             }
         }
         {
             if self.ext_palm_pose {
-                out.push(raw::PalmPoseEXT::NAME.into());
+                out.push(raw::PalmPoseEXT::NAME);
             }
         }
         {
             if self.ext_uuid {
-                out.push(raw::UuidEXT::NAME.into());
+                out.push(raw::UuidEXT::NAME);
             }
         }
         {
             if self.ext_hand_interaction {
-                out.push(raw::HandInteractionEXT::NAME.into());
+                out.push(raw::HandInteractionEXT::NAME);
             }
         }
         {
             if self.ext_active_action_set_priority {
-                out.push(raw::ActiveActionSetPriorityEXT::NAME.into());
+                out.push(raw::ActiveActionSetPriorityEXT::NAME);
             }
         }
         {
             if self.ext_local_floor {
-                out.push(raw::LocalFloorEXT::NAME.into());
+                out.push(raw::LocalFloorEXT::NAME);
             }
         }
         {
             if self.ext_hand_tracking_data_source {
-                out.push(raw::HandTrackingDataSourceEXT::NAME.into());
+                out.push(raw::HandTrackingDataSourceEXT::NAME);
             }
         }
         {
             if self.ext_plane_detection {
-                out.push(raw::PlaneDetectionEXT::NAME.into());
+                out.push(raw::PlaneDetectionEXT::NAME);
             }
         }
         {
             if self.ext_future {
-                out.push(raw::FutureEXT::NAME.into());
+                out.push(raw::FutureEXT::NAME);
             }
         }
         {
             if self.ext_user_presence {
-                out.push(raw::UserPresenceEXT::NAME.into());
+                out.push(raw::UserPresenceEXT::NAME);
             }
         }
         {
             if self.ext_composition_layer_inverted_alpha {
-                out.push(raw::CompositionLayerInvertedAlphaEXT::NAME.into());
+                out.push(raw::CompositionLayerInvertedAlphaEXT::NAME);
             }
         }
         {
             if self.fb_composition_layer_image_layout {
-                out.push(raw::CompositionLayerImageLayoutFB::NAME.into());
+                out.push(raw::CompositionLayerImageLayoutFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_alpha_blend {
-                out.push(raw::CompositionLayerAlphaBlendFB::NAME.into());
+                out.push(raw::CompositionLayerAlphaBlendFB::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.fb_android_surface_swapchain_create {
-                out.push(raw::AndroidSurfaceSwapchainCreateFB::NAME.into());
+                out.push(raw::AndroidSurfaceSwapchainCreateFB::NAME);
             }
         }
         {
             if self.fb_swapchain_update_state {
-                out.push(raw::SwapchainUpdateStateFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_secure_content {
-                out.push(raw::CompositionLayerSecureContentFB::NAME.into());
+                out.push(raw::CompositionLayerSecureContentFB::NAME);
             }
         }
         {
             if self.fb_body_tracking {
-                out.push(raw::BodyTrackingFB::NAME.into());
+                out.push(raw::BodyTrackingFB::NAME);
             }
         }
         {
             if self.fb_display_refresh_rate {
-                out.push(raw::DisplayRefreshRateFB::NAME.into());
+                out.push(raw::DisplayRefreshRateFB::NAME);
             }
         }
         {
             if self.fb_color_space {
-                out.push(raw::ColorSpaceFB::NAME.into());
+                out.push(raw::ColorSpaceFB::NAME);
             }
         }
         {
             if self.fb_hand_tracking_mesh {
-                out.push(raw::HandTrackingMeshFB::NAME.into());
+                out.push(raw::HandTrackingMeshFB::NAME);
             }
         }
         {
             if self.fb_hand_tracking_aim {
-                out.push(raw::HandTrackingAimFB::NAME.into());
+                out.push(raw::HandTrackingAimFB::NAME);
             }
         }
         {
             if self.fb_hand_tracking_capsules {
-                out.push(raw::HandTrackingCapsulesFB::NAME.into());
+                out.push(raw::HandTrackingCapsulesFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity {
-                out.push(raw::SpatialEntityFB::NAME.into());
+                out.push(raw::SpatialEntityFB::NAME);
             }
         }
         {
             if self.fb_foveation {
-                out.push(raw::FoveationFB::NAME.into());
+                out.push(raw::FoveationFB::NAME);
             }
         }
         {
             if self.fb_foveation_configuration {
-                out.push(raw::FoveationConfigurationFB::NAME.into());
+                out.push(raw::FoveationConfigurationFB::NAME);
             }
         }
         {
             if self.fb_keyboard_tracking {
-                out.push(raw::KeyboardTrackingFB::NAME.into());
+                out.push(raw::KeyboardTrackingFB::NAME);
             }
         }
         {
             if self.fb_triangle_mesh {
-                out.push(raw::TriangleMeshFB::NAME.into());
+                out.push(raw::TriangleMeshFB::NAME);
             }
         }
         {
             if self.fb_passthrough {
-                out.push(raw::PassthroughFB::NAME.into());
+                out.push(raw::PassthroughFB::NAME);
             }
         }
         {
             if self.fb_render_model {
-                out.push(raw::RenderModelFB::NAME.into());
+                out.push(raw::RenderModelFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_query {
-                out.push(raw::SpatialEntityQueryFB::NAME.into());
+                out.push(raw::SpatialEntityQueryFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_storage {
-                out.push(raw::SpatialEntityStorageFB::NAME.into());
+                out.push(raw::SpatialEntityStorageFB::NAME);
             }
         }
         {
             if self.fb_foveation_vulkan {
-                out.push(raw::FoveationVulkanFB::NAME.into());
+                out.push(raw::FoveationVulkanFB::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.fb_swapchain_update_state_android_surface {
-                out.push(raw::SwapchainUpdateStateAndroidSurfaceFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateAndroidSurfaceFB::NAME);
             }
         }
         {
             if self.fb_swapchain_update_state_opengl_es {
-                out.push(raw::SwapchainUpdateStateOpenglEsFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateOpenglEsFB::NAME);
             }
         }
         {
             if self.fb_swapchain_update_state_vulkan {
-                out.push(raw::SwapchainUpdateStateVulkanFB::NAME.into());
+                out.push(raw::SwapchainUpdateStateVulkanFB::NAME);
             }
         }
         {
             if self.fb_touch_controller_pro {
-                out.push(raw::TouchControllerProFB::NAME.into());
+                out.push(raw::TouchControllerProFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_sharing {
-                out.push(raw::SpatialEntitySharingFB::NAME.into());
+                out.push(raw::SpatialEntitySharingFB::NAME);
             }
         }
         {
             if self.fb_space_warp {
-                out.push(raw::SpaceWarpFB::NAME.into());
+                out.push(raw::SpaceWarpFB::NAME);
             }
         }
         {
             if self.fb_haptic_amplitude_envelope {
-                out.push(raw::HapticAmplitudeEnvelopeFB::NAME.into());
+                out.push(raw::HapticAmplitudeEnvelopeFB::NAME);
             }
         }
         {
             if self.fb_scene {
-                out.push(raw::SceneFB::NAME.into());
+                out.push(raw::SceneFB::NAME);
             }
         }
         {
             if self.fb_scene_capture {
-                out.push(raw::SceneCaptureFB::NAME.into());
+                out.push(raw::SceneCaptureFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_container {
-                out.push(raw::SpatialEntityContainerFB::NAME.into());
+                out.push(raw::SpatialEntityContainerFB::NAME);
             }
         }
         {
             if self.fb_face_tracking {
-                out.push(raw::FaceTrackingFB::NAME.into());
+                out.push(raw::FaceTrackingFB::NAME);
             }
         }
         {
             if self.fb_eye_tracking_social {
-                out.push(raw::EyeTrackingSocialFB::NAME.into());
+                out.push(raw::EyeTrackingSocialFB::NAME);
             }
         }
         {
             if self.fb_passthrough_keyboard_hands {
-                out.push(raw::PassthroughKeyboardHandsFB::NAME.into());
+                out.push(raw::PassthroughKeyboardHandsFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_settings {
-                out.push(raw::CompositionLayerSettingsFB::NAME.into());
+                out.push(raw::CompositionLayerSettingsFB::NAME);
             }
         }
         {
             if self.fb_touch_controller_proximity {
-                out.push(raw::TouchControllerProximityFB::NAME.into());
+                out.push(raw::TouchControllerProximityFB::NAME);
             }
         }
         {
             if self.fb_haptic_pcm {
-                out.push(raw::HapticPcmFB::NAME.into());
+                out.push(raw::HapticPcmFB::NAME);
             }
         }
         {
             if self.fb_composition_layer_depth_test {
-                out.push(raw::CompositionLayerDepthTestFB::NAME.into());
+                out.push(raw::CompositionLayerDepthTestFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_storage_batch {
-                out.push(raw::SpatialEntityStorageBatchFB::NAME.into());
+                out.push(raw::SpatialEntityStorageBatchFB::NAME);
             }
         }
         {
             if self.fb_spatial_entity_user {
-                out.push(raw::SpatialEntityUserFB::NAME.into());
+                out.push(raw::SpatialEntityUserFB::NAME);
             }
         }
         {
             if self.fb_face_tracking2 {
-                out.push(raw::FaceTracking2FB::NAME.into());
+                out.push(raw::FaceTracking2FB::NAME);
             }
         }
         {
             if self.htc_vive_cosmos_controller_interaction {
-                out.push(raw::ViveCosmosControllerInteractionHTC::NAME.into());
+                out.push(raw::ViveCosmosControllerInteractionHTC::NAME);
             }
         }
         {
             if self.htc_facial_tracking {
-                out.push(raw::FacialTrackingHTC::NAME.into());
+                out.push(raw::FacialTrackingHTC::NAME);
             }
         }
         {
             if self.htc_vive_focus3_controller_interaction {
-                out.push(raw::ViveFocus3ControllerInteractionHTC::NAME.into());
+                out.push(raw::ViveFocus3ControllerInteractionHTC::NAME);
             }
         }
         {
             if self.htc_hand_interaction {
-                out.push(raw::HandInteractionHTC::NAME.into());
+                out.push(raw::HandInteractionHTC::NAME);
             }
         }
         {
             if self.htc_vive_wrist_tracker_interaction {
-                out.push(raw::ViveWristTrackerInteractionHTC::NAME.into());
+                out.push(raw::ViveWristTrackerInteractionHTC::NAME);
             }
         }
         {
             if self.htc_passthrough {
-                out.push(raw::PassthroughHTC::NAME.into());
+                out.push(raw::PassthroughHTC::NAME);
             }
         }
         {
             if self.htc_foveation {
-                out.push(raw::FoveationHTC::NAME.into());
+                out.push(raw::FoveationHTC::NAME);
             }
         }
         {
             if self.htc_anchor {
-                out.push(raw::AnchorHTC::NAME.into());
+                out.push(raw::AnchorHTC::NAME);
             }
         }
         {
             if self.huawei_controller_interaction {
-                out.push(raw::ControllerInteractionHUAWEI::NAME.into());
+                out.push(raw::ControllerInteractionHUAWEI::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_thread_settings {
-                out.push(raw::AndroidThreadSettingsKHR::NAME.into());
+                out.push(raw::AndroidThreadSettingsKHR::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_surface_swapchain {
-                out.push(raw::AndroidSurfaceSwapchainKHR::NAME.into());
+                out.push(raw::AndroidSurfaceSwapchainKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_cube {
-                out.push(raw::CompositionLayerCubeKHR::NAME.into());
+                out.push(raw::CompositionLayerCubeKHR::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_android_create_instance {
-                out.push(raw::AndroidCreateInstanceKHR::NAME.into());
+                out.push(raw::AndroidCreateInstanceKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_depth {
-                out.push(raw::CompositionLayerDepthKHR::NAME.into());
+                out.push(raw::CompositionLayerDepthKHR::NAME);
             }
         }
         {
             if self.khr_vulkan_swapchain_format_list {
-                out.push(raw::VulkanSwapchainFormatListKHR::NAME.into());
+                out.push(raw::VulkanSwapchainFormatListKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_cylinder {
-                out.push(raw::CompositionLayerCylinderKHR::NAME.into());
+                out.push(raw::CompositionLayerCylinderKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_equirect {
-                out.push(raw::CompositionLayerEquirectKHR::NAME.into());
+                out.push(raw::CompositionLayerEquirectKHR::NAME);
             }
         }
         {
             if self.khr_opengl_enable {
-                out.push(raw::OpenglEnableKHR::NAME.into());
+                out.push(raw::OpenglEnableKHR::NAME);
             }
         }
         {
             if self.khr_opengl_es_enable {
-                out.push(raw::OpenglEsEnableKHR::NAME.into());
+                out.push(raw::OpenglEsEnableKHR::NAME);
             }
         }
         {
             if self.khr_vulkan_enable {
-                out.push(raw::VulkanEnableKHR::NAME.into());
+                out.push(raw::VulkanEnableKHR::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.khr_d3d11_enable {
-                out.push(raw::D3d11EnableKHR::NAME.into());
+                out.push(raw::D3d11EnableKHR::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.khr_d3d12_enable {
-                out.push(raw::D3d12EnableKHR::NAME.into());
+                out.push(raw::D3d12EnableKHR::NAME);
             }
         }
         #[cfg(target_vendor = "apple")]
         {
             if self.khr_metal_enable {
-                out.push(raw::MetalEnableKHR::NAME.into());
+                out.push(raw::MetalEnableKHR::NAME);
             }
         }
         {
             if self.khr_visibility_mask {
-                out.push(raw::VisibilityMaskKHR::NAME.into());
+                out.push(raw::VisibilityMaskKHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_color_scale_bias {
-                out.push(raw::CompositionLayerColorScaleBiasKHR::NAME.into());
+                out.push(raw::CompositionLayerColorScaleBiasKHR::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.khr_win32_convert_performance_counter_time {
-                out.push(raw::Win32ConvertPerformanceCounterTimeKHR::NAME.into());
+                out.push(raw::Win32ConvertPerformanceCounterTimeKHR::NAME);
             }
         }
         {
             if self.khr_convert_timespec_time {
-                out.push(raw::ConvertTimespecTimeKHR::NAME.into());
+                out.push(raw::ConvertTimespecTimeKHR::NAME);
             }
         }
         {
             if self.khr_loader_init {
-                out.push(raw::LoaderInitKHR::NAME.into());
+                out.push(raw::LoaderInitKHR::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.khr_loader_init_android {
-                out.push(raw::LoaderInitAndroidKHR::NAME.into());
+                out.push(raw::LoaderInitAndroidKHR::NAME);
             }
         }
         {
             if self.khr_vulkan_enable2 {
-                out.push(raw::VulkanEnable2KHR::NAME.into());
+                out.push(raw::VulkanEnable2KHR::NAME);
             }
         }
         {
             if self.khr_composition_layer_equirect2 {
-                out.push(raw::CompositionLayerEquirect2KHR::NAME.into());
+                out.push(raw::CompositionLayerEquirect2KHR::NAME);
             }
         }
         {
             if self.khr_binding_modification {
-                out.push(raw::BindingModificationKHR::NAME.into());
+                out.push(raw::BindingModificationKHR::NAME);
             }
         }
         {
             if self.khr_swapchain_usage_input_attachment_bit {
-                out.push(raw::SwapchainUsageInputAttachmentBitKHR::NAME.into());
+                out.push(raw::SwapchainUsageInputAttachmentBitKHR::NAME);
             }
         }
         {
             if self.khr_locate_spaces {
-                out.push(raw::LocateSpacesKHR::NAME.into());
+                out.push(raw::LocateSpacesKHR::NAME);
             }
         }
         {
             if self.khr_maintenance1 {
-                out.push(raw::Maintenance1KHR::NAME.into());
+                out.push(raw::Maintenance1KHR::NAME);
             }
         }
         {
             if self.meta_foveation_eye_tracked {
-                out.push(raw::FoveationEyeTrackedMETA::NAME.into());
+                out.push(raw::FoveationEyeTrackedMETA::NAME);
             }
         }
         {
             if self.meta_local_dimming {
-                out.push(raw::LocalDimmingMETA::NAME.into());
+                out.push(raw::LocalDimmingMETA::NAME);
             }
         }
         {
             if self.meta_passthrough_preferences {
-                out.push(raw::PassthroughPreferencesMETA::NAME.into());
+                out.push(raw::PassthroughPreferencesMETA::NAME);
             }
         }
         {
             if self.meta_virtual_keyboard {
-                out.push(raw::VirtualKeyboardMETA::NAME.into());
+                out.push(raw::VirtualKeyboardMETA::NAME);
             }
         }
         {
             if self.meta_vulkan_swapchain_create_info {
-                out.push(raw::VulkanSwapchainCreateInfoMETA::NAME.into());
+                out.push(raw::VulkanSwapchainCreateInfoMETA::NAME);
             }
         }
         {
             if self.meta_performance_metrics {
-                out.push(raw::PerformanceMetricsMETA::NAME.into());
+                out.push(raw::PerformanceMetricsMETA::NAME);
             }
         }
         {
             if self.meta_headset_id {
-                out.push(raw::HeadsetIdMETA::NAME.into());
+                out.push(raw::HeadsetIdMETA::NAME);
             }
         }
         {
             if self.meta_recommended_layer_resolution {
-                out.push(raw::RecommendedLayerResolutionMETA::NAME.into());
+                out.push(raw::RecommendedLayerResolutionMETA::NAME);
             }
         }
         {
             if self.meta_passthrough_color_lut {
-                out.push(raw::PassthroughColorLutMETA::NAME.into());
+                out.push(raw::PassthroughColorLutMETA::NAME);
             }
         }
         {
             if self.meta_spatial_entity_mesh {
-                out.push(raw::SpatialEntityMeshMETA::NAME.into());
+                out.push(raw::SpatialEntityMeshMETA::NAME);
             }
         }
         {
             if self.meta_automatic_layer_filter {
-                out.push(raw::AutomaticLayerFilterMETA::NAME.into());
+                out.push(raw::AutomaticLayerFilterMETA::NAME);
             }
         }
         {
             if self.meta_touch_controller_plus {
-                out.push(raw::TouchControllerPlusMETA::NAME.into());
+                out.push(raw::TouchControllerPlusMETA::NAME);
             }
         }
         {
             if self.meta_environment_depth {
-                out.push(raw::EnvironmentDepthMETA::NAME.into());
+                out.push(raw::EnvironmentDepthMETA::NAME);
             }
         }
         {
             if self.ml_ml2_controller_interaction {
-                out.push(raw::Ml2ControllerInteractionML::NAME.into());
+                out.push(raw::Ml2ControllerInteractionML::NAME);
             }
         }
         {
             if self.ml_frame_end_info {
-                out.push(raw::FrameEndInfoML::NAME.into());
+                out.push(raw::FrameEndInfoML::NAME);
             }
         }
         {
             if self.ml_global_dimmer {
-                out.push(raw::GlobalDimmerML::NAME.into());
+                out.push(raw::GlobalDimmerML::NAME);
             }
         }
         {
             if self.ml_compat {
-                out.push(raw::CompatML::NAME.into());
+                out.push(raw::CompatML::NAME);
             }
         }
         {
             if self.ml_marker_understanding {
-                out.push(raw::MarkerUnderstandingML::NAME.into());
+                out.push(raw::MarkerUnderstandingML::NAME);
             }
         }
         {
             if self.ml_localization_map {
-                out.push(raw::LocalizationMapML::NAME.into());
+                out.push(raw::LocalizationMapML::NAME);
             }
         }
         {
             if self.ml_user_calibration {
-                out.push(raw::UserCalibrationML::NAME.into());
+                out.push(raw::UserCalibrationML::NAME);
             }
         }
         {
             if self.mnd_headless {
-                out.push(raw::HeadlessMND::NAME.into());
+                out.push(raw::HeadlessMND::NAME);
             }
         }
         {
             if self.mnd_swapchain_usage_input_attachment_bit {
-                out.push(raw::SwapchainUsageInputAttachmentBitMND::NAME.into());
+                out.push(raw::SwapchainUsageInputAttachmentBitMND::NAME);
             }
         }
         {
             if self.msft_unbounded_reference_space {
-                out.push(raw::UnboundedReferenceSpaceMSFT::NAME.into());
+                out.push(raw::UnboundedReferenceSpaceMSFT::NAME);
             }
         }
         {
             if self.msft_spatial_anchor {
-                out.push(raw::SpatialAnchorMSFT::NAME.into());
+                out.push(raw::SpatialAnchorMSFT::NAME);
             }
         }
         {
             if self.msft_spatial_graph_bridge {
-                out.push(raw::SpatialGraphBridgeMSFT::NAME.into());
+                out.push(raw::SpatialGraphBridgeMSFT::NAME);
             }
         }
         {
             if self.msft_hand_interaction {
-                out.push(raw::HandInteractionMSFT::NAME.into());
+                out.push(raw::HandInteractionMSFT::NAME);
             }
         }
         {
             if self.msft_hand_tracking_mesh {
-                out.push(raw::HandTrackingMeshMSFT::NAME.into());
+                out.push(raw::HandTrackingMeshMSFT::NAME);
             }
         }
         {
             if self.msft_secondary_view_configuration {
-                out.push(raw::SecondaryViewConfigurationMSFT::NAME.into());
+                out.push(raw::SecondaryViewConfigurationMSFT::NAME);
             }
         }
         {
             if self.msft_first_person_observer {
-                out.push(raw::FirstPersonObserverMSFT::NAME.into());
+                out.push(raw::FirstPersonObserverMSFT::NAME);
             }
         }
         {
             if self.msft_controller_model {
-                out.push(raw::ControllerModelMSFT::NAME.into());
+                out.push(raw::ControllerModelMSFT::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.msft_perception_anchor_interop {
-                out.push(raw::PerceptionAnchorInteropMSFT::NAME.into());
+                out.push(raw::PerceptionAnchorInteropMSFT::NAME);
             }
         }
         #[cfg(windows)]
         {
             if self.msft_holographic_window_attachment {
-                out.push(raw::HolographicWindowAttachmentMSFT::NAME.into());
+                out.push(raw::HolographicWindowAttachmentMSFT::NAME);
             }
         }
         {
             if self.msft_composition_layer_reprojection {
-                out.push(raw::CompositionLayerReprojectionMSFT::NAME.into());
+                out.push(raw::CompositionLayerReprojectionMSFT::NAME);
             }
         }
         {
             if self.msft_spatial_anchor_persistence {
-                out.push(raw::SpatialAnchorPersistenceMSFT::NAME.into());
+                out.push(raw::SpatialAnchorPersistenceMSFT::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
             if self.oculus_android_session_state_enable {
-                out.push(raw::AndroidSessionStateEnableOCULUS::NAME.into());
+                out.push(raw::AndroidSessionStateEnableOCULUS::NAME);
             }
         }
         {
             if self.oculus_audio_device_guid {
-                out.push(raw::AudioDeviceGuidOCULUS::NAME.into());
+                out.push(raw::AudioDeviceGuidOCULUS::NAME);
             }
         }
         {
             if self.oculus_external_camera {
-                out.push(raw::ExternalCameraOCULUS::NAME.into());
+                out.push(raw::ExternalCameraOCULUS::NAME);
             }
         }
         {
             if self.oppo_controller_interaction {
-                out.push(raw::ControllerInteractionOPPO::NAME.into());
+                out.push(raw::ControllerInteractionOPPO::NAME);
             }
         }
         {
             if self.qcom_tracking_optimization_settings {
-                out.push(raw::TrackingOptimizationSettingsQCOM::NAME.into());
+                out.push(raw::TrackingOptimizationSettingsQCOM::NAME);
             }
         }
         {
             if self.ultraleap_hand_tracking_forearm {
-                out.push(raw::HandTrackingForearmULTRALEAP::NAME.into());
+                out.push(raw::HandTrackingForearmULTRALEAP::NAME);
             }
         }
         {
             if self.valve_analog_threshold {
-                out.push(raw::AnalogThresholdVALVE::NAME.into());
+                out.push(raw::AnalogThresholdVALVE::NAME);
             }
         }
         {
             if self.varjo_quad_views {
-                out.push(raw::QuadViewsVARJO::NAME.into());
+                out.push(raw::QuadViewsVARJO::NAME);
             }
         }
         {
             if self.varjo_foveated_rendering {
-                out.push(raw::FoveatedRenderingVARJO::NAME.into());
+                out.push(raw::FoveatedRenderingVARJO::NAME);
             }
         }
         {
             if self.varjo_composition_layer_depth_test {
-                out.push(raw::CompositionLayerDepthTestVARJO::NAME.into());
+                out.push(raw::CompositionLayerDepthTestVARJO::NAME);
             }
         }
         {
             if self.varjo_environment_depth_estimation {
-                out.push(raw::EnvironmentDepthEstimationVARJO::NAME.into());
+                out.push(raw::EnvironmentDepthEstimationVARJO::NAME);
             }
         }
         {
             if self.varjo_marker_tracking {
-                out.push(raw::MarkerTrackingVARJO::NAME.into());
+                out.push(raw::MarkerTrackingVARJO::NAME);
             }
         }
         {
             if self.varjo_view_offset {
-                out.push(raw::ViewOffsetVARJO::NAME.into());
+                out.push(raw::ViewOffsetVARJO::NAME);
             }
         }
         {
             if self.varjo_xr4_controller_interaction {
-                out.push(raw::Xr4ControllerInteractionVARJO::NAME.into());
+                out.push(raw::Xr4ControllerInteractionVARJO::NAME);
             }
         }
         {
             if self.yvr_controller_interaction {
-                out.push(raw::ControllerInteractionYVR::NAME.into());
+                out.push(raw::ControllerInteractionYVR::NAME);
             }
         }
         {
             if self.extx_overlay {
-                out.push(raw::OverlayEXTX::NAME.into());
+                out.push(raw::OverlayEXTX::NAME);
             }
         }
         {
             if self.mndx_egl_enable {
-                out.push(raw::EglEnableMNDX::NAME.into());
+                out.push(raw::EglEnableMNDX::NAME);
             }
         }
         {
             if self.mndx_force_feedback_curl {
-                out.push(raw::ForceFeedbackCurlMNDX::NAME.into());
+                out.push(raw::ForceFeedbackCurlMNDX::NAME);
             }
         }
         {
             if self.htcx_vive_tracker_interaction {
-                out.push(raw::ViveTrackerInteractionHTCX::NAME.into());
+                out.push(raw::ViveTrackerInteractionHTCX::NAME);
             }
         }
-        for name in &self.other {
-            let mut bytes = Vec::with_capacity(name.len() + 1);
-            bytes.extend_from_slice(name.as_bytes());
-            bytes.push(0);
-            out.push(bytes.into());
-        }
+        out.extend(self.other.iter().map(|x| x.as_slice()));
         out
     }
 }

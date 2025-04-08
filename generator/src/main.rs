@@ -1352,6 +1352,8 @@ impl Parser {
         let mut ext_set_names = Vec::new();
         let mut ext_set_fields = Vec::new();
         let mut ext_set_inits = Vec::new();
+        let mut ext_diff_fields = Vec::new();
+        let mut ext_intersection_fields = Vec::new();
         for (tag_name, tag) in &self.extensions {
             for ext in &tag.extensions {
                 if self.disabled_exts.contains(&ext.name) {
@@ -1387,12 +1389,6 @@ impl Parser {
                     Span::call_site(),
                 );
                 let conds = conditions(&ext.name, Some(&ext.name));
-                let conds2 = conds.clone();
-                let conds3 = conds.clone();
-                let conds4 = conds.clone();
-                let conds5 = conds.clone();
-                let conds6 = conds.clone();
-                let conds7 = conds.clone();
                 let load = if ext.commands.is_empty() {
                     quote! {}
                 } else {
@@ -1416,7 +1412,7 @@ impl Parser {
                         #(#pfns,)*
                     }
 
-                    #conds2
+                    #conds
                     impl #ty_ident {
                         pub const #version_ident: u32 = sys::#version_const;
                         pub const #name_ident: &'static [u8] = sys::#name_const;
@@ -1425,31 +1421,39 @@ impl Parser {
                 });
                 let field_ident = Ident::new(&trimmed.to_snake_case(), Span::call_site());
                 ext_fields.push(quote! {
-                    #conds3
+                    #conds
                     pub #field_ident: Option<raw::#ty_ident>,
                 });
                 ext_field_inits.push(if ext.commands.is_empty() {
                     quote! {
-                        #conds4
+                        #conds
                         #field_ident: if required.#field_ident { Some(raw::#ty_ident {}) } else { None },
                     }
                 } else {
                     quote! {
-                        #conds4
+                        #conds
                         #field_ident: if required.#field_ident { Some(raw::#ty_ident::load(entry, instance)?) } else { None },
                     }
                 });
                 ext_set_names.push(quote! {
-                    #conds5
-                    { if self.#field_ident { out.push(raw::#ty_ident::NAME.into()); } }
+                    #conds
+                    { if self.#field_ident { out.push(raw::#ty_ident::NAME); } }
                 });
                 ext_set_inits.push(quote! {
-                    #conds6
+                    #conds
                     raw::#ty_ident::NAME => { out.#field_ident = true; }
                 });
                 ext_set_fields.push(quote! {
-                    #conds7
+                    #conds
                     pub #field_ident: bool,
+                });
+                ext_diff_fields.push(quote! {
+                    #conds
+                    #field_ident: self.#field_ident && !other.#field_ident,
+                });
+                ext_intersection_fields.push(quote! {
+                    #conds
+                    #field_ident: self.#field_ident && other.#field_ident,
                 });
             }
         }
@@ -1558,9 +1562,8 @@ impl Parser {
             //! Automatically generated code; do not edit!
 
             #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr, clippy::missing_transmute_annotations)]
-            use std::borrow::Cow;
-            use std::ffi::CStr;
             use std::mem::MaybeUninit;
+            use std::iter::FromIterator;
             pub use sys::{#(#reexports),*};
             pub use sys::platform::{EGLenum, VkFilter, VkSamplerMipmapMode, VkSamplerAddressMode, VkComponentSwizzle};
 
@@ -1572,38 +1575,60 @@ impl Parser {
             pub struct ExtensionSet {
                 #(#ext_set_fields)*
                 /// Extensions unknown to the high-level bindings
-                pub other: Vec<String>,
+                pub other: Vec<Vec<u8>>,
             }
 
-            impl ExtensionSet {
-                pub(crate) fn from_properties(properties: &[sys::ExtensionProperties]) -> Self {
+            /// Create a ExtensionSet from a list of nul-terminated extension names
+            impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
+                fn from_iter<I>(iter: I) -> Self
+                where
+                    I: IntoIterator<Item = &'a [u8]>,
+                {
                     let mut out = Self::default();
-                    for ext in properties {
-                        match crate::fixed_str_bytes(&ext.extension_name) {
+                    for name in iter {
+                        match name {
                             #(#ext_set_inits)*
-                            bytes => {
-                                let cstr = CStr::from_bytes_with_nul(bytes)
-                                    .expect("extension names should be null terminated strings");
-                                let string = cstr
-                                    .to_str()
-                                    .expect("extension names should be valid UTF-8")
-                                    .to_string();
-                                out.other.push(string);
-                            }
+                            bytes => out.other.push(bytes.to_vec()),
                         }
                     }
                     out
                 }
+            }
 
-                pub(crate) fn names(&self) -> Vec<Cow<'static, [u8]>> {
+            impl ExtensionSet {
+                /// Return `self` without the members set in `other`.
+                #[inline]
+                pub fn difference(&self, other: &Self) -> Self {
+                    Self {
+                        #(#ext_diff_fields)*
+                        other: self.other
+                            .iter()
+                            .collect::<std::collections::HashSet<_>>()
+                            .difference(&other.other.iter().collect())
+                            .map(|x| x.to_vec())
+                            .collect(),
+                    }
+                }
+
+                /// Return the intersection of `self` and `other`, i.e. fields set in both
+                #[inline]
+                pub fn intersection(&self, other: &Self) -> Self {
+                    Self {
+                        #(#ext_intersection_fields)*
+                        other: self.other
+                            .iter()
+                            .collect::<std::collections::HashSet<_>>()
+                            .intersection(&other.other.iter().collect())
+                            .map(|x| x.to_vec())
+                            .collect(),
+                    }
+                }
+
+                /// Return names of supported extensions, as a `Vec` of nul terminated byte slices.
+                pub fn names(&self) -> Vec<&[u8]> {
                     let mut out = Vec::new();
                     #(#ext_set_names)*
-                    for name in &self.other {
-                        let mut bytes = Vec::with_capacity(name.len() + 1);
-                        bytes.extend_from_slice(name.as_bytes());
-                        bytes.push(0);
-                        out.push(bytes.into());
-                    }
+                    out.extend(self.other.iter().map(|x| x.as_slice()));
                     out
                 }
             }
