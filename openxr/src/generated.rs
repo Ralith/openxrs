@@ -3880,7 +3880,7 @@ impl<'a> UserPresenceChangedEXT<'a> {
 }
 pub mod raw {
     use crate::{Entry, Result};
-    use std::{ffi::CStr, mem};
+    use std::mem;
     use sys::pfn;
     #[derive(Copy, Clone)]
     pub struct Instance {
@@ -3949,253 +3949,191 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_instance_proc_addr: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProcAddr\0"),
-                    )?),
+                    get_instance_proc_addr: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetInstanceProcAddr")?,
+                    ),
                     enumerate_api_layer_properties: entry
-                        .get_instance_proc_addr(
-                            instance,
-                            CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
-                        )
+                        .get_instance_proc_addr(instance, c"xrEnumerateApiLayerProperties")
                         .map(|s| mem::transmute(s))
                         .unwrap_or(crate::stub_enumerate_api_layer_properties),
                     enumerate_instance_extension_properties: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateInstanceExtensionProperties\0",
-                            ),
+                            c"xrEnumerateInstanceExtensionProperties",
                         )?,
                     ),
-                    create_instance: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
-                    )?),
-                    destroy_instance: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyInstance\0"),
-                    )?),
-                    result_to_string: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrResultToString\0"),
-                    )?),
-                    structure_type_to_string: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrStructureTypeToString\0"),
-                    )?),
-                    get_instance_properties: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProperties\0"),
-                    )?),
-                    get_system: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSystem\0"),
-                    )?),
-                    get_system_properties: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSystemProperties\0"),
-                    )?),
-                    create_session: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSession\0"),
-                    )?),
-                    destroy_session: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySession\0"),
-                    )?),
-                    destroy_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySpace\0"),
-                    )?),
-                    enumerate_swapchain_formats: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainFormats\0"),
-                    )?),
-                    create_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSwapchain\0"),
-                    )?),
-                    destroy_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySwapchain\0"),
-                    )?),
-                    enumerate_swapchain_images: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainImages\0"),
-                    )?),
-                    acquire_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrAcquireSwapchainImage\0"),
-                    )?),
-                    wait_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrWaitSwapchainImage\0"),
-                    )?),
-                    release_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrReleaseSwapchainImage\0"),
-                    )?),
-                    begin_session: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrBeginSession\0"),
-                    )?),
-                    end_session: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEndSession\0"),
-                    )?),
-                    request_exit_session: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrRequestExitSession\0"),
-                    )?),
-                    enumerate_reference_spaces: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReferenceSpaces\0"),
-                    )?),
-                    create_reference_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateReferenceSpace\0"),
-                    )?),
-                    create_action_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSpace\0"),
-                    )?),
-                    locate_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLocateSpace\0"),
-                    )?),
-                    enumerate_view_configurations: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViewConfigurations\0"),
-                    )?),
+                    create_instance: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateInstance")?,
+                    ),
+                    destroy_instance: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyInstance")?,
+                    ),
+                    result_to_string: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrResultToString")?,
+                    ),
+                    structure_type_to_string: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrStructureTypeToString")?,
+                    ),
+                    get_instance_properties: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetInstanceProperties")?,
+                    ),
+                    get_system: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSystem")?,
+                    ),
+                    get_system_properties: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSystemProperties")?,
+                    ),
+                    create_session: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSession")?,
+                    ),
+                    destroy_session: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySession")?,
+                    ),
+                    destroy_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySpace")?,
+                    ),
+                    enumerate_swapchain_formats: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEnumerateSwapchainFormats")?,
+                    ),
+                    create_swapchain: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSwapchain")?,
+                    ),
+                    destroy_swapchain: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySwapchain")?,
+                    ),
+                    enumerate_swapchain_images: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEnumerateSwapchainImages")?,
+                    ),
+                    acquire_swapchain_image: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrAcquireSwapchainImage")?,
+                    ),
+                    wait_swapchain_image: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrWaitSwapchainImage")?,
+                    ),
+                    release_swapchain_image: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrReleaseSwapchainImage")?,
+                    ),
+                    begin_session: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrBeginSession")?,
+                    ),
+                    end_session: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEndSession")?,
+                    ),
+                    request_exit_session: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrRequestExitSession")?,
+                    ),
+                    enumerate_reference_spaces: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEnumerateReferenceSpaces")?,
+                    ),
+                    create_reference_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateReferenceSpace")?,
+                    ),
+                    create_action_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateActionSpace")?,
+                    ),
+                    locate_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrLocateSpace")?,
+                    ),
+                    enumerate_view_configurations: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEnumerateViewConfigurations")?,
+                    ),
                     enumerate_environment_blend_modes: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateEnvironmentBlendModes\0",
-                            ),
+                            c"xrEnumerateEnvironmentBlendModes",
                         )?,
                     ),
                     get_view_configuration_properties: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetViewConfigurationProperties\0",
-                            ),
+                            c"xrGetViewConfigurationProperties",
                         )?,
                     ),
                     enumerate_view_configuration_views: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateViewConfigurationViews\0",
-                            ),
+                            c"xrEnumerateViewConfigurationViews",
                         )?,
                     ),
-                    begin_frame: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrBeginFrame\0"),
-                    )?),
-                    locate_views: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLocateViews\0"),
-                    )?),
-                    end_frame: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEndFrame\0"),
-                    )?),
-                    wait_frame: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrWaitFrame\0"),
-                    )?),
-                    apply_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrApplyHapticFeedback\0"),
-                    )?),
-                    stop_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrStopHapticFeedback\0"),
-                    )?),
-                    poll_event: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPollEvent\0"),
-                    )?),
-                    string_to_path: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrStringToPath\0"),
-                    )?),
-                    path_to_string: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPathToString\0"),
-                    )?),
-                    get_reference_space_bounds_rect: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetReferenceSpaceBoundsRect\0"),
-                    )?),
-                    get_action_state_boolean: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateBoolean\0"),
-                    )?),
-                    get_action_state_float: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateFloat\0"),
-                    )?),
-                    get_action_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector2f\0"),
-                    )?),
-                    get_action_state_pose: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStatePose\0"),
-                    )?),
-                    create_action_set: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSet\0"),
-                    )?),
-                    destroy_action_set: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyActionSet\0"),
-                    )?),
-                    create_action: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateAction\0"),
-                    )?),
-                    destroy_action: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyAction\0"),
-                    )?),
+                    begin_frame: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrBeginFrame")?,
+                    ),
+                    locate_views: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrLocateViews")?,
+                    ),
+                    end_frame: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEndFrame")?,
+                    ),
+                    wait_frame: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrWaitFrame")?,
+                    ),
+                    apply_haptic_feedback: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrApplyHapticFeedback")?,
+                    ),
+                    stop_haptic_feedback: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrStopHapticFeedback")?,
+                    ),
+                    poll_event: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPollEvent")?,
+                    ),
+                    string_to_path: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrStringToPath")?,
+                    ),
+                    path_to_string: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPathToString")?,
+                    ),
+                    get_reference_space_bounds_rect: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetReferenceSpaceBoundsRect")?,
+                    ),
+                    get_action_state_boolean: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetActionStateBoolean")?,
+                    ),
+                    get_action_state_float: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetActionStateFloat")?,
+                    ),
+                    get_action_state_vector2f: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetActionStateVector2f")?,
+                    ),
+                    get_action_state_pose: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetActionStatePose")?,
+                    ),
+                    create_action_set: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateActionSet")?,
+                    ),
+                    destroy_action_set: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyActionSet")?,
+                    ),
+                    create_action: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateAction")?,
+                    ),
+                    destroy_action: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyAction")?,
+                    ),
                     suggest_interaction_profile_bindings: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSuggestInteractionProfileBindings\0",
-                            ),
+                            c"xrSuggestInteractionProfileBindings",
                         )?,
                     ),
-                    attach_session_action_sets: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrAttachSessionActionSets\0"),
-                    )?),
-                    get_current_interaction_profile: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetCurrentInteractionProfile\0"),
-                    )?),
-                    sync_actions: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSyncActions\0"),
-                    )?),
+                    attach_session_action_sets: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrAttachSessionActionSets")?,
+                    ),
+                    get_current_interaction_profile: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrGetCurrentInteractionProfile")?,
+                    ),
+                    sync_actions: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSyncActions")?,
+                    ),
                     enumerate_bound_sources_for_action: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateBoundSourcesForAction\0",
-                            ),
+                            c"xrEnumerateBoundSourcesForAction",
                         )?,
                     ),
-                    get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetInputSourceLocalizedName\0"),
-                    )?),
+                    get_input_source_localized_name: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetInputSourceLocalizedName")?,
+                    ),
                 })
             }
         }
@@ -4215,10 +4153,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    set_digital_lens_control: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetDigitalLensControlALMALENCE\0"),
-                    )?),
+                    set_digital_lens_control: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrSetDigitalLensControlALMALENCE",
+                        )?,
+                    ),
                 })
             }
         }
@@ -4253,9 +4193,7 @@ pub mod raw {
                     perf_settings_set_performance_level: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrPerfSettingsSetPerformanceLevelEXT\0",
-                            ),
+                            c"xrPerfSettingsSetPerformanceLevelEXT",
                         )?,
                     ),
                 })
@@ -4277,10 +4215,10 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    thermal_get_temperature_trend: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrThermalGetTemperatureTrendEXT\0"),
-                    )?),
+                    thermal_get_temperature_trend: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrThermalGetTemperatureTrendEXT")?,
+                    ),
                 })
             }
         }
@@ -4306,44 +4244,36 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    set_debug_utils_object_name: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetDebugUtilsObjectNameEXT\0"),
-                    )?),
-                    create_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateDebugUtilsMessengerEXT\0"),
-                    )?),
-                    destroy_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyDebugUtilsMessengerEXT\0"),
-                    )?),
-                    submit_debug_utils_message: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSubmitDebugUtilsMessageEXT\0"),
-                    )?),
+                    set_debug_utils_object_name: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetDebugUtilsObjectNameEXT")?,
+                    ),
+                    create_debug_utils_messenger: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrCreateDebugUtilsMessengerEXT")?,
+                    ),
+                    destroy_debug_utils_messenger: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrDestroyDebugUtilsMessengerEXT")?,
+                    ),
+                    submit_debug_utils_message: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSubmitDebugUtilsMessageEXT")?,
+                    ),
                     session_begin_debug_utils_label_region: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSessionBeginDebugUtilsLabelRegionEXT\0",
-                            ),
+                            c"xrSessionBeginDebugUtilsLabelRegionEXT",
                         )?,
                     ),
                     session_end_debug_utils_label_region: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSessionEndDebugUtilsLabelRegionEXT\0",
-                            ),
+                            c"xrSessionEndDebugUtilsLabelRegionEXT",
                         )?,
                     ),
                     session_insert_debug_utils_label: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSessionInsertDebugUtilsLabelEXT\0",
-                            ),
+                            c"xrSessionInsertDebugUtilsLabelEXT",
                         )?,
                     ),
                 })
@@ -4381,26 +4311,24 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    set_input_device_active: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceActiveEXT\0"),
-                    )?),
-                    set_input_device_state_bool: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateBoolEXT\0"),
-                    )?),
-                    set_input_device_state_float: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateFloatEXT\0"),
-                    )?),
-                    set_input_device_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateVector2fEXT\0"),
-                    )?),
-                    set_input_device_location: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceLocationEXT\0"),
-                    )?),
+                    set_input_device_active: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetInputDeviceActiveEXT")?,
+                    ),
+                    set_input_device_state_bool: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetInputDeviceStateBoolEXT")?,
+                    ),
+                    set_input_device_state_float: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetInputDeviceStateFloatEXT")?,
+                    ),
+                    set_input_device_state_vector2f: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrSetInputDeviceStateVector2fEXT",
+                        )?,
+                    ),
+                    set_input_device_location: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetInputDeviceLocationEXT")?,
+                    ),
                 })
             }
         }
@@ -4422,18 +4350,15 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateHandTrackerEXT\0"),
-                    )?),
-                    destroy_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyHandTrackerEXT\0"),
-                    )?),
-                    locate_hand_joints: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLocateHandJointsEXT\0"),
-                    )?),
+                    create_hand_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateHandTrackerEXT")?,
+                    ),
+                    destroy_hand_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyHandTrackerEXT")?,
+                    ),
+                    locate_hand_joints: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrLocateHandJointsEXT")?,
+                    ),
                 })
             }
         }
@@ -4526,30 +4451,24 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_plane_detector: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePlaneDetectorEXT\0"),
-                    )?),
-                    destroy_plane_detector: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPlaneDetectorEXT\0"),
-                    )?),
-                    begin_plane_detection: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrBeginPlaneDetectionEXT\0"),
-                    )?),
-                    get_plane_detection_state: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetPlaneDetectionStateEXT\0"),
-                    )?),
-                    get_plane_detections: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetPlaneDetectionsEXT\0"),
-                    )?),
-                    get_plane_polygon_buffer: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetPlanePolygonBufferEXT\0"),
-                    )?),
+                    create_plane_detector: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreatePlaneDetectorEXT")?,
+                    ),
+                    destroy_plane_detector: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyPlaneDetectorEXT")?,
+                    ),
+                    begin_plane_detection: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrBeginPlaneDetectionEXT")?,
+                    ),
+                    get_plane_detection_state: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetPlaneDetectionStateEXT")?,
+                    ),
+                    get_plane_detections: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetPlaneDetectionsEXT")?,
+                    ),
+                    get_plane_polygon_buffer: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetPlanePolygonBufferEXT")?,
+                    ),
                 })
             }
         }
@@ -4570,14 +4489,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    poll_future: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPollFutureEXT\0"),
-                    )?),
-                    cancel_future: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCancelFutureEXT\0"),
-                    )?),
+                    poll_future: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPollFutureEXT")?,
+                    ),
+                    cancel_future: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCancelFutureEXT")?,
+                    ),
                 })
             }
         }
@@ -4630,14 +4547,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    update_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrUpdateSwapchainFB\0"),
-                    )?),
-                    get_swapchain_state: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSwapchainStateFB\0"),
-                    )?),
+                    update_swapchain: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrUpdateSwapchainFB")?,
+                    ),
+                    get_swapchain_state: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSwapchainStateFB")?,
+                    ),
                 })
             }
         }
@@ -4666,22 +4581,18 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_body_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateBodyTrackerFB\0"),
-                    )?),
-                    destroy_body_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyBodyTrackerFB\0"),
-                    )?),
-                    locate_body_joints: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLocateBodyJointsFB\0"),
-                    )?),
-                    get_body_skeleton: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetBodySkeletonFB\0"),
-                    )?),
+                    create_body_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateBodyTrackerFB")?,
+                    ),
+                    destroy_body_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyBodyTrackerFB")?,
+                    ),
+                    locate_body_joints: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrLocateBodyJointsFB")?,
+                    ),
+                    get_body_skeleton: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetBodySkeletonFB")?,
+                    ),
                 })
             }
         }
@@ -4703,18 +4614,18 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enumerate_display_refresh_rates: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateDisplayRefreshRatesFB\0"),
-                    )?),
-                    get_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetDisplayRefreshRateFB\0"),
-                    )?),
-                    request_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrRequestDisplayRefreshRateFB\0"),
-                    )?),
+                    enumerate_display_refresh_rates: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrEnumerateDisplayRefreshRatesFB",
+                        )?,
+                    ),
+                    get_display_refresh_rate: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetDisplayRefreshRateFB")?,
+                    ),
+                    request_display_refresh_rate: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrRequestDisplayRefreshRateFB")?,
+                    ),
                 })
             }
         }
@@ -4735,14 +4646,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enumerate_color_spaces: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateColorSpacesFB\0"),
-                    )?),
-                    set_color_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetColorSpaceFB\0"),
-                    )?),
+                    enumerate_color_spaces: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEnumerateColorSpacesFB")?,
+                    ),
+                    set_color_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetColorSpaceFB")?,
+                    ),
                 })
             }
         }
@@ -4762,10 +4671,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetHandMeshFB\0"),
-                    )?),
+                    get_hand_mesh: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetHandMeshFB")?,
+                    ),
                 })
             }
         }
@@ -4801,30 +4709,24 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorFB\0"),
-                    )?),
-                    get_space_uuid: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceUuidFB\0"),
-                    )?),
+                    create_spatial_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSpatialAnchorFB")?,
+                    ),
+                    get_space_uuid: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceUuidFB")?,
+                    ),
                     enumerate_space_supported_components: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateSpaceSupportedComponentsFB\0",
-                            ),
+                            c"xrEnumerateSpaceSupportedComponentsFB",
                         )?,
                     ),
-                    set_space_component_status: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetSpaceComponentStatusFB\0"),
-                    )?),
-                    get_space_component_status: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceComponentStatusFB\0"),
-                    )?),
+                    set_space_component_status: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetSpaceComponentStatusFB")?,
+                    ),
+                    get_space_component_status: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceComponentStatusFB")?,
+                    ),
                 })
             }
         }
@@ -4845,14 +4747,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFoveationProfileFB\0"),
-                    )?),
-                    destroy_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFoveationProfileFB\0"),
-                    )?),
+                    create_foveation_profile: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateFoveationProfileFB")?,
+                    ),
+                    destroy_foveation_profile: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyFoveationProfileFB")?,
+                    ),
                 })
             }
         }
@@ -4879,14 +4779,13 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    query_system_tracked_keyboard: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrQuerySystemTrackedKeyboardFB\0"),
-                    )?),
-                    create_keyboard_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateKeyboardSpaceFB\0"),
-                    )?),
+                    query_system_tracked_keyboard: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrQuerySystemTrackedKeyboardFB")?,
+                    ),
+                    create_keyboard_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateKeyboardSpaceFB")?,
+                    ),
                 })
             }
         }
@@ -4913,44 +4812,36 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateTriangleMeshFB\0"),
-                    )?),
-                    destroy_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyTriangleMeshFB\0"),
-                    )?),
-                    triangle_mesh_get_vertex_buffer: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetVertexBufferFB\0"),
-                    )?),
-                    triangle_mesh_get_index_buffer: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetIndexBufferFB\0"),
-                    )?),
-                    triangle_mesh_begin_update: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshBeginUpdateFB\0"),
-                    )?),
-                    triangle_mesh_end_update: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshEndUpdateFB\0"),
-                    )?),
+                    create_triangle_mesh: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateTriangleMeshFB")?,
+                    ),
+                    destroy_triangle_mesh: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyTriangleMeshFB")?,
+                    ),
+                    triangle_mesh_get_vertex_buffer: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrTriangleMeshGetVertexBufferFB")?,
+                    ),
+                    triangle_mesh_get_index_buffer: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrTriangleMeshGetIndexBufferFB")?,
+                    ),
+                    triangle_mesh_begin_update: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrTriangleMeshBeginUpdateFB")?,
+                    ),
+                    triangle_mesh_end_update: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrTriangleMeshEndUpdateFB")?,
+                    ),
                     triangle_mesh_begin_vertex_buffer_update: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrTriangleMeshBeginVertexBufferUpdateFB\0",
-                            ),
+                            c"xrTriangleMeshBeginVertexBufferUpdateFB",
                         )?,
                     ),
                     triangle_mesh_end_vertex_buffer_update: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrTriangleMeshEndVertexBufferUpdateFB\0",
-                            ),
+                            c"xrTriangleMeshEndVertexBufferUpdateFB",
                         )?,
                     ),
                 })
@@ -4983,54 +4874,45 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughFB\0"),
-                    )?),
-                    destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughFB\0"),
-                    )?),
-                    passthrough_start: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughStartFB\0"),
-                    )?),
-                    passthrough_pause: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughPauseFB\0"),
-                    )?),
-                    create_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughLayerFB\0"),
-                    )?),
-                    destroy_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughLayerFB\0"),
-                    )?),
-                    passthrough_layer_pause: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerPauseFB\0"),
-                    )?),
-                    passthrough_layer_resume: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerResumeFB\0"),
-                    )?),
-                    passthrough_layer_set_style: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerSetStyleFB\0"),
-                    )?),
-                    create_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateGeometryInstanceFB\0"),
-                    )?),
-                    destroy_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyGeometryInstanceFB\0"),
-                    )?),
-                    geometry_instance_set_transform: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGeometryInstanceSetTransformFB\0"),
-                    )?),
+                    create_passthrough: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreatePassthroughFB")?,
+                    ),
+                    destroy_passthrough: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyPassthroughFB")?,
+                    ),
+                    passthrough_start: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPassthroughStartFB")?,
+                    ),
+                    passthrough_pause: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPassthroughPauseFB")?,
+                    ),
+                    create_passthrough_layer: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreatePassthroughLayerFB")?,
+                    ),
+                    destroy_passthrough_layer: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyPassthroughLayerFB")?,
+                    ),
+                    passthrough_layer_pause: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPassthroughLayerPauseFB")?,
+                    ),
+                    passthrough_layer_resume: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPassthroughLayerResumeFB")?,
+                    ),
+                    passthrough_layer_set_style: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPassthroughLayerSetStyleFB")?,
+                    ),
+                    create_geometry_instance: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateGeometryInstanceFB")?,
+                    ),
+                    destroy_geometry_instance: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyGeometryInstanceFB")?,
+                    ),
+                    geometry_instance_set_transform: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGeometryInstanceSetTransformFB",
+                        )?,
+                    ),
                 })
             }
         }
@@ -5052,18 +4934,15 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enumerate_render_model_paths: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateRenderModelPathsFB\0"),
-                    )?),
-                    get_render_model_properties: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetRenderModelPropertiesFB\0"),
-                    )?),
-                    load_render_model: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLoadRenderModelFB\0"),
-                    )?),
+                    enumerate_render_model_paths: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEnumerateRenderModelPathsFB")?,
+                    ),
+                    get_render_model_properties: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetRenderModelPropertiesFB")?,
+                    ),
+                    load_render_model: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrLoadRenderModelFB")?,
+                    ),
                 })
             }
         }
@@ -5084,14 +4963,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    query_spaces: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrQuerySpacesFB\0"),
-                    )?),
-                    retrieve_space_query_results: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrRetrieveSpaceQueryResultsFB\0"),
-                    )?),
+                    query_spaces: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrQuerySpacesFB")?,
+                    ),
+                    retrieve_space_query_results: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrRetrieveSpaceQueryResultsFB")?,
+                    ),
                 })
             }
         }
@@ -5112,14 +4989,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    save_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSaveSpaceFB\0"),
-                    )?),
-                    erase_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEraseSpaceFB\0"),
-                    )?),
+                    save_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSaveSpaceFB")?,
+                    ),
+                    erase_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEraseSpaceFB")?,
+                    ),
                 })
             }
         }
@@ -5172,10 +5047,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    share_spaces: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrShareSpacesFB\0"),
-                    )?),
+                    share_spaces: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrShareSpacesFB")?,
+                    ),
                 })
             }
         }
@@ -5211,26 +5085,21 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_space_bounding_box2_d: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox2DFB\0"),
-                    )?),
-                    get_space_bounding_box3_d: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox3DFB\0"),
-                    )?),
-                    get_space_semantic_labels: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceSemanticLabelsFB\0"),
-                    )?),
-                    get_space_boundary2_d: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundary2DFB\0"),
-                    )?),
-                    get_space_room_layout: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceRoomLayoutFB\0"),
-                    )?),
+                    get_space_bounding_box2_d: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceBoundingBox2DFB")?,
+                    ),
+                    get_space_bounding_box3_d: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceBoundingBox3DFB")?,
+                    ),
+                    get_space_semantic_labels: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceSemanticLabelsFB")?,
+                    ),
+                    get_space_boundary2_d: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceBoundary2DFB")?,
+                    ),
+                    get_space_room_layout: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceRoomLayoutFB")?,
+                    ),
                 })
             }
         }
@@ -5250,10 +5119,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    request_scene_capture: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrRequestSceneCaptureFB\0"),
-                    )?),
+                    request_scene_capture: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrRequestSceneCaptureFB")?,
+                    ),
                 })
             }
         }
@@ -5273,10 +5141,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_space_container: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceContainerFB\0"),
-                    )?),
+                    get_space_container: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceContainerFB")?,
+                    ),
                 })
             }
         }
@@ -5298,18 +5165,15 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_face_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFaceTrackerFB\0"),
-                    )?),
-                    destroy_face_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFaceTrackerFB\0"),
-                    )?),
-                    get_face_expression_weights: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetFaceExpressionWeightsFB\0"),
-                    )?),
+                    create_face_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateFaceTrackerFB")?,
+                    ),
+                    destroy_face_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyFaceTrackerFB")?,
+                    ),
+                    get_face_expression_weights: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetFaceExpressionWeightsFB")?,
+                    ),
                 })
             }
         }
@@ -5331,18 +5195,15 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_eye_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateEyeTrackerFB\0"),
-                    )?),
-                    destroy_eye_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyEyeTrackerFB\0"),
-                    )?),
-                    get_eye_gazes: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetEyeGazesFB\0"),
-                    )?),
+                    create_eye_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateEyeTrackerFB")?,
+                    ),
+                    destroy_eye_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyEyeTrackerFB")?,
+                    ),
+                    get_eye_gazes: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetEyeGazesFB")?,
+                    ),
                 })
             }
         }
@@ -5366,9 +5227,7 @@ pub mod raw {
                     passthrough_layer_set_keyboard_hands_intensity: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrPassthroughLayerSetKeyboardHandsIntensityFB\0",
-                            ),
+                            c"xrPassthroughLayerSetKeyboardHandsIntensityFB",
                         )?,
                     ),
                 })
@@ -5402,10 +5261,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_device_sample_rate: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetDeviceSampleRateFB\0"),
-                    )?),
+                    get_device_sample_rate: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetDeviceSampleRateFB")?,
+                    ),
                 })
             }
         }
@@ -5431,10 +5289,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    save_space_list: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSaveSpaceListFB\0"),
-                    )?),
+                    save_space_list: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSaveSpaceListFB")?,
+                    ),
                 })
             }
         }
@@ -5456,18 +5313,15 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_space_user: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpaceUserFB\0"),
-                    )?),
-                    get_space_user_id: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceUserIdFB\0"),
-                    )?),
-                    destroy_space_user: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySpaceUserFB\0"),
-                    )?),
+                    create_space_user: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSpaceUserFB")?,
+                    ),
+                    get_space_user_id: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceUserIdFB")?,
+                    ),
+                    destroy_space_user: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySpaceUserFB")?,
+                    ),
                 })
             }
         }
@@ -5489,18 +5343,15 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFaceTracker2FB\0"),
-                    )?),
-                    destroy_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFaceTracker2FB\0"),
-                    )?),
-                    get_face_expression_weights2: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetFaceExpressionWeights2FB\0"),
-                    )?),
+                    create_face_tracker2: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateFaceTracker2FB")?,
+                    ),
+                    destroy_face_tracker2: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyFaceTracker2FB")?,
+                    ),
+                    get_face_expression_weights2: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetFaceExpressionWeights2FB")?,
+                    ),
                 })
             }
         }
@@ -5528,18 +5379,15 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFacialTrackerHTC\0"),
-                    )?),
-                    destroy_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFacialTrackerHTC\0"),
-                    )?),
-                    get_facial_expressions: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetFacialExpressionsHTC\0"),
-                    )?),
+                    create_facial_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateFacialTrackerHTC")?,
+                    ),
+                    destroy_facial_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyFacialTrackerHTC")?,
+                    ),
+                    get_facial_expressions: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetFacialExpressionsHTC")?,
+                    ),
                 })
             }
         }
@@ -5578,14 +5426,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughHTC\0"),
-                    )?),
-                    destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughHTC\0"),
-                    )?),
+                    create_passthrough: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreatePassthroughHTC")?,
+                    ),
+                    destroy_passthrough: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyPassthroughHTC")?,
+                    ),
                 })
             }
         }
@@ -5605,10 +5451,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    apply_foveation: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrApplyFoveationHTC\0"),
-                    )?),
+                    apply_foveation: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrApplyFoveationHTC")?,
+                    ),
                 })
             }
         }
@@ -5629,14 +5474,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorHTC\0"),
-                    )?),
-                    get_spatial_anchor_name: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpatialAnchorNameHTC\0"),
-                    )?),
+                    create_spatial_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSpatialAnchorHTC")?,
+                    ),
+                    get_spatial_anchor_name: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpatialAnchorNameHTC")?,
+                    ),
                 })
             }
         }
@@ -5664,10 +5507,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    set_android_application_thread: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetAndroidApplicationThreadKHR\0"),
-                    )?),
+                    set_android_application_thread: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrSetAndroidApplicationThreadKHR",
+                        )?,
+                    ),
                 })
             }
         }
@@ -5692,9 +5537,7 @@ pub mod raw {
                     create_swapchain_android_surface: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateSwapchainAndroidSurfaceKHR\0",
-                            ),
+                            c"xrCreateSwapchainAndroidSurfaceKHR",
                         )?,
                     ),
                 })
@@ -5757,9 +5600,7 @@ pub mod raw {
                     get_open_gl_graphics_requirements: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetOpenGLGraphicsRequirementsKHR\0",
-                            ),
+                            c"xrGetOpenGLGraphicsRequirementsKHR",
                         )?,
                     ),
                 })
@@ -5784,9 +5625,7 @@ pub mod raw {
                     get_open_gles_graphics_requirements: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetOpenGLESGraphicsRequirementsKHR\0",
-                            ),
+                            c"xrGetOpenGLESGraphicsRequirementsKHR",
                         )?,
                     ),
                 })
@@ -5811,24 +5650,23 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_vulkan_instance_extensions: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanInstanceExtensionsKHR\0"),
-                    )?),
-                    get_vulkan_device_extensions: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanDeviceExtensionsKHR\0"),
-                    )?),
-                    get_vulkan_graphics_device: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDeviceKHR\0"),
-                    )?),
+                    get_vulkan_instance_extensions: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetVulkanInstanceExtensionsKHR",
+                        )?,
+                    ),
+                    get_vulkan_device_extensions: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrGetVulkanDeviceExtensionsKHR")?,
+                    ),
+                    get_vulkan_graphics_device: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetVulkanGraphicsDeviceKHR")?,
+                    ),
                     get_vulkan_graphics_requirements: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetVulkanGraphicsRequirementsKHR\0",
-                            ),
+                            c"xrGetVulkanGraphicsRequirementsKHR",
                         )?,
                     ),
                 })
@@ -5852,10 +5690,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_d3d11_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetD3D11GraphicsRequirementsKHR\0"),
-                    )?),
+                    get_d3d11_graphics_requirements: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetD3D11GraphicsRequirementsKHR",
+                        )?,
+                    ),
                 })
             }
         }
@@ -5877,10 +5717,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_d3d12_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetD3D12GraphicsRequirementsKHR\0"),
-                    )?),
+                    get_d3d12_graphics_requirements: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetD3D12GraphicsRequirementsKHR",
+                        )?,
+                    ),
                 })
             }
         }
@@ -5902,10 +5744,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_metal_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMetalGraphicsRequirementsKHR\0"),
-                    )?),
+                    get_metal_graphics_requirements: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetMetalGraphicsRequirementsKHR",
+                        )?,
+                    ),
                 })
             }
         }
@@ -5925,10 +5769,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_visibility_mask: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVisibilityMaskKHR\0"),
-                    )?),
+                    get_visibility_mask: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetVisibilityMaskKHR")?,
+                    ),
                 })
             }
         }
@@ -5961,17 +5804,13 @@ pub mod raw {
                     convert_win32_performance_counter_to_time: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrConvertWin32PerformanceCounterToTimeKHR\0",
-                            ),
+                            c"xrConvertWin32PerformanceCounterToTimeKHR",
                         )?,
                     ),
                     convert_time_to_win32_performance_counter: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrConvertTimeToWin32PerformanceCounterKHR\0",
-                            ),
+                            c"xrConvertTimeToWin32PerformanceCounterKHR",
                         )?,
                     ),
                 })
@@ -5994,14 +5833,14 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    convert_timespec_time_to_time: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrConvertTimespecTimeToTimeKHR\0"),
-                    )?),
-                    convert_time_to_timespec_time: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrConvertTimeToTimespecTimeKHR\0"),
-                    )?),
+                    convert_timespec_time_to_time: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrConvertTimespecTimeToTimeKHR")?,
+                    ),
+                    convert_time_to_timespec_time: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrConvertTimeToTimespecTimeKHR")?,
+                    ),
                 })
             }
         }
@@ -6021,10 +5860,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    initialize_loader: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrInitializeLoaderKHR\0"),
-                    )?),
+                    initialize_loader: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrInitializeLoaderKHR")?,
+                    ),
                 })
             }
         }
@@ -6055,24 +5893,19 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_vulkan_instance: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanInstanceKHR\0"),
-                    )?),
-                    create_vulkan_device: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanDeviceKHR\0"),
-                    )?),
-                    get_vulkan_graphics_device2: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDevice2KHR\0"),
-                    )?),
+                    create_vulkan_instance: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateVulkanInstanceKHR")?,
+                    ),
+                    create_vulkan_device: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateVulkanDeviceKHR")?,
+                    ),
+                    get_vulkan_graphics_device2: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetVulkanGraphicsDevice2KHR")?,
+                    ),
                     get_vulkan_graphics_requirements2: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetVulkanGraphicsRequirements2KHR\0",
-                            ),
+                            c"xrGetVulkanGraphicsRequirements2KHR",
                         )?,
                     ),
                 })
@@ -6113,10 +5946,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    locate_spaces: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLocateSpacesKHR\0"),
-                    )?),
+                    locate_spaces: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrLocateSpacesKHR")?,
+                    ),
                 })
             }
         }
@@ -6142,10 +5974,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_foveation_eye_tracked_state: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetFoveationEyeTrackedStateMETA\0"),
-                    )?),
+                    get_foveation_eye_tracked_state: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetFoveationEyeTrackedStateMETA",
+                        )?,
+                    ),
                 })
             }
         }
@@ -6171,10 +6005,10 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_passthrough_preferences: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetPassthroughPreferencesMETA\0"),
-                    )?),
+                    get_passthrough_preferences: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrGetPassthroughPreferencesMETA")?,
+                    ),
                 })
             }
         }
@@ -6205,72 +6039,59 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_virtual_keyboard: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVirtualKeyboardMETA\0"),
-                    )?),
-                    destroy_virtual_keyboard: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyVirtualKeyboardMETA\0"),
-                    )?),
-                    create_virtual_keyboard_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVirtualKeyboardSpaceMETA\0"),
-                    )?),
+                    create_virtual_keyboard: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateVirtualKeyboardMETA")?,
+                    ),
+                    destroy_virtual_keyboard: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyVirtualKeyboardMETA")?,
+                    ),
+                    create_virtual_keyboard_space: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateVirtualKeyboardSpaceMETA",
+                        )?,
+                    ),
                     suggest_virtual_keyboard_location: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSuggestVirtualKeyboardLocationMETA\0",
-                            ),
+                            c"xrSuggestVirtualKeyboardLocationMETA",
                         )?,
                     ),
-                    get_virtual_keyboard_scale: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetVirtualKeyboardScaleMETA\0"),
-                    )?),
+                    get_virtual_keyboard_scale: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetVirtualKeyboardScaleMETA")?,
+                    ),
                     set_virtual_keyboard_model_visibility: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSetVirtualKeyboardModelVisibilityMETA\0",
-                            ),
+                            c"xrSetVirtualKeyboardModelVisibilityMETA",
                         )?,
                     ),
                     get_virtual_keyboard_model_animation_states: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetVirtualKeyboardModelAnimationStatesMETA\0",
-                            ),
+                            c"xrGetVirtualKeyboardModelAnimationStatesMETA",
                         )?,
                     ),
                     get_virtual_keyboard_dirty_textures: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetVirtualKeyboardDirtyTexturesMETA\0",
-                            ),
+                            c"xrGetVirtualKeyboardDirtyTexturesMETA",
                         )?,
                     ),
                     get_virtual_keyboard_texture_data: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetVirtualKeyboardTextureDataMETA\0",
-                            ),
+                            c"xrGetVirtualKeyboardTextureDataMETA",
                         )?,
                     ),
-                    send_virtual_keyboard_input: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSendVirtualKeyboardInputMETA\0"),
-                    )?),
+                    send_virtual_keyboard_input: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrSendVirtualKeyboardInputMETA")?,
+                    ),
                     change_virtual_keyboard_text_context: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrChangeVirtualKeyboardTextContextMETA\0",
-                            ),
+                            c"xrChangeVirtualKeyboardTextContextMETA",
                         )?,
                     ),
                 })
@@ -6305,25 +6126,25 @@ pub mod raw {
                     enumerate_performance_metrics_counter_paths: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumeratePerformanceMetricsCounterPathsMETA\0",
-                            ),
+                            c"xrEnumeratePerformanceMetricsCounterPathsMETA",
                         )?,
                     ),
-                    set_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetPerformanceMetricsStateMETA\0"),
-                    )?),
-                    get_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetPerformanceMetricsStateMETA\0"),
-                    )?),
+                    set_performance_metrics_state: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrSetPerformanceMetricsStateMETA",
+                        )?,
+                    ),
+                    get_performance_metrics_state: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetPerformanceMetricsStateMETA",
+                        )?,
+                    ),
                     query_performance_metrics_counter: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrQueryPerformanceMetricsCounterMETA\0",
-                            ),
+                            c"xrQueryPerformanceMetricsCounterMETA",
                         )?,
                     ),
                 })
@@ -6354,9 +6175,7 @@ pub mod raw {
                     get_recommended_layer_resolution: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetRecommendedLayerResolutionMETA\0",
-                            ),
+                            c"xrGetRecommendedLayerResolutionMETA",
                         )?,
                     ),
                 })
@@ -6380,18 +6199,20 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughColorLutMETA\0"),
-                    )?),
-                    destroy_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughColorLutMETA\0"),
-                    )?),
-                    update_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrUpdatePassthroughColorLutMETA\0"),
-                    )?),
+                    create_passthrough_color_lut: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrCreatePassthroughColorLutMETA")?,
+                    ),
+                    destroy_passthrough_color_lut: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrDestroyPassthroughColorLutMETA",
+                        )?,
+                    ),
+                    update_passthrough_color_lut: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrUpdatePassthroughColorLutMETA")?,
+                    ),
                 })
             }
         }
@@ -6411,10 +6232,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_space_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceTriangleMeshMETA\0"),
-                    )?),
+                    get_space_triangle_mesh: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSpaceTriangleMeshMETA")?,
+                    ),
                 })
             }
         }
@@ -6459,77 +6279,61 @@ pub mod raw {
                     create_environment_depth_provider: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateEnvironmentDepthProviderMETA\0",
-                            ),
+                            c"xrCreateEnvironmentDepthProviderMETA",
                         )?,
                     ),
                     destroy_environment_depth_provider: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrDestroyEnvironmentDepthProviderMETA\0",
-                            ),
+                            c"xrDestroyEnvironmentDepthProviderMETA",
                         )?,
                     ),
                     start_environment_depth_provider: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrStartEnvironmentDepthProviderMETA\0",
-                            ),
+                            c"xrStartEnvironmentDepthProviderMETA",
                         )?,
                     ),
-                    stop_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrStopEnvironmentDepthProviderMETA\0",
-                        ),
-                    )?),
+                    stop_environment_depth_provider: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrStopEnvironmentDepthProviderMETA",
+                        )?,
+                    ),
                     create_environment_depth_swapchain: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateEnvironmentDepthSwapchainMETA\0",
-                            ),
+                            c"xrCreateEnvironmentDepthSwapchainMETA",
                         )?,
                     ),
                     destroy_environment_depth_swapchain: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrDestroyEnvironmentDepthSwapchainMETA\0",
-                            ),
+                            c"xrDestroyEnvironmentDepthSwapchainMETA",
                         )?,
                     ),
                     enumerate_environment_depth_swapchain_images: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateEnvironmentDepthSwapchainImagesMETA\0",
-                            ),
+                            c"xrEnumerateEnvironmentDepthSwapchainImagesMETA",
                         )?,
                     ),
                     get_environment_depth_swapchain_state: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetEnvironmentDepthSwapchainStateMETA\0",
-                            ),
+                            c"xrGetEnvironmentDepthSwapchainStateMETA",
                         )?,
                     ),
-                    acquire_environment_depth_image: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrAcquireEnvironmentDepthImageMETA\0",
-                        ),
-                    )?),
+                    acquire_environment_depth_image: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrAcquireEnvironmentDepthImageMETA",
+                        )?,
+                    ),
                     set_environment_depth_hand_removal: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSetEnvironmentDepthHandRemovalMETA\0",
-                            ),
+                            c"xrSetEnvironmentDepthHandRemovalMETA",
                         )?,
                     ),
                 })
@@ -6572,9 +6376,7 @@ pub mod raw {
                     create_space_from_coordinate_frame_uid: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateSpaceFromCoordinateFrameUIDML\0",
-                            ),
+                            c"xrCreateSpaceFromCoordinateFrameUIDML",
                         )?,
                     ),
                 })
@@ -6605,46 +6407,37 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_marker_detector: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerDetectorML\0"),
-                    )?),
-                    destroy_marker_detector: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyMarkerDetectorML\0"),
-                    )?),
-                    snapshot_marker_detector: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSnapshotMarkerDetectorML\0"),
-                    )?),
-                    get_marker_detector_state: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerDetectorStateML\0"),
-                    )?),
-                    get_markers: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkersML\0"),
-                    )?),
-                    get_marker_reprojection_error: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerReprojectionErrorML\0"),
-                    )?),
-                    get_marker_length: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerLengthML\0"),
-                    )?),
-                    get_marker_number: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerNumberML\0"),
-                    )?),
-                    get_marker_string: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerStringML\0"),
-                    )?),
-                    create_marker_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceML\0"),
-                    )?),
+                    create_marker_detector: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateMarkerDetectorML")?,
+                    ),
+                    destroy_marker_detector: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroyMarkerDetectorML")?,
+                    ),
+                    snapshot_marker_detector: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSnapshotMarkerDetectorML")?,
+                    ),
+                    get_marker_detector_state: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetMarkerDetectorStateML")?,
+                    ),
+                    get_markers: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetMarkersML")?,
+                    ),
+                    get_marker_reprojection_error: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrGetMarkerReprojectionErrorML")?,
+                    ),
+                    get_marker_length: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetMarkerLengthML")?,
+                    ),
+                    get_marker_number: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetMarkerNumberML")?,
+                    ),
+                    get_marker_string: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetMarkerStringML")?,
+                    ),
+                    create_marker_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateMarkerSpaceML")?,
+                    ),
                 })
             }
         }
@@ -6670,44 +6463,34 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enable_localization_events: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnableLocalizationEventsML\0"),
-                    )?),
-                    query_localization_maps: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrQueryLocalizationMapsML\0"),
-                    )?),
-                    request_map_localization: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrRequestMapLocalizationML\0"),
-                    )?),
-                    import_localization_map: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrImportLocalizationMapML\0"),
-                    )?),
+                    enable_localization_events: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEnableLocalizationEventsML")?,
+                    ),
+                    query_localization_maps: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrQueryLocalizationMapsML")?,
+                    ),
+                    request_map_localization: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrRequestMapLocalizationML")?,
+                    ),
+                    import_localization_map: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrImportLocalizationMapML")?,
+                    ),
                     create_exported_localization_map: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateExportedLocalizationMapML\0",
-                            ),
+                            c"xrCreateExportedLocalizationMapML",
                         )?,
                     ),
                     destroy_exported_localization_map: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrDestroyExportedLocalizationMapML\0",
-                            ),
+                            c"xrDestroyExportedLocalizationMapML",
                         )?,
                     ),
                     get_exported_localization_map_data: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetExportedLocalizationMapDataML\0",
-                            ),
+                            c"xrGetExportedLocalizationMapDataML",
                         )?,
                     ),
                 })
@@ -6729,10 +6512,10 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enable_user_calibration_events: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnableUserCalibrationEventsML\0"),
-                    )?),
+                    enable_user_calibration_events: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrEnableUserCalibrationEventsML")?,
+                    ),
                 })
             }
         }
@@ -6773,18 +6556,16 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorMSFT\0"),
-                    )?),
-                    create_spatial_anchor_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorSpaceMSFT\0"),
-                    )?),
-                    destroy_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySpatialAnchorMSFT\0"),
-                    )?),
+                    create_spatial_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSpatialAnchorMSFT")?,
+                    ),
+                    create_spatial_anchor_space: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrCreateSpatialAnchorSpaceMSFT")?,
+                    ),
+                    destroy_spatial_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySpatialAnchorMSFT")?,
+                    ),
                 })
             }
         }
@@ -6809,32 +6590,28 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_spatial_graph_node_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialGraphNodeSpaceMSFT\0"),
-                    )?),
+                    create_spatial_graph_node_space: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateSpatialGraphNodeSpaceMSFT",
+                        )?,
+                    ),
                     try_create_spatial_graph_static_node_binding: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrTryCreateSpatialGraphStaticNodeBindingMSFT\0",
-                            ),
+                            c"xrTryCreateSpatialGraphStaticNodeBindingMSFT",
                         )?,
                     ),
                     destroy_spatial_graph_node_binding: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrDestroySpatialGraphNodeBindingMSFT\0",
-                            ),
+                            c"xrDestroySpatialGraphNodeBindingMSFT",
                         )?,
                     ),
                     get_spatial_graph_node_binding_properties: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrGetSpatialGraphNodeBindingPropertiesMSFT\0",
-                            ),
+                            c"xrGetSpatialGraphNodeBindingPropertiesMSFT",
                         )?,
                     ),
                 })
@@ -6863,14 +6640,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    create_hand_mesh_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateHandMeshSpaceMSFT\0"),
-                    )?),
-                    update_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrUpdateHandMeshMSFT\0"),
-                    )?),
+                    create_hand_mesh_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateHandMeshSpaceMSFT")?,
+                    ),
+                    update_hand_mesh: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrUpdateHandMeshMSFT")?,
+                    ),
                 })
             }
         }
@@ -6905,24 +6680,21 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_controller_model_key: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelKeyMSFT\0"),
-                    )?),
-                    load_controller_model: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrLoadControllerModelMSFT\0"),
-                    )?),
-                    get_controller_model_properties: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrGetControllerModelPropertiesMSFT\0",
-                        ),
-                    )?),
-                    get_controller_model_state: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelStateMSFT\0"),
-                    )?),
+                    get_controller_model_key: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetControllerModelKeyMSFT")?,
+                    ),
+                    load_controller_model: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrLoadControllerModelMSFT")?,
+                    ),
+                    get_controller_model_properties: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetControllerModelPropertiesMSFT",
+                        )?,
+                    ),
+                    get_controller_model_state: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetControllerModelStateMSFT")?,
+                    ),
                 })
             }
         }
@@ -6950,17 +6722,13 @@ pub mod raw {
                     create_spatial_anchor_from_perception_anchor: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateSpatialAnchorFromPerceptionAnchorMSFT\0",
-                            ),
+                            c"xrCreateSpatialAnchorFromPerceptionAnchorMSFT",
                         )?,
                     ),
                     try_get_perception_anchor_from_spatial_anchor: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrTryGetPerceptionAnchorFromSpatialAnchorMSFT\0",
-                            ),
+                            c"xrTryGetPerceptionAnchorFromSpatialAnchorMSFT",
                         )?,
                     ),
                 })
@@ -6990,10 +6758,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enumerate_reprojection_modes: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReprojectionModesMSFT\0"),
-                    )?),
+                    enumerate_reprojection_modes: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrEnumerateReprojectionModesMSFT",
+                        )?,
+                    ),
                 })
             }
         }
@@ -7023,47 +6793,36 @@ pub mod raw {
                     create_spatial_anchor_store_connection: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateSpatialAnchorStoreConnectionMSFT\0",
-                            ),
+                            c"xrCreateSpatialAnchorStoreConnectionMSFT",
                         )?,
                     ),
                     destroy_spatial_anchor_store_connection: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrDestroySpatialAnchorStoreConnectionMSFT\0",
-                            ),
+                            c"xrDestroySpatialAnchorStoreConnectionMSFT",
                         )?,
                     ),
-                    persist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrPersistSpatialAnchorMSFT\0"),
-                    )?),
+                    persist_spatial_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrPersistSpatialAnchorMSFT")?,
+                    ),
                     enumerate_persisted_spatial_anchor_names: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumeratePersistedSpatialAnchorNamesMSFT\0",
-                            ),
+                            c"xrEnumeratePersistedSpatialAnchorNamesMSFT",
                         )?,
                     ),
                     create_spatial_anchor_from_persisted_name: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrCreateSpatialAnchorFromPersistedNameMSFT\0",
-                            ),
+                            c"xrCreateSpatialAnchorFromPersistedNameMSFT",
                         )?,
                     ),
-                    unpersist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrUnpersistSpatialAnchorMSFT\0"),
-                    )?),
-                    clear_spatial_anchor_store: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrClearSpatialAnchorStoreMSFT\0"),
-                    )?),
+                    unpersist_spatial_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrUnpersistSpatialAnchorMSFT")?,
+                    ),
+                    clear_spatial_anchor_store: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrClearSpatialAnchorStoreMSFT")?,
+                    ),
                 })
             }
         }
@@ -7092,14 +6851,16 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    get_audio_output_device_guid: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetAudioOutputDeviceGuidOculus\0"),
-                    )?),
-                    get_audio_input_device_guid: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetAudioInputDeviceGuidOculus\0"),
-                    )?),
+                    get_audio_output_device_guid: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrGetAudioOutputDeviceGuidOculus",
+                        )?,
+                    ),
+                    get_audio_input_device_guid: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrGetAudioInputDeviceGuidOculus")?,
+                    ),
                 })
             }
         }
@@ -7119,10 +6880,12 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enumerate_external_cameras: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateExternalCamerasOCULUS\0"),
-                    )?),
+                    enumerate_external_cameras: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrEnumerateExternalCamerasOCULUS",
+                        )?,
+                    ),
                 })
             }
         }
@@ -7151,9 +6914,7 @@ pub mod raw {
                     set_tracking_optimization_settings_hint: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSetTrackingOptimizationSettingsHintQCOM\0",
-                            ),
+                            c"xrSetTrackingOptimizationSettingsHintQCOM",
                         )?,
                     ),
                 })
@@ -7208,9 +6969,7 @@ pub mod raw {
                     set_environment_depth_estimation: mem::transmute(
                         entry.get_instance_proc_addr(
                             instance,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrSetEnvironmentDepthEstimationVARJO\0",
-                            ),
+                            c"xrSetEnvironmentDepthEstimationVARJO",
                         )?,
                     ),
                 })
@@ -7236,28 +6995,25 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    set_marker_tracking: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingVARJO\0"),
-                    )?),
-                    set_marker_tracking_timeout: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingTimeoutVARJO\0"),
-                    )?),
-                    set_marker_tracking_prediction: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrSetMarkerTrackingPredictionVARJO\0",
-                        ),
-                    )?),
-                    get_marker_size: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerSizeVARJO\0"),
-                    )?),
-                    create_marker_space: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceVARJO\0"),
-                    )?),
+                    set_marker_tracking: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetMarkerTrackingVARJO")?,
+                    ),
+                    set_marker_tracking_timeout: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrSetMarkerTrackingTimeoutVARJO")?,
+                    ),
+                    set_marker_tracking_prediction: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrSetMarkerTrackingPredictionVARJO",
+                        )?,
+                    ),
+                    get_marker_size: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetMarkerSizeVARJO")?,
+                    ),
+                    create_marker_space: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateMarkerSpaceVARJO")?,
+                    ),
                 })
             }
         }
@@ -7277,10 +7033,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    set_view_offset: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrSetViewOffsetVARJO\0"),
-                    )?),
+                    set_view_offset: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetViewOffsetVARJO")?,
+                    ),
                 })
             }
         }
@@ -7324,10 +7079,9 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    apply_force_feedback_curl: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrApplyForceFeedbackCurlMNDX\0"),
-                    )?),
+                    apply_force_feedback_curl: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrApplyForceFeedbackCurlMNDX")?,
+                    ),
                 })
             }
         }
@@ -7347,10 +7101,10 @@ pub mod raw {
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
             unsafe {
                 Ok(Self {
-                    enumerate_vive_tracker_paths: mem::transmute(entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViveTrackerPathsHTCX\0"),
-                    )?),
+                    enumerate_vive_tracker_paths: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrEnumerateViveTrackerPathsHTCX")?,
+                    ),
                 })
             }
         }

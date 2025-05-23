@@ -119,21 +119,19 @@ impl Entry {
                         create_instance: mem::transmute(get_instance_proc_addr_helper(
                             get_instance_proc_addr,
                             sys::Instance::NULL,
-                            CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
+                            c"xrCreateInstance",
                         )?),
                         enumerate_instance_extension_properties: mem::transmute(
                             get_instance_proc_addr_helper(
                                 get_instance_proc_addr,
                                 sys::Instance::NULL,
-                                CStr::from_bytes_with_nul_unchecked(
-                                    b"xrEnumerateInstanceExtensionProperties\0",
-                                ),
+                                c"xrEnumerateInstanceExtensionProperties",
                             )?,
                         ),
                         enumerate_api_layer_properties: get_instance_proc_addr_helper(
                             get_instance_proc_addr,
                             sys::Instance::NULL,
-                            CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
+                            c"xrEnumerateApiLayerProperties",
                         )
                         .map(|s| mem::transmute(s))
                         .unwrap_or(crate::stub_enumerate_api_layer_properties),
