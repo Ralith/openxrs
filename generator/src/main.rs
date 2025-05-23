@@ -1339,7 +1339,7 @@ impl Parser {
                 quote! {
                     #field_ident: entry
                         .get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))
-                        .map(|s| unsafe { mem::transmute(s) })
+                        .map(|s| mem::transmute(s))
                         .unwrap_or(crate::stub_enumerate_api_layer_properties),
                 }
             };
@@ -1399,9 +1399,11 @@ impl Parser {
                         ///
                         /// `instance` must be a valid instance handle.
                         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-                            Ok(Self {
-                                #(#pfn_inits)*
-                            })
+                            unsafe {
+                                Ok(Self {
+                                    #(#pfn_inits)*
+                                })
+                            }
                         }
                     }
                 };
@@ -1646,9 +1648,11 @@ impl Parser {
                 ///
                 /// `instance` must be a valid instance handle.
                 pub unsafe fn load(entry: &Entry, instance: sys::Instance, required: &ExtensionSet) -> Result<Self> {
-                    Ok(Self {
-                        #(#ext_field_inits)*
-                    })
+                    unsafe {
+                        Ok(Self {
+                            #(#ext_field_inits)*
+                        })
+                    }
                 }
             }
 
@@ -1669,10 +1673,12 @@ impl Parser {
                 /// `xrPollEvent`, which has not been moved since.
                 pub unsafe fn from_raw(raw: &'a MaybeUninit<sys::EventDataBuffer>) -> Option<Self> {
                     let raw = raw.as_ptr();
-                    Some(match (raw as *const sys::BaseInStructure).read().ty {
-                        #(#event_decodes)*
-                        _ => { return None; }
-                    })
+                    unsafe {
+                        Some(match (raw as *const sys::BaseInStructure).read().ty {
+                            #(#event_decodes)*
+                            _ => { return None; }
+                        })
+                    }
                 }
             }
 
@@ -1695,9 +1701,11 @@ impl Parser {
                     ///
                     /// `instance` must be a valid instance handle.
                     pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-                        Ok(Self {
-                            #(#instance_pfn_inits)*
-                        })
+                        unsafe {
+                            Ok(Self {
+                                #(#instance_pfn_inits)*
+                            })
+                        }
                     }
                 }
 
@@ -1948,7 +1956,7 @@ impl Parser {
             };
             Some(quote! {
                 #[inline]
-                pub fn #ident#fn_type_params(mut self, value: #ty) -> Self {
+                pub fn #ident #fn_type_params(mut self, value: #ty) -> Self {
                     #init
                     self
                 }

@@ -607,20 +607,22 @@ pub struct View {
 
 impl View {
     unsafe fn new(flags: ViewStateFlags, raw: &MaybeUninit<sys::View>) -> Self {
-        // Applications *must* not read invalid parts of a poses, i.e. they may be uninitialized
-        let ptr = raw.as_ptr();
-        Self {
-            pose: Posef {
-                orientation: flags
-                    .contains(sys::ViewStateFlags::ORIENTATION_VALID)
-                    .then(|| *ptr::addr_of!((*ptr).pose.orientation))
-                    .unwrap_or_default(),
-                position: flags
-                    .contains(sys::ViewStateFlags::POSITION_VALID)
-                    .then(|| *ptr::addr_of!((*ptr).pose.position))
-                    .unwrap_or_default(),
-            },
-            fov: *ptr::addr_of!((*ptr).fov),
+        unsafe {
+            // Applications *must* not read invalid parts of a poses, i.e. they may be uninitialized
+            let ptr = raw.as_ptr();
+            Self {
+                pose: Posef {
+                    orientation: flags
+                        .contains(sys::ViewStateFlags::ORIENTATION_VALID)
+                        .then(|| *ptr::addr_of!((*ptr).pose.orientation))
+                        .unwrap_or_default(),
+                    position: flags
+                        .contains(sys::ViewStateFlags::POSITION_VALID)
+                        .then(|| *ptr::addr_of!((*ptr).pose.position))
+                        .unwrap_or_default(),
+                },
+                fov: *ptr::addr_of!((*ptr).fov),
+            }
         }
     }
 }

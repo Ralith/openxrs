@@ -57,13 +57,15 @@ impl Entry {
     /// OpenXR specification.
     #[cfg(feature = "loaded")]
     pub unsafe fn load() -> std::result::Result<Self, LoadError> {
-        #[cfg(target_os = "windows")]
-        const PATH: &str = "openxr_loader.dll";
-        #[cfg(target_os = "macos")]
-        const PATH: &str = "libopenxr_loader.dylib";
-        #[cfg(not(any(target_os = "windows", target_os = "macos")))]
-        const PATH: &str = "libopenxr_loader.so";
-        Self::load_from(Path::new(PATH))
+        unsafe {
+            #[cfg(target_os = "windows")]
+            const PATH: &str = "openxr_loader.dll";
+            #[cfg(target_os = "macos")]
+            const PATH: &str = "libopenxr_loader.dylib";
+            #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+            const PATH: &str = "libopenxr_loader.so";
+            Self::load_from(Path::new(PATH))
+        }
     }
 
     /// Load entry points at run time from the dynamic library identified by `path`
@@ -76,25 +78,27 @@ impl Entry {
     /// OpenXR entry point.
     #[cfg(feature = "loaded")]
     pub unsafe fn load_from(path: &Path) -> std::result::Result<Self, LoadError> {
-        let lib = Library::new(path).map_err(LoadError)?;
-        Ok(Self {
-            inner: Arc::new(Inner {
-                raw: RawEntry {
-                    get_instance_proc_addr: *lib
-                        .get(b"xrGetInstanceProcAddr\0")
-                        .map_err(LoadError)?,
-                    create_instance: *lib.get(b"xrCreateInstance\0").map_err(LoadError)?,
-                    enumerate_instance_extension_properties: *lib
-                        .get(b"xrEnumerateInstanceExtensionProperties\0")
-                        .map_err(LoadError)?,
-                    enumerate_api_layer_properties: lib
-                        .get(b"xrEnumerateApiLayerProperties\0")
-                        .map(|s| *s)
-                        .unwrap_or(crate::stub_enumerate_api_layer_properties),
-                },
-                _lib_guard: Some(lib),
-            }),
-        })
+        unsafe {
+            let lib = Library::new(path).map_err(LoadError)?;
+            Ok(Self {
+                inner: Arc::new(Inner {
+                    raw: RawEntry {
+                        get_instance_proc_addr: *lib
+                            .get(b"xrGetInstanceProcAddr\0")
+                            .map_err(LoadError)?,
+                        create_instance: *lib.get(b"xrCreateInstance\0").map_err(LoadError)?,
+                        enumerate_instance_extension_properties: *lib
+                            .get(b"xrEnumerateInstanceExtensionProperties\0")
+                            .map_err(LoadError)?,
+                        enumerate_api_layer_properties: lib
+                            .get(b"xrEnumerateApiLayerProperties\0")
+                            .map(|s| *s)
+                            .unwrap_or(crate::stub_enumerate_api_layer_properties),
+                    },
+                    _lib_guard: Some(lib),
+                }),
+            })
+        }
     }
 
     /// Load entry points using an arbitrary `xrGetInstanceProcAddr` implementation
@@ -107,36 +111,38 @@ impl Entry {
     pub unsafe fn from_get_instance_proc_addr(
         get_instance_proc_addr: sys::pfn::GetInstanceProcAddr,
     ) -> Result<Self> {
-        Ok(Self {
-            inner: Arc::new(Inner {
-                raw: RawEntry {
-                    get_instance_proc_addr,
-                    create_instance: mem::transmute(get_instance_proc_addr_helper(
+        unsafe {
+            Ok(Self {
+                inner: Arc::new(Inner {
+                    raw: RawEntry {
                         get_instance_proc_addr,
-                        sys::Instance::NULL,
-                        CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
-                    )?),
-                    enumerate_instance_extension_properties: mem::transmute(
-                        get_instance_proc_addr_helper(
+                        create_instance: mem::transmute(get_instance_proc_addr_helper(
                             get_instance_proc_addr,
                             sys::Instance::NULL,
-                            CStr::from_bytes_with_nul_unchecked(
-                                b"xrEnumerateInstanceExtensionProperties\0",
-                            ),
-                        )?,
-                    ),
-                    enumerate_api_layer_properties: get_instance_proc_addr_helper(
-                        get_instance_proc_addr,
-                        sys::Instance::NULL,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
-                    )
-                    .map(|s| unsafe { mem::transmute(s) })
-                    .unwrap_or(crate::stub_enumerate_api_layer_properties),
-                },
-                #[cfg(feature = "loaded")]
-                _lib_guard: None,
-            }),
-        })
+                            CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
+                        )?),
+                        enumerate_instance_extension_properties: mem::transmute(
+                            get_instance_proc_addr_helper(
+                                get_instance_proc_addr,
+                                sys::Instance::NULL,
+                                CStr::from_bytes_with_nul_unchecked(
+                                    b"xrEnumerateInstanceExtensionProperties\0",
+                                ),
+                            )?,
+                        ),
+                        enumerate_api_layer_properties: get_instance_proc_addr_helper(
+                            get_instance_proc_addr,
+                            sys::Instance::NULL,
+                            CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
+                        )
+                        .map(|s| mem::transmute(s))
+                        .unwrap_or(crate::stub_enumerate_api_layer_properties),
+                    },
+                    #[cfg(feature = "loaded")]
+                    _lib_guard: None,
+                }),
+            })
+        }
     }
 
     /// Access the raw function pointers
@@ -151,7 +157,7 @@ impl Entry {
         instance: sys::Instance,
         name: &CStr,
     ) -> Result<unsafe extern "system" fn()> {
-        get_instance_proc_addr_helper(self.fp().get_instance_proc_addr, instance, name)
+        unsafe { get_instance_proc_addr_helper(self.fp().get_instance_proc_addr, instance, name) }
     }
 
     /// Initialize Android loader. This must be called before `create_instance()`.
@@ -312,9 +318,11 @@ unsafe fn get_instance_proc_addr_helper(
     instance: sys::Instance,
     name: &CStr,
 ) -> Result<unsafe extern "system" fn()> {
-    let mut f = None;
-    cvt((get_instance_proc_addr)(instance, name.as_ptr(), &mut f))?;
-    Ok(f.unwrap())
+    unsafe {
+        let mut f = None;
+        cvt((get_instance_proc_addr)(instance, name.as_ptr(), &mut f))?;
+        Ok(f.unwrap())
+    }
 }
 
 struct Inner {

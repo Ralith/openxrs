@@ -47,28 +47,30 @@ impl Graphics for Vulkan {
         system: SystemId,
         info: &Self::SessionCreateInfo,
     ) -> Result<sys::Session> {
-        let binding = sys::GraphicsBindingVulkanKHR {
-            ty: sys::GraphicsBindingVulkanKHR::TYPE,
-            next: ptr::null(),
-            instance: info.instance,
-            physical_device: info.physical_device,
-            device: info.device,
-            queue_family_index: info.queue_family_index,
-            queue_index: info.queue_index,
-        };
-        let info = sys::SessionCreateInfo {
-            ty: sys::SessionCreateInfo::TYPE,
-            next: &binding as *const _ as *const _,
-            create_flags: Default::default(),
-            system_id: system,
-        };
-        let mut out = sys::Session::NULL;
-        cvt((instance.fp().create_session)(
-            instance.as_raw(),
-            &info,
-            &mut out,
-        ))?;
-        Ok(out)
+        unsafe {
+            let binding = sys::GraphicsBindingVulkanKHR {
+                ty: sys::GraphicsBindingVulkanKHR::TYPE,
+                next: ptr::null(),
+                instance: info.instance,
+                physical_device: info.physical_device,
+                device: info.device,
+                queue_family_index: info.queue_family_index,
+                queue_index: info.queue_index,
+            };
+            let info = sys::SessionCreateInfo {
+                ty: sys::SessionCreateInfo::TYPE,
+                next: &binding as *const _ as *const _,
+                create_flags: Default::default(),
+                system_id: system,
+            };
+            let mut out = sys::Session::NULL;
+            cvt((instance.fp().create_session)(
+                instance.as_raw(),
+                &info,
+                &mut out,
+            ))?;
+            Ok(out)
+        }
     }
 
     fn enumerate_swapchain_images(

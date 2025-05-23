@@ -5,8 +5,8 @@
 use std::os::raw::c_char;
 
 pub use sys::{
-    self, AsyncRequestIdFB, Duration, Path, SystemId, Time, UuidEXT, Version, CURRENT_API_VERSION,
-    FREQUENCY_UNSPECIFIED, MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META,
+    self, AsyncRequestIdFB, CURRENT_API_VERSION, Duration, FREQUENCY_UNSPECIFIED,
+    MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META, Path, SystemId, Time, UuidEXT, Version,
 };
 
 mod generated;
@@ -80,11 +80,7 @@ pub trait AsHandle {
 
 // FFI helpers
 fn cvt(x: sys::Result) -> Result<sys::Result> {
-    if x.into_raw() >= 0 {
-        Ok(x)
-    } else {
-        Err(x)
-    }
+    if x.into_raw() >= 0 { Ok(x) } else { Err(x) }
 }
 
 fn place_cstr(out: &mut [c_char], s: &str) {
@@ -102,7 +98,7 @@ fn place_cstr(out: &mut [c_char], s: &str) {
 }
 
 unsafe fn fixed_str(x: &[c_char]) -> &str {
-    std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes())
+    unsafe { std::str::from_utf8_unchecked(std::ffi::CStr::from_ptr(x.as_ptr()).to_bytes()) }
 }
 
 fn get_str(mut getter: impl FnMut(u32, &mut u32, *mut c_char) -> sys::Result) -> Result<String> {
@@ -192,7 +188,7 @@ impl<'a> From<&'a [sys::ExtensionProperties]> for generated::ExtensionSet {
 mod tests {
     #[test]
     fn extension_set_from_iter() {
-        use crate::generated::{raw, ExtensionSet};
+        use crate::generated::{ExtensionSet, raw};
         use std::convert::TryInto;
         let extensions = [
             raw::PassthroughFB::NAME,
@@ -209,7 +205,7 @@ mod tests {
 
     #[test]
     fn extension_set_from_properties() {
-        use crate::generated::{raw, ExtensionSet};
+        use crate::generated::{ExtensionSet, raw};
         use std::convert::TryInto;
         const EXTENSION_PROP_INIT: sys::ExtensionProperties = sys::ExtensionProperties {
             extension_name: [0; sys::MAX_EXTENSION_NAME_SIZE],

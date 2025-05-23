@@ -46,78 +46,80 @@ impl Graphics for OpenGL {
         system: SystemId,
         info: &Self::SessionCreateInfo,
     ) -> Result<sys::Session> {
-        match *info {
-            #[cfg(windows)]
-            SessionCreateInfo::Windows { h_dc, h_glrc } => {
-                let binding = sys::GraphicsBindingOpenGLWin32KHR {
-                    ty: sys::GraphicsBindingOpenGLWin32KHR::TYPE,
-                    next: ptr::null(),
-                    h_dc,
-                    h_glrc,
-                };
-                let info = sys::SessionCreateInfo {
-                    ty: sys::SessionCreateInfo::TYPE,
-                    next: &binding as *const _ as *const _,
-                    create_flags: Default::default(),
-                    system_id: system,
-                };
-                let mut out = sys::Session::NULL;
-                cvt((instance.fp().create_session)(
-                    instance.as_raw(),
-                    &info,
-                    &mut out,
-                ))?;
-                Ok(out)
-            }
-            SessionCreateInfo::Xlib {
-                x_display,
-                visualid,
-                glx_fb_config,
-                glx_drawable,
-                glx_context,
-            } => {
-                let binding = sys::GraphicsBindingOpenGLXlibKHR {
-                    ty: sys::GraphicsBindingOpenGLXlibKHR::TYPE,
-                    next: ptr::null(),
+        unsafe {
+            match *info {
+                #[cfg(windows)]
+                SessionCreateInfo::Windows { h_dc, h_glrc } => {
+                    let binding = sys::GraphicsBindingOpenGLWin32KHR {
+                        ty: sys::GraphicsBindingOpenGLWin32KHR::TYPE,
+                        next: ptr::null(),
+                        h_dc,
+                        h_glrc,
+                    };
+                    let info = sys::SessionCreateInfo {
+                        ty: sys::SessionCreateInfo::TYPE,
+                        next: &binding as *const _ as *const _,
+                        create_flags: Default::default(),
+                        system_id: system,
+                    };
+                    let mut out = sys::Session::NULL;
+                    cvt((instance.fp().create_session)(
+                        instance.as_raw(),
+                        &info,
+                        &mut out,
+                    ))?;
+                    Ok(out)
+                }
+                SessionCreateInfo::Xlib {
                     x_display,
                     visualid,
                     glx_fb_config,
                     glx_drawable,
                     glx_context,
-                };
-                let info = sys::SessionCreateInfo {
-                    ty: sys::SessionCreateInfo::TYPE,
-                    next: &binding as *const _ as *const _,
-                    create_flags: Default::default(),
-                    system_id: system,
-                };
-                let mut out = sys::Session::NULL;
-                cvt((instance.fp().create_session)(
-                    instance.as_raw(),
-                    &info,
-                    &mut out,
-                ))?;
-                Ok(out)
-            }
-            SessionCreateInfo::Wayland { display } => {
-                let binding = sys::GraphicsBindingOpenGLWaylandKHR {
-                    ty: sys::GraphicsBindingOpenGLWaylandKHR::TYPE,
-                    next: ptr::null(),
-                    display,
-                };
-                let info = sys::SessionCreateInfo {
-                    ty: sys::SessionCreateInfo::TYPE,
-                    next: &binding as *const _ as *const _,
-                    create_flags: Default::default(),
-                    system_id: system,
-                };
-                let mut out = sys::Session::NULL;
-                cvt((instance.fp().create_session)(
-                    instance.as_raw(),
-                    &info,
-                    &mut out,
-                ))?;
-                Ok(out)
+                } => {
+                    let binding = sys::GraphicsBindingOpenGLXlibKHR {
+                        ty: sys::GraphicsBindingOpenGLXlibKHR::TYPE,
+                        next: ptr::null(),
+                        x_display,
+                        visualid,
+                        glx_fb_config,
+                        glx_drawable,
+                        glx_context,
+                    };
+                    let info = sys::SessionCreateInfo {
+                        ty: sys::SessionCreateInfo::TYPE,
+                        next: &binding as *const _ as *const _,
+                        create_flags: Default::default(),
+                        system_id: system,
+                    };
+                    let mut out = sys::Session::NULL;
+                    cvt((instance.fp().create_session)(
+                        instance.as_raw(),
+                        &info,
+                        &mut out,
+                    ))?;
+                    Ok(out)
+                }
+                SessionCreateInfo::Wayland { display } => {
+                    let binding = sys::GraphicsBindingOpenGLWaylandKHR {
+                        ty: sys::GraphicsBindingOpenGLWaylandKHR::TYPE,
+                        next: ptr::null(),
+                        display,
+                    };
+                    let info = sys::SessionCreateInfo {
+                        ty: sys::SessionCreateInfo::TYPE,
+                        next: &binding as *const _ as *const _,
+                        create_flags: Default::default(),
+                        system_id: system,
+                    };
+                    let mut out = sys::Session::NULL;
+                    cvt((instance.fp().create_session)(
+                        instance.as_raw(),
+                        &info,
+                        &mut out,
+                    ))?;
+                    Ok(out)
+                }
             }
         }
     }

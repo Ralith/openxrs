@@ -1,6 +1,6 @@
 use std::ptr;
 
-use sys::{platform::*, Handle as _};
+use sys::{Handle as _, platform::*};
 
 use crate::*;
 
@@ -57,11 +57,13 @@ impl Graphics for D3D11 {
             system_id: system,
         };
         let mut out = sys::Session::NULL;
-        cvt((instance.fp().create_session)(
-            instance.as_raw(),
-            &info,
-            &mut out,
-        ))?;
+        unsafe {
+            cvt((instance.fp().create_session)(
+                instance.as_raw(),
+                &info,
+                &mut out,
+            ))?;
+        }
         Ok(out)
     }
 
@@ -141,11 +143,13 @@ impl Graphics for D3D12 {
             system_id: system,
         };
         let mut out = sys::Session::NULL;
-        cvt((instance.fp().create_session)(
-            instance.as_raw(),
-            &info,
-            &mut out,
-        ))?;
+        unsafe {
+            cvt((instance.fp().create_session)(
+                instance.as_raw(),
+                &info,
+                &mut out,
+            ))?;
+        }
         Ok(out)
     }
 

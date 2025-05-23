@@ -1,6 +1,6 @@
+use crate::Version;
 use crate::generated::*;
 use crate::support::fmt_enum;
-use crate::Version;
 
 /// Function pointer prototype for the xrCreateApiLayerInstance function used in place of xrCreateInstance.
 /// This function allows us to pass special API layer information to each layer during the process of creating an Instance.
