@@ -257,13 +257,13 @@ pub fn main() {
                         vk::PipelineShaderStageCreateInfo {
                             stage: vk::ShaderStageFlags::VERTEX,
                             module: vert,
-                            p_name: b"main\0".as_ptr() as _,
+                            p_name: c"main".as_ptr(),
                             ..Default::default()
                         },
                         vk::PipelineShaderStageCreateInfo {
                             stage: vk::ShaderStageFlags::FRAGMENT,
                             module: frag,
-                            p_name: b"main\0".as_ptr() as _,
+                            p_name: c"main".as_ptr(),
                             ..Default::default()
                         },
                     ])

@@ -3,6 +3,7 @@
 use std::{
     collections::{HashMap, HashSet},
     env,
+    ffi::CString,
     fs::File,
     io::Write,
     path::{Path, PathBuf},
@@ -14,7 +15,7 @@ use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use regex::Regex;
-use syn::{Ident, LitByteStr};
+use syn::{Ident, LitByteStr, LitCStr};
 use xml::{
     attribute::OwnedAttribute,
     reader::{EventReader, ParserConfig, XmlEvent},
@@ -1251,7 +1252,7 @@ impl Parser {
                     &format!("{}_EXTENSION_NAME", trimmed.to_uppercase()),
                     Span::call_site(),
                 );
-                let name_lit = c_name(&ext.name);
+                let name_lit = byte_name(&ext.name);
                 let version_ident =
                     Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
                 let version_lit = ext.version;
@@ -1333,12 +1334,12 @@ impl Parser {
 
             let init = if name != "xrEnumerateApiLayerProperties" {
                 quote! {
-                    #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+                    #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, #c_name)?),
                 }
             } else {
                 quote! {
                     #field_ident: entry
-                        .get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))
+                        .get_instance_proc_addr(instance, #c_name)
                         .map(|s| mem::transmute(s))
                         .unwrap_or(crate::stub_enumerate_api_layer_properties),
                 }
@@ -1368,7 +1369,7 @@ impl Parser {
                     };
                     let c_name = c_name(cmd);
                     let init = quote! {
-                        #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, CStr::from_bytes_with_nul_unchecked(#c_name))?),
+                        #field_ident: mem::transmute(entry.get_instance_proc_addr(instance, #c_name)?),
                     };
                     (pfn, init)
                 }).unzip::<_, _, Vec<_>, Vec<_>>();
@@ -1685,7 +1686,7 @@ impl Parser {
             #(#event_readers)*
 
             pub mod raw {
-                use std::{mem, ffi::CStr};
+                use std::mem;
                 use sys::pfn;
                 use crate::{Entry, Result};
 
@@ -2424,10 +2425,14 @@ fn split_ext_tag(name: &str) -> (&str, &str) {
     (tag, &tail[1..])
 }
 
-fn c_name(name: &str) -> LitByteStr {
+fn byte_name(name: &str) -> LitByteStr {
     let mut name = name.as_bytes().to_vec();
     name.push(0);
     LitByteStr::new(&name, Span::call_site())
+}
+
+fn c_name(name: &str) -> LitCStr {
+    LitCStr::new(&CString::new(name.as_bytes()).unwrap(), Span::call_site())
 }
 
 fn tidy_comment(s: &str) -> Option<String> {
