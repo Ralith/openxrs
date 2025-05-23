@@ -2,11 +2,12 @@
 
 // deref_addrof false positive: https://github.com/rust-lang/rust-clippy/issues/8247
 #![allow(clippy::transmute_ptr_to_ptr, clippy::deref_addrof)]
+use std::ffi::CStr;
 use std::os::raw::c_char;
 
 pub use sys::{
-    self, AsyncRequestIdFB, CURRENT_API_VERSION, Duration, FREQUENCY_UNSPECIFIED,
-    MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META, Path, SystemId, Time, UuidEXT, Version,
+    self, AsyncRequestIdFB, Duration, Path, SystemId, Time, UuidEXT, Version, CURRENT_API_VERSION,
+    FREQUENCY_UNSPECIFIED, MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META,
 };
 
 mod generated;
@@ -80,7 +81,11 @@ pub trait AsHandle {
 
 // FFI helpers
 fn cvt(x: sys::Result) -> Result<sys::Result> {
-    if x.into_raw() >= 0 { Ok(x) } else { Err(x) }
+    if x.into_raw() >= 0 {
+        Ok(x)
+    } else {
+        Err(x)
+    }
 }
 
 fn place_cstr(out: &mut [c_char], s: &str) {
@@ -169,16 +174,12 @@ impl<'a> From<&'a [sys::ExtensionProperties]> for generated::ExtensionSet {
     fn from(properties: &'a [sys::ExtensionProperties]) -> Self {
         properties
             .iter()
-            .map(|ext| {
-                // Safety: `c_char` and `u8` has the same size, alignment, and representation.
-                let name = unsafe {
-                    &*(&ext.extension_name as *const _ as *const [u8; sys::MAX_EXTENSION_NAME_SIZE])
-                };
-                let nul = name
-                    .iter()
-                    .position(|&x| x == 0)
-                    .expect("extension name must be nul terminated strings");
-                &name[..=nul]
+            .filter_map(|ext| {
+                // Safety: `c_char` and `u8` have identical layout and no padding
+                CStr::from_bytes_until_nul(unsafe {
+                    std::mem::transmute::<&[c_char], &[u8]>(&ext.extension_name[..])
+                })
+                .ok()
             })
             .collect()
     }
@@ -188,7 +189,7 @@ impl<'a> From<&'a [sys::ExtensionProperties]> for generated::ExtensionSet {
 mod tests {
     #[test]
     fn extension_set_from_iter() {
-        use crate::generated::{ExtensionSet, raw};
+        use crate::generated::{raw, ExtensionSet};
         use std::convert::TryInto;
         let extensions = [
             raw::PassthroughFB::NAME,
@@ -205,7 +206,7 @@ mod tests {
 
     #[test]
     fn extension_set_from_properties() {
-        use crate::generated::{ExtensionSet, raw};
+        use crate::generated::{raw, ExtensionSet};
         use std::convert::TryInto;
         const EXTENSION_PROP_INIT: sys::ExtensionProperties = sys::ExtensionProperties {
             extension_name: [0; sys::MAX_EXTENSION_NAME_SIZE],

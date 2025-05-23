@@ -10,6 +10,7 @@ use crate::platform::*;
 use crate::support::*;
 use crate::*;
 use libc::{timespec, wchar_t};
+use std::ffi::CStr;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
@@ -13311,397 +13312,389 @@ pub mod pfn {
     ) -> Result;
 }
 pub const ALMALENCE_digital_lens_control_SPEC_VERSION: u32 = 1u32;
-pub const ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME: &[u8] =
-    b"XR_ALMALENCE_digital_lens_control\0";
+pub const ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME: &CStr =
+    c"XR_ALMALENCE_digital_lens_control";
 pub const BD_controller_interaction_SPEC_VERSION: u32 = 2u32;
-pub const BD_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_BD_controller_interaction\0";
+pub const BD_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr = c"XR_BD_controller_interaction";
 pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 2u32;
-pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
+pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &CStr = c"XR_EPIC_view_configuration_fov";
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 4u32;
-pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_EXT_performance_settings\0";
+pub const EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME: &CStr = c"XR_EXT_performance_settings";
 pub const EXT_thermal_query_SPEC_VERSION: u32 = 2u32;
-pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &[u8] = b"XR_EXT_thermal_query\0";
+pub const EXT_THERMAL_QUERY_EXTENSION_NAME: &CStr = c"XR_EXT_thermal_query";
 pub const EXT_debug_utils_SPEC_VERSION: u32 = 5u32;
-pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &[u8] = b"XR_EXT_debug_utils\0";
+pub const EXT_DEBUG_UTILS_EXTENSION_NAME: &CStr = c"XR_EXT_debug_utils";
 pub const EXT_eye_gaze_interaction_SPEC_VERSION: u32 = 2u32;
-pub const EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_EXT_eye_gaze_interaction\0";
+pub const EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME: &CStr = c"XR_EXT_eye_gaze_interaction";
 pub const EXT_view_configuration_depth_range_SPEC_VERSION: u32 = 1u32;
-pub const EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME: &[u8] =
-    b"XR_EXT_view_configuration_depth_range\0";
+pub const EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME: &CStr =
+    c"XR_EXT_view_configuration_depth_range";
 pub const EXT_conformance_automation_SPEC_VERSION: u32 = 3u32;
-pub const EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME: &[u8] = b"XR_EXT_conformance_automation\0";
+pub const EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME: &CStr = c"XR_EXT_conformance_automation";
 pub const EXT_hand_tracking_SPEC_VERSION: u32 = 4u32;
-pub const EXT_HAND_TRACKING_EXTENSION_NAME: &[u8] = b"XR_EXT_hand_tracking\0";
+pub const EXT_HAND_TRACKING_EXTENSION_NAME: &CStr = c"XR_EXT_hand_tracking";
 #[cfg(windows)]
 pub const EXT_win32_appcontainer_compatible_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
-pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &[u8] =
-    b"XR_EXT_win32_appcontainer_compatible\0";
+pub const EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME: &CStr =
+    c"XR_EXT_win32_appcontainer_compatible";
 pub const EXT_dpad_binding_SPEC_VERSION: u32 = 1u32;
-pub const EXT_DPAD_BINDING_EXTENSION_NAME: &[u8] = b"XR_EXT_dpad_binding\0";
+pub const EXT_DPAD_BINDING_EXTENSION_NAME: &CStr = c"XR_EXT_dpad_binding";
 pub const EXT_hand_joints_motion_range_SPEC_VERSION: u32 = 1u32;
-pub const EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME: &[u8] = b"XR_EXT_hand_joints_motion_range\0";
+pub const EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME: &CStr = c"XR_EXT_hand_joints_motion_range";
 pub const EXT_samsung_odyssey_controller_SPEC_VERSION: u32 = 1u32;
-pub const EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME: &[u8] =
-    b"XR_EXT_samsung_odyssey_controller\0";
+pub const EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME: &CStr =
+    c"XR_EXT_samsung_odyssey_controller";
 pub const EXT_hp_mixed_reality_controller_SPEC_VERSION: u32 = 1u32;
-pub const EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME: &[u8] =
-    b"XR_EXT_hp_mixed_reality_controller\0";
+pub const EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME: &CStr =
+    c"XR_EXT_hp_mixed_reality_controller";
 pub const EXT_palm_pose_SPEC_VERSION: u32 = 3u32;
-pub const EXT_PALM_POSE_EXTENSION_NAME: &[u8] = b"XR_EXT_palm_pose\0";
+pub const EXT_PALM_POSE_EXTENSION_NAME: &CStr = c"XR_EXT_palm_pose";
 pub const EXT_uuid_SPEC_VERSION: u32 = 1u32;
-pub const EXT_UUID_EXTENSION_NAME: &[u8] = b"XR_EXT_uuid\0";
+pub const EXT_UUID_EXTENSION_NAME: &CStr = c"XR_EXT_uuid";
 pub const EXT_hand_interaction_SPEC_VERSION: u32 = 1u32;
-pub const EXT_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_EXT_hand_interaction\0";
+pub const EXT_HAND_INTERACTION_EXTENSION_NAME: &CStr = c"XR_EXT_hand_interaction";
 pub const EXT_active_action_set_priority_SPEC_VERSION: u32 = 1u32;
-pub const EXT_ACTIVE_ACTION_SET_PRIORITY_EXTENSION_NAME: &[u8] =
-    b"XR_EXT_active_action_set_priority\0";
+pub const EXT_ACTIVE_ACTION_SET_PRIORITY_EXTENSION_NAME: &CStr =
+    c"XR_EXT_active_action_set_priority";
 pub const EXT_local_floor_SPEC_VERSION: u32 = 1u32;
-pub const EXT_LOCAL_FLOOR_EXTENSION_NAME: &[u8] = b"XR_EXT_local_floor\0";
+pub const EXT_LOCAL_FLOOR_EXTENSION_NAME: &CStr = c"XR_EXT_local_floor";
 pub const EXT_hand_tracking_data_source_SPEC_VERSION: u32 = 1u32;
-pub const EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME: &[u8] =
-    b"XR_EXT_hand_tracking_data_source\0";
+pub const EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME: &CStr = c"XR_EXT_hand_tracking_data_source";
 pub const EXT_plane_detection_SPEC_VERSION: u32 = 2u32;
-pub const EXT_PLANE_DETECTION_EXTENSION_NAME: &[u8] = b"XR_EXT_plane_detection\0";
+pub const EXT_PLANE_DETECTION_EXTENSION_NAME: &CStr = c"XR_EXT_plane_detection";
 pub const EXT_future_SPEC_VERSION: u32 = 1u32;
-pub const EXT_FUTURE_EXTENSION_NAME: &[u8] = b"XR_EXT_future\0";
+pub const EXT_FUTURE_EXTENSION_NAME: &CStr = c"XR_EXT_future";
 pub const EXT_user_presence_SPEC_VERSION: u32 = 1u32;
-pub const EXT_USER_PRESENCE_EXTENSION_NAME: &[u8] = b"XR_EXT_user_presence\0";
+pub const EXT_USER_PRESENCE_EXTENSION_NAME: &CStr = c"XR_EXT_user_presence";
 pub const EXT_composition_layer_inverted_alpha_SPEC_VERSION: u32 = 1u32;
-pub const EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME: &[u8] =
-    b"XR_EXT_composition_layer_inverted_alpha\0";
+pub const EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME: &CStr =
+    c"XR_EXT_composition_layer_inverted_alpha";
 pub const FB_composition_layer_image_layout_SPEC_VERSION: u32 = 1u32;
-pub const FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME: &[u8] =
-    b"XR_FB_composition_layer_image_layout\0";
+pub const FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME: &CStr =
+    c"XR_FB_composition_layer_image_layout";
 pub const FB_composition_layer_alpha_blend_SPEC_VERSION: u32 = 3u32;
-pub const FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME: &[u8] =
-    b"XR_FB_composition_layer_alpha_blend\0";
+pub const FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME: &CStr =
+    c"XR_FB_composition_layer_alpha_blend";
 #[cfg(target_os = "android")]
 pub const FB_android_surface_swapchain_create_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
-pub const FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME: &[u8] =
-    b"XR_FB_android_surface_swapchain_create\0";
+pub const FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME: &CStr =
+    c"XR_FB_android_surface_swapchain_create";
 pub const FB_swapchain_update_state_SPEC_VERSION: u32 = 3u32;
-pub const FB_SWAPCHAIN_UPDATE_STATE_EXTENSION_NAME: &[u8] = b"XR_FB_swapchain_update_state\0";
+pub const FB_SWAPCHAIN_UPDATE_STATE_EXTENSION_NAME: &CStr = c"XR_FB_swapchain_update_state";
 pub const FB_composition_layer_secure_content_SPEC_VERSION: u32 = 1u32;
-pub const FB_COMPOSITION_LAYER_SECURE_CONTENT_EXTENSION_NAME: &[u8] =
-    b"XR_FB_composition_layer_secure_content\0";
+pub const FB_COMPOSITION_LAYER_SECURE_CONTENT_EXTENSION_NAME: &CStr =
+    c"XR_FB_composition_layer_secure_content";
 pub const FB_body_tracking_SPEC_VERSION: u32 = 1u32;
-pub const FB_BODY_TRACKING_EXTENSION_NAME: &[u8] = b"XR_FB_body_tracking\0";
+pub const FB_BODY_TRACKING_EXTENSION_NAME: &CStr = c"XR_FB_body_tracking";
 pub const FB_display_refresh_rate_SPEC_VERSION: u32 = 1u32;
-pub const FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME: &[u8] = b"XR_FB_display_refresh_rate\0";
+pub const FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME: &CStr = c"XR_FB_display_refresh_rate";
 pub const FB_color_space_SPEC_VERSION: u32 = 3u32;
-pub const FB_COLOR_SPACE_EXTENSION_NAME: &[u8] = b"XR_FB_color_space\0";
+pub const FB_COLOR_SPACE_EXTENSION_NAME: &CStr = c"XR_FB_color_space";
 pub const FB_hand_tracking_mesh_SPEC_VERSION: u32 = 3u32;
-pub const FB_HAND_TRACKING_MESH_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_mesh\0";
+pub const FB_HAND_TRACKING_MESH_EXTENSION_NAME: &CStr = c"XR_FB_hand_tracking_mesh";
 pub const FB_hand_tracking_aim_SPEC_VERSION: u32 = 2u32;
-pub const FB_HAND_TRACKING_AIM_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_aim\0";
+pub const FB_HAND_TRACKING_AIM_EXTENSION_NAME: &CStr = c"XR_FB_hand_tracking_aim";
 pub const FB_hand_tracking_capsules_SPEC_VERSION: u32 = 3u32;
-pub const FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME: &[u8] = b"XR_FB_hand_tracking_capsules\0";
+pub const FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME: &CStr = c"XR_FB_hand_tracking_capsules";
 pub const FB_spatial_entity_SPEC_VERSION: u32 = 3u32;
-pub const FB_SPATIAL_ENTITY_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity\0";
+pub const FB_SPATIAL_ENTITY_EXTENSION_NAME: &CStr = c"XR_FB_spatial_entity";
 pub const FB_foveation_SPEC_VERSION: u32 = 1u32;
-pub const FB_FOVEATION_EXTENSION_NAME: &[u8] = b"XR_FB_foveation\0";
+pub const FB_FOVEATION_EXTENSION_NAME: &CStr = c"XR_FB_foveation";
 pub const FB_foveation_configuration_SPEC_VERSION: u32 = 1u32;
-pub const FB_FOVEATION_CONFIGURATION_EXTENSION_NAME: &[u8] = b"XR_FB_foveation_configuration\0";
+pub const FB_FOVEATION_CONFIGURATION_EXTENSION_NAME: &CStr = c"XR_FB_foveation_configuration";
 pub const FB_keyboard_tracking_SPEC_VERSION: u32 = 1u32;
-pub const FB_KEYBOARD_TRACKING_EXTENSION_NAME: &[u8] = b"XR_FB_keyboard_tracking\0";
+pub const FB_KEYBOARD_TRACKING_EXTENSION_NAME: &CStr = c"XR_FB_keyboard_tracking";
 pub const FB_triangle_mesh_SPEC_VERSION: u32 = 2u32;
-pub const FB_TRIANGLE_MESH_EXTENSION_NAME: &[u8] = b"XR_FB_triangle_mesh\0";
+pub const FB_TRIANGLE_MESH_EXTENSION_NAME: &CStr = c"XR_FB_triangle_mesh";
 pub const FB_passthrough_SPEC_VERSION: u32 = 4u32;
-pub const FB_PASSTHROUGH_EXTENSION_NAME: &[u8] = b"XR_FB_passthrough\0";
+pub const FB_PASSTHROUGH_EXTENSION_NAME: &CStr = c"XR_FB_passthrough";
 pub const FB_render_model_SPEC_VERSION: u32 = 4u32;
-pub const FB_RENDER_MODEL_EXTENSION_NAME: &[u8] = b"XR_FB_render_model\0";
+pub const FB_RENDER_MODEL_EXTENSION_NAME: &CStr = c"XR_FB_render_model";
 pub const FB_spatial_entity_query_SPEC_VERSION: u32 = 1u32;
-pub const FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity_query\0";
+pub const FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME: &CStr = c"XR_FB_spatial_entity_query";
 pub const FB_spatial_entity_storage_SPEC_VERSION: u32 = 1u32;
-pub const FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity_storage\0";
+pub const FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME: &CStr = c"XR_FB_spatial_entity_storage";
 pub const FB_foveation_vulkan_SPEC_VERSION: u32 = 1u32;
-pub const FB_FOVEATION_VULKAN_EXTENSION_NAME: &[u8] = b"XR_FB_foveation_vulkan\0";
+pub const FB_FOVEATION_VULKAN_EXTENSION_NAME: &CStr = c"XR_FB_foveation_vulkan";
 #[cfg(target_os = "android")]
 pub const FB_swapchain_update_state_android_surface_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
-pub const FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME: &[u8] =
-    b"XR_FB_swapchain_update_state_android_surface\0";
+pub const FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME: &CStr =
+    c"XR_FB_swapchain_update_state_android_surface";
 pub const FB_swapchain_update_state_opengl_es_SPEC_VERSION: u32 = 1u32;
-pub const FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME: &[u8] =
-    b"XR_FB_swapchain_update_state_opengl_es\0";
+pub const FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME: &CStr =
+    c"XR_FB_swapchain_update_state_opengl_es";
 pub const FB_swapchain_update_state_vulkan_SPEC_VERSION: u32 = 1u32;
-pub const FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME: &[u8] =
-    b"XR_FB_swapchain_update_state_vulkan\0";
+pub const FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME: &CStr =
+    c"XR_FB_swapchain_update_state_vulkan";
 pub const FB_touch_controller_pro_SPEC_VERSION: u32 = 1u32;
-pub const FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME: &[u8] = b"XR_FB_touch_controller_pro\0";
+pub const FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME: &CStr = c"XR_FB_touch_controller_pro";
 pub const FB_spatial_entity_sharing_SPEC_VERSION: u32 = 1u32;
-pub const FB_SPATIAL_ENTITY_SHARING_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity_sharing\0";
+pub const FB_SPATIAL_ENTITY_SHARING_EXTENSION_NAME: &CStr = c"XR_FB_spatial_entity_sharing";
 pub const FB_space_warp_SPEC_VERSION: u32 = 2u32;
-pub const FB_SPACE_WARP_EXTENSION_NAME: &[u8] = b"XR_FB_space_warp\0";
+pub const FB_SPACE_WARP_EXTENSION_NAME: &CStr = c"XR_FB_space_warp";
 pub const FB_haptic_amplitude_envelope_SPEC_VERSION: u32 = 1u32;
-pub const FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME: &[u8] = b"XR_FB_haptic_amplitude_envelope\0";
+pub const FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME: &CStr = c"XR_FB_haptic_amplitude_envelope";
 pub const FB_scene_SPEC_VERSION: u32 = 4u32;
-pub const FB_SCENE_EXTENSION_NAME: &[u8] = b"XR_FB_scene\0";
+pub const FB_SCENE_EXTENSION_NAME: &CStr = c"XR_FB_scene";
 pub const FB_scene_capture_SPEC_VERSION: u32 = 1u32;
-pub const FB_SCENE_CAPTURE_EXTENSION_NAME: &[u8] = b"XR_FB_scene_capture\0";
+pub const FB_SCENE_CAPTURE_EXTENSION_NAME: &CStr = c"XR_FB_scene_capture";
 pub const FB_spatial_entity_container_SPEC_VERSION: u32 = 2u32;
-pub const FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity_container\0";
+pub const FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME: &CStr = c"XR_FB_spatial_entity_container";
 pub const FB_face_tracking_SPEC_VERSION: u32 = 1u32;
-pub const FB_FACE_TRACKING_EXTENSION_NAME: &[u8] = b"XR_FB_face_tracking\0";
+pub const FB_FACE_TRACKING_EXTENSION_NAME: &CStr = c"XR_FB_face_tracking";
 pub const FB_eye_tracking_social_SPEC_VERSION: u32 = 1u32;
-pub const FB_EYE_TRACKING_SOCIAL_EXTENSION_NAME: &[u8] = b"XR_FB_eye_tracking_social\0";
+pub const FB_EYE_TRACKING_SOCIAL_EXTENSION_NAME: &CStr = c"XR_FB_eye_tracking_social";
 pub const FB_passthrough_keyboard_hands_SPEC_VERSION: u32 = 2u32;
-pub const FB_PASSTHROUGH_KEYBOARD_HANDS_EXTENSION_NAME: &[u8] =
-    b"XR_FB_passthrough_keyboard_hands\0";
+pub const FB_PASSTHROUGH_KEYBOARD_HANDS_EXTENSION_NAME: &CStr = c"XR_FB_passthrough_keyboard_hands";
 pub const FB_composition_layer_settings_SPEC_VERSION: u32 = 1u32;
-pub const FB_COMPOSITION_LAYER_SETTINGS_EXTENSION_NAME: &[u8] =
-    b"XR_FB_composition_layer_settings\0";
+pub const FB_COMPOSITION_LAYER_SETTINGS_EXTENSION_NAME: &CStr = c"XR_FB_composition_layer_settings";
 pub const FB_touch_controller_proximity_SPEC_VERSION: u32 = 1u32;
-pub const FB_TOUCH_CONTROLLER_PROXIMITY_EXTENSION_NAME: &[u8] =
-    b"XR_FB_touch_controller_proximity\0";
+pub const FB_TOUCH_CONTROLLER_PROXIMITY_EXTENSION_NAME: &CStr = c"XR_FB_touch_controller_proximity";
 pub const FB_haptic_pcm_SPEC_VERSION: u32 = 1u32;
-pub const FB_HAPTIC_PCM_EXTENSION_NAME: &[u8] = b"XR_FB_haptic_pcm\0";
+pub const FB_HAPTIC_PCM_EXTENSION_NAME: &CStr = c"XR_FB_haptic_pcm";
 pub const FB_composition_layer_depth_test_SPEC_VERSION: u32 = 1u32;
-pub const FB_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME: &[u8] =
-    b"XR_FB_composition_layer_depth_test\0";
+pub const FB_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME: &CStr =
+    c"XR_FB_composition_layer_depth_test";
 pub const FB_spatial_entity_storage_batch_SPEC_VERSION: u32 = 1u32;
-pub const FB_SPATIAL_ENTITY_STORAGE_BATCH_EXTENSION_NAME: &[u8] =
-    b"XR_FB_spatial_entity_storage_batch\0";
+pub const FB_SPATIAL_ENTITY_STORAGE_BATCH_EXTENSION_NAME: &CStr =
+    c"XR_FB_spatial_entity_storage_batch";
 pub const FB_spatial_entity_user_SPEC_VERSION: u32 = 1u32;
-pub const FB_SPATIAL_ENTITY_USER_EXTENSION_NAME: &[u8] = b"XR_FB_spatial_entity_user\0";
+pub const FB_SPATIAL_ENTITY_USER_EXTENSION_NAME: &CStr = c"XR_FB_spatial_entity_user";
 pub const FB_face_tracking2_SPEC_VERSION: u32 = 1u32;
-pub const FB_FACE_TRACKING2_EXTENSION_NAME: &[u8] = b"XR_FB_face_tracking2\0";
+pub const FB_FACE_TRACKING2_EXTENSION_NAME: &CStr = c"XR_FB_face_tracking2";
 pub const HTC_vive_cosmos_controller_interaction_SPEC_VERSION: u32 = 1u32;
-pub const HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
-    b"XR_HTC_vive_cosmos_controller_interaction\0";
+pub const HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr =
+    c"XR_HTC_vive_cosmos_controller_interaction";
 pub const HTC_facial_tracking_SPEC_VERSION: u32 = 2u32;
-pub const HTC_FACIAL_TRACKING_EXTENSION_NAME: &[u8] = b"XR_HTC_facial_tracking\0";
+pub const HTC_FACIAL_TRACKING_EXTENSION_NAME: &CStr = c"XR_HTC_facial_tracking";
 pub const HTC_vive_focus3_controller_interaction_SPEC_VERSION: u32 = 2u32;
-pub const HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
-    b"XR_HTC_vive_focus3_controller_interaction\0";
+pub const HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr =
+    c"XR_HTC_vive_focus3_controller_interaction";
 pub const HTC_hand_interaction_SPEC_VERSION: u32 = 1u32;
-pub const HTC_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_HTC_hand_interaction\0";
+pub const HTC_HAND_INTERACTION_EXTENSION_NAME: &CStr = c"XR_HTC_hand_interaction";
 pub const HTC_vive_wrist_tracker_interaction_SPEC_VERSION: u32 = 1u32;
-pub const HTC_VIVE_WRIST_TRACKER_INTERACTION_EXTENSION_NAME: &[u8] =
-    b"XR_HTC_vive_wrist_tracker_interaction\0";
+pub const HTC_VIVE_WRIST_TRACKER_INTERACTION_EXTENSION_NAME: &CStr =
+    c"XR_HTC_vive_wrist_tracker_interaction";
 pub const HTC_passthrough_SPEC_VERSION: u32 = 1u32;
-pub const HTC_PASSTHROUGH_EXTENSION_NAME: &[u8] = b"XR_HTC_passthrough\0";
+pub const HTC_PASSTHROUGH_EXTENSION_NAME: &CStr = c"XR_HTC_passthrough";
 pub const HTC_foveation_SPEC_VERSION: u32 = 1u32;
-pub const HTC_FOVEATION_EXTENSION_NAME: &[u8] = b"XR_HTC_foveation\0";
+pub const HTC_FOVEATION_EXTENSION_NAME: &CStr = c"XR_HTC_foveation";
 pub const HTC_anchor_SPEC_VERSION: u32 = 1u32;
-pub const HTC_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_HTC_anchor\0";
+pub const HTC_ANCHOR_EXTENSION_NAME: &CStr = c"XR_HTC_anchor";
 pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
-pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
-    b"XR_HUAWEI_controller_interaction\0";
+pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr = c"XR_HUAWEI_controller_interaction";
 #[cfg(target_os = "android")]
 pub const KHR_android_thread_settings_SPEC_VERSION: u32 = 6u32;
 #[cfg(target_os = "android")]
-pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &[u8] = b"XR_KHR_android_thread_settings\0";
+pub const KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME: &CStr = c"XR_KHR_android_thread_settings";
 #[cfg(target_os = "android")]
 pub const KHR_android_surface_swapchain_SPEC_VERSION: u32 = 4u32;
 #[cfg(target_os = "android")]
-pub const KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_android_surface_swapchain\0";
+pub const KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME: &CStr = c"XR_KHR_android_surface_swapchain";
 pub const KHR_composition_layer_cube_SPEC_VERSION: u32 = 8u32;
-pub const KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME: &[u8] = b"XR_KHR_composition_layer_cube\0";
+pub const KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME: &CStr = c"XR_KHR_composition_layer_cube";
 #[cfg(target_os = "android")]
 pub const KHR_android_create_instance_SPEC_VERSION: u32 = 3u32;
 #[cfg(target_os = "android")]
-pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &[u8] = b"XR_KHR_android_create_instance\0";
+pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &CStr = c"XR_KHR_android_create_instance";
 pub const KHR_composition_layer_depth_SPEC_VERSION: u32 = 6u32;
-pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &[u8] = b"XR_KHR_composition_layer_depth\0";
+pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &CStr = c"XR_KHR_composition_layer_depth";
 pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 4u32;
-pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_vulkan_swapchain_format_list\0";
+pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &CStr =
+    c"XR_KHR_vulkan_swapchain_format_list";
 pub const KHR_composition_layer_cylinder_SPEC_VERSION: u32 = 4u32;
-pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_composition_layer_cylinder\0";
+pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &CStr =
+    c"XR_KHR_composition_layer_cylinder";
 pub const KHR_composition_layer_equirect_SPEC_VERSION: u32 = 3u32;
-pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_composition_layer_equirect\0";
+pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &CStr =
+    c"XR_KHR_composition_layer_equirect";
 pub const KHR_opengl_enable_SPEC_VERSION: u32 = 10u32;
-pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_enable\0";
+pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &CStr = c"XR_KHR_opengl_enable";
 pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 8u32;
-pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_es_enable\0";
+pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &CStr = c"XR_KHR_opengl_es_enable";
 pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 8u32;
-pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_vulkan_enable\0";
+pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &CStr = c"XR_KHR_vulkan_enable";
 #[cfg(windows)]
 pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 9u32;
 #[cfg(windows)]
-pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D11_enable\0";
+pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &CStr = c"XR_KHR_D3D11_enable";
 #[cfg(windows)]
 pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 9u32;
 #[cfg(windows)]
-pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D12_enable\0";
+pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &CStr = c"XR_KHR_D3D12_enable";
 #[cfg(target_vendor = "apple")]
 pub const KHR_metal_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_vendor = "apple")]
-pub const KHR_METAL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_metal_enable\0";
+pub const KHR_METAL_ENABLE_EXTENSION_NAME: &CStr = c"XR_KHR_metal_enable";
 pub const KHR_visibility_mask_SPEC_VERSION: u32 = 2u32;
-pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &[u8] = b"XR_KHR_visibility_mask\0";
+pub const KHR_VISIBILITY_MASK_EXTENSION_NAME: &CStr = c"XR_KHR_visibility_mask";
 pub const KHR_composition_layer_color_scale_bias_SPEC_VERSION: u32 = 5u32;
-pub const KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_composition_layer_color_scale_bias\0";
+pub const KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME: &CStr =
+    c"XR_KHR_composition_layer_color_scale_bias";
 #[cfg(windows)]
 pub const KHR_win32_convert_performance_counter_time_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
-pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_win32_convert_performance_counter_time\0";
+pub const KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME: &CStr =
+    c"XR_KHR_win32_convert_performance_counter_time";
 pub const KHR_convert_timespec_time_SPEC_VERSION: u32 = 1u32;
-pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &[u8] = b"XR_KHR_convert_timespec_time\0";
+pub const KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME: &CStr = c"XR_KHR_convert_timespec_time";
 pub const KHR_loader_init_SPEC_VERSION: u32 = 2u32;
-pub const KHR_LOADER_INIT_EXTENSION_NAME: &[u8] = b"XR_KHR_loader_init\0";
+pub const KHR_LOADER_INIT_EXTENSION_NAME: &CStr = c"XR_KHR_loader_init";
 #[cfg(target_os = "android")]
 pub const KHR_loader_init_android_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
-pub const KHR_LOADER_INIT_ANDROID_EXTENSION_NAME: &[u8] = b"XR_KHR_loader_init_android\0";
+pub const KHR_LOADER_INIT_ANDROID_EXTENSION_NAME: &CStr = c"XR_KHR_loader_init_android";
 pub const KHR_vulkan_enable2_SPEC_VERSION: u32 = 2u32;
-pub const KHR_VULKAN_ENABLE2_EXTENSION_NAME: &[u8] = b"XR_KHR_vulkan_enable2\0";
+pub const KHR_VULKAN_ENABLE2_EXTENSION_NAME: &CStr = c"XR_KHR_vulkan_enable2";
 pub const KHR_composition_layer_equirect2_SPEC_VERSION: u32 = 1u32;
-pub const KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_composition_layer_equirect2\0";
+pub const KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME: &CStr =
+    c"XR_KHR_composition_layer_equirect2";
 pub const KHR_binding_modification_SPEC_VERSION: u32 = 1u32;
-pub const KHR_BINDING_MODIFICATION_EXTENSION_NAME: &[u8] = b"XR_KHR_binding_modification\0";
+pub const KHR_BINDING_MODIFICATION_EXTENSION_NAME: &CStr = c"XR_KHR_binding_modification";
 pub const KHR_swapchain_usage_input_attachment_bit_SPEC_VERSION: u32 = 3u32;
-pub const KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME: &[u8] =
-    b"XR_KHR_swapchain_usage_input_attachment_bit\0";
+pub const KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME: &CStr =
+    c"XR_KHR_swapchain_usage_input_attachment_bit";
 pub const KHR_locate_spaces_SPEC_VERSION: u32 = 1u32;
-pub const KHR_LOCATE_SPACES_EXTENSION_NAME: &[u8] = b"XR_KHR_locate_spaces\0";
+pub const KHR_LOCATE_SPACES_EXTENSION_NAME: &CStr = c"XR_KHR_locate_spaces";
 pub const KHR_maintenance1_SPEC_VERSION: u32 = 1u32;
-pub const KHR_MAINTENANCE1_EXTENSION_NAME: &[u8] = b"XR_KHR_maintenance1\0";
+pub const KHR_MAINTENANCE1_EXTENSION_NAME: &CStr = c"XR_KHR_maintenance1";
 pub const META_foveation_eye_tracked_SPEC_VERSION: u32 = 1u32;
-pub const META_FOVEATION_EYE_TRACKED_EXTENSION_NAME: &[u8] = b"XR_META_foveation_eye_tracked\0";
+pub const META_FOVEATION_EYE_TRACKED_EXTENSION_NAME: &CStr = c"XR_META_foveation_eye_tracked";
 pub const META_local_dimming_SPEC_VERSION: u32 = 1u32;
-pub const META_LOCAL_DIMMING_EXTENSION_NAME: &[u8] = b"XR_META_local_dimming\0";
+pub const META_LOCAL_DIMMING_EXTENSION_NAME: &CStr = c"XR_META_local_dimming";
 pub const META_passthrough_preferences_SPEC_VERSION: u32 = 1u32;
-pub const META_PASSTHROUGH_PREFERENCES_EXTENSION_NAME: &[u8] = b"XR_META_passthrough_preferences\0";
+pub const META_PASSTHROUGH_PREFERENCES_EXTENSION_NAME: &CStr = c"XR_META_passthrough_preferences";
 pub const META_virtual_keyboard_SPEC_VERSION: u32 = 1u32;
-pub const META_VIRTUAL_KEYBOARD_EXTENSION_NAME: &[u8] = b"XR_META_virtual_keyboard\0";
+pub const META_VIRTUAL_KEYBOARD_EXTENSION_NAME: &CStr = c"XR_META_virtual_keyboard";
 pub const META_vulkan_swapchain_create_info_SPEC_VERSION: u32 = 1u32;
-pub const META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME: &[u8] =
-    b"XR_META_vulkan_swapchain_create_info\0";
+pub const META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME: &CStr =
+    c"XR_META_vulkan_swapchain_create_info";
 pub const META_performance_metrics_SPEC_VERSION: u32 = 2u32;
-pub const META_PERFORMANCE_METRICS_EXTENSION_NAME: &[u8] = b"XR_META_performance_metrics\0";
+pub const META_PERFORMANCE_METRICS_EXTENSION_NAME: &CStr = c"XR_META_performance_metrics";
 pub const META_headset_id_SPEC_VERSION: u32 = 2u32;
-pub const META_HEADSET_ID_EXTENSION_NAME: &[u8] = b"XR_META_headset_id\0";
+pub const META_HEADSET_ID_EXTENSION_NAME: &CStr = c"XR_META_headset_id";
 pub const META_recommended_layer_resolution_SPEC_VERSION: u32 = 1u32;
-pub const META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME: &[u8] =
-    b"XR_META_recommended_layer_resolution\0";
+pub const META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME: &CStr =
+    c"XR_META_recommended_layer_resolution";
 pub const META_passthrough_color_lut_SPEC_VERSION: u32 = 1u32;
-pub const META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME: &[u8] = b"XR_META_passthrough_color_lut\0";
+pub const META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME: &CStr = c"XR_META_passthrough_color_lut";
 pub const META_spatial_entity_mesh_SPEC_VERSION: u32 = 1u32;
-pub const META_SPATIAL_ENTITY_MESH_EXTENSION_NAME: &[u8] = b"XR_META_spatial_entity_mesh\0";
+pub const META_SPATIAL_ENTITY_MESH_EXTENSION_NAME: &CStr = c"XR_META_spatial_entity_mesh";
 pub const META_automatic_layer_filter_SPEC_VERSION: u32 = 1u32;
-pub const META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME: &[u8] = b"XR_META_automatic_layer_filter\0";
+pub const META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME: &CStr = c"XR_META_automatic_layer_filter";
 pub const META_touch_controller_plus_SPEC_VERSION: u32 = 1u32;
-pub const META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME: &[u8] = b"XR_META_touch_controller_plus\0";
+pub const META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME: &CStr = c"XR_META_touch_controller_plus";
 pub const META_environment_depth_SPEC_VERSION: u32 = 1u32;
-pub const META_ENVIRONMENT_DEPTH_EXTENSION_NAME: &[u8] = b"XR_META_environment_depth\0";
+pub const META_ENVIRONMENT_DEPTH_EXTENSION_NAME: &CStr = c"XR_META_environment_depth";
 pub const ML_ml2_controller_interaction_SPEC_VERSION: u32 = 1u32;
-pub const ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
-    b"XR_ML_ml2_controller_interaction\0";
+pub const ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr = c"XR_ML_ml2_controller_interaction";
 pub const ML_frame_end_info_SPEC_VERSION: u32 = 1u32;
-pub const ML_FRAME_END_INFO_EXTENSION_NAME: &[u8] = b"XR_ML_frame_end_info\0";
+pub const ML_FRAME_END_INFO_EXTENSION_NAME: &CStr = c"XR_ML_frame_end_info";
 pub const ML_global_dimmer_SPEC_VERSION: u32 = 1u32;
-pub const ML_GLOBAL_DIMMER_EXTENSION_NAME: &[u8] = b"XR_ML_global_dimmer\0";
+pub const ML_GLOBAL_DIMMER_EXTENSION_NAME: &CStr = c"XR_ML_global_dimmer";
 pub const ML_compat_SPEC_VERSION: u32 = 1u32;
-pub const ML_COMPAT_EXTENSION_NAME: &[u8] = b"XR_ML_compat\0";
+pub const ML_COMPAT_EXTENSION_NAME: &CStr = c"XR_ML_compat";
 pub const ML_marker_understanding_SPEC_VERSION: u32 = 1u32;
-pub const ML_MARKER_UNDERSTANDING_EXTENSION_NAME: &[u8] = b"XR_ML_marker_understanding\0";
+pub const ML_MARKER_UNDERSTANDING_EXTENSION_NAME: &CStr = c"XR_ML_marker_understanding";
 pub const ML_localization_map_SPEC_VERSION: u32 = 1u32;
-pub const ML_LOCALIZATION_MAP_EXTENSION_NAME: &[u8] = b"XR_ML_localization_map\0";
+pub const ML_LOCALIZATION_MAP_EXTENSION_NAME: &CStr = c"XR_ML_localization_map";
 pub const ML_user_calibration_SPEC_VERSION: u32 = 1u32;
-pub const ML_USER_CALIBRATION_EXTENSION_NAME: &[u8] = b"XR_ML_user_calibration\0";
+pub const ML_USER_CALIBRATION_EXTENSION_NAME: &CStr = c"XR_ML_user_calibration";
 pub const MND_headless_SPEC_VERSION: u32 = 2u32;
-pub const MND_HEADLESS_EXTENSION_NAME: &[u8] = b"XR_MND_headless\0";
+pub const MND_HEADLESS_EXTENSION_NAME: &CStr = c"XR_MND_headless";
 pub const MND_swapchain_usage_input_attachment_bit_SPEC_VERSION: u32 = 2u32;
-pub const MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME: &[u8] =
-    b"XR_MND_swapchain_usage_input_attachment_bit\0";
+pub const MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME: &CStr =
+    c"XR_MND_swapchain_usage_input_attachment_bit";
 pub const MSFT_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &[u8] =
-    b"XR_MSFT_unbounded_reference_space\0";
+pub const MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &CStr =
+    c"XR_MSFT_unbounded_reference_space";
 pub const MSFT_spatial_anchor_SPEC_VERSION: u32 = 2u32;
-pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_anchor\0";
+pub const MSFT_SPATIAL_ANCHOR_EXTENSION_NAME: &CStr = c"XR_MSFT_spatial_anchor";
 pub const MSFT_spatial_graph_bridge_SPEC_VERSION: u32 = 2u32;
-pub const MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME: &[u8] = b"XR_MSFT_spatial_graph_bridge\0";
+pub const MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME: &CStr = c"XR_MSFT_spatial_graph_bridge";
 pub const MSFT_hand_interaction_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_interaction\0";
+pub const MSFT_HAND_INTERACTION_EXTENSION_NAME: &CStr = c"XR_MSFT_hand_interaction";
 pub const MSFT_hand_tracking_mesh_SPEC_VERSION: u32 = 4u32;
-pub const MSFT_HAND_TRACKING_MESH_EXTENSION_NAME: &[u8] = b"XR_MSFT_hand_tracking_mesh\0";
+pub const MSFT_HAND_TRACKING_MESH_EXTENSION_NAME: &CStr = c"XR_MSFT_hand_tracking_mesh";
 pub const MSFT_secondary_view_configuration_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME: &[u8] =
-    b"XR_MSFT_secondary_view_configuration\0";
+pub const MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME: &CStr =
+    c"XR_MSFT_secondary_view_configuration";
 pub const MSFT_first_person_observer_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME: &[u8] = b"XR_MSFT_first_person_observer\0";
+pub const MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME: &CStr = c"XR_MSFT_first_person_observer";
 pub const MSFT_controller_model_SPEC_VERSION: u32 = 2u32;
-pub const MSFT_CONTROLLER_MODEL_EXTENSION_NAME: &[u8] = b"XR_MSFT_controller_model\0";
+pub const MSFT_CONTROLLER_MODEL_EXTENSION_NAME: &CStr = c"XR_MSFT_controller_model";
 #[cfg(windows)]
 pub const MSFT_perception_anchor_interop_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
-pub const MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME: &[u8] =
-    b"XR_MSFT_perception_anchor_interop\0";
+pub const MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME: &CStr =
+    c"XR_MSFT_perception_anchor_interop";
 #[cfg(windows)]
 pub const MSFT_holographic_window_attachment_SPEC_VERSION: u32 = 1u32;
 #[cfg(windows)]
-pub const MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME: &[u8] =
-    b"XR_MSFT_holographic_window_attachment\0";
+pub const MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME: &CStr =
+    c"XR_MSFT_holographic_window_attachment";
 pub const MSFT_composition_layer_reprojection_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME: &[u8] =
-    b"XR_MSFT_composition_layer_reprojection\0";
+pub const MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME: &CStr =
+    c"XR_MSFT_composition_layer_reprojection";
 pub const MSFT_scene_understanding_SPEC_VERSION: u32 = 2u32;
-pub const MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME: &[u8] = b"XR_MSFT_scene_understanding\0";
+pub const MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME: &CStr = c"XR_MSFT_scene_understanding";
 pub const MSFT_scene_understanding_serialization_SPEC_VERSION: u32 = 2u32;
-pub const MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME: &[u8] =
-    b"XR_MSFT_scene_understanding_serialization\0";
+pub const MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME: &CStr =
+    c"XR_MSFT_scene_understanding_serialization";
 pub const MSFT_spatial_anchor_persistence_SPEC_VERSION: u32 = 2u32;
-pub const MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME: &[u8] =
-    b"XR_MSFT_spatial_anchor_persistence\0";
+pub const MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME: &CStr =
+    c"XR_MSFT_spatial_anchor_persistence";
 pub const MSFT_scene_marker_SPEC_VERSION: u32 = 1u32;
-pub const MSFT_SCENE_MARKER_EXTENSION_NAME: &[u8] = b"XR_MSFT_scene_marker\0";
+pub const MSFT_SCENE_MARKER_EXTENSION_NAME: &CStr = c"XR_MSFT_scene_marker";
 #[cfg(target_os = "android")]
 pub const OCULUS_android_session_state_enable_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
-pub const OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME: &[u8] =
-    b"XR_OCULUS_android_session_state_enable\0";
+pub const OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME: &CStr =
+    c"XR_OCULUS_android_session_state_enable";
 pub const OCULUS_audio_device_guid_SPEC_VERSION: u32 = 1u32;
-pub const OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME: &[u8] = b"XR_OCULUS_audio_device_guid\0";
+pub const OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME: &CStr = c"XR_OCULUS_audio_device_guid";
 pub const OCULUS_external_camera_SPEC_VERSION: u32 = 1u32;
-pub const OCULUS_EXTERNAL_CAMERA_EXTENSION_NAME: &[u8] = b"XR_OCULUS_external_camera\0";
+pub const OCULUS_EXTERNAL_CAMERA_EXTENSION_NAME: &CStr = c"XR_OCULUS_external_camera";
 pub const OPPO_controller_interaction_SPEC_VERSION: u32 = 1u32;
-pub const OPPO_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_OPPO_controller_interaction\0";
+pub const OPPO_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr = c"XR_OPPO_controller_interaction";
 pub const QCOM_tracking_optimization_settings_SPEC_VERSION: u32 = 1u32;
-pub const QCOM_TRACKING_OPTIMIZATION_SETTINGS_EXTENSION_NAME: &[u8] =
-    b"XR_QCOM_tracking_optimization_settings\0";
+pub const QCOM_TRACKING_OPTIMIZATION_SETTINGS_EXTENSION_NAME: &CStr =
+    c"XR_QCOM_tracking_optimization_settings";
 pub const ULTRALEAP_hand_tracking_forearm_SPEC_VERSION: u32 = 1u32;
-pub const ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME: &[u8] =
-    b"XR_ULTRALEAP_hand_tracking_forearm\0";
+pub const ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME: &CStr =
+    c"XR_ULTRALEAP_hand_tracking_forearm";
 pub const VALVE_analog_threshold_SPEC_VERSION: u32 = 2u32;
-pub const VALVE_ANALOG_THRESHOLD_EXTENSION_NAME: &[u8] = b"XR_VALVE_analog_threshold\0";
+pub const VALVE_ANALOG_THRESHOLD_EXTENSION_NAME: &CStr = c"XR_VALVE_analog_threshold";
 pub const VARJO_quad_views_SPEC_VERSION: u32 = 2u32;
-pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &[u8] = b"XR_VARJO_quad_views\0";
+pub const VARJO_QUAD_VIEWS_EXTENSION_NAME: &CStr = c"XR_VARJO_quad_views";
 pub const VARJO_foveated_rendering_SPEC_VERSION: u32 = 3u32;
-pub const VARJO_FOVEATED_RENDERING_EXTENSION_NAME: &[u8] = b"XR_VARJO_foveated_rendering\0";
+pub const VARJO_FOVEATED_RENDERING_EXTENSION_NAME: &CStr = c"XR_VARJO_foveated_rendering";
 pub const VARJO_composition_layer_depth_test_SPEC_VERSION: u32 = 2u32;
-pub const VARJO_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME: &[u8] =
-    b"XR_VARJO_composition_layer_depth_test\0";
+pub const VARJO_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME: &CStr =
+    c"XR_VARJO_composition_layer_depth_test";
 pub const VARJO_environment_depth_estimation_SPEC_VERSION: u32 = 1u32;
-pub const VARJO_ENVIRONMENT_DEPTH_ESTIMATION_EXTENSION_NAME: &[u8] =
-    b"XR_VARJO_environment_depth_estimation\0";
+pub const VARJO_ENVIRONMENT_DEPTH_ESTIMATION_EXTENSION_NAME: &CStr =
+    c"XR_VARJO_environment_depth_estimation";
 pub const VARJO_marker_tracking_SPEC_VERSION: u32 = 1u32;
-pub const VARJO_MARKER_TRACKING_EXTENSION_NAME: &[u8] = b"XR_VARJO_marker_tracking\0";
+pub const VARJO_MARKER_TRACKING_EXTENSION_NAME: &CStr = c"XR_VARJO_marker_tracking";
 pub const VARJO_view_offset_SPEC_VERSION: u32 = 1u32;
-pub const VARJO_VIEW_OFFSET_EXTENSION_NAME: &[u8] = b"XR_VARJO_view_offset\0";
+pub const VARJO_VIEW_OFFSET_EXTENSION_NAME: &CStr = c"XR_VARJO_view_offset";
 pub const VARJO_xr4_controller_interaction_SPEC_VERSION: u32 = 1u32;
-pub const VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
-    b"XR_VARJO_xr4_controller_interaction\0";
+pub const VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr =
+    c"XR_VARJO_xr4_controller_interaction";
 pub const YVR_controller_interaction_SPEC_VERSION: u32 = 1u32;
-pub const YVR_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_YVR_controller_interaction\0";
+pub const YVR_CONTROLLER_INTERACTION_EXTENSION_NAME: &CStr = c"XR_YVR_controller_interaction";
 pub const EXTX_overlay_SPEC_VERSION: u32 = 5u32;
-pub const EXTX_OVERLAY_EXTENSION_NAME: &[u8] = b"XR_EXTX_overlay\0";
+pub const EXTX_OVERLAY_EXTENSION_NAME: &CStr = c"XR_EXTX_overlay";
 pub const MNDX_egl_enable_SPEC_VERSION: u32 = 2u32;
-pub const MNDX_EGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_MNDX_egl_enable\0";
+pub const MNDX_EGL_ENABLE_EXTENSION_NAME: &CStr = c"XR_MNDX_egl_enable";
 pub const MNDX_force_feedback_curl_SPEC_VERSION: u32 = 1u32;
-pub const MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME: &[u8] = b"XR_MNDX_force_feedback_curl\0";
+pub const MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME: &CStr = c"XR_MNDX_force_feedback_curl";
 pub const HTCX_vive_tracker_interaction_SPEC_VERSION: u32 = 3u32;
-pub const HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME: &[u8] =
-    b"XR_HTCX_vive_tracker_interaction\0";
+pub const HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME: &CStr = c"XR_HTCX_vive_tracker_interaction";
 #[cfg(feature = "linked")]
 extern "system" {
     #[link_name = "xrNegotiateLoaderRuntimeInterface"]
