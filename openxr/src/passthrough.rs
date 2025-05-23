@@ -8,8 +8,8 @@
 //!
 //! Not all features are currently implemented. Execution control features are implemented, style-oriented features are not.
 use crate::{
-    cvt, raw, session, sys, sys::Handle as _, AsHandle, PassthroughFlagsFB,
-    PassthroughLayerPurposeFB, Result, Session, SessionInner,
+    AsHandle, PassthroughFlagsFB, PassthroughLayerPurposeFB, Result, Session, SessionInner, cvt,
+    raw, session, sys, sys::Handle as _,
 };
 use std::ptr;
 use std::sync::Arc;

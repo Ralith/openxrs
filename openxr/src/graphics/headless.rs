@@ -39,11 +39,13 @@ impl Graphics for Headless {
             system_id: system,
         };
         let mut out = sys::Session::NULL;
-        cvt((instance.fp().create_session)(
-            instance.as_raw(),
-            &info,
-            &mut out,
-        ))?;
+        unsafe {
+            cvt((instance.fp().create_session)(
+                instance.as_raw(),
+                &info,
+                &mut out,
+            ))?;
+        }
         Ok(out)
     }
 

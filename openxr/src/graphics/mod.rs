@@ -31,7 +31,7 @@ pub trait Graphics: Sized {
 
     #[doc(hidden)]
     fn enumerate_swapchain_images(swapchain: &Swapchain<Self>)
-        -> Result<Vec<Self::SwapchainImage>>;
+    -> Result<Vec<Self::SwapchainImage>>;
 }
 
 #[cfg(windows)]

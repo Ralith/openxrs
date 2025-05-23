@@ -2232,812 +2232,822 @@ impl InstanceExtensions {
         instance: sys::Instance,
         required: &ExtensionSet,
     ) -> Result<Self> {
-        Ok(Self {
-            almalence_digital_lens_control: if required.almalence_digital_lens_control {
-                Some(raw::DigitalLensControlALMALENCE::load(entry, instance)?)
-            } else {
-                None
-            },
-            bd_controller_interaction: if required.bd_controller_interaction {
-                Some(raw::ControllerInteractionBD {})
-            } else {
-                None
-            },
-            epic_view_configuration_fov: if required.epic_view_configuration_fov {
-                Some(raw::ViewConfigurationFovEPIC {})
-            } else {
-                None
-            },
-            ext_performance_settings: if required.ext_performance_settings {
-                Some(raw::PerformanceSettingsEXT::load(entry, instance)?)
-            } else {
-                None
-            },
-            ext_thermal_query: if required.ext_thermal_query {
-                Some(raw::ThermalQueryEXT::load(entry, instance)?)
-            } else {
-                None
-            },
-            ext_debug_utils: if required.ext_debug_utils {
-                Some(raw::DebugUtilsEXT::load(entry, instance)?)
-            } else {
-                None
-            },
-            ext_eye_gaze_interaction: if required.ext_eye_gaze_interaction {
-                Some(raw::EyeGazeInteractionEXT {})
-            } else {
-                None
-            },
-            ext_view_configuration_depth_range: if required.ext_view_configuration_depth_range {
-                Some(raw::ViewConfigurationDepthRangeEXT {})
-            } else {
-                None
-            },
-            ext_conformance_automation: if required.ext_conformance_automation {
-                Some(raw::ConformanceAutomationEXT::load(entry, instance)?)
-            } else {
-                None
-            },
-            ext_hand_tracking: if required.ext_hand_tracking {
-                Some(raw::HandTrackingEXT::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(windows)]
-            ext_win32_appcontainer_compatible: if required.ext_win32_appcontainer_compatible {
-                Some(raw::Win32AppcontainerCompatibleEXT {})
-            } else {
-                None
-            },
-            ext_dpad_binding: if required.ext_dpad_binding {
-                Some(raw::DpadBindingEXT {})
-            } else {
-                None
-            },
-            ext_hand_joints_motion_range: if required.ext_hand_joints_motion_range {
-                Some(raw::HandJointsMotionRangeEXT {})
-            } else {
-                None
-            },
-            ext_samsung_odyssey_controller: if required.ext_samsung_odyssey_controller {
-                Some(raw::SamsungOdysseyControllerEXT {})
-            } else {
-                None
-            },
-            ext_hp_mixed_reality_controller: if required.ext_hp_mixed_reality_controller {
-                Some(raw::HpMixedRealityControllerEXT {})
-            } else {
-                None
-            },
-            ext_palm_pose: if required.ext_palm_pose {
-                Some(raw::PalmPoseEXT {})
-            } else {
-                None
-            },
-            ext_uuid: if required.ext_uuid {
-                Some(raw::UuidEXT {})
-            } else {
-                None
-            },
-            ext_hand_interaction: if required.ext_hand_interaction {
-                Some(raw::HandInteractionEXT {})
-            } else {
-                None
-            },
-            ext_active_action_set_priority: if required.ext_active_action_set_priority {
-                Some(raw::ActiveActionSetPriorityEXT {})
-            } else {
-                None
-            },
-            ext_local_floor: if required.ext_local_floor {
-                Some(raw::LocalFloorEXT {})
-            } else {
-                None
-            },
-            ext_hand_tracking_data_source: if required.ext_hand_tracking_data_source {
-                Some(raw::HandTrackingDataSourceEXT {})
-            } else {
-                None
-            },
-            ext_plane_detection: if required.ext_plane_detection {
-                Some(raw::PlaneDetectionEXT::load(entry, instance)?)
-            } else {
-                None
-            },
-            ext_future: if required.ext_future {
-                Some(raw::FutureEXT::load(entry, instance)?)
-            } else {
-                None
-            },
-            ext_user_presence: if required.ext_user_presence {
-                Some(raw::UserPresenceEXT {})
-            } else {
-                None
-            },
-            ext_composition_layer_inverted_alpha: if required.ext_composition_layer_inverted_alpha {
-                Some(raw::CompositionLayerInvertedAlphaEXT {})
-            } else {
-                None
-            },
-            fb_composition_layer_image_layout: if required.fb_composition_layer_image_layout {
-                Some(raw::CompositionLayerImageLayoutFB {})
-            } else {
-                None
-            },
-            fb_composition_layer_alpha_blend: if required.fb_composition_layer_alpha_blend {
-                Some(raw::CompositionLayerAlphaBlendFB {})
-            } else {
-                None
-            },
-            #[cfg(target_os = "android")]
-            fb_android_surface_swapchain_create: if required.fb_android_surface_swapchain_create {
-                Some(raw::AndroidSurfaceSwapchainCreateFB {})
-            } else {
-                None
-            },
-            fb_swapchain_update_state: if required.fb_swapchain_update_state {
-                Some(raw::SwapchainUpdateStateFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_composition_layer_secure_content: if required.fb_composition_layer_secure_content {
-                Some(raw::CompositionLayerSecureContentFB {})
-            } else {
-                None
-            },
-            fb_body_tracking: if required.fb_body_tracking {
-                Some(raw::BodyTrackingFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_display_refresh_rate: if required.fb_display_refresh_rate {
-                Some(raw::DisplayRefreshRateFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_color_space: if required.fb_color_space {
-                Some(raw::ColorSpaceFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_hand_tracking_mesh: if required.fb_hand_tracking_mesh {
-                Some(raw::HandTrackingMeshFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_hand_tracking_aim: if required.fb_hand_tracking_aim {
-                Some(raw::HandTrackingAimFB {})
-            } else {
-                None
-            },
-            fb_hand_tracking_capsules: if required.fb_hand_tracking_capsules {
-                Some(raw::HandTrackingCapsulesFB {})
-            } else {
-                None
-            },
-            fb_spatial_entity: if required.fb_spatial_entity {
-                Some(raw::SpatialEntityFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_foveation: if required.fb_foveation {
-                Some(raw::FoveationFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_foveation_configuration: if required.fb_foveation_configuration {
-                Some(raw::FoveationConfigurationFB {})
-            } else {
-                None
-            },
-            fb_keyboard_tracking: if required.fb_keyboard_tracking {
-                Some(raw::KeyboardTrackingFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_triangle_mesh: if required.fb_triangle_mesh {
-                Some(raw::TriangleMeshFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_passthrough: if required.fb_passthrough {
-                Some(raw::PassthroughFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_render_model: if required.fb_render_model {
-                Some(raw::RenderModelFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_spatial_entity_query: if required.fb_spatial_entity_query {
-                Some(raw::SpatialEntityQueryFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_spatial_entity_storage: if required.fb_spatial_entity_storage {
-                Some(raw::SpatialEntityStorageFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_foveation_vulkan: if required.fb_foveation_vulkan {
-                Some(raw::FoveationVulkanFB {})
-            } else {
-                None
-            },
-            #[cfg(target_os = "android")]
-            fb_swapchain_update_state_android_surface: if required
-                .fb_swapchain_update_state_android_surface
-            {
-                Some(raw::SwapchainUpdateStateAndroidSurfaceFB {})
-            } else {
-                None
-            },
-            fb_swapchain_update_state_opengl_es: if required.fb_swapchain_update_state_opengl_es {
-                Some(raw::SwapchainUpdateStateOpenglEsFB {})
-            } else {
-                None
-            },
-            fb_swapchain_update_state_vulkan: if required.fb_swapchain_update_state_vulkan {
-                Some(raw::SwapchainUpdateStateVulkanFB {})
-            } else {
-                None
-            },
-            fb_touch_controller_pro: if required.fb_touch_controller_pro {
-                Some(raw::TouchControllerProFB {})
-            } else {
-                None
-            },
-            fb_spatial_entity_sharing: if required.fb_spatial_entity_sharing {
-                Some(raw::SpatialEntitySharingFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_space_warp: if required.fb_space_warp {
-                Some(raw::SpaceWarpFB {})
-            } else {
-                None
-            },
-            fb_haptic_amplitude_envelope: if required.fb_haptic_amplitude_envelope {
-                Some(raw::HapticAmplitudeEnvelopeFB {})
-            } else {
-                None
-            },
-            fb_scene: if required.fb_scene {
-                Some(raw::SceneFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_scene_capture: if required.fb_scene_capture {
-                Some(raw::SceneCaptureFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_spatial_entity_container: if required.fb_spatial_entity_container {
-                Some(raw::SpatialEntityContainerFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_face_tracking: if required.fb_face_tracking {
-                Some(raw::FaceTrackingFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_eye_tracking_social: if required.fb_eye_tracking_social {
-                Some(raw::EyeTrackingSocialFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_passthrough_keyboard_hands: if required.fb_passthrough_keyboard_hands {
-                Some(raw::PassthroughKeyboardHandsFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_composition_layer_settings: if required.fb_composition_layer_settings {
-                Some(raw::CompositionLayerSettingsFB {})
-            } else {
-                None
-            },
-            fb_touch_controller_proximity: if required.fb_touch_controller_proximity {
-                Some(raw::TouchControllerProximityFB {})
-            } else {
-                None
-            },
-            fb_haptic_pcm: if required.fb_haptic_pcm {
-                Some(raw::HapticPcmFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_composition_layer_depth_test: if required.fb_composition_layer_depth_test {
-                Some(raw::CompositionLayerDepthTestFB {})
-            } else {
-                None
-            },
-            fb_spatial_entity_storage_batch: if required.fb_spatial_entity_storage_batch {
-                Some(raw::SpatialEntityStorageBatchFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_spatial_entity_user: if required.fb_spatial_entity_user {
-                Some(raw::SpatialEntityUserFB::load(entry, instance)?)
-            } else {
-                None
-            },
-            fb_face_tracking2: if required.fb_face_tracking2 {
-                Some(raw::FaceTracking2FB::load(entry, instance)?)
-            } else {
-                None
-            },
-            htc_vive_cosmos_controller_interaction: if required
-                .htc_vive_cosmos_controller_interaction
-            {
-                Some(raw::ViveCosmosControllerInteractionHTC {})
-            } else {
-                None
-            },
-            htc_facial_tracking: if required.htc_facial_tracking {
-                Some(raw::FacialTrackingHTC::load(entry, instance)?)
-            } else {
-                None
-            },
-            htc_vive_focus3_controller_interaction: if required
-                .htc_vive_focus3_controller_interaction
-            {
-                Some(raw::ViveFocus3ControllerInteractionHTC {})
-            } else {
-                None
-            },
-            htc_hand_interaction: if required.htc_hand_interaction {
-                Some(raw::HandInteractionHTC {})
-            } else {
-                None
-            },
-            htc_vive_wrist_tracker_interaction: if required.htc_vive_wrist_tracker_interaction {
-                Some(raw::ViveWristTrackerInteractionHTC {})
-            } else {
-                None
-            },
-            htc_passthrough: if required.htc_passthrough {
-                Some(raw::PassthroughHTC::load(entry, instance)?)
-            } else {
-                None
-            },
-            htc_foveation: if required.htc_foveation {
-                Some(raw::FoveationHTC::load(entry, instance)?)
-            } else {
-                None
-            },
-            htc_anchor: if required.htc_anchor {
-                Some(raw::AnchorHTC::load(entry, instance)?)
-            } else {
-                None
-            },
-            huawei_controller_interaction: if required.huawei_controller_interaction {
-                Some(raw::ControllerInteractionHUAWEI {})
-            } else {
-                None
-            },
-            #[cfg(target_os = "android")]
-            khr_android_thread_settings: if required.khr_android_thread_settings {
-                Some(raw::AndroidThreadSettingsKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(target_os = "android")]
-            khr_android_surface_swapchain: if required.khr_android_surface_swapchain {
-                Some(raw::AndroidSurfaceSwapchainKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_composition_layer_cube: if required.khr_composition_layer_cube {
-                Some(raw::CompositionLayerCubeKHR {})
-            } else {
-                None
-            },
-            #[cfg(target_os = "android")]
-            khr_android_create_instance: if required.khr_android_create_instance {
-                Some(raw::AndroidCreateInstanceKHR {})
-            } else {
-                None
-            },
-            khr_composition_layer_depth: if required.khr_composition_layer_depth {
-                Some(raw::CompositionLayerDepthKHR {})
-            } else {
-                None
-            },
-            khr_vulkan_swapchain_format_list: if required.khr_vulkan_swapchain_format_list {
-                Some(raw::VulkanSwapchainFormatListKHR {})
-            } else {
-                None
-            },
-            khr_composition_layer_cylinder: if required.khr_composition_layer_cylinder {
-                Some(raw::CompositionLayerCylinderKHR {})
-            } else {
-                None
-            },
-            khr_composition_layer_equirect: if required.khr_composition_layer_equirect {
-                Some(raw::CompositionLayerEquirectKHR {})
-            } else {
-                None
-            },
-            khr_opengl_enable: if required.khr_opengl_enable {
-                Some(raw::OpenglEnableKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_opengl_es_enable: if required.khr_opengl_es_enable {
-                Some(raw::OpenglEsEnableKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_vulkan_enable: if required.khr_vulkan_enable {
-                Some(raw::VulkanEnableKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(windows)]
-            khr_d3d11_enable: if required.khr_d3d11_enable {
-                Some(raw::D3d11EnableKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(windows)]
-            khr_d3d12_enable: if required.khr_d3d12_enable {
-                Some(raw::D3d12EnableKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(target_vendor = "apple")]
-            khr_metal_enable: if required.khr_metal_enable {
-                Some(raw::MetalEnableKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_visibility_mask: if required.khr_visibility_mask {
-                Some(raw::VisibilityMaskKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_composition_layer_color_scale_bias: if required
-                .khr_composition_layer_color_scale_bias
-            {
-                Some(raw::CompositionLayerColorScaleBiasKHR {})
-            } else {
-                None
-            },
-            #[cfg(windows)]
-            khr_win32_convert_performance_counter_time: if required
-                .khr_win32_convert_performance_counter_time
-            {
-                Some(raw::Win32ConvertPerformanceCounterTimeKHR::load(
-                    entry, instance,
-                )?)
-            } else {
-                None
-            },
-            khr_convert_timespec_time: if required.khr_convert_timespec_time {
-                Some(raw::ConvertTimespecTimeKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_loader_init: if required.khr_loader_init {
-                Some(raw::LoaderInitKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(target_os = "android")]
-            khr_loader_init_android: if required.khr_loader_init_android {
-                Some(raw::LoaderInitAndroidKHR {})
-            } else {
-                None
-            },
-            khr_vulkan_enable2: if required.khr_vulkan_enable2 {
-                Some(raw::VulkanEnable2KHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_composition_layer_equirect2: if required.khr_composition_layer_equirect2 {
-                Some(raw::CompositionLayerEquirect2KHR {})
-            } else {
-                None
-            },
-            khr_binding_modification: if required.khr_binding_modification {
-                Some(raw::BindingModificationKHR {})
-            } else {
-                None
-            },
-            khr_swapchain_usage_input_attachment_bit: if required
-                .khr_swapchain_usage_input_attachment_bit
-            {
-                Some(raw::SwapchainUsageInputAttachmentBitKHR {})
-            } else {
-                None
-            },
-            khr_locate_spaces: if required.khr_locate_spaces {
-                Some(raw::LocateSpacesKHR::load(entry, instance)?)
-            } else {
-                None
-            },
-            khr_maintenance1: if required.khr_maintenance1 {
-                Some(raw::Maintenance1KHR {})
-            } else {
-                None
-            },
-            meta_foveation_eye_tracked: if required.meta_foveation_eye_tracked {
-                Some(raw::FoveationEyeTrackedMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            meta_local_dimming: if required.meta_local_dimming {
-                Some(raw::LocalDimmingMETA {})
-            } else {
-                None
-            },
-            meta_passthrough_preferences: if required.meta_passthrough_preferences {
-                Some(raw::PassthroughPreferencesMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            meta_virtual_keyboard: if required.meta_virtual_keyboard {
-                Some(raw::VirtualKeyboardMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            meta_vulkan_swapchain_create_info: if required.meta_vulkan_swapchain_create_info {
-                Some(raw::VulkanSwapchainCreateInfoMETA {})
-            } else {
-                None
-            },
-            meta_performance_metrics: if required.meta_performance_metrics {
-                Some(raw::PerformanceMetricsMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            meta_headset_id: if required.meta_headset_id {
-                Some(raw::HeadsetIdMETA {})
-            } else {
-                None
-            },
-            meta_recommended_layer_resolution: if required.meta_recommended_layer_resolution {
-                Some(raw::RecommendedLayerResolutionMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            meta_passthrough_color_lut: if required.meta_passthrough_color_lut {
-                Some(raw::PassthroughColorLutMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            meta_spatial_entity_mesh: if required.meta_spatial_entity_mesh {
-                Some(raw::SpatialEntityMeshMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            meta_automatic_layer_filter: if required.meta_automatic_layer_filter {
-                Some(raw::AutomaticLayerFilterMETA {})
-            } else {
-                None
-            },
-            meta_touch_controller_plus: if required.meta_touch_controller_plus {
-                Some(raw::TouchControllerPlusMETA {})
-            } else {
-                None
-            },
-            meta_environment_depth: if required.meta_environment_depth {
-                Some(raw::EnvironmentDepthMETA::load(entry, instance)?)
-            } else {
-                None
-            },
-            ml_ml2_controller_interaction: if required.ml_ml2_controller_interaction {
-                Some(raw::Ml2ControllerInteractionML {})
-            } else {
-                None
-            },
-            ml_frame_end_info: if required.ml_frame_end_info {
-                Some(raw::FrameEndInfoML {})
-            } else {
-                None
-            },
-            ml_global_dimmer: if required.ml_global_dimmer {
-                Some(raw::GlobalDimmerML {})
-            } else {
-                None
-            },
-            ml_compat: if required.ml_compat {
-                Some(raw::CompatML::load(entry, instance)?)
-            } else {
-                None
-            },
-            ml_marker_understanding: if required.ml_marker_understanding {
-                Some(raw::MarkerUnderstandingML::load(entry, instance)?)
-            } else {
-                None
-            },
-            ml_localization_map: if required.ml_localization_map {
-                Some(raw::LocalizationMapML::load(entry, instance)?)
-            } else {
-                None
-            },
-            ml_user_calibration: if required.ml_user_calibration {
-                Some(raw::UserCalibrationML::load(entry, instance)?)
-            } else {
-                None
-            },
-            mnd_headless: if required.mnd_headless {
-                Some(raw::HeadlessMND {})
-            } else {
-                None
-            },
-            mnd_swapchain_usage_input_attachment_bit: if required
-                .mnd_swapchain_usage_input_attachment_bit
-            {
-                Some(raw::SwapchainUsageInputAttachmentBitMND {})
-            } else {
-                None
-            },
-            msft_unbounded_reference_space: if required.msft_unbounded_reference_space {
-                Some(raw::UnboundedReferenceSpaceMSFT {})
-            } else {
-                None
-            },
-            msft_spatial_anchor: if required.msft_spatial_anchor {
-                Some(raw::SpatialAnchorMSFT::load(entry, instance)?)
-            } else {
-                None
-            },
-            msft_spatial_graph_bridge: if required.msft_spatial_graph_bridge {
-                Some(raw::SpatialGraphBridgeMSFT::load(entry, instance)?)
-            } else {
-                None
-            },
-            msft_hand_interaction: if required.msft_hand_interaction {
-                Some(raw::HandInteractionMSFT {})
-            } else {
-                None
-            },
-            msft_hand_tracking_mesh: if required.msft_hand_tracking_mesh {
-                Some(raw::HandTrackingMeshMSFT::load(entry, instance)?)
-            } else {
-                None
-            },
-            msft_secondary_view_configuration: if required.msft_secondary_view_configuration {
-                Some(raw::SecondaryViewConfigurationMSFT {})
-            } else {
-                None
-            },
-            msft_first_person_observer: if required.msft_first_person_observer {
-                Some(raw::FirstPersonObserverMSFT {})
-            } else {
-                None
-            },
-            msft_controller_model: if required.msft_controller_model {
-                Some(raw::ControllerModelMSFT::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(windows)]
-            msft_perception_anchor_interop: if required.msft_perception_anchor_interop {
-                Some(raw::PerceptionAnchorInteropMSFT::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(windows)]
-            msft_holographic_window_attachment: if required.msft_holographic_window_attachment {
-                Some(raw::HolographicWindowAttachmentMSFT {})
-            } else {
-                None
-            },
-            msft_composition_layer_reprojection: if required.msft_composition_layer_reprojection {
-                Some(raw::CompositionLayerReprojectionMSFT::load(
-                    entry, instance,
-                )?)
-            } else {
-                None
-            },
-            msft_spatial_anchor_persistence: if required.msft_spatial_anchor_persistence {
-                Some(raw::SpatialAnchorPersistenceMSFT::load(entry, instance)?)
-            } else {
-                None
-            },
-            #[cfg(target_os = "android")]
-            oculus_android_session_state_enable: if required.oculus_android_session_state_enable {
-                Some(raw::AndroidSessionStateEnableOCULUS {})
-            } else {
-                None
-            },
-            oculus_audio_device_guid: if required.oculus_audio_device_guid {
-                Some(raw::AudioDeviceGuidOCULUS::load(entry, instance)?)
-            } else {
-                None
-            },
-            oculus_external_camera: if required.oculus_external_camera {
-                Some(raw::ExternalCameraOCULUS::load(entry, instance)?)
-            } else {
-                None
-            },
-            oppo_controller_interaction: if required.oppo_controller_interaction {
-                Some(raw::ControllerInteractionOPPO {})
-            } else {
-                None
-            },
-            qcom_tracking_optimization_settings: if required.qcom_tracking_optimization_settings {
-                Some(raw::TrackingOptimizationSettingsQCOM::load(
-                    entry, instance,
-                )?)
-            } else {
-                None
-            },
-            ultraleap_hand_tracking_forearm: if required.ultraleap_hand_tracking_forearm {
-                Some(raw::HandTrackingForearmULTRALEAP {})
-            } else {
-                None
-            },
-            valve_analog_threshold: if required.valve_analog_threshold {
-                Some(raw::AnalogThresholdVALVE {})
-            } else {
-                None
-            },
-            varjo_quad_views: if required.varjo_quad_views {
-                Some(raw::QuadViewsVARJO {})
-            } else {
-                None
-            },
-            varjo_foveated_rendering: if required.varjo_foveated_rendering {
-                Some(raw::FoveatedRenderingVARJO {})
-            } else {
-                None
-            },
-            varjo_composition_layer_depth_test: if required.varjo_composition_layer_depth_test {
-                Some(raw::CompositionLayerDepthTestVARJO {})
-            } else {
-                None
-            },
-            varjo_environment_depth_estimation: if required.varjo_environment_depth_estimation {
-                Some(raw::EnvironmentDepthEstimationVARJO::load(entry, instance)?)
-            } else {
-                None
-            },
-            varjo_marker_tracking: if required.varjo_marker_tracking {
-                Some(raw::MarkerTrackingVARJO::load(entry, instance)?)
-            } else {
-                None
-            },
-            varjo_view_offset: if required.varjo_view_offset {
-                Some(raw::ViewOffsetVARJO::load(entry, instance)?)
-            } else {
-                None
-            },
-            varjo_xr4_controller_interaction: if required.varjo_xr4_controller_interaction {
-                Some(raw::Xr4ControllerInteractionVARJO {})
-            } else {
-                None
-            },
-            yvr_controller_interaction: if required.yvr_controller_interaction {
-                Some(raw::ControllerInteractionYVR {})
-            } else {
-                None
-            },
-            extx_overlay: if required.extx_overlay {
-                Some(raw::OverlayEXTX {})
-            } else {
-                None
-            },
-            mndx_egl_enable: if required.mndx_egl_enable {
-                Some(raw::EglEnableMNDX {})
-            } else {
-                None
-            },
-            mndx_force_feedback_curl: if required.mndx_force_feedback_curl {
-                Some(raw::ForceFeedbackCurlMNDX::load(entry, instance)?)
-            } else {
-                None
-            },
-            htcx_vive_tracker_interaction: if required.htcx_vive_tracker_interaction {
-                Some(raw::ViveTrackerInteractionHTCX::load(entry, instance)?)
-            } else {
-                None
-            },
-        })
+        unsafe {
+            Ok(Self {
+                almalence_digital_lens_control: if required.almalence_digital_lens_control {
+                    Some(raw::DigitalLensControlALMALENCE::load(entry, instance)?)
+                } else {
+                    None
+                },
+                bd_controller_interaction: if required.bd_controller_interaction {
+                    Some(raw::ControllerInteractionBD {})
+                } else {
+                    None
+                },
+                epic_view_configuration_fov: if required.epic_view_configuration_fov {
+                    Some(raw::ViewConfigurationFovEPIC {})
+                } else {
+                    None
+                },
+                ext_performance_settings: if required.ext_performance_settings {
+                    Some(raw::PerformanceSettingsEXT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ext_thermal_query: if required.ext_thermal_query {
+                    Some(raw::ThermalQueryEXT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ext_debug_utils: if required.ext_debug_utils {
+                    Some(raw::DebugUtilsEXT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ext_eye_gaze_interaction: if required.ext_eye_gaze_interaction {
+                    Some(raw::EyeGazeInteractionEXT {})
+                } else {
+                    None
+                },
+                ext_view_configuration_depth_range: if required.ext_view_configuration_depth_range {
+                    Some(raw::ViewConfigurationDepthRangeEXT {})
+                } else {
+                    None
+                },
+                ext_conformance_automation: if required.ext_conformance_automation {
+                    Some(raw::ConformanceAutomationEXT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ext_hand_tracking: if required.ext_hand_tracking {
+                    Some(raw::HandTrackingEXT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(windows)]
+                ext_win32_appcontainer_compatible: if required.ext_win32_appcontainer_compatible {
+                    Some(raw::Win32AppcontainerCompatibleEXT {})
+                } else {
+                    None
+                },
+                ext_dpad_binding: if required.ext_dpad_binding {
+                    Some(raw::DpadBindingEXT {})
+                } else {
+                    None
+                },
+                ext_hand_joints_motion_range: if required.ext_hand_joints_motion_range {
+                    Some(raw::HandJointsMotionRangeEXT {})
+                } else {
+                    None
+                },
+                ext_samsung_odyssey_controller: if required.ext_samsung_odyssey_controller {
+                    Some(raw::SamsungOdysseyControllerEXT {})
+                } else {
+                    None
+                },
+                ext_hp_mixed_reality_controller: if required.ext_hp_mixed_reality_controller {
+                    Some(raw::HpMixedRealityControllerEXT {})
+                } else {
+                    None
+                },
+                ext_palm_pose: if required.ext_palm_pose {
+                    Some(raw::PalmPoseEXT {})
+                } else {
+                    None
+                },
+                ext_uuid: if required.ext_uuid {
+                    Some(raw::UuidEXT {})
+                } else {
+                    None
+                },
+                ext_hand_interaction: if required.ext_hand_interaction {
+                    Some(raw::HandInteractionEXT {})
+                } else {
+                    None
+                },
+                ext_active_action_set_priority: if required.ext_active_action_set_priority {
+                    Some(raw::ActiveActionSetPriorityEXT {})
+                } else {
+                    None
+                },
+                ext_local_floor: if required.ext_local_floor {
+                    Some(raw::LocalFloorEXT {})
+                } else {
+                    None
+                },
+                ext_hand_tracking_data_source: if required.ext_hand_tracking_data_source {
+                    Some(raw::HandTrackingDataSourceEXT {})
+                } else {
+                    None
+                },
+                ext_plane_detection: if required.ext_plane_detection {
+                    Some(raw::PlaneDetectionEXT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ext_future: if required.ext_future {
+                    Some(raw::FutureEXT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ext_user_presence: if required.ext_user_presence {
+                    Some(raw::UserPresenceEXT {})
+                } else {
+                    None
+                },
+                ext_composition_layer_inverted_alpha: if required
+                    .ext_composition_layer_inverted_alpha
+                {
+                    Some(raw::CompositionLayerInvertedAlphaEXT {})
+                } else {
+                    None
+                },
+                fb_composition_layer_image_layout: if required.fb_composition_layer_image_layout {
+                    Some(raw::CompositionLayerImageLayoutFB {})
+                } else {
+                    None
+                },
+                fb_composition_layer_alpha_blend: if required.fb_composition_layer_alpha_blend {
+                    Some(raw::CompositionLayerAlphaBlendFB {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                fb_android_surface_swapchain_create: if required.fb_android_surface_swapchain_create
+                {
+                    Some(raw::AndroidSurfaceSwapchainCreateFB {})
+                } else {
+                    None
+                },
+                fb_swapchain_update_state: if required.fb_swapchain_update_state {
+                    Some(raw::SwapchainUpdateStateFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_composition_layer_secure_content: if required.fb_composition_layer_secure_content
+                {
+                    Some(raw::CompositionLayerSecureContentFB {})
+                } else {
+                    None
+                },
+                fb_body_tracking: if required.fb_body_tracking {
+                    Some(raw::BodyTrackingFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_display_refresh_rate: if required.fb_display_refresh_rate {
+                    Some(raw::DisplayRefreshRateFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_color_space: if required.fb_color_space {
+                    Some(raw::ColorSpaceFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_hand_tracking_mesh: if required.fb_hand_tracking_mesh {
+                    Some(raw::HandTrackingMeshFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_hand_tracking_aim: if required.fb_hand_tracking_aim {
+                    Some(raw::HandTrackingAimFB {})
+                } else {
+                    None
+                },
+                fb_hand_tracking_capsules: if required.fb_hand_tracking_capsules {
+                    Some(raw::HandTrackingCapsulesFB {})
+                } else {
+                    None
+                },
+                fb_spatial_entity: if required.fb_spatial_entity {
+                    Some(raw::SpatialEntityFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_foveation: if required.fb_foveation {
+                    Some(raw::FoveationFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_foveation_configuration: if required.fb_foveation_configuration {
+                    Some(raw::FoveationConfigurationFB {})
+                } else {
+                    None
+                },
+                fb_keyboard_tracking: if required.fb_keyboard_tracking {
+                    Some(raw::KeyboardTrackingFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_triangle_mesh: if required.fb_triangle_mesh {
+                    Some(raw::TriangleMeshFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_passthrough: if required.fb_passthrough {
+                    Some(raw::PassthroughFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_render_model: if required.fb_render_model {
+                    Some(raw::RenderModelFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_spatial_entity_query: if required.fb_spatial_entity_query {
+                    Some(raw::SpatialEntityQueryFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_spatial_entity_storage: if required.fb_spatial_entity_storage {
+                    Some(raw::SpatialEntityStorageFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_foveation_vulkan: if required.fb_foveation_vulkan {
+                    Some(raw::FoveationVulkanFB {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                fb_swapchain_update_state_android_surface: if required
+                    .fb_swapchain_update_state_android_surface
+                {
+                    Some(raw::SwapchainUpdateStateAndroidSurfaceFB {})
+                } else {
+                    None
+                },
+                fb_swapchain_update_state_opengl_es: if required.fb_swapchain_update_state_opengl_es
+                {
+                    Some(raw::SwapchainUpdateStateOpenglEsFB {})
+                } else {
+                    None
+                },
+                fb_swapchain_update_state_vulkan: if required.fb_swapchain_update_state_vulkan {
+                    Some(raw::SwapchainUpdateStateVulkanFB {})
+                } else {
+                    None
+                },
+                fb_touch_controller_pro: if required.fb_touch_controller_pro {
+                    Some(raw::TouchControllerProFB {})
+                } else {
+                    None
+                },
+                fb_spatial_entity_sharing: if required.fb_spatial_entity_sharing {
+                    Some(raw::SpatialEntitySharingFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_space_warp: if required.fb_space_warp {
+                    Some(raw::SpaceWarpFB {})
+                } else {
+                    None
+                },
+                fb_haptic_amplitude_envelope: if required.fb_haptic_amplitude_envelope {
+                    Some(raw::HapticAmplitudeEnvelopeFB {})
+                } else {
+                    None
+                },
+                fb_scene: if required.fb_scene {
+                    Some(raw::SceneFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_scene_capture: if required.fb_scene_capture {
+                    Some(raw::SceneCaptureFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_spatial_entity_container: if required.fb_spatial_entity_container {
+                    Some(raw::SpatialEntityContainerFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_face_tracking: if required.fb_face_tracking {
+                    Some(raw::FaceTrackingFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_eye_tracking_social: if required.fb_eye_tracking_social {
+                    Some(raw::EyeTrackingSocialFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_passthrough_keyboard_hands: if required.fb_passthrough_keyboard_hands {
+                    Some(raw::PassthroughKeyboardHandsFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_composition_layer_settings: if required.fb_composition_layer_settings {
+                    Some(raw::CompositionLayerSettingsFB {})
+                } else {
+                    None
+                },
+                fb_touch_controller_proximity: if required.fb_touch_controller_proximity {
+                    Some(raw::TouchControllerProximityFB {})
+                } else {
+                    None
+                },
+                fb_haptic_pcm: if required.fb_haptic_pcm {
+                    Some(raw::HapticPcmFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_composition_layer_depth_test: if required.fb_composition_layer_depth_test {
+                    Some(raw::CompositionLayerDepthTestFB {})
+                } else {
+                    None
+                },
+                fb_spatial_entity_storage_batch: if required.fb_spatial_entity_storage_batch {
+                    Some(raw::SpatialEntityStorageBatchFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_spatial_entity_user: if required.fb_spatial_entity_user {
+                    Some(raw::SpatialEntityUserFB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                fb_face_tracking2: if required.fb_face_tracking2 {
+                    Some(raw::FaceTracking2FB::load(entry, instance)?)
+                } else {
+                    None
+                },
+                htc_vive_cosmos_controller_interaction: if required
+                    .htc_vive_cosmos_controller_interaction
+                {
+                    Some(raw::ViveCosmosControllerInteractionHTC {})
+                } else {
+                    None
+                },
+                htc_facial_tracking: if required.htc_facial_tracking {
+                    Some(raw::FacialTrackingHTC::load(entry, instance)?)
+                } else {
+                    None
+                },
+                htc_vive_focus3_controller_interaction: if required
+                    .htc_vive_focus3_controller_interaction
+                {
+                    Some(raw::ViveFocus3ControllerInteractionHTC {})
+                } else {
+                    None
+                },
+                htc_hand_interaction: if required.htc_hand_interaction {
+                    Some(raw::HandInteractionHTC {})
+                } else {
+                    None
+                },
+                htc_vive_wrist_tracker_interaction: if required.htc_vive_wrist_tracker_interaction {
+                    Some(raw::ViveWristTrackerInteractionHTC {})
+                } else {
+                    None
+                },
+                htc_passthrough: if required.htc_passthrough {
+                    Some(raw::PassthroughHTC::load(entry, instance)?)
+                } else {
+                    None
+                },
+                htc_foveation: if required.htc_foveation {
+                    Some(raw::FoveationHTC::load(entry, instance)?)
+                } else {
+                    None
+                },
+                htc_anchor: if required.htc_anchor {
+                    Some(raw::AnchorHTC::load(entry, instance)?)
+                } else {
+                    None
+                },
+                huawei_controller_interaction: if required.huawei_controller_interaction {
+                    Some(raw::ControllerInteractionHUAWEI {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                khr_android_thread_settings: if required.khr_android_thread_settings {
+                    Some(raw::AndroidThreadSettingsKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                khr_android_surface_swapchain: if required.khr_android_surface_swapchain {
+                    Some(raw::AndroidSurfaceSwapchainKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_composition_layer_cube: if required.khr_composition_layer_cube {
+                    Some(raw::CompositionLayerCubeKHR {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                khr_android_create_instance: if required.khr_android_create_instance {
+                    Some(raw::AndroidCreateInstanceKHR {})
+                } else {
+                    None
+                },
+                khr_composition_layer_depth: if required.khr_composition_layer_depth {
+                    Some(raw::CompositionLayerDepthKHR {})
+                } else {
+                    None
+                },
+                khr_vulkan_swapchain_format_list: if required.khr_vulkan_swapchain_format_list {
+                    Some(raw::VulkanSwapchainFormatListKHR {})
+                } else {
+                    None
+                },
+                khr_composition_layer_cylinder: if required.khr_composition_layer_cylinder {
+                    Some(raw::CompositionLayerCylinderKHR {})
+                } else {
+                    None
+                },
+                khr_composition_layer_equirect: if required.khr_composition_layer_equirect {
+                    Some(raw::CompositionLayerEquirectKHR {})
+                } else {
+                    None
+                },
+                khr_opengl_enable: if required.khr_opengl_enable {
+                    Some(raw::OpenglEnableKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_opengl_es_enable: if required.khr_opengl_es_enable {
+                    Some(raw::OpenglEsEnableKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_vulkan_enable: if required.khr_vulkan_enable {
+                    Some(raw::VulkanEnableKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(windows)]
+                khr_d3d11_enable: if required.khr_d3d11_enable {
+                    Some(raw::D3d11EnableKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(windows)]
+                khr_d3d12_enable: if required.khr_d3d12_enable {
+                    Some(raw::D3d12EnableKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_vendor = "apple")]
+                khr_metal_enable: if required.khr_metal_enable {
+                    Some(raw::MetalEnableKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_visibility_mask: if required.khr_visibility_mask {
+                    Some(raw::VisibilityMaskKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_composition_layer_color_scale_bias: if required
+                    .khr_composition_layer_color_scale_bias
+                {
+                    Some(raw::CompositionLayerColorScaleBiasKHR {})
+                } else {
+                    None
+                },
+                #[cfg(windows)]
+                khr_win32_convert_performance_counter_time: if required
+                    .khr_win32_convert_performance_counter_time
+                {
+                    Some(raw::Win32ConvertPerformanceCounterTimeKHR::load(
+                        entry, instance,
+                    )?)
+                } else {
+                    None
+                },
+                khr_convert_timespec_time: if required.khr_convert_timespec_time {
+                    Some(raw::ConvertTimespecTimeKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_loader_init: if required.khr_loader_init {
+                    Some(raw::LoaderInitKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                khr_loader_init_android: if required.khr_loader_init_android {
+                    Some(raw::LoaderInitAndroidKHR {})
+                } else {
+                    None
+                },
+                khr_vulkan_enable2: if required.khr_vulkan_enable2 {
+                    Some(raw::VulkanEnable2KHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_composition_layer_equirect2: if required.khr_composition_layer_equirect2 {
+                    Some(raw::CompositionLayerEquirect2KHR {})
+                } else {
+                    None
+                },
+                khr_binding_modification: if required.khr_binding_modification {
+                    Some(raw::BindingModificationKHR {})
+                } else {
+                    None
+                },
+                khr_swapchain_usage_input_attachment_bit: if required
+                    .khr_swapchain_usage_input_attachment_bit
+                {
+                    Some(raw::SwapchainUsageInputAttachmentBitKHR {})
+                } else {
+                    None
+                },
+                khr_locate_spaces: if required.khr_locate_spaces {
+                    Some(raw::LocateSpacesKHR::load(entry, instance)?)
+                } else {
+                    None
+                },
+                khr_maintenance1: if required.khr_maintenance1 {
+                    Some(raw::Maintenance1KHR {})
+                } else {
+                    None
+                },
+                meta_foveation_eye_tracked: if required.meta_foveation_eye_tracked {
+                    Some(raw::FoveationEyeTrackedMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_local_dimming: if required.meta_local_dimming {
+                    Some(raw::LocalDimmingMETA {})
+                } else {
+                    None
+                },
+                meta_passthrough_preferences: if required.meta_passthrough_preferences {
+                    Some(raw::PassthroughPreferencesMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_virtual_keyboard: if required.meta_virtual_keyboard {
+                    Some(raw::VirtualKeyboardMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_vulkan_swapchain_create_info: if required.meta_vulkan_swapchain_create_info {
+                    Some(raw::VulkanSwapchainCreateInfoMETA {})
+                } else {
+                    None
+                },
+                meta_performance_metrics: if required.meta_performance_metrics {
+                    Some(raw::PerformanceMetricsMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_headset_id: if required.meta_headset_id {
+                    Some(raw::HeadsetIdMETA {})
+                } else {
+                    None
+                },
+                meta_recommended_layer_resolution: if required.meta_recommended_layer_resolution {
+                    Some(raw::RecommendedLayerResolutionMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_passthrough_color_lut: if required.meta_passthrough_color_lut {
+                    Some(raw::PassthroughColorLutMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_spatial_entity_mesh: if required.meta_spatial_entity_mesh {
+                    Some(raw::SpatialEntityMeshMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_automatic_layer_filter: if required.meta_automatic_layer_filter {
+                    Some(raw::AutomaticLayerFilterMETA {})
+                } else {
+                    None
+                },
+                meta_touch_controller_plus: if required.meta_touch_controller_plus {
+                    Some(raw::TouchControllerPlusMETA {})
+                } else {
+                    None
+                },
+                meta_environment_depth: if required.meta_environment_depth {
+                    Some(raw::EnvironmentDepthMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ml_ml2_controller_interaction: if required.ml_ml2_controller_interaction {
+                    Some(raw::Ml2ControllerInteractionML {})
+                } else {
+                    None
+                },
+                ml_frame_end_info: if required.ml_frame_end_info {
+                    Some(raw::FrameEndInfoML {})
+                } else {
+                    None
+                },
+                ml_global_dimmer: if required.ml_global_dimmer {
+                    Some(raw::GlobalDimmerML {})
+                } else {
+                    None
+                },
+                ml_compat: if required.ml_compat {
+                    Some(raw::CompatML::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ml_marker_understanding: if required.ml_marker_understanding {
+                    Some(raw::MarkerUnderstandingML::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ml_localization_map: if required.ml_localization_map {
+                    Some(raw::LocalizationMapML::load(entry, instance)?)
+                } else {
+                    None
+                },
+                ml_user_calibration: if required.ml_user_calibration {
+                    Some(raw::UserCalibrationML::load(entry, instance)?)
+                } else {
+                    None
+                },
+                mnd_headless: if required.mnd_headless {
+                    Some(raw::HeadlessMND {})
+                } else {
+                    None
+                },
+                mnd_swapchain_usage_input_attachment_bit: if required
+                    .mnd_swapchain_usage_input_attachment_bit
+                {
+                    Some(raw::SwapchainUsageInputAttachmentBitMND {})
+                } else {
+                    None
+                },
+                msft_unbounded_reference_space: if required.msft_unbounded_reference_space {
+                    Some(raw::UnboundedReferenceSpaceMSFT {})
+                } else {
+                    None
+                },
+                msft_spatial_anchor: if required.msft_spatial_anchor {
+                    Some(raw::SpatialAnchorMSFT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                msft_spatial_graph_bridge: if required.msft_spatial_graph_bridge {
+                    Some(raw::SpatialGraphBridgeMSFT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                msft_hand_interaction: if required.msft_hand_interaction {
+                    Some(raw::HandInteractionMSFT {})
+                } else {
+                    None
+                },
+                msft_hand_tracking_mesh: if required.msft_hand_tracking_mesh {
+                    Some(raw::HandTrackingMeshMSFT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                msft_secondary_view_configuration: if required.msft_secondary_view_configuration {
+                    Some(raw::SecondaryViewConfigurationMSFT {})
+                } else {
+                    None
+                },
+                msft_first_person_observer: if required.msft_first_person_observer {
+                    Some(raw::FirstPersonObserverMSFT {})
+                } else {
+                    None
+                },
+                msft_controller_model: if required.msft_controller_model {
+                    Some(raw::ControllerModelMSFT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(windows)]
+                msft_perception_anchor_interop: if required.msft_perception_anchor_interop {
+                    Some(raw::PerceptionAnchorInteropMSFT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(windows)]
+                msft_holographic_window_attachment: if required.msft_holographic_window_attachment {
+                    Some(raw::HolographicWindowAttachmentMSFT {})
+                } else {
+                    None
+                },
+                msft_composition_layer_reprojection: if required.msft_composition_layer_reprojection
+                {
+                    Some(raw::CompositionLayerReprojectionMSFT::load(
+                        entry, instance,
+                    )?)
+                } else {
+                    None
+                },
+                msft_spatial_anchor_persistence: if required.msft_spatial_anchor_persistence {
+                    Some(raw::SpatialAnchorPersistenceMSFT::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                oculus_android_session_state_enable: if required.oculus_android_session_state_enable
+                {
+                    Some(raw::AndroidSessionStateEnableOCULUS {})
+                } else {
+                    None
+                },
+                oculus_audio_device_guid: if required.oculus_audio_device_guid {
+                    Some(raw::AudioDeviceGuidOCULUS::load(entry, instance)?)
+                } else {
+                    None
+                },
+                oculus_external_camera: if required.oculus_external_camera {
+                    Some(raw::ExternalCameraOCULUS::load(entry, instance)?)
+                } else {
+                    None
+                },
+                oppo_controller_interaction: if required.oppo_controller_interaction {
+                    Some(raw::ControllerInteractionOPPO {})
+                } else {
+                    None
+                },
+                qcom_tracking_optimization_settings: if required.qcom_tracking_optimization_settings
+                {
+                    Some(raw::TrackingOptimizationSettingsQCOM::load(
+                        entry, instance,
+                    )?)
+                } else {
+                    None
+                },
+                ultraleap_hand_tracking_forearm: if required.ultraleap_hand_tracking_forearm {
+                    Some(raw::HandTrackingForearmULTRALEAP {})
+                } else {
+                    None
+                },
+                valve_analog_threshold: if required.valve_analog_threshold {
+                    Some(raw::AnalogThresholdVALVE {})
+                } else {
+                    None
+                },
+                varjo_quad_views: if required.varjo_quad_views {
+                    Some(raw::QuadViewsVARJO {})
+                } else {
+                    None
+                },
+                varjo_foveated_rendering: if required.varjo_foveated_rendering {
+                    Some(raw::FoveatedRenderingVARJO {})
+                } else {
+                    None
+                },
+                varjo_composition_layer_depth_test: if required.varjo_composition_layer_depth_test {
+                    Some(raw::CompositionLayerDepthTestVARJO {})
+                } else {
+                    None
+                },
+                varjo_environment_depth_estimation: if required.varjo_environment_depth_estimation {
+                    Some(raw::EnvironmentDepthEstimationVARJO::load(entry, instance)?)
+                } else {
+                    None
+                },
+                varjo_marker_tracking: if required.varjo_marker_tracking {
+                    Some(raw::MarkerTrackingVARJO::load(entry, instance)?)
+                } else {
+                    None
+                },
+                varjo_view_offset: if required.varjo_view_offset {
+                    Some(raw::ViewOffsetVARJO::load(entry, instance)?)
+                } else {
+                    None
+                },
+                varjo_xr4_controller_interaction: if required.varjo_xr4_controller_interaction {
+                    Some(raw::Xr4ControllerInteractionVARJO {})
+                } else {
+                    None
+                },
+                yvr_controller_interaction: if required.yvr_controller_interaction {
+                    Some(raw::ControllerInteractionYVR {})
+                } else {
+                    None
+                },
+                extx_overlay: if required.extx_overlay {
+                    Some(raw::OverlayEXTX {})
+                } else {
+                    None
+                },
+                mndx_egl_enable: if required.mndx_egl_enable {
+                    Some(raw::EglEnableMNDX {})
+                } else {
+                    None
+                },
+                mndx_force_feedback_curl: if required.mndx_force_feedback_curl {
+                    Some(raw::ForceFeedbackCurlMNDX::load(entry, instance)?)
+                } else {
+                    None
+                },
+                htcx_vive_tracker_interaction: if required.htcx_vive_tracker_interaction {
+                    Some(raw::ViveTrackerInteractionHTCX::load(entry, instance)?)
+                } else {
+                    None
+                },
+            })
+        }
     }
 }
 #[derive(Copy, Clone)]
@@ -3085,133 +3095,135 @@ impl<'a> Event<'a> {
     #[doc = r" `xrPollEvent`, which has not been moved since."]
     pub unsafe fn from_raw(raw: &'a MaybeUninit<sys::EventDataBuffer>) -> Option<Self> {
         let raw = raw.as_ptr();
-        Some(match (raw as *const sys::BaseInStructure).read().ty {
-            sys::StructureType::EVENT_DATA_EVENTS_LOST => {
-                let typed = &*(raw as *const sys::EventDataEventsLost);
-                Event::EventsLost(EventsLost::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING => {
-                let typed = &*(raw as *const sys::EventDataInstanceLossPending);
-                Event::InstanceLossPending(InstanceLossPending::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SESSION_STATE_CHANGED => {
-                let typed = &*(raw as *const sys::EventDataSessionStateChanged);
-                Event::SessionStateChanged(SessionStateChanged::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING => {
-                let typed = &*(raw as *const sys::EventDataReferenceSpaceChangePending);
-                Event::ReferenceSpaceChangePending(ReferenceSpaceChangePending::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_PERF_SETTINGS_EXT => {
-                let typed = &*(raw as *const sys::EventDataPerfSettingsEXT);
-                Event::PerfSettingsEXT(PerfSettingsEXT::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
-                let typed = &*(raw as *const sys::EventDataVisibilityMaskChangedKHR);
-                Event::VisibilityMaskChangedKHR(VisibilityMaskChangedKHR::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED => {
-                let typed = &*(raw as *const sys::EventDataInteractionProfileChanged);
-                Event::InteractionProfileChanged(InteractionProfileChanged::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX => {
-                let typed = &*(raw as *const sys::EventDataMainSessionVisibilityChangedEXTX);
-                Event::MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX::new(
-                    typed,
-                ))
-            }
-            sys::StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB => {
-                let typed = &*(raw as *const sys::EventDataDisplayRefreshRateChangedFB);
-                Event::DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPATIAL_ANCHOR_CREATE_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpatialAnchorCreateCompleteFB);
-                Event::SpatialAnchorCreateCompleteFB(SpatialAnchorCreateCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPACE_SET_STATUS_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpaceSetStatusCompleteFB);
-                Event::SpaceSetStatusCompleteFB(SpaceSetStatusCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPACE_QUERY_RESULTS_AVAILABLE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpaceQueryResultsAvailableFB);
-                Event::SpaceQueryResultsAvailableFB(SpaceQueryResultsAvailableFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPACE_QUERY_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpaceQueryCompleteFB);
-                Event::SpaceQueryCompleteFB(SpaceQueryCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPACE_SAVE_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpaceSaveCompleteFB);
-                Event::SpaceSaveCompleteFB(SpaceSaveCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPACE_ERASE_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpaceEraseCompleteFB);
-                Event::SpaceEraseCompleteFB(SpaceEraseCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPACE_SHARE_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpaceShareCompleteFB);
-                Event::SpaceShareCompleteFB(SpaceShareCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SPACE_LIST_SAVE_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSpaceListSaveCompleteFB);
-                Event::SpaceListSaveCompleteFB(SpaceListSaveCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_SCENE_CAPTURE_COMPLETE_FB => {
-                let typed = &*(raw as *const sys::EventDataSceneCaptureCompleteFB);
-                Event::SceneCaptureCompleteFB(SceneCaptureCompleteFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB => {
-                let typed = &*(raw as *const sys::EventDataPassthroughStateChangedFB);
-                Event::PassthroughStateChangedFB(PassthroughStateChangedFB::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX => {
-                let typed = &*(raw as *const sys::EventDataViveTrackerConnectedHTCX);
-                Event::ViveTrackerConnectedHTCX(ViveTrackerConnectedHTCX::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO => {
-                let typed = &*(raw as *const sys::EventDataMarkerTrackingUpdateVARJO);
-                Event::MarkerTrackingUpdateVARJO(MarkerTrackingUpdateVARJO::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_COMMIT_TEXT_META => {
-                let typed = &*(raw as *const sys::EventDataVirtualKeyboardCommitTextMETA);
-                Event::VirtualKeyboardCommitTextMETA(VirtualKeyboardCommitTextMETA::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_BACKSPACE_META => {
-                let typed = &*(raw as *const sys::EventDataVirtualKeyboardBackspaceMETA);
-                Event::VirtualKeyboardBackspaceMETA(VirtualKeyboardBackspaceMETA::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_ENTER_META => {
-                let typed = &*(raw as *const sys::EventDataVirtualKeyboardEnterMETA);
-                Event::VirtualKeyboardEnterMETA(VirtualKeyboardEnterMETA::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_SHOWN_META => {
-                let typed = &*(raw as *const sys::EventDataVirtualKeyboardShownMETA);
-                Event::VirtualKeyboardShownMETA(VirtualKeyboardShownMETA::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_HIDDEN_META => {
-                let typed = &*(raw as *const sys::EventDataVirtualKeyboardHiddenMETA);
-                Event::VirtualKeyboardHiddenMETA(VirtualKeyboardHiddenMETA::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_HEADSET_FIT_CHANGED_ML => {
-                let typed = &*(raw as *const sys::EventDataHeadsetFitChangedML);
-                Event::HeadsetFitChangedML(HeadsetFitChangedML::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_EYE_CALIBRATION_CHANGED_ML => {
-                let typed = &*(raw as *const sys::EventDataEyeCalibrationChangedML);
-                Event::EyeCalibrationChangedML(EyeCalibrationChangedML::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_LOCALIZATION_CHANGED_ML => {
-                let typed = &*(raw as *const sys::EventDataLocalizationChangedML);
-                Event::LocalizationChangedML(LocalizationChangedML::new(typed))
-            }
-            sys::StructureType::EVENT_DATA_USER_PRESENCE_CHANGED_EXT => {
-                let typed = &*(raw as *const sys::EventDataUserPresenceChangedEXT);
-                Event::UserPresenceChangedEXT(UserPresenceChangedEXT::new(typed))
-            }
-            _ => {
-                return None;
-            }
-        })
+        unsafe {
+            Some(match (raw as *const sys::BaseInStructure).read().ty {
+                sys::StructureType::EVENT_DATA_EVENTS_LOST => {
+                    let typed = &*(raw as *const sys::EventDataEventsLost);
+                    Event::EventsLost(EventsLost::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_INSTANCE_LOSS_PENDING => {
+                    let typed = &*(raw as *const sys::EventDataInstanceLossPending);
+                    Event::InstanceLossPending(InstanceLossPending::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SESSION_STATE_CHANGED => {
+                    let typed = &*(raw as *const sys::EventDataSessionStateChanged);
+                    Event::SessionStateChanged(SessionStateChanged::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING => {
+                    let typed = &*(raw as *const sys::EventDataReferenceSpaceChangePending);
+                    Event::ReferenceSpaceChangePending(ReferenceSpaceChangePending::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_PERF_SETTINGS_EXT => {
+                    let typed = &*(raw as *const sys::EventDataPerfSettingsEXT);
+                    Event::PerfSettingsEXT(PerfSettingsEXT::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR => {
+                    let typed = &*(raw as *const sys::EventDataVisibilityMaskChangedKHR);
+                    Event::VisibilityMaskChangedKHR(VisibilityMaskChangedKHR::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_INTERACTION_PROFILE_CHANGED => {
+                    let typed = &*(raw as *const sys::EventDataInteractionProfileChanged);
+                    Event::InteractionProfileChanged(InteractionProfileChanged::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX => {
+                    let typed = &*(raw as *const sys::EventDataMainSessionVisibilityChangedEXTX);
+                    Event::MainSessionVisibilityChangedEXTX(MainSessionVisibilityChangedEXTX::new(
+                        typed,
+                    ))
+                }
+                sys::StructureType::EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB => {
+                    let typed = &*(raw as *const sys::EventDataDisplayRefreshRateChangedFB);
+                    Event::DisplayRefreshRateChangedFB(DisplayRefreshRateChangedFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPATIAL_ANCHOR_CREATE_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpatialAnchorCreateCompleteFB);
+                    Event::SpatialAnchorCreateCompleteFB(SpatialAnchorCreateCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPACE_SET_STATUS_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpaceSetStatusCompleteFB);
+                    Event::SpaceSetStatusCompleteFB(SpaceSetStatusCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPACE_QUERY_RESULTS_AVAILABLE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpaceQueryResultsAvailableFB);
+                    Event::SpaceQueryResultsAvailableFB(SpaceQueryResultsAvailableFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPACE_QUERY_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpaceQueryCompleteFB);
+                    Event::SpaceQueryCompleteFB(SpaceQueryCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPACE_SAVE_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpaceSaveCompleteFB);
+                    Event::SpaceSaveCompleteFB(SpaceSaveCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPACE_ERASE_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpaceEraseCompleteFB);
+                    Event::SpaceEraseCompleteFB(SpaceEraseCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPACE_SHARE_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpaceShareCompleteFB);
+                    Event::SpaceShareCompleteFB(SpaceShareCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SPACE_LIST_SAVE_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSpaceListSaveCompleteFB);
+                    Event::SpaceListSaveCompleteFB(SpaceListSaveCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_SCENE_CAPTURE_COMPLETE_FB => {
+                    let typed = &*(raw as *const sys::EventDataSceneCaptureCompleteFB);
+                    Event::SceneCaptureCompleteFB(SceneCaptureCompleteFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB => {
+                    let typed = &*(raw as *const sys::EventDataPassthroughStateChangedFB);
+                    Event::PassthroughStateChangedFB(PassthroughStateChangedFB::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX => {
+                    let typed = &*(raw as *const sys::EventDataViveTrackerConnectedHTCX);
+                    Event::ViveTrackerConnectedHTCX(ViveTrackerConnectedHTCX::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO => {
+                    let typed = &*(raw as *const sys::EventDataMarkerTrackingUpdateVARJO);
+                    Event::MarkerTrackingUpdateVARJO(MarkerTrackingUpdateVARJO::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_COMMIT_TEXT_META => {
+                    let typed = &*(raw as *const sys::EventDataVirtualKeyboardCommitTextMETA);
+                    Event::VirtualKeyboardCommitTextMETA(VirtualKeyboardCommitTextMETA::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_BACKSPACE_META => {
+                    let typed = &*(raw as *const sys::EventDataVirtualKeyboardBackspaceMETA);
+                    Event::VirtualKeyboardBackspaceMETA(VirtualKeyboardBackspaceMETA::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_ENTER_META => {
+                    let typed = &*(raw as *const sys::EventDataVirtualKeyboardEnterMETA);
+                    Event::VirtualKeyboardEnterMETA(VirtualKeyboardEnterMETA::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_SHOWN_META => {
+                    let typed = &*(raw as *const sys::EventDataVirtualKeyboardShownMETA);
+                    Event::VirtualKeyboardShownMETA(VirtualKeyboardShownMETA::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VIRTUAL_KEYBOARD_HIDDEN_META => {
+                    let typed = &*(raw as *const sys::EventDataVirtualKeyboardHiddenMETA);
+                    Event::VirtualKeyboardHiddenMETA(VirtualKeyboardHiddenMETA::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_HEADSET_FIT_CHANGED_ML => {
+                    let typed = &*(raw as *const sys::EventDataHeadsetFitChangedML);
+                    Event::HeadsetFitChangedML(HeadsetFitChangedML::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_EYE_CALIBRATION_CHANGED_ML => {
+                    let typed = &*(raw as *const sys::EventDataEyeCalibrationChangedML);
+                    Event::EyeCalibrationChangedML(EyeCalibrationChangedML::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_LOCALIZATION_CHANGED_ML => {
+                    let typed = &*(raw as *const sys::EventDataLocalizationChangedML);
+                    Event::LocalizationChangedML(LocalizationChangedML::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_USER_PRESENCE_CHANGED_EXT => {
+                    let typed = &*(raw as *const sys::EventDataUserPresenceChangedEXT);
+                    Event::UserPresenceChangedEXT(UserPresenceChangedEXT::new(typed))
+                }
+                _ => {
+                    return None;
+                }
+            })
+        }
     }
 }
 #[derive(Copy, Clone)]
@@ -3935,239 +3947,257 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_instance_proc_addr: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProcAddr\0"),
-                )?),
-                enumerate_api_layer_properties: entry
-                    .get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    get_instance_proc_addr: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
-                    )
-                    .map(|s| unsafe { mem::transmute(s) })
-                    .unwrap_or(crate::stub_enumerate_api_layer_properties),
-                enumerate_instance_extension_properties: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProcAddr\0"),
+                    )?),
+                    enumerate_api_layer_properties: entry
+                        .get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(b"xrEnumerateApiLayerProperties\0"),
+                        )
+                        .map(|s| mem::transmute(s))
+                        .unwrap_or(crate::stub_enumerate_api_layer_properties),
+                    enumerate_instance_extension_properties: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumerateInstanceExtensionProperties\0",
+                            ),
+                        )?,
+                    ),
+                    create_instance: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrEnumerateInstanceExtensionProperties\0",
-                        ),
-                    )?,
-                ),
-                create_instance: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
-                )?),
-                destroy_instance: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyInstance\0"),
-                )?),
-                result_to_string: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrResultToString\0"),
-                )?),
-                structure_type_to_string: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrStructureTypeToString\0"),
-                )?),
-                get_instance_properties: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProperties\0"),
-                )?),
-                get_system: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSystem\0"),
-                )?),
-                get_system_properties: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSystemProperties\0"),
-                )?),
-                create_session: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSession\0"),
-                )?),
-                destroy_session: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySession\0"),
-                )?),
-                destroy_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpace\0"),
-                )?),
-                enumerate_swapchain_formats: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainFormats\0"),
-                )?),
-                create_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSwapchain\0"),
-                )?),
-                destroy_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySwapchain\0"),
-                )?),
-                enumerate_swapchain_images: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainImages\0"),
-                )?),
-                acquire_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrAcquireSwapchainImage\0"),
-                )?),
-                wait_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrWaitSwapchainImage\0"),
-                )?),
-                release_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrReleaseSwapchainImage\0"),
-                )?),
-                begin_session: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrBeginSession\0"),
-                )?),
-                end_session: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEndSession\0"),
-                )?),
-                request_exit_session: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrRequestExitSession\0"),
-                )?),
-                enumerate_reference_spaces: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReferenceSpaces\0"),
-                )?),
-                create_reference_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateReferenceSpace\0"),
-                )?),
-                create_action_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSpace\0"),
-                )?),
-                locate_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLocateSpace\0"),
-                )?),
-                enumerate_view_configurations: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViewConfigurations\0"),
-                )?),
-                enumerate_environment_blend_modes: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateEnvironmentBlendModes\0"),
-                )?),
-                get_view_configuration_properties: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetViewConfigurationProperties\0"),
-                )?),
-                enumerate_view_configuration_views: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViewConfigurationViews\0"),
-                )?),
-                begin_frame: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrBeginFrame\0"),
-                )?),
-                locate_views: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLocateViews\0"),
-                )?),
-                end_frame: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEndFrame\0"),
-                )?),
-                wait_frame: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrWaitFrame\0"),
-                )?),
-                apply_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrApplyHapticFeedback\0"),
-                )?),
-                stop_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrStopHapticFeedback\0"),
-                )?),
-                poll_event: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPollEvent\0"),
-                )?),
-                string_to_path: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrStringToPath\0"),
-                )?),
-                path_to_string: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPathToString\0"),
-                )?),
-                get_reference_space_bounds_rect: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetReferenceSpaceBoundsRect\0"),
-                )?),
-                get_action_state_boolean: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateBoolean\0"),
-                )?),
-                get_action_state_float: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateFloat\0"),
-                )?),
-                get_action_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector2f\0"),
-                )?),
-                get_action_state_pose: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetActionStatePose\0"),
-                )?),
-                create_action_set: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSet\0"),
-                )?),
-                destroy_action_set: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyActionSet\0"),
-                )?),
-                create_action: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateAction\0"),
-                )?),
-                destroy_action: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyAction\0"),
-                )?),
-                suggest_interaction_profile_bindings: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateInstance\0"),
+                    )?),
+                    destroy_instance: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrSuggestInteractionProfileBindings\0",
-                        ),
-                    )?,
-                ),
-                attach_session_action_sets: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrAttachSessionActionSets\0"),
-                )?),
-                get_current_interaction_profile: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetCurrentInteractionProfile\0"),
-                )?),
-                sync_actions: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSyncActions\0"),
-                )?),
-                enumerate_bound_sources_for_action: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateBoundSourcesForAction\0"),
-                )?),
-                get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetInputSourceLocalizedName\0"),
-                )?),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyInstance\0"),
+                    )?),
+                    result_to_string: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrResultToString\0"),
+                    )?),
+                    structure_type_to_string: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrStructureTypeToString\0"),
+                    )?),
+                    get_instance_properties: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetInstanceProperties\0"),
+                    )?),
+                    get_system: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSystem\0"),
+                    )?),
+                    get_system_properties: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSystemProperties\0"),
+                    )?),
+                    create_session: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSession\0"),
+                    )?),
+                    destroy_session: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySession\0"),
+                    )?),
+                    destroy_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySpace\0"),
+                    )?),
+                    enumerate_swapchain_formats: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainFormats\0"),
+                    )?),
+                    create_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSwapchain\0"),
+                    )?),
+                    destroy_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySwapchain\0"),
+                    )?),
+                    enumerate_swapchain_images: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateSwapchainImages\0"),
+                    )?),
+                    acquire_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrAcquireSwapchainImage\0"),
+                    )?),
+                    wait_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrWaitSwapchainImage\0"),
+                    )?),
+                    release_swapchain_image: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrReleaseSwapchainImage\0"),
+                    )?),
+                    begin_session: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrBeginSession\0"),
+                    )?),
+                    end_session: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEndSession\0"),
+                    )?),
+                    request_exit_session: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrRequestExitSession\0"),
+                    )?),
+                    enumerate_reference_spaces: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReferenceSpaces\0"),
+                    )?),
+                    create_reference_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateReferenceSpace\0"),
+                    )?),
+                    create_action_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSpace\0"),
+                    )?),
+                    locate_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrLocateSpace\0"),
+                    )?),
+                    enumerate_view_configurations: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViewConfigurations\0"),
+                    )?),
+                    enumerate_environment_blend_modes: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumerateEnvironmentBlendModes\0",
+                            ),
+                        )?,
+                    ),
+                    get_view_configuration_properties: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetViewConfigurationProperties\0",
+                            ),
+                        )?,
+                    ),
+                    enumerate_view_configuration_views: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumerateViewConfigurationViews\0",
+                            ),
+                        )?,
+                    ),
+                    begin_frame: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrBeginFrame\0"),
+                    )?),
+                    locate_views: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrLocateViews\0"),
+                    )?),
+                    end_frame: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEndFrame\0"),
+                    )?),
+                    wait_frame: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrWaitFrame\0"),
+                    )?),
+                    apply_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrApplyHapticFeedback\0"),
+                    )?),
+                    stop_haptic_feedback: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrStopHapticFeedback\0"),
+                    )?),
+                    poll_event: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPollEvent\0"),
+                    )?),
+                    string_to_path: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrStringToPath\0"),
+                    )?),
+                    path_to_string: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPathToString\0"),
+                    )?),
+                    get_reference_space_bounds_rect: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetReferenceSpaceBoundsRect\0"),
+                    )?),
+                    get_action_state_boolean: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateBoolean\0"),
+                    )?),
+                    get_action_state_float: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateFloat\0"),
+                    )?),
+                    get_action_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStateVector2f\0"),
+                    )?),
+                    get_action_state_pose: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetActionStatePose\0"),
+                    )?),
+                    create_action_set: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateActionSet\0"),
+                    )?),
+                    destroy_action_set: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyActionSet\0"),
+                    )?),
+                    create_action: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateAction\0"),
+                    )?),
+                    destroy_action: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyAction\0"),
+                    )?),
+                    suggest_interaction_profile_bindings: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSuggestInteractionProfileBindings\0",
+                            ),
+                        )?,
+                    ),
+                    attach_session_action_sets: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrAttachSessionActionSets\0"),
+                    )?),
+                    get_current_interaction_profile: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetCurrentInteractionProfile\0"),
+                    )?),
+                    sync_actions: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSyncActions\0"),
+                    )?),
+                    enumerate_bound_sources_for_action: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumerateBoundSourcesForAction\0",
+                            ),
+                        )?,
+                    ),
+                    get_input_source_localized_name: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetInputSourceLocalizedName\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4183,12 +4213,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_digital_lens_control: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetDigitalLensControlALMALENCE\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    set_digital_lens_control: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetDigitalLensControlALMALENCE\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4216,12 +4248,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                perf_settings_set_performance_level: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPerfSettingsSetPerformanceLevelEXT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    perf_settings_set_performance_level: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrPerfSettingsSetPerformanceLevelEXT\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4237,12 +4275,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                thermal_get_temperature_trend: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrThermalGetTemperatureTrendEXT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    thermal_get_temperature_trend: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrThermalGetTemperatureTrendEXT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4264,44 +4304,50 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_debug_utils_object_name: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetDebugUtilsObjectNameEXT\0"),
-                )?),
-                create_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateDebugUtilsMessengerEXT\0"),
-                )?),
-                destroy_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyDebugUtilsMessengerEXT\0"),
-                )?),
-                submit_debug_utils_message: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSubmitDebugUtilsMessageEXT\0"),
-                )?),
-                session_begin_debug_utils_label_region: mem::transmute(
-                    entry.get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    set_debug_utils_object_name: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrSessionBeginDebugUtilsLabelRegionEXT\0",
-                        ),
-                    )?,
-                ),
-                session_end_debug_utils_label_region: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetDebugUtilsObjectNameEXT\0"),
+                    )?),
+                    create_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrSessionEndDebugUtilsLabelRegionEXT\0",
-                        ),
-                    )?,
-                ),
-                session_insert_debug_utils_label: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSessionInsertDebugUtilsLabelEXT\0"),
-                )?),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateDebugUtilsMessengerEXT\0"),
+                    )?),
+                    destroy_debug_utils_messenger: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyDebugUtilsMessengerEXT\0"),
+                    )?),
+                    submit_debug_utils_message: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSubmitDebugUtilsMessageEXT\0"),
+                    )?),
+                    session_begin_debug_utils_label_region: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSessionBeginDebugUtilsLabelRegionEXT\0",
+                            ),
+                        )?,
+                    ),
+                    session_end_debug_utils_label_region: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSessionEndDebugUtilsLabelRegionEXT\0",
+                            ),
+                        )?,
+                    ),
+                    session_insert_debug_utils_label: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSessionInsertDebugUtilsLabelEXT\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4333,28 +4379,30 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_input_device_active: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceActiveEXT\0"),
-                )?),
-                set_input_device_state_bool: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateBoolEXT\0"),
-                )?),
-                set_input_device_state_float: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateFloatEXT\0"),
-                )?),
-                set_input_device_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateVector2fEXT\0"),
-                )?),
-                set_input_device_location: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceLocationEXT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    set_input_device_active: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceActiveEXT\0"),
+                    )?),
+                    set_input_device_state_bool: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateBoolEXT\0"),
+                    )?),
+                    set_input_device_state_float: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateFloatEXT\0"),
+                    )?),
+                    set_input_device_state_vector2f: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceStateVector2fEXT\0"),
+                    )?),
+                    set_input_device_location: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetInputDeviceLocationEXT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4372,20 +4420,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateHandTrackerEXT\0"),
-                )?),
-                destroy_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyHandTrackerEXT\0"),
-                )?),
-                locate_hand_joints: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLocateHandJointsEXT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateHandTrackerEXT\0"),
+                    )?),
+                    destroy_hand_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyHandTrackerEXT\0"),
+                    )?),
+                    locate_hand_joints: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrLocateHandJointsEXT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[cfg(windows)]
@@ -4474,32 +4524,34 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_plane_detector: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePlaneDetectorEXT\0"),
-                )?),
-                destroy_plane_detector: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPlaneDetectorEXT\0"),
-                )?),
-                begin_plane_detection: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrBeginPlaneDetectionEXT\0"),
-                )?),
-                get_plane_detection_state: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetPlaneDetectionStateEXT\0"),
-                )?),
-                get_plane_detections: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetPlaneDetectionsEXT\0"),
-                )?),
-                get_plane_polygon_buffer: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetPlanePolygonBufferEXT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_plane_detector: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePlaneDetectorEXT\0"),
+                    )?),
+                    destroy_plane_detector: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPlaneDetectorEXT\0"),
+                    )?),
+                    begin_plane_detection: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrBeginPlaneDetectionEXT\0"),
+                    )?),
+                    get_plane_detection_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetPlaneDetectionStateEXT\0"),
+                    )?),
+                    get_plane_detections: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetPlaneDetectionsEXT\0"),
+                    )?),
+                    get_plane_polygon_buffer: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetPlanePolygonBufferEXT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4516,16 +4568,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                poll_future: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPollFutureEXT\0"),
-                )?),
-                cancel_future: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCancelFutureEXT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    poll_future: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPollFutureEXT\0"),
+                    )?),
+                    cancel_future: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCancelFutureEXT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4574,16 +4628,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                update_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrUpdateSwapchainFB\0"),
-                )?),
-                get_swapchain_state: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSwapchainStateFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    update_swapchain: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrUpdateSwapchainFB\0"),
+                    )?),
+                    get_swapchain_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSwapchainStateFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4608,24 +4664,26 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_body_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateBodyTrackerFB\0"),
-                )?),
-                destroy_body_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyBodyTrackerFB\0"),
-                )?),
-                locate_body_joints: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLocateBodyJointsFB\0"),
-                )?),
-                get_body_skeleton: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetBodySkeletonFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_body_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateBodyTrackerFB\0"),
+                    )?),
+                    destroy_body_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyBodyTrackerFB\0"),
+                    )?),
+                    locate_body_joints: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrLocateBodyJointsFB\0"),
+                    )?),
+                    get_body_skeleton: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetBodySkeletonFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4643,20 +4701,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enumerate_display_refresh_rates: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateDisplayRefreshRatesFB\0"),
-                )?),
-                get_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetDisplayRefreshRateFB\0"),
-                )?),
-                request_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrRequestDisplayRefreshRateFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enumerate_display_refresh_rates: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateDisplayRefreshRatesFB\0"),
+                    )?),
+                    get_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetDisplayRefreshRateFB\0"),
+                    )?),
+                    request_display_refresh_rate: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrRequestDisplayRefreshRateFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4673,16 +4733,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enumerate_color_spaces: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateColorSpacesFB\0"),
-                )?),
-                set_color_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetColorSpaceFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enumerate_color_spaces: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateColorSpacesFB\0"),
+                    )?),
+                    set_color_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetColorSpaceFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4698,12 +4760,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetHandMeshFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetHandMeshFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4735,32 +4799,34 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorFB\0"),
-                )?),
-                get_space_uuid: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceUuidFB\0"),
-                )?),
-                enumerate_space_supported_components: mem::transmute(
-                    entry.get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrEnumerateSpaceSupportedComponentsFB\0",
-                        ),
-                    )?,
-                ),
-                set_space_component_status: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetSpaceComponentStatusFB\0"),
-                )?),
-                get_space_component_status: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceComponentStatusFB\0"),
-                )?),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorFB\0"),
+                    )?),
+                    get_space_uuid: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceUuidFB\0"),
+                    )?),
+                    enumerate_space_supported_components: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumerateSpaceSupportedComponentsFB\0",
+                            ),
+                        )?,
+                    ),
+                    set_space_component_status: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetSpaceComponentStatusFB\0"),
+                    )?),
+                    get_space_component_status: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceComponentStatusFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4777,16 +4843,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateFoveationProfileFB\0"),
-                )?),
-                destroy_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyFoveationProfileFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFoveationProfileFB\0"),
+                    )?),
+                    destroy_foveation_profile: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFoveationProfileFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4809,16 +4877,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                query_system_tracked_keyboard: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrQuerySystemTrackedKeyboardFB\0"),
-                )?),
-                create_keyboard_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateKeyboardSpaceFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    query_system_tracked_keyboard: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrQuerySystemTrackedKeyboardFB\0"),
+                    )?),
+                    create_keyboard_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateKeyboardSpaceFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4841,48 +4911,50 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateTriangleMeshFB\0"),
-                )?),
-                destroy_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyTriangleMeshFB\0"),
-                )?),
-                triangle_mesh_get_vertex_buffer: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetVertexBufferFB\0"),
-                )?),
-                triangle_mesh_get_index_buffer: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetIndexBufferFB\0"),
-                )?),
-                triangle_mesh_begin_update: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshBeginUpdateFB\0"),
-                )?),
-                triangle_mesh_end_update: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshEndUpdateFB\0"),
-                )?),
-                triangle_mesh_begin_vertex_buffer_update: mem::transmute(
-                    entry.get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    create_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrTriangleMeshBeginVertexBufferUpdateFB\0",
-                        ),
-                    )?,
-                ),
-                triangle_mesh_end_vertex_buffer_update: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateTriangleMeshFB\0"),
+                    )?),
+                    destroy_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrTriangleMeshEndVertexBufferUpdateFB\0",
-                        ),
-                    )?,
-                ),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyTriangleMeshFB\0"),
+                    )?),
+                    triangle_mesh_get_vertex_buffer: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetVertexBufferFB\0"),
+                    )?),
+                    triangle_mesh_get_index_buffer: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshGetIndexBufferFB\0"),
+                    )?),
+                    triangle_mesh_begin_update: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshBeginUpdateFB\0"),
+                    )?),
+                    triangle_mesh_end_update: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrTriangleMeshEndUpdateFB\0"),
+                    )?),
+                    triangle_mesh_begin_vertex_buffer_update: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrTriangleMeshBeginVertexBufferUpdateFB\0",
+                            ),
+                        )?,
+                    ),
+                    triangle_mesh_end_vertex_buffer_update: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrTriangleMeshEndVertexBufferUpdateFB\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4909,56 +4981,58 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughFB\0"),
-                )?),
-                destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughFB\0"),
-                )?),
-                passthrough_start: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughStartFB\0"),
-                )?),
-                passthrough_pause: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughPauseFB\0"),
-                )?),
-                create_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughLayerFB\0"),
-                )?),
-                destroy_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughLayerFB\0"),
-                )?),
-                passthrough_layer_pause: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerPauseFB\0"),
-                )?),
-                passthrough_layer_resume: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerResumeFB\0"),
-                )?),
-                passthrough_layer_set_style: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerSetStyleFB\0"),
-                )?),
-                create_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateGeometryInstanceFB\0"),
-                )?),
-                destroy_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyGeometryInstanceFB\0"),
-                )?),
-                geometry_instance_set_transform: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGeometryInstanceSetTransformFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughFB\0"),
+                    )?),
+                    destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughFB\0"),
+                    )?),
+                    passthrough_start: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughStartFB\0"),
+                    )?),
+                    passthrough_pause: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughPauseFB\0"),
+                    )?),
+                    create_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughLayerFB\0"),
+                    )?),
+                    destroy_passthrough_layer: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughLayerFB\0"),
+                    )?),
+                    passthrough_layer_pause: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerPauseFB\0"),
+                    )?),
+                    passthrough_layer_resume: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerResumeFB\0"),
+                    )?),
+                    passthrough_layer_set_style: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrPassthroughLayerSetStyleFB\0"),
+                    )?),
+                    create_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateGeometryInstanceFB\0"),
+                    )?),
+                    destroy_geometry_instance: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyGeometryInstanceFB\0"),
+                    )?),
+                    geometry_instance_set_transform: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGeometryInstanceSetTransformFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -4976,20 +5050,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enumerate_render_model_paths: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateRenderModelPathsFB\0"),
-                )?),
-                get_render_model_properties: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetRenderModelPropertiesFB\0"),
-                )?),
-                load_render_model: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLoadRenderModelFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enumerate_render_model_paths: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateRenderModelPathsFB\0"),
+                    )?),
+                    get_render_model_properties: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetRenderModelPropertiesFB\0"),
+                    )?),
+                    load_render_model: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrLoadRenderModelFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5006,16 +5082,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                query_spaces: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrQuerySpacesFB\0"),
-                )?),
-                retrieve_space_query_results: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrRetrieveSpaceQueryResultsFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    query_spaces: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrQuerySpacesFB\0"),
+                    )?),
+                    retrieve_space_query_results: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrRetrieveSpaceQueryResultsFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5032,16 +5110,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                save_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSaveSpaceFB\0"),
-                )?),
-                erase_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEraseSpaceFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    save_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSaveSpaceFB\0"),
+                    )?),
+                    erase_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEraseSpaceFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5090,12 +5170,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                share_spaces: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrShareSpacesFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    share_spaces: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrShareSpacesFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5127,28 +5209,30 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_space_bounding_box2_d: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox2DFB\0"),
-                )?),
-                get_space_bounding_box3_d: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox3DFB\0"),
-                )?),
-                get_space_semantic_labels: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceSemanticLabelsFB\0"),
-                )?),
-                get_space_boundary2_d: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundary2DFB\0"),
-                )?),
-                get_space_room_layout: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceRoomLayoutFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_space_bounding_box2_d: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox2DFB\0"),
+                    )?),
+                    get_space_bounding_box3_d: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundingBox3DFB\0"),
+                    )?),
+                    get_space_semantic_labels: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceSemanticLabelsFB\0"),
+                    )?),
+                    get_space_boundary2_d: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceBoundary2DFB\0"),
+                    )?),
+                    get_space_room_layout: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceRoomLayoutFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5164,12 +5248,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                request_scene_capture: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrRequestSceneCaptureFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    request_scene_capture: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrRequestSceneCaptureFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5185,12 +5271,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_space_container: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceContainerFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_space_container: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceContainerFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5208,20 +5296,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_face_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateFaceTrackerFB\0"),
-                )?),
-                destroy_face_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyFaceTrackerFB\0"),
-                )?),
-                get_face_expression_weights: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetFaceExpressionWeightsFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_face_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFaceTrackerFB\0"),
+                    )?),
+                    destroy_face_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFaceTrackerFB\0"),
+                    )?),
+                    get_face_expression_weights: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetFaceExpressionWeightsFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5239,20 +5329,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_eye_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateEyeTrackerFB\0"),
-                )?),
-                destroy_eye_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyEyeTrackerFB\0"),
-                )?),
-                get_eye_gazes: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetEyeGazesFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_eye_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateEyeTrackerFB\0"),
+                    )?),
+                    destroy_eye_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyEyeTrackerFB\0"),
+                    )?),
+                    get_eye_gazes: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetEyeGazesFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5269,16 +5361,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                passthrough_layer_set_keyboard_hands_intensity: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrPassthroughLayerSetKeyboardHandsIntensityFB\0",
-                        ),
-                    )?,
-                ),
-            })
+            unsafe {
+                Ok(Self {
+                    passthrough_layer_set_keyboard_hands_intensity: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrPassthroughLayerSetKeyboardHandsIntensityFB\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5306,12 +5400,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_device_sample_rate: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetDeviceSampleRateFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_device_sample_rate: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetDeviceSampleRateFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5333,12 +5429,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                save_space_list: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSaveSpaceListFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    save_space_list: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSaveSpaceListFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5356,20 +5454,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_space_user: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpaceUserFB\0"),
-                )?),
-                get_space_user_id: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceUserIdFB\0"),
-                )?),
-                destroy_space_user: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpaceUserFB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_space_user: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpaceUserFB\0"),
+                    )?),
+                    get_space_user_id: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceUserIdFB\0"),
+                    )?),
+                    destroy_space_user: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySpaceUserFB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5387,20 +5487,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateFaceTracker2FB\0"),
-                )?),
-                destroy_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyFaceTracker2FB\0"),
-                )?),
-                get_face_expression_weights2: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetFaceExpressionWeights2FB\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFaceTracker2FB\0"),
+                    )?),
+                    destroy_face_tracker2: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFaceTracker2FB\0"),
+                    )?),
+                    get_face_expression_weights2: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetFaceExpressionWeights2FB\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5424,20 +5526,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateFacialTrackerHTC\0"),
-                )?),
-                destroy_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyFacialTrackerHTC\0"),
-                )?),
-                get_facial_expressions: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetFacialExpressionsHTC\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateFacialTrackerHTC\0"),
+                    )?),
+                    destroy_facial_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyFacialTrackerHTC\0"),
+                    )?),
+                    get_facial_expressions: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetFacialExpressionsHTC\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5472,16 +5576,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughHTC\0"),
-                )?),
-                destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughHTC\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughHTC\0"),
+                    )?),
+                    destroy_passthrough: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughHTC\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5497,12 +5603,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                apply_foveation: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrApplyFoveationHTC\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    apply_foveation: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrApplyFoveationHTC\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5519,16 +5627,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorHTC\0"),
-                )?),
-                get_spatial_anchor_name: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpatialAnchorNameHTC\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorHTC\0"),
+                    )?),
+                    get_spatial_anchor_name: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpatialAnchorNameHTC\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5552,12 +5662,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_android_application_thread: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetAndroidApplicationThreadKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    set_android_application_thread: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetAndroidApplicationThreadKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[cfg(target_os = "android")]
@@ -5575,12 +5687,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_swapchain_android_surface: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSwapchainAndroidSurfaceKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_swapchain_android_surface: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateSwapchainAndroidSurfaceKHR\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5634,12 +5752,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_open_gl_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetOpenGLGraphicsRequirementsKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_open_gl_graphics_requirements: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetOpenGLGraphicsRequirementsKHR\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5655,12 +5779,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_open_gles_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetOpenGLESGraphicsRequirementsKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_open_gles_graphics_requirements: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetOpenGLESGraphicsRequirementsKHR\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5679,24 +5809,30 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_vulkan_instance_extensions: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanInstanceExtensionsKHR\0"),
-                )?),
-                get_vulkan_device_extensions: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanDeviceExtensionsKHR\0"),
-                )?),
-                get_vulkan_graphics_device: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDeviceKHR\0"),
-                )?),
-                get_vulkan_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsRequirementsKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_vulkan_instance_extensions: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanInstanceExtensionsKHR\0"),
+                    )?),
+                    get_vulkan_device_extensions: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanDeviceExtensionsKHR\0"),
+                    )?),
+                    get_vulkan_graphics_device: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDeviceKHR\0"),
+                    )?),
+                    get_vulkan_graphics_requirements: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetVulkanGraphicsRequirementsKHR\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[cfg(windows)]
@@ -5714,12 +5850,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_d3d11_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetD3D11GraphicsRequirementsKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_d3d11_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetD3D11GraphicsRequirementsKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[cfg(windows)]
@@ -5737,12 +5875,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_d3d12_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetD3D12GraphicsRequirementsKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_d3d12_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetD3D12GraphicsRequirementsKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[cfg(target_vendor = "apple")]
@@ -5760,12 +5900,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_metal_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMetalGraphicsRequirementsKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_metal_graphics_requirements: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMetalGraphicsRequirementsKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5781,12 +5923,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_visibility_mask: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVisibilityMaskKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_visibility_mask: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetVisibilityMaskKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5812,24 +5956,26 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                convert_win32_performance_counter_to_time: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrConvertWin32PerformanceCounterToTimeKHR\0",
-                        ),
-                    )?,
-                ),
-                convert_time_to_win32_performance_counter: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrConvertTimeToWin32PerformanceCounterKHR\0",
-                        ),
-                    )?,
-                ),
-            })
+            unsafe {
+                Ok(Self {
+                    convert_win32_performance_counter_to_time: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrConvertWin32PerformanceCounterToTimeKHR\0",
+                            ),
+                        )?,
+                    ),
+                    convert_time_to_win32_performance_counter: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrConvertTimeToWin32PerformanceCounterKHR\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5846,16 +5992,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                convert_timespec_time_to_time: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrConvertTimespecTimeToTimeKHR\0"),
-                )?),
-                convert_time_to_timespec_time: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrConvertTimeToTimespecTimeKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    convert_timespec_time_to_time: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrConvertTimespecTimeToTimeKHR\0"),
+                    )?),
+                    convert_time_to_timespec_time: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrConvertTimeToTimespecTimeKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5871,12 +6019,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                initialize_loader: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrInitializeLoaderKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    initialize_loader: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrInitializeLoaderKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[cfg(target_os = "android")]
@@ -5903,24 +6053,30 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_vulkan_instance: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanInstanceKHR\0"),
-                )?),
-                create_vulkan_device: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanDeviceKHR\0"),
-                )?),
-                get_vulkan_graphics_device2: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDevice2KHR\0"),
-                )?),
-                get_vulkan_graphics_requirements2: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsRequirements2KHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_vulkan_instance: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanInstanceKHR\0"),
+                    )?),
+                    create_vulkan_device: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVulkanDeviceKHR\0"),
+                    )?),
+                    get_vulkan_graphics_device2: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetVulkanGraphicsDevice2KHR\0"),
+                    )?),
+                    get_vulkan_graphics_requirements2: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetVulkanGraphicsRequirements2KHR\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5955,12 +6111,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                locate_spaces: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLocateSpacesKHR\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    locate_spaces: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrLocateSpacesKHR\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -5982,12 +6140,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_foveation_eye_tracked_state: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetFoveationEyeTrackedStateMETA\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_foveation_eye_tracked_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetFoveationEyeTrackedStateMETA\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6009,12 +6169,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_passthrough_preferences: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetPassthroughPreferencesMETA\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_passthrough_preferences: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetPassthroughPreferencesMETA\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6041,64 +6203,78 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_virtual_keyboard: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateVirtualKeyboardMETA\0"),
-                )?),
-                destroy_virtual_keyboard: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyVirtualKeyboardMETA\0"),
-                )?),
-                create_virtual_keyboard_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateVirtualKeyboardSpaceMETA\0"),
-                )?),
-                suggest_virtual_keyboard_location: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSuggestVirtualKeyboardLocationMETA\0"),
-                )?),
-                get_virtual_keyboard_scale: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVirtualKeyboardScaleMETA\0"),
-                )?),
-                set_virtual_keyboard_model_visibility: mem::transmute(
-                    entry.get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    create_virtual_keyboard: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrSetVirtualKeyboardModelVisibilityMETA\0",
-                        ),
-                    )?,
-                ),
-                get_virtual_keyboard_model_animation_states: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVirtualKeyboardMETA\0"),
+                    )?),
+                    destroy_virtual_keyboard: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrGetVirtualKeyboardModelAnimationStatesMETA\0",
-                        ),
-                    )?,
-                ),
-                get_virtual_keyboard_dirty_textures: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVirtualKeyboardDirtyTexturesMETA\0"),
-                )?),
-                get_virtual_keyboard_texture_data: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetVirtualKeyboardTextureDataMETA\0"),
-                )?),
-                send_virtual_keyboard_input: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSendVirtualKeyboardInputMETA\0"),
-                )?),
-                change_virtual_keyboard_text_context: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyVirtualKeyboardMETA\0"),
+                    )?),
+                    create_virtual_keyboard_space: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrChangeVirtualKeyboardTextContextMETA\0",
-                        ),
-                    )?,
-                ),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateVirtualKeyboardSpaceMETA\0"),
+                    )?),
+                    suggest_virtual_keyboard_location: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSuggestVirtualKeyboardLocationMETA\0",
+                            ),
+                        )?,
+                    ),
+                    get_virtual_keyboard_scale: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetVirtualKeyboardScaleMETA\0"),
+                    )?),
+                    set_virtual_keyboard_model_visibility: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSetVirtualKeyboardModelVisibilityMETA\0",
+                            ),
+                        )?,
+                    ),
+                    get_virtual_keyboard_model_animation_states: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetVirtualKeyboardModelAnimationStatesMETA\0",
+                            ),
+                        )?,
+                    ),
+                    get_virtual_keyboard_dirty_textures: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetVirtualKeyboardDirtyTexturesMETA\0",
+                            ),
+                        )?,
+                    ),
+                    get_virtual_keyboard_texture_data: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetVirtualKeyboardTextureDataMETA\0",
+                            ),
+                        )?,
+                    ),
+                    send_virtual_keyboard_input: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSendVirtualKeyboardInputMETA\0"),
+                    )?),
+                    change_virtual_keyboard_text_context: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrChangeVirtualKeyboardTextContextMETA\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6124,28 +6300,34 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enumerate_performance_metrics_counter_paths: mem::transmute(
-                    entry.get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    enumerate_performance_metrics_counter_paths: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumeratePerformanceMetricsCounterPathsMETA\0",
+                            ),
+                        )?,
+                    ),
+                    set_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrEnumeratePerformanceMetricsCounterPathsMETA\0",
-                        ),
-                    )?,
-                ),
-                set_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetPerformanceMetricsStateMETA\0"),
-                )?),
-                get_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetPerformanceMetricsStateMETA\0"),
-                )?),
-                query_performance_metrics_counter: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrQueryPerformanceMetricsCounterMETA\0"),
-                )?),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetPerformanceMetricsStateMETA\0"),
+                    )?),
+                    get_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetPerformanceMetricsStateMETA\0"),
+                    )?),
+                    query_performance_metrics_counter: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrQueryPerformanceMetricsCounterMETA\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6167,12 +6349,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_recommended_layer_resolution: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetRecommendedLayerResolutionMETA\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_recommended_layer_resolution: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetRecommendedLayerResolutionMETA\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6190,20 +6378,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughColorLutMETA\0"),
-                )?),
-                destroy_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughColorLutMETA\0"),
-                )?),
-                update_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrUpdatePassthroughColorLutMETA\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreatePassthroughColorLutMETA\0"),
+                    )?),
+                    destroy_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyPassthroughColorLutMETA\0"),
+                    )?),
+                    update_passthrough_color_lut: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrUpdatePassthroughColorLutMETA\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6219,12 +6409,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_space_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceTriangleMeshMETA\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_space_triangle_mesh: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetSpaceTriangleMeshMETA\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6262,58 +6454,86 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateEnvironmentDepthProviderMETA\0"),
-                )?),
-                destroy_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyEnvironmentDepthProviderMETA\0"),
-                )?),
-                start_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrStartEnvironmentDepthProviderMETA\0"),
-                )?),
-                stop_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrStopEnvironmentDepthProviderMETA\0"),
-                )?),
-                create_environment_depth_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateEnvironmentDepthSwapchainMETA\0"),
-                )?),
-                destroy_environment_depth_swapchain: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(
-                        b"xrDestroyEnvironmentDepthSwapchainMETA\0",
+            unsafe {
+                Ok(Self {
+                    create_environment_depth_provider: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateEnvironmentDepthProviderMETA\0",
+                            ),
+                        )?,
                     ),
-                )?),
-                enumerate_environment_depth_swapchain_images: mem::transmute(
-                    entry.get_instance_proc_addr(
+                    destroy_environment_depth_provider: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrDestroyEnvironmentDepthProviderMETA\0",
+                            ),
+                        )?,
+                    ),
+                    start_environment_depth_provider: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrStartEnvironmentDepthProviderMETA\0",
+                            ),
+                        )?,
+                    ),
+                    stop_environment_depth_provider: mem::transmute(entry.get_instance_proc_addr(
                         instance,
                         CStr::from_bytes_with_nul_unchecked(
-                            b"xrEnumerateEnvironmentDepthSwapchainImagesMETA\0",
+                            b"xrStopEnvironmentDepthProviderMETA\0",
                         ),
-                    )?,
-                ),
-                get_environment_depth_swapchain_state: mem::transmute(
-                    entry.get_instance_proc_addr(
+                    )?),
+                    create_environment_depth_swapchain: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateEnvironmentDepthSwapchainMETA\0",
+                            ),
+                        )?,
+                    ),
+                    destroy_environment_depth_swapchain: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrDestroyEnvironmentDepthSwapchainMETA\0",
+                            ),
+                        )?,
+                    ),
+                    enumerate_environment_depth_swapchain_images: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumerateEnvironmentDepthSwapchainImagesMETA\0",
+                            ),
+                        )?,
+                    ),
+                    get_environment_depth_swapchain_state: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetEnvironmentDepthSwapchainStateMETA\0",
+                            ),
+                        )?,
+                    ),
+                    acquire_environment_depth_image: mem::transmute(entry.get_instance_proc_addr(
                         instance,
                         CStr::from_bytes_with_nul_unchecked(
-                            b"xrGetEnvironmentDepthSwapchainStateMETA\0",
+                            b"xrAcquireEnvironmentDepthImageMETA\0",
                         ),
-                    )?,
-                ),
-                acquire_environment_depth_image: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrAcquireEnvironmentDepthImageMETA\0"),
-                )?),
-                set_environment_depth_hand_removal: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetEnvironmentDepthHandRemovalMETA\0"),
-                )?),
-            })
+                    )?),
+                    set_environment_depth_hand_removal: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSetEnvironmentDepthHandRemovalMETA\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6347,16 +6567,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_space_from_coordinate_frame_uid: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrCreateSpaceFromCoordinateFrameUIDML\0",
-                        ),
-                    )?,
-                ),
-            })
+            unsafe {
+                Ok(Self {
+                    create_space_from_coordinate_frame_uid: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateSpaceFromCoordinateFrameUIDML\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6381,48 +6603,50 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_marker_detector: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerDetectorML\0"),
-                )?),
-                destroy_marker_detector: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyMarkerDetectorML\0"),
-                )?),
-                snapshot_marker_detector: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSnapshotMarkerDetectorML\0"),
-                )?),
-                get_marker_detector_state: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerDetectorStateML\0"),
-                )?),
-                get_markers: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkersML\0"),
-                )?),
-                get_marker_reprojection_error: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerReprojectionErrorML\0"),
-                )?),
-                get_marker_length: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerLengthML\0"),
-                )?),
-                get_marker_number: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerNumberML\0"),
-                )?),
-                get_marker_string: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerStringML\0"),
-                )?),
-                create_marker_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceML\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_marker_detector: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerDetectorML\0"),
+                    )?),
+                    destroy_marker_detector: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroyMarkerDetectorML\0"),
+                    )?),
+                    snapshot_marker_detector: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSnapshotMarkerDetectorML\0"),
+                    )?),
+                    get_marker_detector_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerDetectorStateML\0"),
+                    )?),
+                    get_markers: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkersML\0"),
+                    )?),
+                    get_marker_reprojection_error: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerReprojectionErrorML\0"),
+                    )?),
+                    get_marker_length: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerLengthML\0"),
+                    )?),
+                    get_marker_number: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerNumberML\0"),
+                    )?),
+                    get_marker_string: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerStringML\0"),
+                    )?),
+                    create_marker_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceML\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6444,36 +6668,50 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enable_localization_events: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnableLocalizationEventsML\0"),
-                )?),
-                query_localization_maps: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrQueryLocalizationMapsML\0"),
-                )?),
-                request_map_localization: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrRequestMapLocalizationML\0"),
-                )?),
-                import_localization_map: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrImportLocalizationMapML\0"),
-                )?),
-                create_exported_localization_map: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateExportedLocalizationMapML\0"),
-                )?),
-                destroy_exported_localization_map: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroyExportedLocalizationMapML\0"),
-                )?),
-                get_exported_localization_map_data: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetExportedLocalizationMapDataML\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enable_localization_events: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnableLocalizationEventsML\0"),
+                    )?),
+                    query_localization_maps: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrQueryLocalizationMapsML\0"),
+                    )?),
+                    request_map_localization: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrRequestMapLocalizationML\0"),
+                    )?),
+                    import_localization_map: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrImportLocalizationMapML\0"),
+                    )?),
+                    create_exported_localization_map: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateExportedLocalizationMapML\0",
+                            ),
+                        )?,
+                    ),
+                    destroy_exported_localization_map: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrDestroyExportedLocalizationMapML\0",
+                            ),
+                        )?,
+                    ),
+                    get_exported_localization_map_data: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetExportedLocalizationMapDataML\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6489,12 +6727,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enable_user_calibration_events: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnableUserCalibrationEventsML\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enable_user_calibration_events: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnableUserCalibrationEventsML\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6531,20 +6771,22 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorMSFT\0"),
-                )?),
-                create_spatial_anchor_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorSpaceMSFT\0"),
-                )?),
-                destroy_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpatialAnchorMSFT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorMSFT\0"),
+                    )?),
+                    create_spatial_anchor_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialAnchorSpaceMSFT\0"),
+                    )?),
+                    destroy_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrDestroySpatialAnchorMSFT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6565,32 +6807,38 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_spatial_graph_node_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialGraphNodeSpaceMSFT\0"),
-                )?),
-                try_create_spatial_graph_static_node_binding: mem::transmute(
-                    entry.get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    create_spatial_graph_node_space: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrTryCreateSpatialGraphStaticNodeBindingMSFT\0",
-                        ),
-                    )?,
-                ),
-                destroy_spatial_graph_node_binding: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrDestroySpatialGraphNodeBindingMSFT\0"),
-                )?),
-                get_spatial_graph_node_binding_properties: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrGetSpatialGraphNodeBindingPropertiesMSFT\0",
-                        ),
-                    )?,
-                ),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateSpatialGraphNodeSpaceMSFT\0"),
+                    )?),
+                    try_create_spatial_graph_static_node_binding: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrTryCreateSpatialGraphStaticNodeBindingMSFT\0",
+                            ),
+                        )?,
+                    ),
+                    destroy_spatial_graph_node_binding: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrDestroySpatialGraphNodeBindingMSFT\0",
+                            ),
+                        )?,
+                    ),
+                    get_spatial_graph_node_binding_properties: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrGetSpatialGraphNodeBindingPropertiesMSFT\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6613,16 +6861,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_hand_mesh_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateHandMeshSpaceMSFT\0"),
-                )?),
-                update_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrUpdateHandMeshMSFT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    create_hand_mesh_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateHandMeshSpaceMSFT\0"),
+                    )?),
+                    update_hand_mesh: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrUpdateHandMeshMSFT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6653,24 +6903,28 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_controller_model_key: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelKeyMSFT\0"),
-                )?),
-                load_controller_model: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrLoadControllerModelMSFT\0"),
-                )?),
-                get_controller_model_properties: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelPropertiesMSFT\0"),
-                )?),
-                get_controller_model_state: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelStateMSFT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_controller_model_key: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelKeyMSFT\0"),
+                    )?),
+                    load_controller_model: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrLoadControllerModelMSFT\0"),
+                    )?),
+                    get_controller_model_properties: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrGetControllerModelPropertiesMSFT\0",
+                        ),
+                    )?),
+                    get_controller_model_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetControllerModelStateMSFT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[cfg(windows)]
@@ -6691,24 +6945,26 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_spatial_anchor_from_perception_anchor: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrCreateSpatialAnchorFromPerceptionAnchorMSFT\0",
-                        ),
-                    )?,
-                ),
-                try_get_perception_anchor_from_spatial_anchor: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrTryGetPerceptionAnchorFromSpatialAnchorMSFT\0",
-                        ),
-                    )?,
-                ),
-            })
+            unsafe {
+                Ok(Self {
+                    create_spatial_anchor_from_perception_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateSpatialAnchorFromPerceptionAnchorMSFT\0",
+                            ),
+                        )?,
+                    ),
+                    try_get_perception_anchor_from_spatial_anchor: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrTryGetPerceptionAnchorFromSpatialAnchorMSFT\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[cfg(windows)]
@@ -6732,12 +6988,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enumerate_reprojection_modes: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReprojectionModesMSFT\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enumerate_reprojection_modes: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateReprojectionModesMSFT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6760,52 +7018,54 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                create_spatial_anchor_store_connection: mem::transmute(
-                    entry.get_instance_proc_addr(
+            unsafe {
+                Ok(Self {
+                    create_spatial_anchor_store_connection: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateSpatialAnchorStoreConnectionMSFT\0",
+                            ),
+                        )?,
+                    ),
+                    destroy_spatial_anchor_store_connection: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrDestroySpatialAnchorStoreConnectionMSFT\0",
+                            ),
+                        )?,
+                    ),
+                    persist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrCreateSpatialAnchorStoreConnectionMSFT\0",
-                        ),
-                    )?,
-                ),
-                destroy_spatial_anchor_store_connection: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrPersistSpatialAnchorMSFT\0"),
+                    )?),
+                    enumerate_persisted_spatial_anchor_names: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrEnumeratePersistedSpatialAnchorNamesMSFT\0",
+                            ),
+                        )?,
+                    ),
+                    create_spatial_anchor_from_persisted_name: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrCreateSpatialAnchorFromPersistedNameMSFT\0",
+                            ),
+                        )?,
+                    ),
+                    unpersist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrDestroySpatialAnchorStoreConnectionMSFT\0",
-                        ),
-                    )?,
-                ),
-                persist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrPersistSpatialAnchorMSFT\0"),
-                )?),
-                enumerate_persisted_spatial_anchor_names: mem::transmute(
-                    entry.get_instance_proc_addr(
+                        CStr::from_bytes_with_nul_unchecked(b"xrUnpersistSpatialAnchorMSFT\0"),
+                    )?),
+                    clear_spatial_anchor_store: mem::transmute(entry.get_instance_proc_addr(
                         instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrEnumeratePersistedSpatialAnchorNamesMSFT\0",
-                        ),
-                    )?,
-                ),
-                create_spatial_anchor_from_persisted_name: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrCreateSpatialAnchorFromPersistedNameMSFT\0",
-                        ),
-                    )?,
-                ),
-                unpersist_spatial_anchor: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrUnpersistSpatialAnchorMSFT\0"),
-                )?),
-                clear_spatial_anchor_store: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrClearSpatialAnchorStoreMSFT\0"),
-                )?),
-            })
+                        CStr::from_bytes_with_nul_unchecked(b"xrClearSpatialAnchorStoreMSFT\0"),
+                    )?),
+                })
+            }
         }
     }
     #[cfg(target_os = "android")]
@@ -6830,16 +7090,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                get_audio_output_device_guid: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetAudioOutputDeviceGuidOculus\0"),
-                )?),
-                get_audio_input_device_guid: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetAudioInputDeviceGuidOculus\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    get_audio_output_device_guid: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetAudioOutputDeviceGuidOculus\0"),
+                    )?),
+                    get_audio_input_device_guid: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetAudioInputDeviceGuidOculus\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6855,12 +7117,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enumerate_external_cameras: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateExternalCamerasOCULUS\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enumerate_external_cameras: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateExternalCamerasOCULUS\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6882,16 +7146,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_tracking_optimization_settings_hint: mem::transmute(
-                    entry.get_instance_proc_addr(
-                        instance,
-                        CStr::from_bytes_with_nul_unchecked(
-                            b"xrSetTrackingOptimizationSettingsHintQCOM\0",
-                        ),
-                    )?,
-                ),
-            })
+            unsafe {
+                Ok(Self {
+                    set_tracking_optimization_settings_hint: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSetTrackingOptimizationSettingsHintQCOM\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6937,12 +7203,18 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_environment_depth_estimation: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetEnvironmentDepthEstimationVARJO\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    set_environment_depth_estimation: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            CStr::from_bytes_with_nul_unchecked(
+                                b"xrSetEnvironmentDepthEstimationVARJO\0",
+                            ),
+                        )?,
+                    ),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6962,28 +7234,32 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_marker_tracking: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingVARJO\0"),
-                )?),
-                set_marker_tracking_timeout: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingTimeoutVARJO\0"),
-                )?),
-                set_marker_tracking_prediction: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingPredictionVARJO\0"),
-                )?),
-                get_marker_size: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerSizeVARJO\0"),
-                )?),
-                create_marker_space: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceVARJO\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    set_marker_tracking: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingVARJO\0"),
+                    )?),
+                    set_marker_tracking_timeout: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetMarkerTrackingTimeoutVARJO\0"),
+                    )?),
+                    set_marker_tracking_prediction: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(
+                            b"xrSetMarkerTrackingPredictionVARJO\0",
+                        ),
+                    )?),
+                    get_marker_size: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrGetMarkerSizeVARJO\0"),
+                    )?),
+                    create_marker_space: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrCreateMarkerSpaceVARJO\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -6999,12 +7275,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                set_view_offset: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrSetViewOffsetVARJO\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    set_view_offset: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrSetViewOffsetVARJO\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -7044,12 +7322,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                apply_force_feedback_curl: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrApplyForceFeedbackCurlMNDX\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    apply_force_feedback_curl: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrApplyForceFeedbackCurlMNDX\0"),
+                    )?),
+                })
+            }
         }
     }
     #[derive(Copy, Clone)]
@@ -7065,12 +7345,14 @@ pub mod raw {
         #[doc = r""]
         #[doc = r" `instance` must be a valid instance handle."]
         pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
-            Ok(Self {
-                enumerate_vive_tracker_paths: mem::transmute(entry.get_instance_proc_addr(
-                    instance,
-                    CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViveTrackerPathsHTCX\0"),
-                )?),
-            })
+            unsafe {
+                Ok(Self {
+                    enumerate_vive_tracker_paths: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        CStr::from_bytes_with_nul_unchecked(b"xrEnumerateViveTrackerPathsHTCX\0"),
+                    )?),
+                })
+            }
         }
     }
 }

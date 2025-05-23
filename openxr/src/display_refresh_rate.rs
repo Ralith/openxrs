@@ -5,8 +5,8 @@
 //! [`XR_FB_display_refresh_rate`]: https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_display_refresh_rate
 //! [`Event::DisplayRefreshRateChangedFB`]: crate::Event::DisplayRefreshRateChangedFB
 
-use crate::{cvt, Session};
-use crate::{get_arr, Result};
+use crate::{Result, get_arr};
+use crate::{Session, cvt};
 use std::mem::MaybeUninit;
 
 impl<G> Session<G> {

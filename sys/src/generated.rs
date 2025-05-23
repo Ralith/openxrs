@@ -1513,7 +1513,288 @@ impl fmt::Debug for Result {
 }
 impl fmt::Display for Result {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let reason = match * self { Self :: SUCCESS => Some ("function successfully completed") , Self :: TIMEOUT_EXPIRED => Some ("the specified timeout time occurred before the operation could complete") , Self :: SESSION_LOSS_PENDING => Some ("the session will be lost soon") , Self :: EVENT_UNAVAILABLE => Some ("no event was available") , Self :: SPACE_BOUNDS_UNAVAILABLE => Some ("the space's bounds are not known at the moment") , Self :: SESSION_NOT_FOCUSED => Some ("the session is not in the focused state") , Self :: FRAME_DISCARDED => Some ("a frame has been discarded from composition") , Self :: ERROR_VALIDATION_FAILURE => Some ("the function usage was invalid in some way") , Self :: ERROR_RUNTIME_FAILURE => Some ("the runtime failed to handle the function in an unexpected way that is not covered by another error result") , Self :: ERROR_OUT_OF_MEMORY => Some ("a memory allocation has failed") , Self :: ERROR_API_VERSION_UNSUPPORTED => Some ("the runtime does not support the requested API version") , Self :: ERROR_INITIALIZATION_FAILED => Some ("initialization of object could not be completed") , Self :: ERROR_FUNCTION_UNSUPPORTED => Some ("the requested function was not found or is otherwise unsupported") , Self :: ERROR_FEATURE_UNSUPPORTED => Some ("the requested feature is not supported") , Self :: ERROR_EXTENSION_NOT_PRESENT => Some ("a requested extension is not supported") , Self :: ERROR_LIMIT_REACHED => Some ("the runtime supports no more of the requested resource") , Self :: ERROR_SIZE_INSUFFICIENT => Some ("the supplied size was smaller than required") , Self :: ERROR_HANDLE_INVALID => Some ("a supplied object handle was invalid") , Self :: ERROR_INSTANCE_LOST => Some ("the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated") , Self :: ERROR_SESSION_RUNNING => Some ("the session is already running") , Self :: ERROR_SESSION_NOT_RUNNING => Some ("the session is not yet running") , Self :: ERROR_SESSION_LOST => Some ("the XrSession was lost. It will need to be destroyed and optionally recreated") , Self :: ERROR_SYSTEM_INVALID => Some ("the provided XrSystemId was invalid") , Self :: ERROR_PATH_INVALID => Some ("the provided XrPath was not valid") , Self :: ERROR_PATH_COUNT_EXCEEDED => Some ("the maximum number of supported semantic paths has been reached") , Self :: ERROR_PATH_FORMAT_INVALID => Some ("the semantic path character format is invalid") , Self :: ERROR_PATH_UNSUPPORTED => Some ("the semantic path is unsupported") , Self :: ERROR_LAYER_INVALID => Some ("the layer was NULL or otherwise invalid") , Self :: ERROR_LAYER_LIMIT_EXCEEDED => Some ("the number of specified layers is greater than the supported number") , Self :: ERROR_SWAPCHAIN_RECT_INVALID => Some ("the image rect was negatively sized or otherwise invalid") , Self :: ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => Some ("the image format is not supported by the runtime or platform") , Self :: ERROR_ACTION_TYPE_MISMATCH => Some ("the API used to retrieve an action's state does not match the action's type") , Self :: ERROR_SESSION_NOT_READY => Some ("the session is not in the ready state") , Self :: ERROR_SESSION_NOT_STOPPING => Some ("the session is not in the stopping state") , Self :: ERROR_TIME_INVALID => Some ("the provided XrTime was zero, negative, or out of range") , Self :: ERROR_REFERENCE_SPACE_UNSUPPORTED => Some ("the specified reference space is not supported by the runtime or system") , Self :: ERROR_FILE_ACCESS_ERROR => Some ("the file could not be accessed") , Self :: ERROR_FILE_CONTENTS_INVALID => Some ("the file's contents were invalid") , Self :: ERROR_FORM_FACTOR_UNSUPPORTED => Some ("the specified form factor is not supported by the current runtime or platform") , Self :: ERROR_FORM_FACTOR_UNAVAILABLE => Some ("the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off") , Self :: ERROR_API_LAYER_NOT_PRESENT => Some ("a requested API layer is not present or could not be loaded") , Self :: ERROR_CALL_ORDER_INVALID => Some ("the call was made without having made a previously required call") , Self :: ERROR_GRAPHICS_DEVICE_INVALID => Some ("the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements") , Self :: ERROR_POSE_INVALID => Some ("the supplied pose was invalid with respect to the requirements") , Self :: ERROR_INDEX_OUT_OF_RANGE => Some ("the supplied index was outside the range of valid indices") , Self :: ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some ("the specified view configuration type is not supported by the runtime or platform") , Self :: ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some ("the specified environment blend mode is not supported by the runtime or platform") , Self :: ERROR_NAME_DUPLICATED => Some ("the name provided was a duplicate of an already-existing resource") , Self :: ERROR_NAME_INVALID => Some ("the name provided was invalid") , Self :: ERROR_ACTIONSET_NOT_ATTACHED => Some ("a referenced action set is not attached to the session") , Self :: ERROR_ACTIONSETS_ALREADY_ATTACHED => Some ("the session already has attached action sets") , Self :: ERROR_LOCALIZED_NAME_DUPLICATED => Some ("the localized name provided was a duplicate of an already-existing resource") , Self :: ERROR_LOCALIZED_NAME_INVALID => Some ("the localized name provided was invalid") , Self :: ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some ("the xrGetGraphicsRequirements* call was not made before calling xrCreateSession") , Self :: ERROR_RUNTIME_UNAVAILABLE => Some ("the loader was unable to find or load a runtime") , Self :: ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED => Some ("one or more of the extensions being enabled has dependency on extensions that are not enabled") , Self :: ERROR_PERMISSION_INSUFFICIENT => Some ("insufficient permissions. This error is included for use by vendor extensions. The precise definition of `XR_ERROR_PERMISSION_INSUFFICIENT` and actions possible by the developer or user to resolve it can vary by platform, extension or function. The developer should refer to the documentation of the function that returned the error code and extension it was defined") , Self :: ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => Some ("xrSetAndroidApplicationThreadKHR failed as thread id is invalid") , Self :: ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some ("xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority") , Self :: ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => Some ("spatial anchor could not be created at that location") , Self :: ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => Some ("the secondary view configuration was not enabled when creating the session") , Self :: ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => Some ("the controller model key is invalid") , Self :: ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => Some ("the reprojection mode is not supported") , Self :: ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => Some ("compute new scene not completed") , Self :: ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => Some ("scene component id invalid") , Self :: ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => Some ("scene component type mismatch") , Self :: ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => Some ("scene mesh buffer id invalid") , Self :: ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => Some ("scene compute feature incompatible") , Self :: ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => Some ("scene compute consistency mismatch") , Self :: ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => Some ("the display refresh rate is not supported by the platform") , Self :: ERROR_COLOR_SPACE_UNSUPPORTED_FB => Some ("the color space is not supported by the runtime") , Self :: ERROR_SPACE_COMPONENT_NOT_SUPPORTED_FB => Some ("the component type is not supported for this space") , Self :: ERROR_SPACE_COMPONENT_NOT_ENABLED_FB => Some ("the required component is not enabled for this space") , Self :: ERROR_SPACE_COMPONENT_STATUS_PENDING_FB => Some ("a request to set the component's status is currently pending") , Self :: ERROR_SPACE_COMPONENT_STATUS_ALREADY_SET_FB => Some ("the component is already set to the requested value") , Self :: ERROR_UNEXPECTED_STATE_PASSTHROUGH_FB => Some ("the object state is unexpected for the issued command") , Self :: ERROR_FEATURE_ALREADY_CREATED_PASSTHROUGH_FB => Some ("trying to create an MR feature when one was already created and only one instance is allowed") , Self :: ERROR_FEATURE_REQUIRED_PASSTHROUGH_FB => Some ("requested functionality requires a feature to be created first") , Self :: ERROR_NOT_PERMITTED_PASSTHROUGH_FB => Some ("requested functionality is not permitted - application is not allowed to perform the requested operation") , Self :: ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB => Some ("there were insufficient resources available to perform an operation") , Self :: ERROR_UNKNOWN_PASSTHROUGH_FB => Some ("unknown Passthrough error (no further details provided)") , Self :: ERROR_RENDER_MODEL_KEY_INVALID_FB => Some ("the model key is invalid") , Self :: RENDER_MODEL_UNAVAILABLE_FB => Some ("the model is unavailable") , Self :: ERROR_MARKER_NOT_TRACKED_VARJO => Some ("marker tracking is disabled or the specified marker is not currently tracked") , Self :: ERROR_MARKER_ID_INVALID_VARJO => Some ("the specified marker ID is not valid") , Self :: ERROR_MARKER_DETECTOR_PERMISSION_DENIED_ML => Some ("the com.magicleap.permission.MARKER_TRACKING permission was denied") , Self :: ERROR_MARKER_DETECTOR_LOCATE_FAILED_ML => Some ("the specified marker could not be located spatially") , Self :: ERROR_MARKER_DETECTOR_INVALID_DATA_QUERY_ML => Some ("the marker queried does not contain data of the requested type") , Self :: ERROR_MARKER_DETECTOR_INVALID_CREATE_INFO_ML => Some ("createInfo contains mutually exclusive parameters, such as setting XR_MARKER_DETECTOR_CORNER_REFINE_METHOD_APRIL_TAG_ML with XR_MARKER_TYPE_ARUCO_ML") , Self :: ERROR_MARKER_INVALID_ML => Some ("the marker id passed to the function was invalid") , Self :: ERROR_LOCALIZATION_MAP_INCOMPATIBLE_ML => Some ("the localization map being imported is not compatible with current OS or mode") , Self :: ERROR_LOCALIZATION_MAP_UNAVAILABLE_ML => Some ("the localization map requested is not available") , Self :: ERROR_LOCALIZATION_MAP_FAIL_ML => Some ("the map localization service failed to fulfill the request, retry later") , Self :: ERROR_LOCALIZATION_MAP_IMPORT_EXPORT_PERMISSION_DENIED_ML => Some ("the com.magicleap.permission.SPACE_IMPORT_EXPORT permission was denied") , Self :: ERROR_LOCALIZATION_MAP_PERMISSION_DENIED_ML => Some ("the com.magicleap.permission.SPACE_MANAGER permission was denied") , Self :: ERROR_LOCALIZATION_MAP_ALREADY_EXISTS_ML => Some ("the map being imported already exists in the system") , Self :: ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML => Some ("the map localization service cannot export cloud based maps") , Self :: ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => Some ("a spatial anchor was not found associated with the spatial anchor name provided") , Self :: ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT => Some ("the spatial anchor name provided was not valid") , Self :: SCENE_MARKER_DATA_NOT_STRING_MSFT => Some ("marker does not encode a string") , Self :: ERROR_SPACE_MAPPING_INSUFFICIENT_FB => Some ("anchor import from cloud or export from device failed") , Self :: ERROR_SPACE_LOCALIZATION_FAILED_FB => Some ("anchors were downloaded from the cloud but failed to be imported/aligned on the device") , Self :: ERROR_SPACE_NETWORK_TIMEOUT_FB => Some ("timeout occurred while waiting for network request to complete") , Self :: ERROR_SPACE_NETWORK_REQUEST_FAILED_FB => Some ("the network request failed") , Self :: ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB => Some ("cloud storage is required for this operation but is currently disabled") , Self :: ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META => Some ("the provided data buffer did not match the required size") , Self :: ENVIRONMENT_DEPTH_NOT_AVAILABLE_META => Some ("warning: The requested depth image is not yet available") , Self :: ERROR_HINT_ALREADY_SET_QCOM => Some ("tracking optimization hint is already set for the domain") , Self :: ERROR_NOT_AN_ANCHOR_HTC => Some ("the provided space is valid but not an anchor") , Self :: ERROR_SPACE_NOT_LOCATABLE_EXT => Some ("the space passed to the function was not locatable") , Self :: ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT => Some ("the permission for this resource was not granted") , Self :: ERROR_FUTURE_PENDING_EXT => Some ("returned by completion function to indicate future is not ready") , Self :: ERROR_FUTURE_INVALID_EXT => Some ("returned by completion function to indicate future is not valid") , Self :: ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR => Some ("ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR") , Self :: ERROR_PERMISSION_INSUFFICIENT_KHR => Some ("ERROR_PERMISSION_INSUFFICIENT_KHR") , _ => None , } ;
+        let reason = match *self {
+            Self::SUCCESS => Some("function successfully completed"),
+            Self::TIMEOUT_EXPIRED => {
+                Some("the specified timeout time occurred before the operation could complete")
+            }
+            Self::SESSION_LOSS_PENDING => Some("the session will be lost soon"),
+            Self::EVENT_UNAVAILABLE => Some("no event was available"),
+            Self::SPACE_BOUNDS_UNAVAILABLE => {
+                Some("the space's bounds are not known at the moment")
+            }
+            Self::SESSION_NOT_FOCUSED => Some("the session is not in the focused state"),
+            Self::FRAME_DISCARDED => Some("a frame has been discarded from composition"),
+            Self::ERROR_VALIDATION_FAILURE => Some("the function usage was invalid in some way"),
+            Self::ERROR_RUNTIME_FAILURE => Some(
+                "the runtime failed to handle the function in an unexpected way that is not covered by another error result",
+            ),
+            Self::ERROR_OUT_OF_MEMORY => Some("a memory allocation has failed"),
+            Self::ERROR_API_VERSION_UNSUPPORTED => {
+                Some("the runtime does not support the requested API version")
+            }
+            Self::ERROR_INITIALIZATION_FAILED => {
+                Some("initialization of object could not be completed")
+            }
+            Self::ERROR_FUNCTION_UNSUPPORTED => {
+                Some("the requested function was not found or is otherwise unsupported")
+            }
+            Self::ERROR_FEATURE_UNSUPPORTED => Some("the requested feature is not supported"),
+            Self::ERROR_EXTENSION_NOT_PRESENT => Some("a requested extension is not supported"),
+            Self::ERROR_LIMIT_REACHED => {
+                Some("the runtime supports no more of the requested resource")
+            }
+            Self::ERROR_SIZE_INSUFFICIENT => Some("the supplied size was smaller than required"),
+            Self::ERROR_HANDLE_INVALID => Some("a supplied object handle was invalid"),
+            Self::ERROR_INSTANCE_LOST => Some(
+                "the XrInstance was lost or could not be found. It will need to be destroyed and optionally recreated",
+            ),
+            Self::ERROR_SESSION_RUNNING => Some("the session is already running"),
+            Self::ERROR_SESSION_NOT_RUNNING => Some("the session is not yet running"),
+            Self::ERROR_SESSION_LOST => Some(
+                "the XrSession was lost. It will need to be destroyed and optionally recreated",
+            ),
+            Self::ERROR_SYSTEM_INVALID => Some("the provided XrSystemId was invalid"),
+            Self::ERROR_PATH_INVALID => Some("the provided XrPath was not valid"),
+            Self::ERROR_PATH_COUNT_EXCEEDED => {
+                Some("the maximum number of supported semantic paths has been reached")
+            }
+            Self::ERROR_PATH_FORMAT_INVALID => {
+                Some("the semantic path character format is invalid")
+            }
+            Self::ERROR_PATH_UNSUPPORTED => Some("the semantic path is unsupported"),
+            Self::ERROR_LAYER_INVALID => Some("the layer was NULL or otherwise invalid"),
+            Self::ERROR_LAYER_LIMIT_EXCEEDED => {
+                Some("the number of specified layers is greater than the supported number")
+            }
+            Self::ERROR_SWAPCHAIN_RECT_INVALID => {
+                Some("the image rect was negatively sized or otherwise invalid")
+            }
+            Self::ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED => {
+                Some("the image format is not supported by the runtime or platform")
+            }
+            Self::ERROR_ACTION_TYPE_MISMATCH => {
+                Some("the API used to retrieve an action's state does not match the action's type")
+            }
+            Self::ERROR_SESSION_NOT_READY => Some("the session is not in the ready state"),
+            Self::ERROR_SESSION_NOT_STOPPING => Some("the session is not in the stopping state"),
+            Self::ERROR_TIME_INVALID => {
+                Some("the provided XrTime was zero, negative, or out of range")
+            }
+            Self::ERROR_REFERENCE_SPACE_UNSUPPORTED => {
+                Some("the specified reference space is not supported by the runtime or system")
+            }
+            Self::ERROR_FILE_ACCESS_ERROR => Some("the file could not be accessed"),
+            Self::ERROR_FILE_CONTENTS_INVALID => Some("the file's contents were invalid"),
+            Self::ERROR_FORM_FACTOR_UNSUPPORTED => Some(
+                "the specified form factor is not supported by the current runtime or platform",
+            ),
+            Self::ERROR_FORM_FACTOR_UNAVAILABLE => Some(
+                "the specified form factor is supported, but the device is currently not available, e.g. not plugged in or powered off",
+            ),
+            Self::ERROR_API_LAYER_NOT_PRESENT => {
+                Some("a requested API layer is not present or could not be loaded")
+            }
+            Self::ERROR_CALL_ORDER_INVALID => {
+                Some("the call was made without having made a previously required call")
+            }
+            Self::ERROR_GRAPHICS_DEVICE_INVALID => Some(
+                "the given graphics device is not in a valid state. The graphics device could be lost or initialized without meeting graphics requirements",
+            ),
+            Self::ERROR_POSE_INVALID => {
+                Some("the supplied pose was invalid with respect to the requirements")
+            }
+            Self::ERROR_INDEX_OUT_OF_RANGE => {
+                Some("the supplied index was outside the range of valid indices")
+            }
+            Self::ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED => Some(
+                "the specified view configuration type is not supported by the runtime or platform",
+            ),
+            Self::ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED => Some(
+                "the specified environment blend mode is not supported by the runtime or platform",
+            ),
+            Self::ERROR_NAME_DUPLICATED => {
+                Some("the name provided was a duplicate of an already-existing resource")
+            }
+            Self::ERROR_NAME_INVALID => Some("the name provided was invalid"),
+            Self::ERROR_ACTIONSET_NOT_ATTACHED => {
+                Some("a referenced action set is not attached to the session")
+            }
+            Self::ERROR_ACTIONSETS_ALREADY_ATTACHED => {
+                Some("the session already has attached action sets")
+            }
+            Self::ERROR_LOCALIZED_NAME_DUPLICATED => {
+                Some("the localized name provided was a duplicate of an already-existing resource")
+            }
+            Self::ERROR_LOCALIZED_NAME_INVALID => Some("the localized name provided was invalid"),
+            Self::ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some(
+                "the xrGetGraphicsRequirements* call was not made before calling xrCreateSession",
+            ),
+            Self::ERROR_RUNTIME_UNAVAILABLE => {
+                Some("the loader was unable to find or load a runtime")
+            }
+            Self::ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED => Some(
+                "one or more of the extensions being enabled has dependency on extensions that are not enabled",
+            ),
+            Self::ERROR_PERMISSION_INSUFFICIENT => Some(
+                "insufficient permissions. This error is included for use by vendor extensions. The precise definition of `XR_ERROR_PERMISSION_INSUFFICIENT` and actions possible by the developer or user to resolve it can vary by platform, extension or function. The developer should refer to the documentation of the function that returned the error code and extension it was defined",
+            ),
+            Self::ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR => {
+                Some("xrSetAndroidApplicationThreadKHR failed as thread id is invalid")
+            }
+            Self::ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR => Some(
+                "xrSetAndroidApplicationThreadKHR failed setting the thread attributes/priority",
+            ),
+            Self::ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT => {
+                Some("spatial anchor could not be created at that location")
+            }
+            Self::ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT => {
+                Some("the secondary view configuration was not enabled when creating the session")
+            }
+            Self::ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT => {
+                Some("the controller model key is invalid")
+            }
+            Self::ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT => {
+                Some("the reprojection mode is not supported")
+            }
+            Self::ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT => {
+                Some("compute new scene not completed")
+            }
+            Self::ERROR_SCENE_COMPONENT_ID_INVALID_MSFT => Some("scene component id invalid"),
+            Self::ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT => Some("scene component type mismatch"),
+            Self::ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT => Some("scene mesh buffer id invalid"),
+            Self::ERROR_SCENE_COMPUTE_FEATURE_INCOMPATIBLE_MSFT => {
+                Some("scene compute feature incompatible")
+            }
+            Self::ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT => {
+                Some("scene compute consistency mismatch")
+            }
+            Self::ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB => {
+                Some("the display refresh rate is not supported by the platform")
+            }
+            Self::ERROR_COLOR_SPACE_UNSUPPORTED_FB => {
+                Some("the color space is not supported by the runtime")
+            }
+            Self::ERROR_SPACE_COMPONENT_NOT_SUPPORTED_FB => {
+                Some("the component type is not supported for this space")
+            }
+            Self::ERROR_SPACE_COMPONENT_NOT_ENABLED_FB => {
+                Some("the required component is not enabled for this space")
+            }
+            Self::ERROR_SPACE_COMPONENT_STATUS_PENDING_FB => {
+                Some("a request to set the component's status is currently pending")
+            }
+            Self::ERROR_SPACE_COMPONENT_STATUS_ALREADY_SET_FB => {
+                Some("the component is already set to the requested value")
+            }
+            Self::ERROR_UNEXPECTED_STATE_PASSTHROUGH_FB => {
+                Some("the object state is unexpected for the issued command")
+            }
+            Self::ERROR_FEATURE_ALREADY_CREATED_PASSTHROUGH_FB => Some(
+                "trying to create an MR feature when one was already created and only one instance is allowed",
+            ),
+            Self::ERROR_FEATURE_REQUIRED_PASSTHROUGH_FB => {
+                Some("requested functionality requires a feature to be created first")
+            }
+            Self::ERROR_NOT_PERMITTED_PASSTHROUGH_FB => Some(
+                "requested functionality is not permitted - application is not allowed to perform the requested operation",
+            ),
+            Self::ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB => {
+                Some("there were insufficient resources available to perform an operation")
+            }
+            Self::ERROR_UNKNOWN_PASSTHROUGH_FB => {
+                Some("unknown Passthrough error (no further details provided)")
+            }
+            Self::ERROR_RENDER_MODEL_KEY_INVALID_FB => Some("the model key is invalid"),
+            Self::RENDER_MODEL_UNAVAILABLE_FB => Some("the model is unavailable"),
+            Self::ERROR_MARKER_NOT_TRACKED_VARJO => {
+                Some("marker tracking is disabled or the specified marker is not currently tracked")
+            }
+            Self::ERROR_MARKER_ID_INVALID_VARJO => Some("the specified marker ID is not valid"),
+            Self::ERROR_MARKER_DETECTOR_PERMISSION_DENIED_ML => {
+                Some("the com.magicleap.permission.MARKER_TRACKING permission was denied")
+            }
+            Self::ERROR_MARKER_DETECTOR_LOCATE_FAILED_ML => {
+                Some("the specified marker could not be located spatially")
+            }
+            Self::ERROR_MARKER_DETECTOR_INVALID_DATA_QUERY_ML => {
+                Some("the marker queried does not contain data of the requested type")
+            }
+            Self::ERROR_MARKER_DETECTOR_INVALID_CREATE_INFO_ML => Some(
+                "createInfo contains mutually exclusive parameters, such as setting XR_MARKER_DETECTOR_CORNER_REFINE_METHOD_APRIL_TAG_ML with XR_MARKER_TYPE_ARUCO_ML",
+            ),
+            Self::ERROR_MARKER_INVALID_ML => {
+                Some("the marker id passed to the function was invalid")
+            }
+            Self::ERROR_LOCALIZATION_MAP_INCOMPATIBLE_ML => Some(
+                "the localization map being imported is not compatible with current OS or mode",
+            ),
+            Self::ERROR_LOCALIZATION_MAP_UNAVAILABLE_ML => {
+                Some("the localization map requested is not available")
+            }
+            Self::ERROR_LOCALIZATION_MAP_FAIL_ML => {
+                Some("the map localization service failed to fulfill the request, retry later")
+            }
+            Self::ERROR_LOCALIZATION_MAP_IMPORT_EXPORT_PERMISSION_DENIED_ML => {
+                Some("the com.magicleap.permission.SPACE_IMPORT_EXPORT permission was denied")
+            }
+            Self::ERROR_LOCALIZATION_MAP_PERMISSION_DENIED_ML => {
+                Some("the com.magicleap.permission.SPACE_MANAGER permission was denied")
+            }
+            Self::ERROR_LOCALIZATION_MAP_ALREADY_EXISTS_ML => {
+                Some("the map being imported already exists in the system")
+            }
+            Self::ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML => {
+                Some("the map localization service cannot export cloud based maps")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => Some(
+                "a spatial anchor was not found associated with the spatial anchor name provided",
+            ),
+            Self::ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT => {
+                Some("the spatial anchor name provided was not valid")
+            }
+            Self::SCENE_MARKER_DATA_NOT_STRING_MSFT => Some("marker does not encode a string"),
+            Self::ERROR_SPACE_MAPPING_INSUFFICIENT_FB => {
+                Some("anchor import from cloud or export from device failed")
+            }
+            Self::ERROR_SPACE_LOCALIZATION_FAILED_FB => Some(
+                "anchors were downloaded from the cloud but failed to be imported/aligned on the device",
+            ),
+            Self::ERROR_SPACE_NETWORK_TIMEOUT_FB => {
+                Some("timeout occurred while waiting for network request to complete")
+            }
+            Self::ERROR_SPACE_NETWORK_REQUEST_FAILED_FB => Some("the network request failed"),
+            Self::ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB => {
+                Some("cloud storage is required for this operation but is currently disabled")
+            }
+            Self::ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META => {
+                Some("the provided data buffer did not match the required size")
+            }
+            Self::ENVIRONMENT_DEPTH_NOT_AVAILABLE_META => {
+                Some("warning: The requested depth image is not yet available")
+            }
+            Self::ERROR_HINT_ALREADY_SET_QCOM => {
+                Some("tracking optimization hint is already set for the domain")
+            }
+            Self::ERROR_NOT_AN_ANCHOR_HTC => Some("the provided space is valid but not an anchor"),
+            Self::ERROR_SPACE_NOT_LOCATABLE_EXT => {
+                Some("the space passed to the function was not locatable")
+            }
+            Self::ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT => {
+                Some("the permission for this resource was not granted")
+            }
+            Self::ERROR_FUTURE_PENDING_EXT => {
+                Some("returned by completion function to indicate future is not ready")
+            }
+            Self::ERROR_FUTURE_INVALID_EXT => {
+                Some("returned by completion function to indicate future is not valid")
+            }
+            Self::ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR => {
+                Some("ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR")
+            }
+            Self::ERROR_PERMISSION_INSUFFICIENT_KHR => Some("ERROR_PERMISSION_INSUFFICIENT_KHR"),
+            _ => None,
+        };
         if let Some(reason) = reason {
             fmt.pad(reason)
         } else {

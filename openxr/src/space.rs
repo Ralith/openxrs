@@ -82,8 +82,11 @@ impl Space {
     #[inline]
     pub fn locate(&self, base: &Space, time: Time) -> Result<SpaceLocation> {
         // This assert allows this function to be safe.
-        assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
-                   "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
+        assert_eq!(
+            &*self.session as *const session::SessionInner,
+            &*base.session as *const session::SessionInner,
+            "`self` and `base` must have been created, allocated, or retrieved from the same `Session`"
+        );
         unsafe {
             let mut x = sys::SpaceLocation::out(ptr::null_mut());
             cvt((self.fp().locate_space)(
@@ -101,8 +104,11 @@ impl Space {
     #[inline]
     pub fn relate(&self, base: &Space, time: Time) -> Result<(SpaceLocation, SpaceVelocity)> {
         // This assert allows this function to be safe.
-        assert_eq!(&*self.session as *const session::SessionInner, &*base.session as *const session::SessionInner,
-                   "`self` and `base` must have been created, allocated, or retrieved from the same `Session`");
+        assert_eq!(
+            &*self.session as *const session::SessionInner,
+            &*base.session as *const session::SessionInner,
+            "`self` and `base` must have been created, allocated, or retrieved from the same `Session`"
+        );
         unsafe {
             let mut velocity = sys::SpaceVelocity::out(ptr::null_mut());
             let mut location = sys::SpaceLocation::out(&mut velocity as *mut _ as _);
@@ -127,8 +133,11 @@ impl Space {
         time: Time,
     ) -> Result<Option<HandJointLocations>> {
         // This assert allows this function to be safe.
-        assert_eq!(&*self.session as *const session::SessionInner, &*tracker.session as *const session::SessionInner,
-                   "`self` and `tracker` must have been created, allocated, or retrieved from the same `Session`");
+        assert_eq!(
+            &*self.session as *const session::SessionInner,
+            &*tracker.session as *const session::SessionInner,
+            "`self` and `tracker` must have been created, allocated, or retrieved from the same `Session`"
+        );
         unsafe {
             let locate_info = sys::HandJointsLocateInfoEXT {
                 ty: sys::HandJointsLocateInfoEXT::TYPE,
@@ -168,8 +177,11 @@ impl Space {
         time: Time,
     ) -> Result<Option<(HandJointLocations, HandJointVelocities)>> {
         // This assert allows this function to be safe.
-        assert_eq!(&*self.session as *const session::SessionInner, &*tracker.session as *const session::SessionInner,
-                   "`self` and `tracker` must have been created, allocated, or retrieved from the same `Session`");
+        assert_eq!(
+            &*self.session as *const session::SessionInner,
+            &*tracker.session as *const session::SessionInner,
+            "`self` and `tracker` must have been created, allocated, or retrieved from the same `Session`"
+        );
         unsafe {
             let locate_info = sys::HandJointsLocateInfoEXT {
                 ty: sys::HandJointsLocateInfoEXT::TYPE,
@@ -237,19 +249,21 @@ impl SpaceLocation {
     unsafe fn new(raw: &MaybeUninit<sys::SpaceLocation>) -> Self {
         // Applications *must* not read invalid parts of a pose, i.e. they may be uninitialized
         let ptr = raw.as_ptr();
-        let flags = *ptr::addr_of!((*ptr).location_flags);
-        Self {
-            location_flags: flags,
-            pose: Posef {
-                orientation: flags
-                    .contains(sys::SpaceLocationFlags::ORIENTATION_VALID)
-                    .then(|| *ptr::addr_of!((*ptr).pose.orientation))
-                    .unwrap_or_default(),
-                position: flags
-                    .contains(sys::SpaceLocationFlags::POSITION_VALID)
-                    .then(|| *ptr::addr_of!((*ptr).pose.position))
-                    .unwrap_or_default(),
-            },
+        unsafe {
+            let flags = *ptr::addr_of!((*ptr).location_flags);
+            Self {
+                location_flags: flags,
+                pose: Posef {
+                    orientation: flags
+                        .contains(sys::SpaceLocationFlags::ORIENTATION_VALID)
+                        .then(|| *ptr::addr_of!((*ptr).pose.orientation))
+                        .unwrap_or_default(),
+                    position: flags
+                        .contains(sys::SpaceLocationFlags::POSITION_VALID)
+                        .then(|| *ptr::addr_of!((*ptr).pose.position))
+                        .unwrap_or_default(),
+                },
+            }
         }
     }
 }
@@ -265,17 +279,19 @@ impl SpaceVelocity {
     unsafe fn new(raw: &MaybeUninit<sys::SpaceVelocity>) -> Self {
         // Applications *must* not read invalid velocities, i.e. they may be uninitialized
         let ptr = raw.as_ptr();
-        let flags = *ptr::addr_of!((*ptr).velocity_flags);
-        Self {
-            velocity_flags: flags,
-            linear_velocity: flags
-                .contains(sys::SpaceVelocityFlags::LINEAR_VALID)
-                .then(|| *ptr::addr_of!((*ptr).linear_velocity))
-                .unwrap_or_default(),
-            angular_velocity: flags
-                .contains(sys::SpaceVelocityFlags::ANGULAR_VALID)
-                .then(|| *ptr::addr_of!((*ptr).angular_velocity))
-                .unwrap_or_default(),
+        unsafe {
+            let flags = *ptr::addr_of!((*ptr).velocity_flags);
+            Self {
+                velocity_flags: flags,
+                linear_velocity: flags
+                    .contains(sys::SpaceVelocityFlags::LINEAR_VALID)
+                    .then(|| *ptr::addr_of!((*ptr).linear_velocity))
+                    .unwrap_or_default(),
+                angular_velocity: flags
+                    .contains(sys::SpaceVelocityFlags::ANGULAR_VALID)
+                    .then(|| *ptr::addr_of!((*ptr).angular_velocity))
+                    .unwrap_or_default(),
+            }
         }
     }
 }

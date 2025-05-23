@@ -30,15 +30,17 @@ impl Instance {
         handle: sys::Instance,
         exts: InstanceExtensions,
     ) -> Result<Self> {
-        Ok(Self {
-            inner: Arc::new(InstanceInner {
-                raw: raw::Instance::load(&entry, handle)?,
-                exts,
-                handle,
-                entry,
-                set_name_lock: Mutex::new(()),
-            }),
-        })
+        unsafe {
+            Ok(Self {
+                inner: Arc::new(InstanceInner {
+                    raw: raw::Instance::load(&entry, handle)?,
+                    exts,
+                    handle,
+                    entry,
+                    set_name_lock: Mutex::new(()),
+                }),
+            })
+        }
     }
 
     #[inline]
@@ -227,26 +229,28 @@ impl Instance {
         get_instance_proc_addr: VkGetInstanceProcAddr,
         create_info: *const VkInstanceCreateInfo,
     ) -> Result<Result<VkInstance, VkResult>> {
-        let mut instance = ptr::null();
-        let mut result = 0;
-        cvt((self.vulkan().create_vulkan_instance)(
-            self.as_raw(),
-            &sys::VulkanInstanceCreateInfoKHR {
-                ty: sys::VulkanInstanceCreateInfoKHR::TYPE,
-                next: ptr::null(),
-                system_id: system,
-                create_flags: sys::VulkanInstanceCreateFlagsKHR::EMPTY,
-                pfn_get_instance_proc_addr: Some(get_instance_proc_addr),
-                vulkan_create_info: create_info,
-                vulkan_allocator: ptr::null(),
-            },
-            &mut instance,
-            &mut result,
-        ))?;
-        if result < 0 {
-            return Ok(Err(result));
+        unsafe {
+            let mut instance = ptr::null();
+            let mut result = 0;
+            cvt((self.vulkan().create_vulkan_instance)(
+                self.as_raw(),
+                &sys::VulkanInstanceCreateInfoKHR {
+                    ty: sys::VulkanInstanceCreateInfoKHR::TYPE,
+                    next: ptr::null(),
+                    system_id: system,
+                    create_flags: sys::VulkanInstanceCreateFlagsKHR::EMPTY,
+                    pfn_get_instance_proc_addr: Some(get_instance_proc_addr),
+                    vulkan_create_info: create_info,
+                    vulkan_allocator: ptr::null(),
+                },
+                &mut instance,
+                &mut result,
+            ))?;
+            if result < 0 {
+                return Ok(Err(result));
+            }
+            Ok(Ok(instance))
         }
-        Ok(Ok(instance))
     }
 
     /// Identify the Vulkan instance extensions required by a system
@@ -302,27 +306,29 @@ impl Instance {
         system: SystemId,
         vulkan_instance: VkInstance,
     ) -> Result<VkPhysicalDevice> {
-        let mut out = ptr::null();
-        if self.exts().khr_vulkan_enable2.is_some() {
-            cvt((self.vulkan().get_vulkan_graphics_device2)(
-                self.as_raw(),
-                &sys::VulkanGraphicsDeviceGetInfoKHR {
-                    ty: sys::VulkanGraphicsDeviceGetInfoKHR::TYPE,
-                    next: ptr::null(),
-                    system_id: system,
+        unsafe {
+            let mut out = ptr::null();
+            if self.exts().khr_vulkan_enable2.is_some() {
+                cvt((self.vulkan().get_vulkan_graphics_device2)(
+                    self.as_raw(),
+                    &sys::VulkanGraphicsDeviceGetInfoKHR {
+                        ty: sys::VulkanGraphicsDeviceGetInfoKHR::TYPE,
+                        next: ptr::null(),
+                        system_id: system,
+                        vulkan_instance,
+                    },
+                    &mut out,
+                ))?;
+            } else {
+                cvt((self.vulkan_legacy().get_vulkan_graphics_device)(
+                    self.as_raw(),
+                    system,
                     vulkan_instance,
-                },
-                &mut out,
-            ))?;
-        } else {
-            cvt((self.vulkan_legacy().get_vulkan_graphics_device)(
-                self.as_raw(),
-                system,
-                vulkan_instance,
-                &mut out,
-            ))?;
+                    &mut out,
+                ))?;
+            }
+            Ok(out)
         }
-        Ok(out)
     }
 
     /// Get a suitable [`VkDevice`] for use with a particular `system`
@@ -342,27 +348,29 @@ impl Instance {
         physical_device: VkPhysicalDevice,
         create_info: *const VkDeviceCreateInfo,
     ) -> Result<Result<VkDevice, VkResult>> {
-        let mut device = ptr::null();
-        let mut result = 0;
-        cvt((self.vulkan().create_vulkan_device)(
-            self.as_raw(),
-            &sys::VulkanDeviceCreateInfoKHR {
-                ty: sys::VulkanDeviceCreateInfoKHR::TYPE,
-                next: ptr::null(),
-                system_id: system,
-                create_flags: sys::VulkanDeviceCreateFlagsKHR::EMPTY,
-                pfn_get_instance_proc_addr: Some(get_instance_proc_addr),
-                vulkan_physical_device: physical_device,
-                vulkan_create_info: create_info,
-                vulkan_allocator: ptr::null(),
-            },
-            &mut device,
-            &mut result,
-        ))?;
-        if result < 0 {
-            return Ok(Err(result));
+        unsafe {
+            let mut device = ptr::null();
+            let mut result = 0;
+            cvt((self.vulkan().create_vulkan_device)(
+                self.as_raw(),
+                &sys::VulkanDeviceCreateInfoKHR {
+                    ty: sys::VulkanDeviceCreateInfoKHR::TYPE,
+                    next: ptr::null(),
+                    system_id: system,
+                    create_flags: sys::VulkanDeviceCreateFlagsKHR::EMPTY,
+                    pfn_get_instance_proc_addr: Some(get_instance_proc_addr),
+                    vulkan_physical_device: physical_device,
+                    vulkan_create_info: create_info,
+                    vulkan_allocator: ptr::null(),
+                },
+                &mut device,
+                &mut result,
+            ))?;
+            if result < 0 {
+                return Ok(Err(result));
+            }
+            Ok(Ok(device))
         }
-        Ok(Ok(device))
     }
 
     /// Query graphics API version requirements
@@ -394,8 +402,10 @@ impl Instance {
         system: SystemId,
         info: &G::SessionCreateInfo,
     ) -> Result<(Session<G>, FrameWaiter, FrameStream<G>)> {
-        let handle = G::create_session(self, system, info)?;
-        Ok(Session::from_raw(self.clone(), handle, Box::new(())))
+        unsafe {
+            let handle = G::create_session(self, system, info)?;
+            Ok(Session::from_raw(self.clone(), handle, Box::new(())))
+        }
     }
 
     /// Refer to [`Instance::create_session()`]. The extra `drop_guard` argument is dropped after
@@ -413,8 +423,10 @@ impl Instance {
         info: &G::SessionCreateInfo,
         drop_guard: DropGuard,
     ) -> Result<(Session<G>, FrameWaiter, FrameStream<G>)> {
-        let handle = G::create_session(self, system, info)?;
-        Ok(Session::from_raw(self.clone(), handle, drop_guard))
+        unsafe {
+            let handle = G::create_session(self, system, info)?;
+            Ok(Session::from_raw(self.clone(), handle, drop_guard))
+        }
     }
 
     /// Get the next event, if available
@@ -567,7 +579,7 @@ impl Instance {
     #[inline]
     #[cfg(windows)]
     pub fn now(&self) -> Result<Time> {
-        extern "system" {
+        unsafe extern "system" {
             fn QueryPerformanceCounter(lpperformancecount: *mut i64) -> i32;
         }
 
