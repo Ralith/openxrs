@@ -1309,7 +1309,7 @@ impl Parser {
             #(#ext_consts)*
 
             #[cfg(feature = "linked")]
-            extern "system" {
+            unsafe extern "system" {
                 #(#protos)*
             }
         }
