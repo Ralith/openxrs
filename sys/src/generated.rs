@@ -13703,7 +13703,7 @@ pub const HTCX_vive_tracker_interaction_SPEC_VERSION: u32 = 3u32;
 pub const HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HTCX_vive_tracker_interaction\0";
 #[cfg(feature = "linked")]
-extern "system" {
+unsafe extern "system" {
     #[link_name = "xrNegotiateLoaderRuntimeInterface"]
     pub fn negotiate_loader_runtime_interface(
         loader_info: *const NegotiateLoaderInfo,
