@@ -283,15 +283,15 @@ impl Parser {
                 } => match &name.local_name[..] {
                     "command" => {
                         let cmd = attr(&attributes, "name").unwrap();
-                        if let Some(ext_name) = ext_name {
-                            if let Some(command) = self.commands.get_mut(cmd) {
-                                command.extension = Some(ext_name.clone());
-                            }
+                        if let Some(ext_name) = ext_name
+                            && let Some(command) = self.commands.get_mut(cmd)
+                        {
+                            command.extension = Some(ext_name.clone());
                         }
-                        if let Some(feature_name) = feature_name {
-                            if let Some(command) = self.commands.get_mut(cmd) {
-                                command.feature = Some(feature_name.clone());
-                            }
+                        if let Some(feature_name) = feature_name
+                            && let Some(command) = self.commands.get_mut(cmd)
+                        {
+                            command.feature = Some(feature_name.clone());
                         }
                         commands.push(cmd.into());
                         self.finish_element();
@@ -595,10 +595,10 @@ impl Parser {
                 _ => {}
             }
         }
-        if let (Some(name), Some(val)) = (&define_name, &define_val) {
-            if let Ok(val) = val.parse::<usize>() {
-                self.api_constants.push((name.into(), val))
-            }
+        if let (Some(name), Some(val)) = (&define_name, &define_val)
+            && let Ok(val) = val.parse::<usize>()
+        {
+            self.api_constants.push((name.into(), val))
         }
         if define_name.as_ref().map(|x| &x[..]) == Some("XR_CURRENT_API_VERSION") {
             let version = define_val.unwrap();
@@ -791,10 +791,10 @@ impl Parser {
     fn parse_enum_values(&mut self, attrs: &[OwnedAttribute]) {
         let name = attr(attrs, "name").unwrap();
         let ty = attr(attrs, "type");
-        if let Some(comment) = attr(attrs, "comment").and_then(tidy_comment) {
-            if let Some(item) = self.enums.get_mut(name) {
-                item.comment = Some(comment);
-            }
+        if let Some(comment) = attr(attrs, "comment").and_then(tidy_comment)
+            && let Some(item) = self.enums.get_mut(name)
+        {
+            item.comment = Some(comment);
         }
 
         match ty {

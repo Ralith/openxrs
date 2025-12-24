@@ -254,14 +254,16 @@ impl SpaceLocation {
             Self {
                 location_flags: flags,
                 pose: Posef {
-                    orientation: flags
-                        .contains(sys::SpaceLocationFlags::ORIENTATION_VALID)
-                        .then(|| *ptr::addr_of!((*ptr).pose.orientation))
-                        .unwrap_or_default(),
-                    position: flags
-                        .contains(sys::SpaceLocationFlags::POSITION_VALID)
-                        .then(|| *ptr::addr_of!((*ptr).pose.position))
-                        .unwrap_or_default(),
+                    orientation: if flags.contains(sys::SpaceLocationFlags::ORIENTATION_VALID) {
+                        *ptr::addr_of!((*ptr).pose.orientation)
+                    } else {
+                        Default::default()
+                    },
+                    position: if flags.contains(sys::SpaceLocationFlags::POSITION_VALID) {
+                        *ptr::addr_of!((*ptr).pose.position)
+                    } else {
+                        Default::default()
+                    },
                 },
             }
         }
@@ -283,14 +285,16 @@ impl SpaceVelocity {
             let flags = *ptr::addr_of!((*ptr).velocity_flags);
             Self {
                 velocity_flags: flags,
-                linear_velocity: flags
-                    .contains(sys::SpaceVelocityFlags::LINEAR_VALID)
-                    .then(|| *ptr::addr_of!((*ptr).linear_velocity))
-                    .unwrap_or_default(),
-                angular_velocity: flags
-                    .contains(sys::SpaceVelocityFlags::ANGULAR_VALID)
-                    .then(|| *ptr::addr_of!((*ptr).angular_velocity))
-                    .unwrap_or_default(),
+                linear_velocity: if flags.contains(sys::SpaceVelocityFlags::LINEAR_VALID) {
+                    *ptr::addr_of!((*ptr).linear_velocity)
+                } else {
+                    Default::default()
+                },
+                angular_velocity: if flags.contains(sys::SpaceVelocityFlags::ANGULAR_VALID) {
+                    *ptr::addr_of!((*ptr).angular_velocity)
+                } else {
+                    Default::default()
+                },
             }
         }
     }
