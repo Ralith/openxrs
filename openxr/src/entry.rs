@@ -311,7 +311,8 @@ impl Entry {
 
     /// Determine the set of extensions supported by a given OpenXR API layer
     pub fn enumerate_layer_extensions(&self, api_layers: &str) -> Result<ExtensionSet> {
-        let c_str = CString::new(api_layers).map_err(|_| sys::Result::ERROR_API_LAYER_NOT_PRESENT)?;
+        let c_str =
+            CString::new(api_layers).map_err(|_| sys::Result::ERROR_API_LAYER_NOT_PRESENT)?;
         unsafe {
             let exts = get_arr_init(
                 sys::ExtensionProperties::out(ptr::null_mut()),

@@ -612,14 +612,16 @@ impl View {
             let ptr = raw.as_ptr();
             Self {
                 pose: Posef {
-                    orientation: flags
-                        .contains(sys::ViewStateFlags::ORIENTATION_VALID)
-                        .then(|| *ptr::addr_of!((*ptr).pose.orientation))
-                        .unwrap_or_default(),
-                    position: flags
-                        .contains(sys::ViewStateFlags::POSITION_VALID)
-                        .then(|| *ptr::addr_of!((*ptr).pose.position))
-                        .unwrap_or_default(),
+                    orientation: if flags.contains(sys::ViewStateFlags::ORIENTATION_VALID) {
+                        *ptr::addr_of!((*ptr).pose.orientation)
+                    } else {
+                        Default::default()
+                    },
+                    position: if flags.contains(sys::ViewStateFlags::POSITION_VALID) {
+                        *ptr::addr_of!((*ptr).pose.position)
+                    } else {
+                        Default::default()
+                    },
                 },
                 fov: *ptr::addr_of!((*ptr).fov),
             }
