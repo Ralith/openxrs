@@ -5859,7 +5859,7 @@ pub struct NegotiateLoaderInfo {
     pub max_api_version: Version,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone)]
 #[doc = "See [XrNegotiateApiLayerRequest](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrNegotiateApiLayerRequest)"]
 pub struct NegotiateApiLayerRequest {
     pub struct_type: LoaderInterfaceStructs,
@@ -5871,7 +5871,7 @@ pub struct NegotiateApiLayerRequest {
     pub create_api_layer_instance: Option<pfn::CreateApiLayerInstance>,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone)]
 #[doc = "See [XrNegotiateRuntimeRequest](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrNegotiateRuntimeRequest)"]
 pub struct NegotiateRuntimeRequest {
     pub struct_type: LoaderInterfaceStructs,

@@ -1729,7 +1729,9 @@ impl Parser {
         let mut out = StructMeta::default();
         for member in &s.members {
             out.has_unprintable |= member.ty.starts_with("PFN") || member.ty == "LUID";
-            out.has_pointer |= member.ptr_depth != 0 || self.handles.contains(&member.ty);
+            out.has_pointer |= member.ptr_depth != 0
+                || self.handles.contains(&member.ty)
+                || member.ty.starts_with("PFN");
             out.has_graphics |= member.ty == "XrSession" || member.ty == "XrSwapchain";
             out.has_array |= member.static_array_len.is_some();
             out.has_non_default |= member.ty == "XrTime";
