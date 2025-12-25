@@ -7,7 +7,7 @@ version = "0.20.0"
 authors = ["Benjamin Saunders <ben.e.saunders@gmail.com>"]
 categories = ["api-bindings", "rendering"]
 keywords = ["vr"]
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 edition = "2024"
 
 [badges]
