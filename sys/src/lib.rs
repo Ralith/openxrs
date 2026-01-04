@@ -225,8 +225,6 @@ impl Posef {
     };
 }
 
-pub const HAND_JOINT_COUNT_EXT: u32 = 26;
-
 pub use generated::*;
 
 impl<T> std::ops::Index<HandJointEXT> for [T] {
@@ -251,7 +249,6 @@ pub struct MLCoordinateFrameUID {
 
 // Hacky constants originating from enums
 pub const EYE_POSITION_COUNT_FB: usize = 2;
-pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992;
 
 pub type SpaceUserIdFB = u64;
 pub type FutureEXT = u64;
