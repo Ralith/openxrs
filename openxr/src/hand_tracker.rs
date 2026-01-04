@@ -8,7 +8,7 @@ pub use sys::HandJointEXT as HandJoint;
 pub use sys::HandJointLocationEXT as HandJointLocation;
 pub use sys::HandJointVelocityEXT as HandJointVelocity;
 
-pub const HAND_JOINT_COUNT: usize = sys::HAND_JOINT_COUNT_EXT as usize;
+pub const HAND_JOINT_COUNT: usize = sys::HAND_JOINT_COUNT_EXT;
 
 pub struct HandTracker {
     pub(crate) session: Arc<session::SessionInner>,

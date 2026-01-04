@@ -73,12 +73,12 @@ pub const NULL_FUTURE_EXT: usize = 0usize;
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct LoaderInterfaceStructs(i32);
 impl LoaderInterfaceStructs {
-    pub const NINTIALIZED: LoaderInterfaceStructs = Self(0i32);
-    pub const OADER_INFO: LoaderInterfaceStructs = Self(1i32);
-    pub const PI_LAYER_REQUEST: LoaderInterfaceStructs = Self(2i32);
-    pub const UNTIME_REQUEST: LoaderInterfaceStructs = Self(3i32);
-    pub const PI_LAYER_CREATE_INFO: LoaderInterfaceStructs = Self(4i32);
-    pub const PI_LAYER_NEXT_INFO: LoaderInterfaceStructs = Self(5i32);
+    pub const UNINTIALIZED: LoaderInterfaceStructs = Self(0i32);
+    pub const LOADER_INFO: LoaderInterfaceStructs = Self(1i32);
+    pub const API_LAYER_REQUEST: LoaderInterfaceStructs = Self(2i32);
+    pub const RUNTIME_REQUEST: LoaderInterfaceStructs = Self(3i32);
+    pub const API_LAYER_CREATE_INFO: LoaderInterfaceStructs = Self(4i32);
+    pub const API_LAYER_NEXT_INFO: LoaderInterfaceStructs = Self(5i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -89,12 +89,12 @@ impl LoaderInterfaceStructs {
 impl fmt::Debug for LoaderInterfaceStructs {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let name = match *self {
-            Self::NINTIALIZED => Some("NINTIALIZED"),
-            Self::OADER_INFO => Some("OADER_INFO"),
-            Self::PI_LAYER_REQUEST => Some("PI_LAYER_REQUEST"),
-            Self::UNTIME_REQUEST => Some("UNTIME_REQUEST"),
-            Self::PI_LAYER_CREATE_INFO => Some("PI_LAYER_CREATE_INFO"),
-            Self::PI_LAYER_NEXT_INFO => Some("PI_LAYER_NEXT_INFO"),
+            Self::UNINTIALIZED => Some("UNINTIALIZED"),
+            Self::LOADER_INFO => Some("LOADER_INFO"),
+            Self::API_LAYER_REQUEST => Some("API_LAYER_REQUEST"),
+            Self::RUNTIME_REQUEST => Some("RUNTIME_REQUEST"),
+            Self::API_LAYER_CREATE_INFO => Some("API_LAYER_CREATE_INFO"),
+            Self::API_LAYER_NEXT_INFO => Some("API_LAYER_NEXT_INFO"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)

@@ -2284,6 +2284,7 @@ fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
         "XrResult" => "XR_".len(),
         "XrMarkerArucoDict" => "XR_MARKER_ARUCO_".len(),
         "XrMarkerAprilTagDict" => "XR_MARKER_APRIL_TAG_".len(),
+        "XrLoaderInterfaceStructs" => "XR_LOADER_INTERFACE_STRUCT_".len(),
         _ => ty.to_shouty_snake_case().len() + 1,
     };
     let end = if !ext.is_empty() {
