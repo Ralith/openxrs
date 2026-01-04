@@ -5,6 +5,7 @@
     clippy::missing_transmute_annotations
 )]
 use crate::*;
+use std::ffi::{CStr, CString};
 use std::iter::FromIterator;
 use std::mem::MaybeUninit;
 pub use sys::platform::{
@@ -232,494 +233,648 @@ pub struct ExtensionSet {
     pub mndx_force_feedback_curl: bool,
     pub htcx_vive_tracker_interaction: bool,
     #[doc = r" Extensions unknown to the high-level bindings"]
-    pub other: Vec<Vec<u8>>,
+    pub other: Vec<CString>,
 }
 #[doc = r" Create a ExtensionSet from a list of nul-terminated extension names"]
-impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
+impl<'a> FromIterator<&'a CStr> for ExtensionSet {
     fn from_iter<I>(iter: I) -> Self
     where
-        I: IntoIterator<Item = &'a [u8]>,
+        I: IntoIterator<Item = &'a CStr>,
     {
         let mut out = Self::default();
         for name in iter {
-            match name {
-                raw::DigitalLensControlALMALENCE::NAME => {
+            if name == raw::DigitalLensControlALMALENCE::NAME {
+                {
                     out.almalence_digital_lens_control = true;
                 }
-                raw::ControllerInteractionBD::NAME => {
+            } else if name == raw::ControllerInteractionBD::NAME {
+                {
                     out.bd_controller_interaction = true;
                 }
-                raw::ViewConfigurationFovEPIC::NAME => {
+            } else if name == raw::ViewConfigurationFovEPIC::NAME {
+                {
                     out.epic_view_configuration_fov = true;
                 }
-                raw::PerformanceSettingsEXT::NAME => {
+            } else if name == raw::PerformanceSettingsEXT::NAME {
+                {
                     out.ext_performance_settings = true;
                 }
-                raw::ThermalQueryEXT::NAME => {
+            } else if name == raw::ThermalQueryEXT::NAME {
+                {
                     out.ext_thermal_query = true;
                 }
-                raw::DebugUtilsEXT::NAME => {
+            } else if name == raw::DebugUtilsEXT::NAME {
+                {
                     out.ext_debug_utils = true;
                 }
-                raw::EyeGazeInteractionEXT::NAME => {
+            } else if name == raw::EyeGazeInteractionEXT::NAME {
+                {
                     out.ext_eye_gaze_interaction = true;
                 }
-                raw::ViewConfigurationDepthRangeEXT::NAME => {
+            } else if name == raw::ViewConfigurationDepthRangeEXT::NAME {
+                {
                     out.ext_view_configuration_depth_range = true;
                 }
-                raw::ConformanceAutomationEXT::NAME => {
+            } else if name == raw::ConformanceAutomationEXT::NAME {
+                {
                     out.ext_conformance_automation = true;
                 }
-                raw::HandTrackingEXT::NAME => {
+            } else if name == raw::HandTrackingEXT::NAME {
+                {
                     out.ext_hand_tracking = true;
                 }
+            } else if name == raw::Win32AppcontainerCompatibleEXT::NAME {
                 #[cfg(windows)]
-                raw::Win32AppcontainerCompatibleEXT::NAME => {
+                {
                     out.ext_win32_appcontainer_compatible = true;
                 }
-                raw::DpadBindingEXT::NAME => {
+            } else if name == raw::DpadBindingEXT::NAME {
+                {
                     out.ext_dpad_binding = true;
                 }
-                raw::HandJointsMotionRangeEXT::NAME => {
+            } else if name == raw::HandJointsMotionRangeEXT::NAME {
+                {
                     out.ext_hand_joints_motion_range = true;
                 }
-                raw::SamsungOdysseyControllerEXT::NAME => {
+            } else if name == raw::SamsungOdysseyControllerEXT::NAME {
+                {
                     out.ext_samsung_odyssey_controller = true;
                 }
-                raw::HpMixedRealityControllerEXT::NAME => {
+            } else if name == raw::HpMixedRealityControllerEXT::NAME {
+                {
                     out.ext_hp_mixed_reality_controller = true;
                 }
-                raw::PalmPoseEXT::NAME => {
+            } else if name == raw::PalmPoseEXT::NAME {
+                {
                     out.ext_palm_pose = true;
                 }
-                raw::UuidEXT::NAME => {
+            } else if name == raw::UuidEXT::NAME {
+                {
                     out.ext_uuid = true;
                 }
-                raw::HandInteractionEXT::NAME => {
+            } else if name == raw::HandInteractionEXT::NAME {
+                {
                     out.ext_hand_interaction = true;
                 }
-                raw::ActiveActionSetPriorityEXT::NAME => {
+            } else if name == raw::ActiveActionSetPriorityEXT::NAME {
+                {
                     out.ext_active_action_set_priority = true;
                 }
-                raw::LocalFloorEXT::NAME => {
+            } else if name == raw::LocalFloorEXT::NAME {
+                {
                     out.ext_local_floor = true;
                 }
-                raw::HandTrackingDataSourceEXT::NAME => {
+            } else if name == raw::HandTrackingDataSourceEXT::NAME {
+                {
                     out.ext_hand_tracking_data_source = true;
                 }
-                raw::PlaneDetectionEXT::NAME => {
+            } else if name == raw::PlaneDetectionEXT::NAME {
+                {
                     out.ext_plane_detection = true;
                 }
-                raw::FutureEXT::NAME => {
+            } else if name == raw::FutureEXT::NAME {
+                {
                     out.ext_future = true;
                 }
-                raw::UserPresenceEXT::NAME => {
+            } else if name == raw::UserPresenceEXT::NAME {
+                {
                     out.ext_user_presence = true;
                 }
-                raw::CompositionLayerInvertedAlphaEXT::NAME => {
+            } else if name == raw::CompositionLayerInvertedAlphaEXT::NAME {
+                {
                     out.ext_composition_layer_inverted_alpha = true;
                 }
-                raw::CompositionLayerImageLayoutFB::NAME => {
+            } else if name == raw::CompositionLayerImageLayoutFB::NAME {
+                {
                     out.fb_composition_layer_image_layout = true;
                 }
-                raw::CompositionLayerAlphaBlendFB::NAME => {
+            } else if name == raw::CompositionLayerAlphaBlendFB::NAME {
+                {
                     out.fb_composition_layer_alpha_blend = true;
                 }
+            } else if name == raw::AndroidSurfaceSwapchainCreateFB::NAME {
                 #[cfg(target_os = "android")]
-                raw::AndroidSurfaceSwapchainCreateFB::NAME => {
+                {
                     out.fb_android_surface_swapchain_create = true;
                 }
-                raw::SwapchainUpdateStateFB::NAME => {
+            } else if name == raw::SwapchainUpdateStateFB::NAME {
+                {
                     out.fb_swapchain_update_state = true;
                 }
-                raw::CompositionLayerSecureContentFB::NAME => {
+            } else if name == raw::CompositionLayerSecureContentFB::NAME {
+                {
                     out.fb_composition_layer_secure_content = true;
                 }
-                raw::BodyTrackingFB::NAME => {
+            } else if name == raw::BodyTrackingFB::NAME {
+                {
                     out.fb_body_tracking = true;
                 }
-                raw::DisplayRefreshRateFB::NAME => {
+            } else if name == raw::DisplayRefreshRateFB::NAME {
+                {
                     out.fb_display_refresh_rate = true;
                 }
-                raw::ColorSpaceFB::NAME => {
+            } else if name == raw::ColorSpaceFB::NAME {
+                {
                     out.fb_color_space = true;
                 }
-                raw::HandTrackingMeshFB::NAME => {
+            } else if name == raw::HandTrackingMeshFB::NAME {
+                {
                     out.fb_hand_tracking_mesh = true;
                 }
-                raw::HandTrackingAimFB::NAME => {
+            } else if name == raw::HandTrackingAimFB::NAME {
+                {
                     out.fb_hand_tracking_aim = true;
                 }
-                raw::HandTrackingCapsulesFB::NAME => {
+            } else if name == raw::HandTrackingCapsulesFB::NAME {
+                {
                     out.fb_hand_tracking_capsules = true;
                 }
-                raw::SpatialEntityFB::NAME => {
+            } else if name == raw::SpatialEntityFB::NAME {
+                {
                     out.fb_spatial_entity = true;
                 }
-                raw::FoveationFB::NAME => {
+            } else if name == raw::FoveationFB::NAME {
+                {
                     out.fb_foveation = true;
                 }
-                raw::FoveationConfigurationFB::NAME => {
+            } else if name == raw::FoveationConfigurationFB::NAME {
+                {
                     out.fb_foveation_configuration = true;
                 }
-                raw::KeyboardTrackingFB::NAME => {
+            } else if name == raw::KeyboardTrackingFB::NAME {
+                {
                     out.fb_keyboard_tracking = true;
                 }
-                raw::TriangleMeshFB::NAME => {
+            } else if name == raw::TriangleMeshFB::NAME {
+                {
                     out.fb_triangle_mesh = true;
                 }
-                raw::PassthroughFB::NAME => {
+            } else if name == raw::PassthroughFB::NAME {
+                {
                     out.fb_passthrough = true;
                 }
-                raw::RenderModelFB::NAME => {
+            } else if name == raw::RenderModelFB::NAME {
+                {
                     out.fb_render_model = true;
                 }
-                raw::SpatialEntityQueryFB::NAME => {
+            } else if name == raw::SpatialEntityQueryFB::NAME {
+                {
                     out.fb_spatial_entity_query = true;
                 }
-                raw::SpatialEntityStorageFB::NAME => {
+            } else if name == raw::SpatialEntityStorageFB::NAME {
+                {
                     out.fb_spatial_entity_storage = true;
                 }
-                raw::FoveationVulkanFB::NAME => {
+            } else if name == raw::FoveationVulkanFB::NAME {
+                {
                     out.fb_foveation_vulkan = true;
                 }
+            } else if name == raw::SwapchainUpdateStateAndroidSurfaceFB::NAME {
                 #[cfg(target_os = "android")]
-                raw::SwapchainUpdateStateAndroidSurfaceFB::NAME => {
+                {
                     out.fb_swapchain_update_state_android_surface = true;
                 }
-                raw::SwapchainUpdateStateOpenglEsFB::NAME => {
+            } else if name == raw::SwapchainUpdateStateOpenglEsFB::NAME {
+                {
                     out.fb_swapchain_update_state_opengl_es = true;
                 }
-                raw::SwapchainUpdateStateVulkanFB::NAME => {
+            } else if name == raw::SwapchainUpdateStateVulkanFB::NAME {
+                {
                     out.fb_swapchain_update_state_vulkan = true;
                 }
-                raw::TouchControllerProFB::NAME => {
+            } else if name == raw::TouchControllerProFB::NAME {
+                {
                     out.fb_touch_controller_pro = true;
                 }
-                raw::SpatialEntitySharingFB::NAME => {
+            } else if name == raw::SpatialEntitySharingFB::NAME {
+                {
                     out.fb_spatial_entity_sharing = true;
                 }
-                raw::SpaceWarpFB::NAME => {
+            } else if name == raw::SpaceWarpFB::NAME {
+                {
                     out.fb_space_warp = true;
                 }
-                raw::HapticAmplitudeEnvelopeFB::NAME => {
+            } else if name == raw::HapticAmplitudeEnvelopeFB::NAME {
+                {
                     out.fb_haptic_amplitude_envelope = true;
                 }
-                raw::SceneFB::NAME => {
+            } else if name == raw::SceneFB::NAME {
+                {
                     out.fb_scene = true;
                 }
-                raw::SceneCaptureFB::NAME => {
+            } else if name == raw::SceneCaptureFB::NAME {
+                {
                     out.fb_scene_capture = true;
                 }
-                raw::SpatialEntityContainerFB::NAME => {
+            } else if name == raw::SpatialEntityContainerFB::NAME {
+                {
                     out.fb_spatial_entity_container = true;
                 }
-                raw::FaceTrackingFB::NAME => {
+            } else if name == raw::FaceTrackingFB::NAME {
+                {
                     out.fb_face_tracking = true;
                 }
-                raw::EyeTrackingSocialFB::NAME => {
+            } else if name == raw::EyeTrackingSocialFB::NAME {
+                {
                     out.fb_eye_tracking_social = true;
                 }
-                raw::PassthroughKeyboardHandsFB::NAME => {
+            } else if name == raw::PassthroughKeyboardHandsFB::NAME {
+                {
                     out.fb_passthrough_keyboard_hands = true;
                 }
-                raw::CompositionLayerSettingsFB::NAME => {
+            } else if name == raw::CompositionLayerSettingsFB::NAME {
+                {
                     out.fb_composition_layer_settings = true;
                 }
-                raw::TouchControllerProximityFB::NAME => {
+            } else if name == raw::TouchControllerProximityFB::NAME {
+                {
                     out.fb_touch_controller_proximity = true;
                 }
-                raw::HapticPcmFB::NAME => {
+            } else if name == raw::HapticPcmFB::NAME {
+                {
                     out.fb_haptic_pcm = true;
                 }
-                raw::CompositionLayerDepthTestFB::NAME => {
+            } else if name == raw::CompositionLayerDepthTestFB::NAME {
+                {
                     out.fb_composition_layer_depth_test = true;
                 }
-                raw::SpatialEntityStorageBatchFB::NAME => {
+            } else if name == raw::SpatialEntityStorageBatchFB::NAME {
+                {
                     out.fb_spatial_entity_storage_batch = true;
                 }
-                raw::SpatialEntityUserFB::NAME => {
+            } else if name == raw::SpatialEntityUserFB::NAME {
+                {
                     out.fb_spatial_entity_user = true;
                 }
-                raw::FaceTracking2FB::NAME => {
+            } else if name == raw::FaceTracking2FB::NAME {
+                {
                     out.fb_face_tracking2 = true;
                 }
-                raw::ViveCosmosControllerInteractionHTC::NAME => {
+            } else if name == raw::ViveCosmosControllerInteractionHTC::NAME {
+                {
                     out.htc_vive_cosmos_controller_interaction = true;
                 }
-                raw::FacialTrackingHTC::NAME => {
+            } else if name == raw::FacialTrackingHTC::NAME {
+                {
                     out.htc_facial_tracking = true;
                 }
-                raw::ViveFocus3ControllerInteractionHTC::NAME => {
+            } else if name == raw::ViveFocus3ControllerInteractionHTC::NAME {
+                {
                     out.htc_vive_focus3_controller_interaction = true;
                 }
-                raw::HandInteractionHTC::NAME => {
+            } else if name == raw::HandInteractionHTC::NAME {
+                {
                     out.htc_hand_interaction = true;
                 }
-                raw::ViveWristTrackerInteractionHTC::NAME => {
+            } else if name == raw::ViveWristTrackerInteractionHTC::NAME {
+                {
                     out.htc_vive_wrist_tracker_interaction = true;
                 }
-                raw::PassthroughHTC::NAME => {
+            } else if name == raw::PassthroughHTC::NAME {
+                {
                     out.htc_passthrough = true;
                 }
-                raw::FoveationHTC::NAME => {
+            } else if name == raw::FoveationHTC::NAME {
+                {
                     out.htc_foveation = true;
                 }
-                raw::AnchorHTC::NAME => {
+            } else if name == raw::AnchorHTC::NAME {
+                {
                     out.htc_anchor = true;
                 }
-                raw::ControllerInteractionHUAWEI::NAME => {
+            } else if name == raw::ControllerInteractionHUAWEI::NAME {
+                {
                     out.huawei_controller_interaction = true;
                 }
+            } else if name == raw::AndroidThreadSettingsKHR::NAME {
                 #[cfg(target_os = "android")]
-                raw::AndroidThreadSettingsKHR::NAME => {
+                {
                     out.khr_android_thread_settings = true;
                 }
+            } else if name == raw::AndroidSurfaceSwapchainKHR::NAME {
                 #[cfg(target_os = "android")]
-                raw::AndroidSurfaceSwapchainKHR::NAME => {
+                {
                     out.khr_android_surface_swapchain = true;
                 }
-                raw::CompositionLayerCubeKHR::NAME => {
+            } else if name == raw::CompositionLayerCubeKHR::NAME {
+                {
                     out.khr_composition_layer_cube = true;
                 }
+            } else if name == raw::AndroidCreateInstanceKHR::NAME {
                 #[cfg(target_os = "android")]
-                raw::AndroidCreateInstanceKHR::NAME => {
+                {
                     out.khr_android_create_instance = true;
                 }
-                raw::CompositionLayerDepthKHR::NAME => {
+            } else if name == raw::CompositionLayerDepthKHR::NAME {
+                {
                     out.khr_composition_layer_depth = true;
                 }
-                raw::VulkanSwapchainFormatListKHR::NAME => {
+            } else if name == raw::VulkanSwapchainFormatListKHR::NAME {
+                {
                     out.khr_vulkan_swapchain_format_list = true;
                 }
-                raw::CompositionLayerCylinderKHR::NAME => {
+            } else if name == raw::CompositionLayerCylinderKHR::NAME {
+                {
                     out.khr_composition_layer_cylinder = true;
                 }
-                raw::CompositionLayerEquirectKHR::NAME => {
+            } else if name == raw::CompositionLayerEquirectKHR::NAME {
+                {
                     out.khr_composition_layer_equirect = true;
                 }
-                raw::OpenglEnableKHR::NAME => {
+            } else if name == raw::OpenglEnableKHR::NAME {
+                {
                     out.khr_opengl_enable = true;
                 }
-                raw::OpenglEsEnableKHR::NAME => {
+            } else if name == raw::OpenglEsEnableKHR::NAME {
+                {
                     out.khr_opengl_es_enable = true;
                 }
-                raw::VulkanEnableKHR::NAME => {
+            } else if name == raw::VulkanEnableKHR::NAME {
+                {
                     out.khr_vulkan_enable = true;
                 }
+            } else if name == raw::D3d11EnableKHR::NAME {
                 #[cfg(windows)]
-                raw::D3d11EnableKHR::NAME => {
+                {
                     out.khr_d3d11_enable = true;
                 }
+            } else if name == raw::D3d12EnableKHR::NAME {
                 #[cfg(windows)]
-                raw::D3d12EnableKHR::NAME => {
+                {
                     out.khr_d3d12_enable = true;
                 }
+            } else if name == raw::MetalEnableKHR::NAME {
                 #[cfg(target_vendor = "apple")]
-                raw::MetalEnableKHR::NAME => {
+                {
                     out.khr_metal_enable = true;
                 }
-                raw::VisibilityMaskKHR::NAME => {
+            } else if name == raw::VisibilityMaskKHR::NAME {
+                {
                     out.khr_visibility_mask = true;
                 }
-                raw::CompositionLayerColorScaleBiasKHR::NAME => {
+            } else if name == raw::CompositionLayerColorScaleBiasKHR::NAME {
+                {
                     out.khr_composition_layer_color_scale_bias = true;
                 }
+            } else if name == raw::Win32ConvertPerformanceCounterTimeKHR::NAME {
                 #[cfg(windows)]
-                raw::Win32ConvertPerformanceCounterTimeKHR::NAME => {
+                {
                     out.khr_win32_convert_performance_counter_time = true;
                 }
-                raw::ConvertTimespecTimeKHR::NAME => {
+            } else if name == raw::ConvertTimespecTimeKHR::NAME {
+                {
                     out.khr_convert_timespec_time = true;
                 }
-                raw::LoaderInitKHR::NAME => {
+            } else if name == raw::LoaderInitKHR::NAME {
+                {
                     out.khr_loader_init = true;
                 }
+            } else if name == raw::LoaderInitAndroidKHR::NAME {
                 #[cfg(target_os = "android")]
-                raw::LoaderInitAndroidKHR::NAME => {
+                {
                     out.khr_loader_init_android = true;
                 }
-                raw::VulkanEnable2KHR::NAME => {
+            } else if name == raw::VulkanEnable2KHR::NAME {
+                {
                     out.khr_vulkan_enable2 = true;
                 }
-                raw::CompositionLayerEquirect2KHR::NAME => {
+            } else if name == raw::CompositionLayerEquirect2KHR::NAME {
+                {
                     out.khr_composition_layer_equirect2 = true;
                 }
-                raw::BindingModificationKHR::NAME => {
+            } else if name == raw::BindingModificationKHR::NAME {
+                {
                     out.khr_binding_modification = true;
                 }
-                raw::SwapchainUsageInputAttachmentBitKHR::NAME => {
+            } else if name == raw::SwapchainUsageInputAttachmentBitKHR::NAME {
+                {
                     out.khr_swapchain_usage_input_attachment_bit = true;
                 }
-                raw::LocateSpacesKHR::NAME => {
+            } else if name == raw::LocateSpacesKHR::NAME {
+                {
                     out.khr_locate_spaces = true;
                 }
-                raw::Maintenance1KHR::NAME => {
+            } else if name == raw::Maintenance1KHR::NAME {
+                {
                     out.khr_maintenance1 = true;
                 }
-                raw::FoveationEyeTrackedMETA::NAME => {
+            } else if name == raw::FoveationEyeTrackedMETA::NAME {
+                {
                     out.meta_foveation_eye_tracked = true;
                 }
-                raw::LocalDimmingMETA::NAME => {
+            } else if name == raw::LocalDimmingMETA::NAME {
+                {
                     out.meta_local_dimming = true;
                 }
-                raw::PassthroughPreferencesMETA::NAME => {
+            } else if name == raw::PassthroughPreferencesMETA::NAME {
+                {
                     out.meta_passthrough_preferences = true;
                 }
-                raw::VirtualKeyboardMETA::NAME => {
+            } else if name == raw::VirtualKeyboardMETA::NAME {
+                {
                     out.meta_virtual_keyboard = true;
                 }
-                raw::VulkanSwapchainCreateInfoMETA::NAME => {
+            } else if name == raw::VulkanSwapchainCreateInfoMETA::NAME {
+                {
                     out.meta_vulkan_swapchain_create_info = true;
                 }
-                raw::PerformanceMetricsMETA::NAME => {
+            } else if name == raw::PerformanceMetricsMETA::NAME {
+                {
                     out.meta_performance_metrics = true;
                 }
-                raw::HeadsetIdMETA::NAME => {
+            } else if name == raw::HeadsetIdMETA::NAME {
+                {
                     out.meta_headset_id = true;
                 }
-                raw::RecommendedLayerResolutionMETA::NAME => {
+            } else if name == raw::RecommendedLayerResolutionMETA::NAME {
+                {
                     out.meta_recommended_layer_resolution = true;
                 }
-                raw::PassthroughColorLutMETA::NAME => {
+            } else if name == raw::PassthroughColorLutMETA::NAME {
+                {
                     out.meta_passthrough_color_lut = true;
                 }
-                raw::SpatialEntityMeshMETA::NAME => {
+            } else if name == raw::SpatialEntityMeshMETA::NAME {
+                {
                     out.meta_spatial_entity_mesh = true;
                 }
-                raw::AutomaticLayerFilterMETA::NAME => {
+            } else if name == raw::AutomaticLayerFilterMETA::NAME {
+                {
                     out.meta_automatic_layer_filter = true;
                 }
-                raw::TouchControllerPlusMETA::NAME => {
+            } else if name == raw::TouchControllerPlusMETA::NAME {
+                {
                     out.meta_touch_controller_plus = true;
                 }
-                raw::EnvironmentDepthMETA::NAME => {
+            } else if name == raw::EnvironmentDepthMETA::NAME {
+                {
                     out.meta_environment_depth = true;
                 }
-                raw::Ml2ControllerInteractionML::NAME => {
+            } else if name == raw::Ml2ControllerInteractionML::NAME {
+                {
                     out.ml_ml2_controller_interaction = true;
                 }
-                raw::FrameEndInfoML::NAME => {
+            } else if name == raw::FrameEndInfoML::NAME {
+                {
                     out.ml_frame_end_info = true;
                 }
-                raw::GlobalDimmerML::NAME => {
+            } else if name == raw::GlobalDimmerML::NAME {
+                {
                     out.ml_global_dimmer = true;
                 }
-                raw::CompatML::NAME => {
+            } else if name == raw::CompatML::NAME {
+                {
                     out.ml_compat = true;
                 }
-                raw::MarkerUnderstandingML::NAME => {
+            } else if name == raw::MarkerUnderstandingML::NAME {
+                {
                     out.ml_marker_understanding = true;
                 }
-                raw::LocalizationMapML::NAME => {
+            } else if name == raw::LocalizationMapML::NAME {
+                {
                     out.ml_localization_map = true;
                 }
-                raw::UserCalibrationML::NAME => {
+            } else if name == raw::UserCalibrationML::NAME {
+                {
                     out.ml_user_calibration = true;
                 }
-                raw::HeadlessMND::NAME => {
+            } else if name == raw::HeadlessMND::NAME {
+                {
                     out.mnd_headless = true;
                 }
-                raw::SwapchainUsageInputAttachmentBitMND::NAME => {
+            } else if name == raw::SwapchainUsageInputAttachmentBitMND::NAME {
+                {
                     out.mnd_swapchain_usage_input_attachment_bit = true;
                 }
-                raw::UnboundedReferenceSpaceMSFT::NAME => {
+            } else if name == raw::UnboundedReferenceSpaceMSFT::NAME {
+                {
                     out.msft_unbounded_reference_space = true;
                 }
-                raw::SpatialAnchorMSFT::NAME => {
+            } else if name == raw::SpatialAnchorMSFT::NAME {
+                {
                     out.msft_spatial_anchor = true;
                 }
-                raw::SpatialGraphBridgeMSFT::NAME => {
+            } else if name == raw::SpatialGraphBridgeMSFT::NAME {
+                {
                     out.msft_spatial_graph_bridge = true;
                 }
-                raw::HandInteractionMSFT::NAME => {
+            } else if name == raw::HandInteractionMSFT::NAME {
+                {
                     out.msft_hand_interaction = true;
                 }
-                raw::HandTrackingMeshMSFT::NAME => {
+            } else if name == raw::HandTrackingMeshMSFT::NAME {
+                {
                     out.msft_hand_tracking_mesh = true;
                 }
-                raw::SecondaryViewConfigurationMSFT::NAME => {
+            } else if name == raw::SecondaryViewConfigurationMSFT::NAME {
+                {
                     out.msft_secondary_view_configuration = true;
                 }
-                raw::FirstPersonObserverMSFT::NAME => {
+            } else if name == raw::FirstPersonObserverMSFT::NAME {
+                {
                     out.msft_first_person_observer = true;
                 }
-                raw::ControllerModelMSFT::NAME => {
+            } else if name == raw::ControllerModelMSFT::NAME {
+                {
                     out.msft_controller_model = true;
                 }
+            } else if name == raw::PerceptionAnchorInteropMSFT::NAME {
                 #[cfg(windows)]
-                raw::PerceptionAnchorInteropMSFT::NAME => {
+                {
                     out.msft_perception_anchor_interop = true;
                 }
+            } else if name == raw::HolographicWindowAttachmentMSFT::NAME {
                 #[cfg(windows)]
-                raw::HolographicWindowAttachmentMSFT::NAME => {
+                {
                     out.msft_holographic_window_attachment = true;
                 }
-                raw::CompositionLayerReprojectionMSFT::NAME => {
+            } else if name == raw::CompositionLayerReprojectionMSFT::NAME {
+                {
                     out.msft_composition_layer_reprojection = true;
                 }
-                raw::SpatialAnchorPersistenceMSFT::NAME => {
+            } else if name == raw::SpatialAnchorPersistenceMSFT::NAME {
+                {
                     out.msft_spatial_anchor_persistence = true;
                 }
+            } else if name == raw::AndroidSessionStateEnableOCULUS::NAME {
                 #[cfg(target_os = "android")]
-                raw::AndroidSessionStateEnableOCULUS::NAME => {
+                {
                     out.oculus_android_session_state_enable = true;
                 }
-                raw::AudioDeviceGuidOCULUS::NAME => {
+            } else if name == raw::AudioDeviceGuidOCULUS::NAME {
+                {
                     out.oculus_audio_device_guid = true;
                 }
-                raw::ExternalCameraOCULUS::NAME => {
+            } else if name == raw::ExternalCameraOCULUS::NAME {
+                {
                     out.oculus_external_camera = true;
                 }
-                raw::ControllerInteractionOPPO::NAME => {
+            } else if name == raw::ControllerInteractionOPPO::NAME {
+                {
                     out.oppo_controller_interaction = true;
                 }
-                raw::TrackingOptimizationSettingsQCOM::NAME => {
+            } else if name == raw::TrackingOptimizationSettingsQCOM::NAME {
+                {
                     out.qcom_tracking_optimization_settings = true;
                 }
-                raw::HandTrackingForearmULTRALEAP::NAME => {
+            } else if name == raw::HandTrackingForearmULTRALEAP::NAME {
+                {
                     out.ultraleap_hand_tracking_forearm = true;
                 }
-                raw::AnalogThresholdVALVE::NAME => {
+            } else if name == raw::AnalogThresholdVALVE::NAME {
+                {
                     out.valve_analog_threshold = true;
                 }
-                raw::QuadViewsVARJO::NAME => {
+            } else if name == raw::QuadViewsVARJO::NAME {
+                {
                     out.varjo_quad_views = true;
                 }
-                raw::FoveatedRenderingVARJO::NAME => {
+            } else if name == raw::FoveatedRenderingVARJO::NAME {
+                {
                     out.varjo_foveated_rendering = true;
                 }
-                raw::CompositionLayerDepthTestVARJO::NAME => {
+            } else if name == raw::CompositionLayerDepthTestVARJO::NAME {
+                {
                     out.varjo_composition_layer_depth_test = true;
                 }
-                raw::EnvironmentDepthEstimationVARJO::NAME => {
+            } else if name == raw::EnvironmentDepthEstimationVARJO::NAME {
+                {
                     out.varjo_environment_depth_estimation = true;
                 }
-                raw::MarkerTrackingVARJO::NAME => {
+            } else if name == raw::MarkerTrackingVARJO::NAME {
+                {
                     out.varjo_marker_tracking = true;
                 }
-                raw::ViewOffsetVARJO::NAME => {
+            } else if name == raw::ViewOffsetVARJO::NAME {
+                {
                     out.varjo_view_offset = true;
                 }
-                raw::Xr4ControllerInteractionVARJO::NAME => {
+            } else if name == raw::Xr4ControllerInteractionVARJO::NAME {
+                {
                     out.varjo_xr4_controller_interaction = true;
                 }
-                raw::ControllerInteractionYVR::NAME => {
+            } else if name == raw::ControllerInteractionYVR::NAME {
+                {
                     out.yvr_controller_interaction = true;
                 }
-                raw::OverlayEXTX::NAME => {
+            } else if name == raw::OverlayEXTX::NAME {
+                {
                     out.extx_overlay = true;
                 }
-                raw::EglEnableMNDX::NAME => {
+            } else if name == raw::EglEnableMNDX::NAME {
+                {
                     out.mndx_egl_enable = true;
                 }
-                raw::ForceFeedbackCurlMNDX::NAME => {
+            } else if name == raw::ForceFeedbackCurlMNDX::NAME {
+                {
                     out.mndx_force_feedback_curl = true;
                 }
-                raw::ViveTrackerInteractionHTCX::NAME => {
+            } else if name == raw::ViveTrackerInteractionHTCX::NAME {
+                {
                     out.htcx_vive_tracker_interaction = true;
                 }
-                bytes => out.other.push(bytes.to_vec()),
+            } else {
+                out.other.push(name.into())
             }
         }
         out
@@ -987,7 +1142,7 @@ impl ExtensionSet {
                 .iter()
                 .collect::<std::collections::HashSet<_>>()
                 .difference(&other.other.iter().collect())
-                .map(|x| x.to_vec())
+                .map(|x| CString::clone(x))
                 .collect(),
         }
     }
@@ -1252,12 +1407,12 @@ impl ExtensionSet {
                 .iter()
                 .collect::<std::collections::HashSet<_>>()
                 .intersection(&other.other.iter().collect())
-                .map(|x| x.to_vec())
+                .map(|x| CString::clone(x))
                 .collect(),
         }
     }
     #[doc = r" Return names of supported extensions, as a `Vec` of nul terminated byte slices."]
-    pub fn names(&self) -> Vec<&[u8]> {
+    pub fn names(&self) -> Vec<&CStr> {
         let mut out = Vec::new();
         {
             if self.almalence_digital_lens_control {
@@ -2043,7 +2198,7 @@ impl ExtensionSet {
                 out.push(raw::ViveTrackerInteractionHTCX::NAME);
             }
         }
-        out.extend(self.other.iter().map(|x| x.as_slice()));
+        out.extend(self.other.iter().map(|x| &**x));
         out
     }
 }
@@ -3880,6 +4035,7 @@ impl<'a> UserPresenceChangedEXT<'a> {
 }
 pub mod raw {
     use crate::{Entry, Result};
+    use std::ffi::CStr;
     use std::mem;
     use sys::pfn;
     #[derive(Copy, Clone)]
@@ -4144,7 +4300,7 @@ pub mod raw {
     }
     impl DigitalLensControlALMALENCE {
         pub const VERSION: u32 = sys::ALMALENCE_digital_lens_control_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4167,13 +4323,13 @@ pub mod raw {
     pub struct ControllerInteractionBD {}
     impl ControllerInteractionBD {
         pub const VERSION: u32 = sys::BD_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::BD_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::BD_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ViewConfigurationFovEPIC {}
     impl ViewConfigurationFovEPIC {
         pub const VERSION: u32 = sys::EPIC_view_configuration_fov_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct PerformanceSettingsEXT {
@@ -4181,7 +4337,7 @@ pub mod raw {
     }
     impl PerformanceSettingsEXT {
         pub const VERSION: u32 = sys::EXT_performance_settings_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4206,7 +4362,7 @@ pub mod raw {
     }
     impl ThermalQueryEXT {
         pub const VERSION: u32 = sys::EXT_thermal_query_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_THERMAL_QUERY_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_THERMAL_QUERY_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4235,7 +4391,7 @@ pub mod raw {
     }
     impl DebugUtilsEXT {
         pub const VERSION: u32 = sys::EXT_debug_utils_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_DEBUG_UTILS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_DEBUG_UTILS_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4284,13 +4440,13 @@ pub mod raw {
     pub struct EyeGazeInteractionEXT {}
     impl EyeGazeInteractionEXT {
         pub const VERSION: u32 = sys::EXT_eye_gaze_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ViewConfigurationDepthRangeEXT {}
     impl ViewConfigurationDepthRangeEXT {
         pub const VERSION: u32 = sys::EXT_view_configuration_depth_range_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ConformanceAutomationEXT {
@@ -4302,7 +4458,7 @@ pub mod raw {
     }
     impl ConformanceAutomationEXT {
         pub const VERSION: u32 = sys::EXT_conformance_automation_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4341,7 +4497,7 @@ pub mod raw {
     }
     impl HandTrackingEXT {
         pub const VERSION: u32 = sys::EXT_hand_tracking_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_HAND_TRACKING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_HAND_TRACKING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4369,67 +4525,67 @@ pub mod raw {
     #[cfg(windows)]
     impl Win32AppcontainerCompatibleEXT {
         pub const VERSION: u32 = sys::EXT_win32_appcontainer_compatible_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct DpadBindingEXT {}
     impl DpadBindingEXT {
         pub const VERSION: u32 = sys::EXT_dpad_binding_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_DPAD_BINDING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_DPAD_BINDING_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HandJointsMotionRangeEXT {}
     impl HandJointsMotionRangeEXT {
         pub const VERSION: u32 = sys::EXT_hand_joints_motion_range_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SamsungOdysseyControllerEXT {}
     impl SamsungOdysseyControllerEXT {
         pub const VERSION: u32 = sys::EXT_samsung_odyssey_controller_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HpMixedRealityControllerEXT {}
     impl HpMixedRealityControllerEXT {
         pub const VERSION: u32 = sys::EXT_hp_mixed_reality_controller_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct PalmPoseEXT {}
     impl PalmPoseEXT {
         pub const VERSION: u32 = sys::EXT_palm_pose_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_PALM_POSE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_PALM_POSE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct UuidEXT {}
     impl UuidEXT {
         pub const VERSION: u32 = sys::EXT_uuid_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_UUID_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_UUID_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HandInteractionEXT {}
     impl HandInteractionEXT {
         pub const VERSION: u32 = sys::EXT_hand_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_HAND_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_HAND_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ActiveActionSetPriorityEXT {}
     impl ActiveActionSetPriorityEXT {
         pub const VERSION: u32 = sys::EXT_active_action_set_priority_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_ACTIVE_ACTION_SET_PRIORITY_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_ACTIVE_ACTION_SET_PRIORITY_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct LocalFloorEXT {}
     impl LocalFloorEXT {
         pub const VERSION: u32 = sys::EXT_local_floor_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_LOCAL_FLOOR_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_LOCAL_FLOOR_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HandTrackingDataSourceEXT {}
     impl HandTrackingDataSourceEXT {
         pub const VERSION: u32 = sys::EXT_hand_tracking_data_source_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct PlaneDetectionEXT {
@@ -4442,7 +4598,7 @@ pub mod raw {
     }
     impl PlaneDetectionEXT {
         pub const VERSION: u32 = sys::EXT_plane_detection_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_PLANE_DETECTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_PLANE_DETECTION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4480,7 +4636,7 @@ pub mod raw {
     }
     impl FutureEXT {
         pub const VERSION: u32 = sys::EXT_future_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_FUTURE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_FUTURE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4503,25 +4659,25 @@ pub mod raw {
     pub struct UserPresenceEXT {}
     impl UserPresenceEXT {
         pub const VERSION: u32 = sys::EXT_user_presence_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_USER_PRESENCE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_USER_PRESENCE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerInvertedAlphaEXT {}
     impl CompositionLayerInvertedAlphaEXT {
         pub const VERSION: u32 = sys::EXT_composition_layer_inverted_alpha_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerImageLayoutFB {}
     impl CompositionLayerImageLayoutFB {
         pub const VERSION: u32 = sys::FB_composition_layer_image_layout_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerAlphaBlendFB {}
     impl CompositionLayerAlphaBlendFB {
         pub const VERSION: u32 = sys::FB_composition_layer_alpha_blend_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -4529,7 +4685,7 @@ pub mod raw {
     #[cfg(target_os = "android")]
     impl AndroidSurfaceSwapchainCreateFB {
         pub const VERSION: u32 = sys::FB_android_surface_swapchain_create_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SwapchainUpdateStateFB {
@@ -4538,7 +4694,7 @@ pub mod raw {
     }
     impl SwapchainUpdateStateFB {
         pub const VERSION: u32 = sys::FB_swapchain_update_state_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SWAPCHAIN_UPDATE_STATE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SWAPCHAIN_UPDATE_STATE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4561,7 +4717,7 @@ pub mod raw {
     pub struct CompositionLayerSecureContentFB {}
     impl CompositionLayerSecureContentFB {
         pub const VERSION: u32 = sys::FB_composition_layer_secure_content_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_SECURE_CONTENT_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_COMPOSITION_LAYER_SECURE_CONTENT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct BodyTrackingFB {
@@ -4572,7 +4728,7 @@ pub mod raw {
     }
     impl BodyTrackingFB {
         pub const VERSION: u32 = sys::FB_body_tracking_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_BODY_TRACKING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_BODY_TRACKING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4605,7 +4761,7 @@ pub mod raw {
     }
     impl DisplayRefreshRateFB {
         pub const VERSION: u32 = sys::FB_display_refresh_rate_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4637,7 +4793,7 @@ pub mod raw {
     }
     impl ColorSpaceFB {
         pub const VERSION: u32 = sys::FB_color_space_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_COLOR_SPACE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_COLOR_SPACE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4662,7 +4818,7 @@ pub mod raw {
     }
     impl HandTrackingMeshFB {
         pub const VERSION: u32 = sys::FB_hand_tracking_mesh_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_HAND_TRACKING_MESH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_HAND_TRACKING_MESH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4682,13 +4838,13 @@ pub mod raw {
     pub struct HandTrackingAimFB {}
     impl HandTrackingAimFB {
         pub const VERSION: u32 = sys::FB_hand_tracking_aim_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_HAND_TRACKING_AIM_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_HAND_TRACKING_AIM_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HandTrackingCapsulesFB {}
     impl HandTrackingCapsulesFB {
         pub const VERSION: u32 = sys::FB_hand_tracking_capsules_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SpatialEntityFB {
@@ -4700,7 +4856,7 @@ pub mod raw {
     }
     impl SpatialEntityFB {
         pub const VERSION: u32 = sys::FB_spatial_entity_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPATIAL_ENTITY_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4738,7 +4894,7 @@ pub mod raw {
     }
     impl FoveationFB {
         pub const VERSION: u32 = sys::FB_foveation_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_FOVEATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_FOVEATION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4761,7 +4917,7 @@ pub mod raw {
     pub struct FoveationConfigurationFB {}
     impl FoveationConfigurationFB {
         pub const VERSION: u32 = sys::FB_foveation_configuration_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_FOVEATION_CONFIGURATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_FOVEATION_CONFIGURATION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct KeyboardTrackingFB {
@@ -4770,7 +4926,7 @@ pub mod raw {
     }
     impl KeyboardTrackingFB {
         pub const VERSION: u32 = sys::FB_keyboard_tracking_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_KEYBOARD_TRACKING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_KEYBOARD_TRACKING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4803,7 +4959,7 @@ pub mod raw {
     }
     impl TriangleMeshFB {
         pub const VERSION: u32 = sys::FB_triangle_mesh_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_TRIANGLE_MESH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_TRIANGLE_MESH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4865,7 +5021,7 @@ pub mod raw {
     }
     impl PassthroughFB {
         pub const VERSION: u32 = sys::FB_passthrough_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_PASSTHROUGH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_PASSTHROUGH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4925,7 +5081,7 @@ pub mod raw {
     }
     impl RenderModelFB {
         pub const VERSION: u32 = sys::FB_render_model_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_RENDER_MODEL_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_RENDER_MODEL_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4954,7 +5110,7 @@ pub mod raw {
     }
     impl SpatialEntityQueryFB {
         pub const VERSION: u32 = sys::FB_spatial_entity_query_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -4980,7 +5136,7 @@ pub mod raw {
     }
     impl SpatialEntityStorageFB {
         pub const VERSION: u32 = sys::FB_spatial_entity_storage_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5003,7 +5159,7 @@ pub mod raw {
     pub struct FoveationVulkanFB {}
     impl FoveationVulkanFB {
         pub const VERSION: u32 = sys::FB_foveation_vulkan_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_FOVEATION_VULKAN_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_FOVEATION_VULKAN_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -5011,26 +5167,26 @@ pub mod raw {
     #[cfg(target_os = "android")]
     impl SwapchainUpdateStateAndroidSurfaceFB {
         pub const VERSION: u32 = sys::FB_swapchain_update_state_android_surface_SPEC_VERSION;
-        pub const NAME: &'static [u8] =
+        pub const NAME: &'static CStr =
             sys::FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SwapchainUpdateStateOpenglEsFB {}
     impl SwapchainUpdateStateOpenglEsFB {
         pub const VERSION: u32 = sys::FB_swapchain_update_state_opengl_es_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SwapchainUpdateStateVulkanFB {}
     impl SwapchainUpdateStateVulkanFB {
         pub const VERSION: u32 = sys::FB_swapchain_update_state_vulkan_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct TouchControllerProFB {}
     impl TouchControllerProFB {
         pub const VERSION: u32 = sys::FB_touch_controller_pro_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SpatialEntitySharingFB {
@@ -5038,7 +5194,7 @@ pub mod raw {
     }
     impl SpatialEntitySharingFB {
         pub const VERSION: u32 = sys::FB_spatial_entity_sharing_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_SHARING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPATIAL_ENTITY_SHARING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5058,13 +5214,13 @@ pub mod raw {
     pub struct SpaceWarpFB {}
     impl SpaceWarpFB {
         pub const VERSION: u32 = sys::FB_space_warp_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPACE_WARP_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPACE_WARP_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HapticAmplitudeEnvelopeFB {}
     impl HapticAmplitudeEnvelopeFB {
         pub const VERSION: u32 = sys::FB_haptic_amplitude_envelope_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SceneFB {
@@ -5076,7 +5232,7 @@ pub mod raw {
     }
     impl SceneFB {
         pub const VERSION: u32 = sys::FB_scene_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SCENE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SCENE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5110,7 +5266,7 @@ pub mod raw {
     }
     impl SceneCaptureFB {
         pub const VERSION: u32 = sys::FB_scene_capture_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SCENE_CAPTURE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SCENE_CAPTURE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5132,7 +5288,7 @@ pub mod raw {
     }
     impl SpatialEntityContainerFB {
         pub const VERSION: u32 = sys::FB_spatial_entity_container_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5156,7 +5312,7 @@ pub mod raw {
     }
     impl FaceTrackingFB {
         pub const VERSION: u32 = sys::FB_face_tracking_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_FACE_TRACKING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_FACE_TRACKING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5186,7 +5342,7 @@ pub mod raw {
     }
     impl EyeTrackingSocialFB {
         pub const VERSION: u32 = sys::FB_eye_tracking_social_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_EYE_TRACKING_SOCIAL_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_EYE_TRACKING_SOCIAL_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5215,7 +5371,7 @@ pub mod raw {
     }
     impl PassthroughKeyboardHandsFB {
         pub const VERSION: u32 = sys::FB_passthrough_keyboard_hands_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_PASSTHROUGH_KEYBOARD_HANDS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_PASSTHROUGH_KEYBOARD_HANDS_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5238,13 +5394,13 @@ pub mod raw {
     pub struct CompositionLayerSettingsFB {}
     impl CompositionLayerSettingsFB {
         pub const VERSION: u32 = sys::FB_composition_layer_settings_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_SETTINGS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_COMPOSITION_LAYER_SETTINGS_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct TouchControllerProximityFB {}
     impl TouchControllerProximityFB {
         pub const VERSION: u32 = sys::FB_touch_controller_proximity_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_TOUCH_CONTROLLER_PROXIMITY_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_TOUCH_CONTROLLER_PROXIMITY_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HapticPcmFB {
@@ -5252,7 +5408,7 @@ pub mod raw {
     }
     impl HapticPcmFB {
         pub const VERSION: u32 = sys::FB_haptic_pcm_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_HAPTIC_PCM_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_HAPTIC_PCM_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5272,7 +5428,7 @@ pub mod raw {
     pub struct CompositionLayerDepthTestFB {}
     impl CompositionLayerDepthTestFB {
         pub const VERSION: u32 = sys::FB_composition_layer_depth_test_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SpatialEntityStorageBatchFB {
@@ -5280,7 +5436,7 @@ pub mod raw {
     }
     impl SpatialEntityStorageBatchFB {
         pub const VERSION: u32 = sys::FB_spatial_entity_storage_batch_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_STORAGE_BATCH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPATIAL_ENTITY_STORAGE_BATCH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5304,7 +5460,7 @@ pub mod raw {
     }
     impl SpatialEntityUserFB {
         pub const VERSION: u32 = sys::FB_spatial_entity_user_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_SPATIAL_ENTITY_USER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_SPATIAL_ENTITY_USER_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5334,7 +5490,7 @@ pub mod raw {
     }
     impl FaceTracking2FB {
         pub const VERSION: u32 = sys::FB_face_tracking2_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::FB_FACE_TRACKING2_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::FB_FACE_TRACKING2_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5360,7 +5516,7 @@ pub mod raw {
     pub struct ViveCosmosControllerInteractionHTC {}
     impl ViveCosmosControllerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_cosmos_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct FacialTrackingHTC {
@@ -5370,7 +5526,7 @@ pub mod raw {
     }
     impl FacialTrackingHTC {
         pub const VERSION: u32 = sys::HTC_facial_tracking_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_FACIAL_TRACKING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_FACIAL_TRACKING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5396,19 +5552,19 @@ pub mod raw {
     pub struct ViveFocus3ControllerInteractionHTC {}
     impl ViveFocus3ControllerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_focus3_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HandInteractionHTC {}
     impl HandInteractionHTC {
         pub const VERSION: u32 = sys::HTC_hand_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_HAND_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_HAND_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ViveWristTrackerInteractionHTC {}
     impl ViveWristTrackerInteractionHTC {
         pub const VERSION: u32 = sys::HTC_vive_wrist_tracker_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_VIVE_WRIST_TRACKER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_VIVE_WRIST_TRACKER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct PassthroughHTC {
@@ -5417,7 +5573,7 @@ pub mod raw {
     }
     impl PassthroughHTC {
         pub const VERSION: u32 = sys::HTC_passthrough_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_PASSTHROUGH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_PASSTHROUGH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5442,7 +5598,7 @@ pub mod raw {
     }
     impl FoveationHTC {
         pub const VERSION: u32 = sys::HTC_foveation_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_FOVEATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_FOVEATION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5465,7 +5621,7 @@ pub mod raw {
     }
     impl AnchorHTC {
         pub const VERSION: u32 = sys::HTC_anchor_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTC_ANCHOR_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTC_ANCHOR_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5488,7 +5644,7 @@ pub mod raw {
     pub struct ControllerInteractionHUAWEI {}
     impl ControllerInteractionHUAWEI {
         pub const VERSION: u32 = sys::HUAWEI_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -5498,7 +5654,7 @@ pub mod raw {
     #[cfg(target_os = "android")]
     impl AndroidThreadSettingsKHR {
         pub const VERSION: u32 = sys::KHR_android_thread_settings_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5525,7 +5681,7 @@ pub mod raw {
     #[cfg(target_os = "android")]
     impl AndroidSurfaceSwapchainKHR {
         pub const VERSION: u32 = sys::KHR_android_surface_swapchain_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5548,7 +5704,7 @@ pub mod raw {
     pub struct CompositionLayerCubeKHR {}
     impl CompositionLayerCubeKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_cube_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -5556,31 +5712,31 @@ pub mod raw {
     #[cfg(target_os = "android")]
     impl AndroidCreateInstanceKHR {
         pub const VERSION: u32 = sys::KHR_android_create_instance_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerDepthKHR {}
     impl CompositionLayerDepthKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_depth_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct VulkanSwapchainFormatListKHR {}
     impl VulkanSwapchainFormatListKHR {
         pub const VERSION: u32 = sys::KHR_vulkan_swapchain_format_list_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerCylinderKHR {}
     impl CompositionLayerCylinderKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_cylinder_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerEquirectKHR {}
     impl CompositionLayerEquirectKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_equirect_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct OpenglEnableKHR {
@@ -5588,7 +5744,7 @@ pub mod raw {
     }
     impl OpenglEnableKHR {
         pub const VERSION: u32 = sys::KHR_opengl_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_OPENGL_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_OPENGL_ENABLE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5613,7 +5769,7 @@ pub mod raw {
     }
     impl OpenglEsEnableKHR {
         pub const VERSION: u32 = sys::KHR_opengl_es_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5641,7 +5797,7 @@ pub mod raw {
     }
     impl VulkanEnableKHR {
         pub const VERSION: u32 = sys::KHR_vulkan_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_VULKAN_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_VULKAN_ENABLE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5681,7 +5837,7 @@ pub mod raw {
     #[cfg(windows)]
     impl D3d11EnableKHR {
         pub const VERSION: u32 = sys::KHR_D3D11_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_D3D11_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_D3D11_ENABLE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5708,7 +5864,7 @@ pub mod raw {
     #[cfg(windows)]
     impl D3d12EnableKHR {
         pub const VERSION: u32 = sys::KHR_D3D12_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_D3D12_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_D3D12_ENABLE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5735,7 +5891,7 @@ pub mod raw {
     #[cfg(target_vendor = "apple")]
     impl MetalEnableKHR {
         pub const VERSION: u32 = sys::KHR_metal_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_METAL_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_METAL_ENABLE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5760,7 +5916,7 @@ pub mod raw {
     }
     impl VisibilityMaskKHR {
         pub const VERSION: u32 = sys::KHR_visibility_mask_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_VISIBILITY_MASK_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_VISIBILITY_MASK_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5780,7 +5936,7 @@ pub mod raw {
     pub struct CompositionLayerColorScaleBiasKHR {}
     impl CompositionLayerColorScaleBiasKHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_color_scale_bias_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME;
     }
     #[cfg(windows)]
     #[derive(Copy, Clone)]
@@ -5791,7 +5947,7 @@ pub mod raw {
     #[cfg(windows)]
     impl Win32ConvertPerformanceCounterTimeKHR {
         pub const VERSION: u32 = sys::KHR_win32_convert_performance_counter_time_SPEC_VERSION;
-        pub const NAME: &'static [u8] =
+        pub const NAME: &'static CStr =
             sys::KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
@@ -5824,7 +5980,7 @@ pub mod raw {
     }
     impl ConvertTimespecTimeKHR {
         pub const VERSION: u32 = sys::KHR_convert_timespec_time_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5851,7 +6007,7 @@ pub mod raw {
     }
     impl LoaderInitKHR {
         pub const VERSION: u32 = sys::KHR_loader_init_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_LOADER_INIT_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_LOADER_INIT_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5873,7 +6029,7 @@ pub mod raw {
     #[cfg(target_os = "android")]
     impl LoaderInitAndroidKHR {
         pub const VERSION: u32 = sys::KHR_loader_init_android_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_LOADER_INIT_ANDROID_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_LOADER_INIT_ANDROID_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct VulkanEnable2KHR {
@@ -5884,7 +6040,7 @@ pub mod raw {
     }
     impl VulkanEnable2KHR {
         pub const VERSION: u32 = sys::KHR_vulkan_enable2_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_VULKAN_ENABLE2_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_VULKAN_ENABLE2_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5916,19 +6072,19 @@ pub mod raw {
     pub struct CompositionLayerEquirect2KHR {}
     impl CompositionLayerEquirect2KHR {
         pub const VERSION: u32 = sys::KHR_composition_layer_equirect2_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct BindingModificationKHR {}
     impl BindingModificationKHR {
         pub const VERSION: u32 = sys::KHR_binding_modification_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_BINDING_MODIFICATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_BINDING_MODIFICATION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SwapchainUsageInputAttachmentBitKHR {}
     impl SwapchainUsageInputAttachmentBitKHR {
         pub const VERSION: u32 = sys::KHR_swapchain_usage_input_attachment_bit_SPEC_VERSION;
-        pub const NAME: &'static [u8] =
+        pub const NAME: &'static CStr =
             sys::KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
@@ -5937,7 +6093,7 @@ pub mod raw {
     }
     impl LocateSpacesKHR {
         pub const VERSION: u32 = sys::KHR_locate_spaces_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_LOCATE_SPACES_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_LOCATE_SPACES_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5957,7 +6113,7 @@ pub mod raw {
     pub struct Maintenance1KHR {}
     impl Maintenance1KHR {
         pub const VERSION: u32 = sys::KHR_maintenance1_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::KHR_MAINTENANCE1_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::KHR_MAINTENANCE1_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct FoveationEyeTrackedMETA {
@@ -5965,7 +6121,7 @@ pub mod raw {
     }
     impl FoveationEyeTrackedMETA {
         pub const VERSION: u32 = sys::META_foveation_eye_tracked_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_FOVEATION_EYE_TRACKED_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_FOVEATION_EYE_TRACKED_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -5988,7 +6144,7 @@ pub mod raw {
     pub struct LocalDimmingMETA {}
     impl LocalDimmingMETA {
         pub const VERSION: u32 = sys::META_local_dimming_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_LOCAL_DIMMING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_LOCAL_DIMMING_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct PassthroughPreferencesMETA {
@@ -5996,7 +6152,7 @@ pub mod raw {
     }
     impl PassthroughPreferencesMETA {
         pub const VERSION: u32 = sys::META_passthrough_preferences_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_PASSTHROUGH_PREFERENCES_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_PASSTHROUGH_PREFERENCES_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6030,7 +6186,7 @@ pub mod raw {
     }
     impl VirtualKeyboardMETA {
         pub const VERSION: u32 = sys::META_virtual_keyboard_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_VIRTUAL_KEYBOARD_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_VIRTUAL_KEYBOARD_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6102,7 +6258,7 @@ pub mod raw {
     pub struct VulkanSwapchainCreateInfoMETA {}
     impl VulkanSwapchainCreateInfoMETA {
         pub const VERSION: u32 = sys::META_vulkan_swapchain_create_info_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct PerformanceMetricsMETA {
@@ -6114,7 +6270,7 @@ pub mod raw {
     }
     impl PerformanceMetricsMETA {
         pub const VERSION: u32 = sys::META_performance_metrics_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_PERFORMANCE_METRICS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_PERFORMANCE_METRICS_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6155,7 +6311,7 @@ pub mod raw {
     pub struct HeadsetIdMETA {}
     impl HeadsetIdMETA {
         pub const VERSION: u32 = sys::META_headset_id_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_HEADSET_ID_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_HEADSET_ID_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct RecommendedLayerResolutionMETA {
@@ -6163,7 +6319,7 @@ pub mod raw {
     }
     impl RecommendedLayerResolutionMETA {
         pub const VERSION: u32 = sys::META_recommended_layer_resolution_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6190,7 +6346,7 @@ pub mod raw {
     }
     impl PassthroughColorLutMETA {
         pub const VERSION: u32 = sys::META_passthrough_color_lut_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6223,7 +6379,7 @@ pub mod raw {
     }
     impl SpatialEntityMeshMETA {
         pub const VERSION: u32 = sys::META_spatial_entity_mesh_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_SPATIAL_ENTITY_MESH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_SPATIAL_ENTITY_MESH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6243,13 +6399,13 @@ pub mod raw {
     pub struct AutomaticLayerFilterMETA {}
     impl AutomaticLayerFilterMETA {
         pub const VERSION: u32 = sys::META_automatic_layer_filter_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct TouchControllerPlusMETA {}
     impl TouchControllerPlusMETA {
         pub const VERSION: u32 = sys::META_touch_controller_plus_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct EnvironmentDepthMETA {
@@ -6267,7 +6423,7 @@ pub mod raw {
     }
     impl EnvironmentDepthMETA {
         pub const VERSION: u32 = sys::META_environment_depth_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::META_ENVIRONMENT_DEPTH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::META_ENVIRONMENT_DEPTH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6344,19 +6500,19 @@ pub mod raw {
     pub struct Ml2ControllerInteractionML {}
     impl Ml2ControllerInteractionML {
         pub const VERSION: u32 = sys::ML_ml2_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct FrameEndInfoML {}
     impl FrameEndInfoML {
         pub const VERSION: u32 = sys::ML_frame_end_info_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ML_FRAME_END_INFO_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ML_FRAME_END_INFO_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct GlobalDimmerML {}
     impl GlobalDimmerML {
         pub const VERSION: u32 = sys::ML_global_dimmer_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ML_GLOBAL_DIMMER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ML_GLOBAL_DIMMER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompatML {
@@ -6364,7 +6520,7 @@ pub mod raw {
     }
     impl CompatML {
         pub const VERSION: u32 = sys::ML_compat_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ML_COMPAT_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ML_COMPAT_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6398,7 +6554,7 @@ pub mod raw {
     }
     impl MarkerUnderstandingML {
         pub const VERSION: u32 = sys::ML_marker_understanding_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ML_MARKER_UNDERSTANDING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ML_MARKER_UNDERSTANDING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6454,7 +6610,7 @@ pub mod raw {
     }
     impl LocalizationMapML {
         pub const VERSION: u32 = sys::ML_localization_map_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ML_LOCALIZATION_MAP_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ML_LOCALIZATION_MAP_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6503,7 +6659,7 @@ pub mod raw {
     }
     impl UserCalibrationML {
         pub const VERSION: u32 = sys::ML_user_calibration_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ML_USER_CALIBRATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ML_USER_CALIBRATION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6524,20 +6680,20 @@ pub mod raw {
     pub struct HeadlessMND {}
     impl HeadlessMND {
         pub const VERSION: u32 = sys::MND_headless_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MND_HEADLESS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MND_HEADLESS_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SwapchainUsageInputAttachmentBitMND {}
     impl SwapchainUsageInputAttachmentBitMND {
         pub const VERSION: u32 = sys::MND_swapchain_usage_input_attachment_bit_SPEC_VERSION;
-        pub const NAME: &'static [u8] =
+        pub const NAME: &'static CStr =
             sys::MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct UnboundedReferenceSpaceMSFT {}
     impl UnboundedReferenceSpaceMSFT {
         pub const VERSION: u32 = sys::MSFT_unbounded_reference_space_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct SpatialAnchorMSFT {
@@ -6547,7 +6703,7 @@ pub mod raw {
     }
     impl SpatialAnchorMSFT {
         pub const VERSION: u32 = sys::MSFT_spatial_anchor_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_SPATIAL_ANCHOR_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_SPATIAL_ANCHOR_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6581,7 +6737,7 @@ pub mod raw {
     }
     impl SpatialGraphBridgeMSFT {
         pub const VERSION: u32 = sys::MSFT_spatial_graph_bridge_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6622,7 +6778,7 @@ pub mod raw {
     pub struct HandInteractionMSFT {}
     impl HandInteractionMSFT {
         pub const VERSION: u32 = sys::MSFT_hand_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_HAND_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_HAND_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct HandTrackingMeshMSFT {
@@ -6631,7 +6787,7 @@ pub mod raw {
     }
     impl HandTrackingMeshMSFT {
         pub const VERSION: u32 = sys::MSFT_hand_tracking_mesh_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_HAND_TRACKING_MESH_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_HAND_TRACKING_MESH_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6654,13 +6810,13 @@ pub mod raw {
     pub struct SecondaryViewConfigurationMSFT {}
     impl SecondaryViewConfigurationMSFT {
         pub const VERSION: u32 = sys::MSFT_secondary_view_configuration_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct FirstPersonObserverMSFT {}
     impl FirstPersonObserverMSFT {
         pub const VERSION: u32 = sys::MSFT_first_person_observer_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ControllerModelMSFT {
@@ -6671,7 +6827,7 @@ pub mod raw {
     }
     impl ControllerModelMSFT {
         pub const VERSION: u32 = sys::MSFT_controller_model_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_CONTROLLER_MODEL_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_CONTROLLER_MODEL_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6710,7 +6866,7 @@ pub mod raw {
     #[cfg(windows)]
     impl PerceptionAnchorInteropMSFT {
         pub const VERSION: u32 = sys::MSFT_perception_anchor_interop_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6741,7 +6897,7 @@ pub mod raw {
     #[cfg(windows)]
     impl HolographicWindowAttachmentMSFT {
         pub const VERSION: u32 = sys::MSFT_holographic_window_attachment_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerReprojectionMSFT {
@@ -6749,7 +6905,7 @@ pub mod raw {
     }
     impl CompositionLayerReprojectionMSFT {
         pub const VERSION: u32 = sys::MSFT_composition_layer_reprojection_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6781,7 +6937,7 @@ pub mod raw {
     }
     impl SpatialAnchorPersistenceMSFT {
         pub const VERSION: u32 = sys::MSFT_spatial_anchor_persistence_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6833,7 +6989,7 @@ pub mod raw {
     #[cfg(target_os = "android")]
     impl AndroidSessionStateEnableOCULUS {
         pub const VERSION: u32 = sys::OCULUS_android_session_state_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct AudioDeviceGuidOCULUS {
@@ -6842,7 +6998,7 @@ pub mod raw {
     }
     impl AudioDeviceGuidOCULUS {
         pub const VERSION: u32 = sys::OCULUS_audio_device_guid_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6871,7 +7027,7 @@ pub mod raw {
     }
     impl ExternalCameraOCULUS {
         pub const VERSION: u32 = sys::OCULUS_external_camera_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::OCULUS_EXTERNAL_CAMERA_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::OCULUS_EXTERNAL_CAMERA_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6894,7 +7050,7 @@ pub mod raw {
     pub struct ControllerInteractionOPPO {}
     impl ControllerInteractionOPPO {
         pub const VERSION: u32 = sys::OPPO_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::OPPO_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::OPPO_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct TrackingOptimizationSettingsQCOM {
@@ -6902,7 +7058,7 @@ pub mod raw {
     }
     impl TrackingOptimizationSettingsQCOM {
         pub const VERSION: u32 = sys::QCOM_tracking_optimization_settings_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::QCOM_TRACKING_OPTIMIZATION_SETTINGS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::QCOM_TRACKING_OPTIMIZATION_SETTINGS_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6925,31 +7081,31 @@ pub mod raw {
     pub struct HandTrackingForearmULTRALEAP {}
     impl HandTrackingForearmULTRALEAP {
         pub const VERSION: u32 = sys::ULTRALEAP_hand_tracking_forearm_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct AnalogThresholdVALVE {}
     impl AnalogThresholdVALVE {
         pub const VERSION: u32 = sys::VALVE_analog_threshold_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VALVE_ANALOG_THRESHOLD_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VALVE_ANALOG_THRESHOLD_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct QuadViewsVARJO {}
     impl QuadViewsVARJO {
         pub const VERSION: u32 = sys::VARJO_quad_views_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VARJO_QUAD_VIEWS_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VARJO_QUAD_VIEWS_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct FoveatedRenderingVARJO {}
     impl FoveatedRenderingVARJO {
         pub const VERSION: u32 = sys::VARJO_foveated_rendering_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VARJO_FOVEATED_RENDERING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VARJO_FOVEATED_RENDERING_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerDepthTestVARJO {}
     impl CompositionLayerDepthTestVARJO {
         pub const VERSION: u32 = sys::VARJO_composition_layer_depth_test_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VARJO_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VARJO_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct EnvironmentDepthEstimationVARJO {
@@ -6957,7 +7113,7 @@ pub mod raw {
     }
     impl EnvironmentDepthEstimationVARJO {
         pub const VERSION: u32 = sys::VARJO_environment_depth_estimation_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VARJO_ENVIRONMENT_DEPTH_ESTIMATION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VARJO_ENVIRONMENT_DEPTH_ESTIMATION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -6986,7 +7142,7 @@ pub mod raw {
     }
     impl MarkerTrackingVARJO {
         pub const VERSION: u32 = sys::VARJO_marker_tracking_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VARJO_MARKER_TRACKING_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VARJO_MARKER_TRACKING_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -7024,7 +7180,7 @@ pub mod raw {
     }
     impl ViewOffsetVARJO {
         pub const VERSION: u32 = sys::VARJO_view_offset_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VARJO_VIEW_OFFSET_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VARJO_VIEW_OFFSET_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -7044,25 +7200,25 @@ pub mod raw {
     pub struct Xr4ControllerInteractionVARJO {}
     impl Xr4ControllerInteractionVARJO {
         pub const VERSION: u32 = sys::VARJO_xr4_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ControllerInteractionYVR {}
     impl ControllerInteractionYVR {
         pub const VERSION: u32 = sys::YVR_controller_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::YVR_CONTROLLER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::YVR_CONTROLLER_INTERACTION_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct OverlayEXTX {}
     impl OverlayEXTX {
         pub const VERSION: u32 = sys::EXTX_overlay_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::EXTX_OVERLAY_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::EXTX_OVERLAY_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct EglEnableMNDX {}
     impl EglEnableMNDX {
         pub const VERSION: u32 = sys::MNDX_egl_enable_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MNDX_EGL_ENABLE_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MNDX_EGL_ENABLE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct ForceFeedbackCurlMNDX {
@@ -7070,7 +7226,7 @@ pub mod raw {
     }
     impl ForceFeedbackCurlMNDX {
         pub const VERSION: u32 = sys::MNDX_force_feedback_curl_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
@@ -7092,7 +7248,7 @@ pub mod raw {
     }
     impl ViveTrackerInteractionHTCX {
         pub const VERSION: u32 = sys::HTCX_vive_tracker_interaction_SPEC_VERSION;
-        pub const NAME: &'static [u8] = sys::HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME;
+        pub const NAME: &'static CStr = sys::HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME;
         #[doc = r" Load the extension's function pointer table"]
         #[doc = r""]
         #[doc = r" # Safety"]
