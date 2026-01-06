@@ -1664,7 +1664,7 @@ impl Parser {
                 }
             }
 
-            #[derive(Copy, Clone)]
+            #[derive(Copy, Clone, Debug)]
             #[non_exhaustive]
             pub enum Event<'a> {
                 #(#event_cases,)*
@@ -2119,10 +2119,9 @@ impl Parser {
                 }
             })
         });
-
         let sys_raw_ident_str = format!("[sys::{}]", raw_ident);
         quote! {
-            #[derive(Copy, Clone)]
+            #[derive(Copy, Clone, Debug)]
             pub struct #ident<'a>(&'a sys::#raw_ident);
 
             impl<'a> #ident<'a> {

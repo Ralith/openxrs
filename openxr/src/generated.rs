@@ -3050,7 +3050,7 @@ impl InstanceExtensions {
         }
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 #[non_exhaustive]
 pub enum Event<'a> {
     EventsLost(EventsLost<'a>),
@@ -3260,7 +3260,7 @@ impl<'a> Event<'a> {
         }
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct EventsLost<'a>(&'a sys::EventDataEventsLost);
 impl<'a> EventsLost<'a> {
     #[inline]
@@ -3276,7 +3276,7 @@ impl<'a> EventsLost<'a> {
         (self.0).lost_event_count
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct InstanceLossPending<'a>(&'a sys::EventDataInstanceLossPending);
 impl<'a> InstanceLossPending<'a> {
     #[inline]
@@ -3292,7 +3292,7 @@ impl<'a> InstanceLossPending<'a> {
         (self.0).loss_time
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SessionStateChanged<'a>(&'a sys::EventDataSessionStateChanged);
 impl<'a> SessionStateChanged<'a> {
     #[inline]
@@ -3316,7 +3316,7 @@ impl<'a> SessionStateChanged<'a> {
         (self.0).time
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct ReferenceSpaceChangePending<'a>(&'a sys::EventDataReferenceSpaceChangePending);
 impl<'a> ReferenceSpaceChangePending<'a> {
     #[inline]
@@ -3348,7 +3348,7 @@ impl<'a> ReferenceSpaceChangePending<'a> {
         (self.0).pose_in_previous_space
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct PerfSettingsEXT<'a>(&'a sys::EventDataPerfSettingsEXT);
 impl<'a> PerfSettingsEXT<'a> {
     #[inline]
@@ -3376,7 +3376,7 @@ impl<'a> PerfSettingsEXT<'a> {
         (self.0).to_level
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct VisibilityMaskChangedKHR<'a>(&'a sys::EventDataVisibilityMaskChangedKHR);
 impl<'a> VisibilityMaskChangedKHR<'a> {
     #[inline]
@@ -3400,7 +3400,7 @@ impl<'a> VisibilityMaskChangedKHR<'a> {
         (self.0).view_index
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct InteractionProfileChanged<'a>(&'a sys::EventDataInteractionProfileChanged);
 impl<'a> InteractionProfileChanged<'a> {
     #[inline]
@@ -3416,7 +3416,7 @@ impl<'a> InteractionProfileChanged<'a> {
         (self.0).session
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct MainSessionVisibilityChangedEXTX<'a>(&'a sys::EventDataMainSessionVisibilityChangedEXTX);
 impl<'a> MainSessionVisibilityChangedEXTX<'a> {
     #[inline]
@@ -3436,7 +3436,7 @@ impl<'a> MainSessionVisibilityChangedEXTX<'a> {
         (self.0).flags
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct DisplayRefreshRateChangedFB<'a>(&'a sys::EventDataDisplayRefreshRateChangedFB);
 impl<'a> DisplayRefreshRateChangedFB<'a> {
     #[inline]
@@ -3456,7 +3456,7 @@ impl<'a> DisplayRefreshRateChangedFB<'a> {
         (self.0).to_display_refresh_rate
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpatialAnchorCreateCompleteFB<'a>(&'a sys::EventDataSpatialAnchorCreateCompleteFB);
 impl<'a> SpatialAnchorCreateCompleteFB<'a> {
     #[inline]
@@ -3484,7 +3484,7 @@ impl<'a> SpatialAnchorCreateCompleteFB<'a> {
         (self.0).uuid
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpaceSetStatusCompleteFB<'a>(&'a sys::EventDataSpaceSetStatusCompleteFB);
 impl<'a> SpaceSetStatusCompleteFB<'a> {
     #[inline]
@@ -3520,7 +3520,7 @@ impl<'a> SpaceSetStatusCompleteFB<'a> {
         (self.0).enabled.into()
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpaceQueryResultsAvailableFB<'a>(&'a sys::EventDataSpaceQueryResultsAvailableFB);
 impl<'a> SpaceQueryResultsAvailableFB<'a> {
     #[inline]
@@ -3536,7 +3536,7 @@ impl<'a> SpaceQueryResultsAvailableFB<'a> {
         (self.0).request_id
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpaceQueryCompleteFB<'a>(&'a sys::EventDataSpaceQueryCompleteFB);
 impl<'a> SpaceQueryCompleteFB<'a> {
     #[inline]
@@ -3556,7 +3556,7 @@ impl<'a> SpaceQueryCompleteFB<'a> {
         (self.0).result
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpaceSaveCompleteFB<'a>(&'a sys::EventDataSpaceSaveCompleteFB);
 impl<'a> SpaceSaveCompleteFB<'a> {
     #[inline]
@@ -3588,7 +3588,7 @@ impl<'a> SpaceSaveCompleteFB<'a> {
         (self.0).location
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpaceEraseCompleteFB<'a>(&'a sys::EventDataSpaceEraseCompleteFB);
 impl<'a> SpaceEraseCompleteFB<'a> {
     #[inline]
@@ -3620,7 +3620,7 @@ impl<'a> SpaceEraseCompleteFB<'a> {
         (self.0).location
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpaceShareCompleteFB<'a>(&'a sys::EventDataSpaceShareCompleteFB);
 impl<'a> SpaceShareCompleteFB<'a> {
     #[inline]
@@ -3640,7 +3640,7 @@ impl<'a> SpaceShareCompleteFB<'a> {
         (self.0).result
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SpaceListSaveCompleteFB<'a>(&'a sys::EventDataSpaceListSaveCompleteFB);
 impl<'a> SpaceListSaveCompleteFB<'a> {
     #[inline]
@@ -3660,7 +3660,7 @@ impl<'a> SpaceListSaveCompleteFB<'a> {
         (self.0).result
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SceneCaptureCompleteFB<'a>(&'a sys::EventDataSceneCaptureCompleteFB);
 impl<'a> SceneCaptureCompleteFB<'a> {
     #[inline]
@@ -3680,7 +3680,7 @@ impl<'a> SceneCaptureCompleteFB<'a> {
         (self.0).result
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct PassthroughStateChangedFB<'a>(&'a sys::EventDataPassthroughStateChangedFB);
 impl<'a> PassthroughStateChangedFB<'a> {
     #[inline]
@@ -3696,7 +3696,7 @@ impl<'a> PassthroughStateChangedFB<'a> {
         (self.0).flags
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct ViveTrackerConnectedHTCX<'a>(&'a sys::EventDataViveTrackerConnectedHTCX);
 impl<'a> ViveTrackerConnectedHTCX<'a> {
     #[inline]
@@ -3712,7 +3712,7 @@ impl<'a> ViveTrackerConnectedHTCX<'a> {
         (*unsafe { self.0.paths.as_ref() }.unwrap()).into()
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct MarkerTrackingUpdateVARJO<'a>(&'a sys::EventDataMarkerTrackingUpdateVARJO);
 impl<'a> MarkerTrackingUpdateVARJO<'a> {
     #[inline]
@@ -3740,7 +3740,7 @@ impl<'a> MarkerTrackingUpdateVARJO<'a> {
         (self.0).time
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct VirtualKeyboardCommitTextMETA<'a>(&'a sys::EventDataVirtualKeyboardCommitTextMETA);
 impl<'a> VirtualKeyboardCommitTextMETA<'a> {
     #[inline]
@@ -3760,7 +3760,7 @@ impl<'a> VirtualKeyboardCommitTextMETA<'a> {
         (self.0).text
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct VirtualKeyboardBackspaceMETA<'a>(&'a sys::EventDataVirtualKeyboardBackspaceMETA);
 impl<'a> VirtualKeyboardBackspaceMETA<'a> {
     #[inline]
@@ -3776,7 +3776,7 @@ impl<'a> VirtualKeyboardBackspaceMETA<'a> {
         (self.0).keyboard
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct VirtualKeyboardEnterMETA<'a>(&'a sys::EventDataVirtualKeyboardEnterMETA);
 impl<'a> VirtualKeyboardEnterMETA<'a> {
     #[inline]
@@ -3792,7 +3792,7 @@ impl<'a> VirtualKeyboardEnterMETA<'a> {
         (self.0).keyboard
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct VirtualKeyboardShownMETA<'a>(&'a sys::EventDataVirtualKeyboardShownMETA);
 impl<'a> VirtualKeyboardShownMETA<'a> {
     #[inline]
@@ -3808,7 +3808,7 @@ impl<'a> VirtualKeyboardShownMETA<'a> {
         (self.0).keyboard
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct VirtualKeyboardHiddenMETA<'a>(&'a sys::EventDataVirtualKeyboardHiddenMETA);
 impl<'a> VirtualKeyboardHiddenMETA<'a> {
     #[inline]
@@ -3824,7 +3824,7 @@ impl<'a> VirtualKeyboardHiddenMETA<'a> {
         (self.0).keyboard
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct HeadsetFitChangedML<'a>(&'a sys::EventDataHeadsetFitChangedML);
 impl<'a> HeadsetFitChangedML<'a> {
     #[inline]
@@ -3844,7 +3844,7 @@ impl<'a> HeadsetFitChangedML<'a> {
         (self.0).time
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct EyeCalibrationChangedML<'a>(&'a sys::EventDataEyeCalibrationChangedML);
 impl<'a> EyeCalibrationChangedML<'a> {
     #[inline]
@@ -3860,7 +3860,7 @@ impl<'a> EyeCalibrationChangedML<'a> {
         (self.0).status
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct LocalizationChangedML<'a>(&'a sys::EventDataLocalizationChangedML);
 impl<'a> LocalizationChangedML<'a> {
     #[inline]
@@ -3892,7 +3892,7 @@ impl<'a> LocalizationChangedML<'a> {
         (self.0).error_flags
     }
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct UserPresenceChangedEXT<'a>(&'a sys::EventDataUserPresenceChangedEXT);
 impl<'a> UserPresenceChangedEXT<'a> {
     #[inline]
