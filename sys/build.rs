@@ -22,7 +22,11 @@ fn main() {
 
         if target_os == "macos" || target_os == "freebsd" {
             println!("cargo:rustc-link-lib=c++");
-        } else if target_os != "windows" {
+        } else if target_os == "windows" {
+            // The OpenXR loader requires linking to `advapi32` on Windows:
+            // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/58e026e7efa5a4f6a612c554560b53aa482f04d4/src/loader/CMakeLists.txt#L245
+            println!("cargo:rustc-link-lib=advapi32");
+        } else {
             println!("cargo:rustc-link-lib=stdc++");
         }
     }
