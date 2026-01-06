@@ -8,6 +8,7 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
     rc::Rc,
+    str::FromStr,
 };
 
 use heck::{ToShoutySnakeCase, ToSnakeCase, ToUpperCamelCase};
@@ -1494,6 +1495,7 @@ impl Parser {
         let mut event_cases = Vec::new();
         let mut event_decodes = Vec::new();
         let mut event_readers = Vec::new();
+        let mut event_names = Vec::new();
         for (raw_name, evt) in self.structs.iter().filter(|(name, _)| {
             name.starts_with("XrEventData")
                 && !name.ends_with("BaseHeader")
@@ -1501,6 +1503,7 @@ impl Parser {
         }) {
             let raw_ident = xr_ty_name(raw_name);
             let name = &raw_name["XrEventData".len()..];
+            event_names.push(name.to_string());
             let ident = Ident::new(name, Span::call_site());
             event_cases.push(if evt.members.len() <= 2 {
                 assert_eq!(evt.members.len(), 2);
@@ -1525,6 +1528,10 @@ impl Parser {
             });
             event_readers.push(self.generate_reader(&ident, &raw_ident, evt));
         }
+        let event_names2 = event_names
+            .iter()
+            .map(|s| TokenStream::from_str(&s).unwrap())
+            .collect::<Vec<TokenStream>>();
 
         let mut struct_meta = HashMap::<&str, StructMeta>::new();
         for (name, s) in &self.structs {
@@ -1679,6 +1686,11 @@ impl Parser {
                             #(#event_decodes)*
                             _ => { return None; }
                         })
+                    }
+                }
+                pub const fn name(&self)->&'static str{
+                    match self{
+                         #(Self::#event_names2(_)=>#event_names,)*
                     }
                 }
             }

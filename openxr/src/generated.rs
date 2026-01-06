@@ -3225,6 +3225,40 @@ impl<'a> Event<'a> {
             })
         }
     }
+    pub const fn name(&self) -> &'static str {
+        match self {
+            Self::EventsLost(_) => "EventsLost",
+            Self::InstanceLossPending(_) => "InstanceLossPending",
+            Self::SessionStateChanged(_) => "SessionStateChanged",
+            Self::ReferenceSpaceChangePending(_) => "ReferenceSpaceChangePending",
+            Self::PerfSettingsEXT(_) => "PerfSettingsEXT",
+            Self::VisibilityMaskChangedKHR(_) => "VisibilityMaskChangedKHR",
+            Self::InteractionProfileChanged(_) => "InteractionProfileChanged",
+            Self::MainSessionVisibilityChangedEXTX(_) => "MainSessionVisibilityChangedEXTX",
+            Self::DisplayRefreshRateChangedFB(_) => "DisplayRefreshRateChangedFB",
+            Self::SpatialAnchorCreateCompleteFB(_) => "SpatialAnchorCreateCompleteFB",
+            Self::SpaceSetStatusCompleteFB(_) => "SpaceSetStatusCompleteFB",
+            Self::SpaceQueryResultsAvailableFB(_) => "SpaceQueryResultsAvailableFB",
+            Self::SpaceQueryCompleteFB(_) => "SpaceQueryCompleteFB",
+            Self::SpaceSaveCompleteFB(_) => "SpaceSaveCompleteFB",
+            Self::SpaceEraseCompleteFB(_) => "SpaceEraseCompleteFB",
+            Self::SpaceShareCompleteFB(_) => "SpaceShareCompleteFB",
+            Self::SpaceListSaveCompleteFB(_) => "SpaceListSaveCompleteFB",
+            Self::SceneCaptureCompleteFB(_) => "SceneCaptureCompleteFB",
+            Self::PassthroughStateChangedFB(_) => "PassthroughStateChangedFB",
+            Self::ViveTrackerConnectedHTCX(_) => "ViveTrackerConnectedHTCX",
+            Self::MarkerTrackingUpdateVARJO(_) => "MarkerTrackingUpdateVARJO",
+            Self::VirtualKeyboardCommitTextMETA(_) => "VirtualKeyboardCommitTextMETA",
+            Self::VirtualKeyboardBackspaceMETA(_) => "VirtualKeyboardBackspaceMETA",
+            Self::VirtualKeyboardEnterMETA(_) => "VirtualKeyboardEnterMETA",
+            Self::VirtualKeyboardShownMETA(_) => "VirtualKeyboardShownMETA",
+            Self::VirtualKeyboardHiddenMETA(_) => "VirtualKeyboardHiddenMETA",
+            Self::HeadsetFitChangedML(_) => "HeadsetFitChangedML",
+            Self::EyeCalibrationChangedML(_) => "EyeCalibrationChangedML",
+            Self::LocalizationChangedML(_) => "LocalizationChangedML",
+            Self::UserPresenceChangedEXT(_) => "UserPresenceChangedEXT",
+        }
+    }
 }
 #[derive(Copy, Clone)]
 pub struct EventsLost<'a>(&'a sys::EventDataEventsLost);
