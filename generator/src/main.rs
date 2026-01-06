@@ -955,6 +955,10 @@ impl Parser {
 
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
+            let has_zero = e
+                .values
+                .iter()
+                .any(|v| matches!(v.value, ConstantValue::Literal(0)));
             let values = e.values.iter().map(|v| {
                 let value_name = xr_enum_value_name(name, &v.name);
                 let value = match v.value {
@@ -1025,10 +1029,15 @@ impl Parser {
             } else {
                 quote! {}
             };
+            let derive_traits = if has_zero {
+                quote! { Copy, Clone, Eq, PartialEq, Default }
+            } else {
+                quote! { Copy, Clone, Eq, PartialEq }
+            };
             quote! {
                 #[doc = #doc]
                 #[repr(transparent)]
-                #[derive(Copy, Clone, Eq, PartialEq)]
+                #[derive(#derive_traits)]
                 pub struct #ident(i32);
                 impl #ident {
                     #(#values)*
@@ -1167,7 +1176,7 @@ impl Parser {
                 quote! { #[derive(Copy, Clone)] }
             } else if meta.has_pointer || meta.has_array && name != "XrUuid" {
                 quote! { #[derive(Copy, Clone, Debug)] }
-            } else if meta.has_non_default {
+            } else if meta.has_non_default || name == "XrNegotiateLoaderInfo" {
                 quote! { #[derive(Copy, Clone, Debug, PartialEq)] }
             } else {
                 quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
@@ -1482,6 +1491,9 @@ impl Parser {
         let reexports = simple_structs
             .iter()
             .cloned()
+            .filter(|&x| {
+                x != "XrRaycastHitResultANDROID" && x != "XrTrackableMarkerDatabaseEntryANDROID"
+            })
             .chain(
                 self.enums
                     .keys()
@@ -1538,6 +1550,9 @@ impl Parser {
             if name == "XrSwapchainImageBaseHeader"
                 || name == "XrEventDataBaseHeader"
                 || name == "XrLoaderInitInfoBaseHeaderKHR"
+                // TODO: Not yet manually implemented
+                || name == "XrSpatialAnchorsCreateInfoBaseHeaderML"
+                || name == "XrFutureCompletionBaseHeaderEXT"
             {
                 return None;
             }
@@ -1739,8 +1754,14 @@ impl Parser {
                 if let Some(x) = self.structs.get(&member.ty) {
                     out |= self.compute_meta(&member.ty, x);
                 }
-                if self.enums.contains_key(&member.ty) {
-                    out.has_non_default = true;
+                if let Some(e) = self.enums.get(&member.ty) {
+                    let has_zero = e
+                        .values
+                        .iter()
+                        .any(|v| matches!(v.value, ConstantValue::Literal(0)));
+                    if !has_zero {
+                        out.has_non_default = true;
+                    }
                 }
             }
         }
@@ -2285,6 +2306,8 @@ fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
         "XrMarkerArucoDict" => "XR_MARKER_ARUCO_".len(),
         "XrMarkerAprilTagDict" => "XR_MARKER_APRIL_TAG_".len(),
         "XrLoaderInterfaceStructs" => "XR_LOADER_INTERFACE_STRUCT_".len(),
+        "XrSpatialMarkerArucoDict" => "XR_SPATIAL_MARKER_ARUCO_".len(),
+        "XrSpatialMarkerAprilTagDict" => "XR_SPATIAL_MARKER_APRIL_TAG_".len(),
         _ => ty.to_shouty_snake_case().len() + 1,
     };
     let end = if !ext.is_empty() {
