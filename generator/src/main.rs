@@ -8,7 +8,6 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
     rc::Rc,
-    str::FromStr,
 };
 
 use heck::{ToShoutySnakeCase, ToSnakeCase, ToUpperCamelCase};
@@ -1503,8 +1502,8 @@ impl Parser {
         }) {
             let raw_ident = xr_ty_name(raw_name);
             let name = &raw_name["XrEventData".len()..];
-            event_names.push(name.to_string());
             let ident = Ident::new(name, Span::call_site());
+            event_names.push(quote! {Self::#ident(_) => #name,});
             event_cases.push(if evt.members.len() <= 2 {
                 assert_eq!(evt.members.len(), 2);
                 quote! { #ident }
@@ -1528,10 +1527,6 @@ impl Parser {
             });
             event_readers.push(self.generate_reader(&ident, &raw_ident, evt));
         }
-        let event_names2 = event_names
-            .iter()
-            .map(|s| TokenStream::from_str(&s).unwrap())
-            .collect::<Vec<TokenStream>>();
 
         let mut struct_meta = HashMap::<&str, StructMeta>::new();
         for (name, s) in &self.structs {
@@ -1690,7 +1685,7 @@ impl Parser {
                 }
                 pub const fn name(&self)->&'static str{
                     match self{
-                         #(Self::#event_names2(_)=>#event_names,)*
+                        #(#event_names)*
                     }
                 }
             }
