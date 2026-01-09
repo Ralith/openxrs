@@ -2129,10 +2129,16 @@ impl Parser {
             })
         });
 
+        let field_attr = if readers.clone().next().is_none() {
+            quote! { #[allow(dead_code)] }
+        } else {
+            quote! {}
+        };
+
         let sys_raw_ident_str = format!("[sys::{}]", raw_ident);
         quote! {
             #[derive(Copy, Clone)]
-            pub struct #ident<'a>(&'a sys::#raw_ident);
+            pub struct #ident<'a>(#field_attr &'a sys::#raw_ident);
 
             impl<'a> #ident<'a> {
                 #[inline]

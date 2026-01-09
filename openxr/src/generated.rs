@@ -5243,7 +5243,7 @@ impl<'a> PassthroughLayerResumedMETA<'a> {
 }
 #[derive(Copy, Clone)]
 pub struct InteractionRenderModelsChangedEXT<'a>(
-    &'a sys::EventDataInteractionRenderModelsChangedEXT,
+    #[allow(dead_code)] &'a sys::EventDataInteractionRenderModelsChangedEXT,
 );
 impl<'a> InteractionRenderModelsChangedEXT<'a> {
     #[inline]
