@@ -67,11 +67,7 @@ impl Graphics for OpenGlEs {
                     system_id: system,
                 };
                 let mut out = sys::Session::NULL;
-                cvt((instance.fp().create_session)(
-                    instance.as_raw(),
-                    &info,
-                    &mut out,
-                ))?;
+                cvt(unsafe { (instance.fp().create_session)(instance.as_raw(), &info, &mut out) })?;
 
                 Ok(out)
             }

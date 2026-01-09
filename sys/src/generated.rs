@@ -13,7 +13,7 @@ use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 1u16, 40u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 1u16, 54u32);
 pub const EXTENSION_ENUM_BASE: usize = 1000000000usize;
 pub const EXTENSION_ENUM_STRIDE: usize = 1000usize;
 pub const NULL_PATH: usize = 0usize;
@@ -30,12 +30,20 @@ pub const API_LAYER_NEXT_INFO_STRUCT_VERSION: usize = 1usize;
 pub const API_LAYER_CREATE_INFO_STRUCT_VERSION: usize = 1usize;
 pub const API_LAYER_MAX_SETTINGS_PATH_SIZE: usize = 512usize;
 pub const HAND_JOINT_COUNT_EXT: usize = 26usize;
+pub const BODY_JOINT_COUNT_BD: usize = 24usize;
+pub const BODY_JOINT_WITHOUT_ARM_COUNT_BD: usize = 16usize;
 pub const NULL_CONTROLLER_MODEL_KEY_MSFT: usize = 0usize;
 pub const NULL_RENDER_MODEL_KEY_FB: usize = 0usize;
 pub const FACIAL_EXPRESSION_EYE_COUNT_HTC: usize = 14usize;
 pub const FACIAL_EXPRESSION_LIP_COUNT_HTC: usize = 37usize;
 pub const HAND_FOREARM_JOINT_COUNT_ULTRALEAP: usize = 27usize;
+pub const NULL_TRACKABLE_ANDROID: usize = 0usize;
 pub const MAX_HAPTIC_PCM_BUFFER_SIZE_FB: usize = 4000usize;
+pub const NULL_SPATIAL_ENTITY_ID_EXT: usize = 0usize;
+pub const NULL_SPATIAL_BUFFER_ID_EXT: usize = 0usize;
+pub const BODY_JOINT_COUNT_HTC: usize = 26usize;
+pub const FACE_EXPRESSION_COUNT_BD: usize = 52usize;
+pub const LIP_EXPRESSION_COUNT_BD: usize = 20usize;
 pub const MAX_EXTENSION_NAME_SIZE: usize = 128usize;
 pub const MAX_API_LAYER_NAME_SIZE: usize = 256usize;
 pub const MAX_API_LAYER_DESCRIPTION_SIZE: usize = 256usize;
@@ -61,16 +69,141 @@ pub const PASSTHROUGH_COLOR_MAP_MONO_SIZE_FB: usize = 256usize;
 pub const MAX_RENDER_MODEL_NAME_SIZE_FB: usize = 64usize;
 pub const MAX_LOCALIZATION_MAP_NAME_LENGTH_ML: usize = 64usize;
 pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_MSFT: usize = 256usize;
+pub const MAX_STRUCTURE_NAME_SIZE_EXTENDED_KHR: usize = 256usize;
 pub const MAX_AUDIO_DEVICE_STR_SIZE_OCULUS: usize = 128usize;
 pub const FOVEATION_CENTER_SIZE_META: usize = 2usize;
 pub const MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META: usize = 3992usize;
 pub const MAX_EXTERNAL_CAMERA_NAME_SIZE_OCULUS: usize = 32usize;
+pub const MAX_SPACES_PER_SHARE_REQUEST_META: usize = 32usize;
 pub const UUID_SIZE_EXT: usize = 16usize;
+pub const NULL_RENDER_MODEL_ID_EXT: usize = 0usize;
+pub const MAX_RENDER_MODEL_ASSET_NODE_NAME_SIZE_EXT: usize = 64usize;
 pub const MAX_SPATIAL_ANCHOR_NAME_SIZE_HTC: usize = 256usize;
+pub const FACE_PARAMETER_COUNT_ANDROID: usize = 68usize;
+pub const FACE_REGION_CONFIDENCE_COUNT_ANDROID: usize = 3usize;
 pub const NULL_FUTURE_EXT: usize = 0usize;
+pub const MAX_COLOCATION_DISCOVERY_BUFFER_SIZE_META: usize = 1024usize;
+#[doc = "See [XrPassthroughCameraStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughCameraStateANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct PassthroughCameraStateANDROID(i32);
+impl PassthroughCameraStateANDROID {
+    #[doc = "The camera has been disabled by an app, the system or the user."]
+    pub const DISABLED: PassthroughCameraStateANDROID = Self(0i32);
+    #[doc = "The camera is still coming online and not yet ready to use. The runtime may: render a black background where the passthrough video is supposed to appear."]
+    pub const INITIALIZING: PassthroughCameraStateANDROID = Self(1i32);
+    #[doc = "The camera is ready to use."]
+    pub const READY: PassthroughCameraStateANDROID = Self(2i32);
+    #[doc = "The camera is in an unrecoverable error state."]
+    pub const ERROR: PassthroughCameraStateANDROID = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for PassthroughCameraStateANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DISABLED => Some("DISABLED"),
+            Self::INITIALIZING => Some("INITIALIZING"),
+            Self::READY => Some("READY"),
+            Self::ERROR => Some("ERROR"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrTrackableMarkerTrackingModeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerTrackingModeANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct TrackableMarkerTrackingModeANDROID(i32);
+impl TrackableMarkerTrackingModeANDROID {
+    #[doc = "Tracking dynamic markers. This mode has the highest accuracy and works on moving and static markers, but also has the highest power consumption."]
+    pub const DYNAMIC: TrackableMarkerTrackingModeANDROID = Self(0i32);
+    #[doc = "Tracking static markers. This mode is primarily useful for markers that are known to be static, which leads to less power consumption in comparison to the dynamic mode."]
+    pub const STATIC: TrackableMarkerTrackingModeANDROID = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for TrackableMarkerTrackingModeANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DYNAMIC => Some("DYNAMIC"),
+            Self::STATIC => Some("STATIC"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrTrackableMarkerDictionaryANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerDictionaryANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct TrackableMarkerDictionaryANDROID(i32);
+impl TrackableMarkerDictionaryANDROID {
+    pub const ARUCO_4X4_50: TrackableMarkerDictionaryANDROID = Self(0i32);
+    pub const ARUCO_4X4_100: TrackableMarkerDictionaryANDROID = Self(1i32);
+    pub const ARUCO_4X4_250: TrackableMarkerDictionaryANDROID = Self(2i32);
+    pub const ARUCO_4X4_1000: TrackableMarkerDictionaryANDROID = Self(3i32);
+    pub const ARUCO_5X5_50: TrackableMarkerDictionaryANDROID = Self(4i32);
+    pub const ARUCO_5X5_100: TrackableMarkerDictionaryANDROID = Self(5i32);
+    pub const ARUCO_5X5_250: TrackableMarkerDictionaryANDROID = Self(6i32);
+    pub const ARUCO_5X5_1000: TrackableMarkerDictionaryANDROID = Self(7i32);
+    pub const ARUCO_6X6_50: TrackableMarkerDictionaryANDROID = Self(8i32);
+    pub const ARUCO_6X6_100: TrackableMarkerDictionaryANDROID = Self(9i32);
+    pub const ARUCO_6X6_250: TrackableMarkerDictionaryANDROID = Self(10i32);
+    pub const ARUCO_6X6_1000: TrackableMarkerDictionaryANDROID = Self(11i32);
+    pub const ARUCO_7X7_50: TrackableMarkerDictionaryANDROID = Self(12i32);
+    pub const ARUCO_7X7_100: TrackableMarkerDictionaryANDROID = Self(13i32);
+    pub const ARUCO_7X7_250: TrackableMarkerDictionaryANDROID = Self(14i32);
+    pub const ARUCO_7X7_1000: TrackableMarkerDictionaryANDROID = Self(15i32);
+    pub const APRILTAG_16H5: TrackableMarkerDictionaryANDROID = Self(16i32);
+    pub const APRILTAG_25H9: TrackableMarkerDictionaryANDROID = Self(17i32);
+    pub const APRILTAG_36H10: TrackableMarkerDictionaryANDROID = Self(18i32);
+    pub const APRILTAG_36H11: TrackableMarkerDictionaryANDROID = Self(19i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for TrackableMarkerDictionaryANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::ARUCO_4X4_50 => Some("ARUCO_4X4_50"),
+            Self::ARUCO_4X4_100 => Some("ARUCO_4X4_100"),
+            Self::ARUCO_4X4_250 => Some("ARUCO_4X4_250"),
+            Self::ARUCO_4X4_1000 => Some("ARUCO_4X4_1000"),
+            Self::ARUCO_5X5_50 => Some("ARUCO_5X5_50"),
+            Self::ARUCO_5X5_100 => Some("ARUCO_5X5_100"),
+            Self::ARUCO_5X5_250 => Some("ARUCO_5X5_250"),
+            Self::ARUCO_5X5_1000 => Some("ARUCO_5X5_1000"),
+            Self::ARUCO_6X6_50 => Some("ARUCO_6X6_50"),
+            Self::ARUCO_6X6_100 => Some("ARUCO_6X6_100"),
+            Self::ARUCO_6X6_250 => Some("ARUCO_6X6_250"),
+            Self::ARUCO_6X6_1000 => Some("ARUCO_6X6_1000"),
+            Self::ARUCO_7X7_50 => Some("ARUCO_7X7_50"),
+            Self::ARUCO_7X7_100 => Some("ARUCO_7X7_100"),
+            Self::ARUCO_7X7_250 => Some("ARUCO_7X7_250"),
+            Self::ARUCO_7X7_1000 => Some("ARUCO_7X7_1000"),
+            Self::APRILTAG_16H5 => Some("APRILTAG_16H5"),
+            Self::APRILTAG_25H9 => Some("APRILTAG_25H9"),
+            Self::APRILTAG_36H10 => Some("APRILTAG_36H10"),
+            Self::APRILTAG_36H11 => Some("APRILTAG_36H11"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrLoaderInterfaceStructs](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLoaderInterfaceStructs)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct LoaderInterfaceStructs(i32);
 impl LoaderInterfaceStructs {
     pub const UNINTIALIZED: LoaderInterfaceStructs = Self(0i32);
@@ -102,7 +235,7 @@ impl fmt::Debug for LoaderInterfaceStructs {
 }
 #[doc = "Structure type enumerant - see [XrStructureType](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrStructureType)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct StructureType(i32);
 impl StructureType {
     pub const UNKNOWN: StructureType = Self(0i32);
@@ -345,6 +478,23 @@ impl StructureType {
     pub const MAP_LOCALIZATION_REQUEST_INFO_ML: StructureType = Self(1000139002i32);
     pub const LOCALIZATION_MAP_IMPORT_INFO_ML: StructureType = Self(1000139003i32);
     pub const LOCALIZATION_ENABLE_EVENTS_INFO_ML: StructureType = Self(1000139004i32);
+    pub const SPATIAL_ANCHORS_CREATE_INFO_FROM_POSE_ML: StructureType = Self(1000140000i32);
+    pub const CREATE_SPATIAL_ANCHORS_COMPLETION_ML: StructureType = Self(1000140001i32);
+    pub const SPATIAL_ANCHOR_STATE_ML: StructureType = Self(1000140002i32);
+    pub const SPATIAL_ANCHORS_CREATE_STORAGE_INFO_ML: StructureType = Self(1000141000i32);
+    pub const SPATIAL_ANCHORS_QUERY_INFO_RADIUS_ML: StructureType = Self(1000141001i32);
+    pub const SPATIAL_ANCHORS_QUERY_COMPLETION_ML: StructureType = Self(1000141002i32);
+    pub const SPATIAL_ANCHORS_CREATE_INFO_FROM_UUIDS_ML: StructureType = Self(1000141003i32);
+    pub const SPATIAL_ANCHORS_PUBLISH_INFO_ML: StructureType = Self(1000141004i32);
+    pub const SPATIAL_ANCHORS_PUBLISH_COMPLETION_ML: StructureType = Self(1000141005i32);
+    pub const SPATIAL_ANCHORS_DELETE_INFO_ML: StructureType = Self(1000141006i32);
+    pub const SPATIAL_ANCHORS_DELETE_COMPLETION_ML: StructureType = Self(1000141007i32);
+    pub const SPATIAL_ANCHORS_UPDATE_EXPIRATION_INFO_ML: StructureType = Self(1000141008i32);
+    pub const SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_ML: StructureType = Self(1000141009i32);
+    pub const SPATIAL_ANCHORS_PUBLISH_COMPLETION_DETAILS_ML: StructureType = Self(1000141010i32);
+    pub const SPATIAL_ANCHORS_DELETE_COMPLETION_DETAILS_ML: StructureType = Self(1000141011i32);
+    pub const SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_DETAILS_ML: StructureType =
+        Self(1000141012i32);
     pub const EVENT_DATA_HEADSET_FIT_CHANGED_ML: StructureType = Self(1000472000i32);
     pub const EVENT_DATA_EYE_CALIBRATION_CHANGED_ML: StructureType = Self(1000472001i32);
     pub const USER_CALIBRATION_ENABLE_EVENTS_INFO_ML: StructureType = Self(1000472002i32);
@@ -399,6 +549,8 @@ impl StructureType {
     pub const DEVICE_PCM_SAMPLE_RATE_STATE_FB: StructureType = Self(1000209002i32);
     pub const DEVICE_PCM_SAMPLE_RATE_GET_INFO_FB: StructureType =
         Self::DEVICE_PCM_SAMPLE_RATE_STATE_FB;
+    pub const FRAME_SYNTHESIS_INFO_EXT: StructureType = Self(1000211000i32);
+    pub const FRAME_SYNTHESIS_CONFIG_VIEW_EXT: StructureType = Self(1000211001i32);
     pub const COMPOSITION_LAYER_DEPTH_TEST_FB: StructureType = Self(1000212000i32);
     pub const LOCAL_DIMMING_FRAME_END_INFO_META: StructureType = Self(1000216000i32);
     pub const PASSTHROUGH_PREFERENCES_META: StructureType = Self(1000217000i32);
@@ -425,8 +577,22 @@ impl StructureType {
     pub const EVENT_DATA_SPACE_LIST_SAVE_COMPLETE_FB: StructureType = Self(1000238001i32);
     pub const SPACE_USER_CREATE_INFO_FB: StructureType = Self(1000241001i32);
     pub const SYSTEM_HEADSET_ID_PROPERTIES_META: StructureType = Self(1000245000i32);
+    pub const SYSTEM_SPACE_DISCOVERY_PROPERTIES_META: StructureType = Self(1000247000i32);
+    pub const SPACE_DISCOVERY_INFO_META: StructureType = Self(1000247001i32);
+    pub const SPACE_FILTER_UUID_META: StructureType = Self(1000247003i32);
+    pub const SPACE_FILTER_COMPONENT_META: StructureType = Self(1000247004i32);
+    pub const SPACE_DISCOVERY_RESULT_META: StructureType = Self(1000247005i32);
+    pub const SPACE_DISCOVERY_RESULTS_META: StructureType = Self(1000247006i32);
+    pub const EVENT_DATA_SPACE_DISCOVERY_RESULTS_AVAILABLE_META: StructureType =
+        Self(1000247007i32);
+    pub const EVENT_DATA_SPACE_DISCOVERY_COMPLETE_META: StructureType = Self(1000247008i32);
     pub const RECOMMENDED_LAYER_RESOLUTION_META: StructureType = Self(1000254000i32);
     pub const RECOMMENDED_LAYER_RESOLUTION_GET_INFO_META: StructureType = Self(1000254001i32);
+    pub const SYSTEM_SPACE_PERSISTENCE_PROPERTIES_META: StructureType = Self(1000259000i32);
+    pub const SPACES_SAVE_INFO_META: StructureType = Self(1000259001i32);
+    pub const EVENT_DATA_SPACES_SAVE_RESULT_META: StructureType = Self(1000259002i32);
+    pub const SPACES_ERASE_INFO_META: StructureType = Self(1000259003i32);
+    pub const EVENT_DATA_SPACES_ERASE_RESULT_META: StructureType = Self(1000259004i32);
     pub const SYSTEM_PASSTHROUGH_COLOR_LUT_PROPERTIES_META: StructureType = Self(1000266000i32);
     pub const PASSTHROUGH_COLOR_LUT_CREATE_INFO_META: StructureType = Self(1000266001i32);
     pub const PASSTHROUGH_COLOR_LUT_UPDATE_INFO_META: StructureType = Self(1000266002i32);
@@ -434,10 +600,18 @@ impl StructureType {
     pub const PASSTHROUGH_COLOR_MAP_INTERPOLATED_LUT_META: StructureType = Self(1000266101i32);
     pub const SPACE_TRIANGLE_MESH_GET_INFO_META: StructureType = Self(1000269001i32);
     pub const SPACE_TRIANGLE_MESH_META: StructureType = Self(1000269002i32);
+    pub const SYSTEM_PROPERTIES_BODY_TRACKING_FULL_BODY_META: StructureType = Self(1000274000i32);
+    pub const EVENT_DATA_PASSTHROUGH_LAYER_RESUMED_META: StructureType = Self(1000282000i32);
+    pub const BODY_TRACKING_CALIBRATION_INFO_META: StructureType = Self(1000283002i32);
+    pub const BODY_TRACKING_CALIBRATION_STATUS_META: StructureType = Self(1000283003i32);
+    pub const SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META: StructureType = Self(1000283004i32);
     pub const SYSTEM_FACE_TRACKING_PROPERTIES2_FB: StructureType = Self(1000287013i32);
     pub const FACE_TRACKER_CREATE_INFO2_FB: StructureType = Self(1000287014i32);
     pub const FACE_EXPRESSION_INFO2_FB: StructureType = Self(1000287015i32);
     pub const FACE_EXPRESSION_WEIGHTS2_FB: StructureType = Self(1000287016i32);
+    pub const SYSTEM_SPATIAL_ENTITY_SHARING_PROPERTIES_META: StructureType = Self(1000290000i32);
+    pub const SHARE_SPACES_INFO_META: StructureType = Self(1000290001i32);
+    pub const EVENT_DATA_SHARE_SPACES_COMPLETE_META: StructureType = Self(1000290002i32);
     pub const ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META: StructureType = Self(1000291000i32);
     pub const ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META: StructureType = Self(1000291001i32);
     pub const ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META: StructureType = Self(1000291002i32);
@@ -446,6 +620,23 @@ impl StructureType {
     pub const ENVIRONMENT_DEPTH_IMAGE_META: StructureType = Self(1000291005i32);
     pub const ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META: StructureType = Self(1000291006i32);
     pub const SYSTEM_ENVIRONMENT_DEPTH_PROPERTIES_META: StructureType = Self(1000291007i32);
+    pub const ENVIRONMENT_DEPTH_IMAGE_TIMESTAMP_META: StructureType = Self(1000291008i32);
+    pub const RENDER_MODEL_CREATE_INFO_EXT: StructureType = Self(1000300000i32);
+    pub const RENDER_MODEL_PROPERTIES_GET_INFO_EXT: StructureType = Self(1000300001i32);
+    pub const RENDER_MODEL_PROPERTIES_EXT: StructureType = Self(1000300002i32);
+    pub const RENDER_MODEL_SPACE_CREATE_INFO_EXT: StructureType = Self(1000300003i32);
+    pub const RENDER_MODEL_STATE_GET_INFO_EXT: StructureType = Self(1000300004i32);
+    pub const RENDER_MODEL_STATE_EXT: StructureType = Self(1000300005i32);
+    pub const RENDER_MODEL_ASSET_CREATE_INFO_EXT: StructureType = Self(1000300006i32);
+    pub const RENDER_MODEL_ASSET_DATA_GET_INFO_EXT: StructureType = Self(1000300007i32);
+    pub const RENDER_MODEL_ASSET_DATA_EXT: StructureType = Self(1000300008i32);
+    pub const RENDER_MODEL_ASSET_PROPERTIES_GET_INFO_EXT: StructureType = Self(1000300009i32);
+    pub const RENDER_MODEL_ASSET_PROPERTIES_EXT: StructureType = Self(1000300010i32);
+    pub const INTERACTION_RENDER_MODEL_IDS_ENUMERATE_INFO_EXT: StructureType = Self(1000301000i32);
+    pub const INTERACTION_RENDER_MODEL_SUBACTION_PATH_INFO_EXT: StructureType = Self(1000301001i32);
+    pub const EVENT_DATA_INTERACTION_RENDER_MODELS_CHANGED_EXT: StructureType = Self(1000301002i32);
+    pub const INTERACTION_RENDER_MODEL_TOP_LEVEL_USER_PATH_GET_INFO_EXT: StructureType =
+        Self(1000301003i32);
     pub const PASSTHROUGH_CREATE_INFO_HTC: StructureType = Self(1000317001i32);
     pub const PASSTHROUGH_COLOR_HTC: StructureType = Self(1000317002i32);
     pub const PASSTHROUGH_MESH_TRANSFORM_INFO_HTC: StructureType = Self(1000317003i32);
@@ -455,9 +646,65 @@ impl StructureType {
     pub const FOVEATION_CUSTOM_MODE_INFO_HTC: StructureType = Self(1000318002i32);
     pub const SYSTEM_ANCHOR_PROPERTIES_HTC: StructureType = Self(1000319000i32);
     pub const SPATIAL_ANCHOR_CREATE_INFO_HTC: StructureType = Self(1000319001i32);
+    pub const SYSTEM_BODY_TRACKING_PROPERTIES_HTC: StructureType = Self(1000320000i32);
+    pub const BODY_TRACKER_CREATE_INFO_HTC: StructureType = Self(1000320001i32);
+    pub const BODY_JOINTS_LOCATE_INFO_HTC: StructureType = Self(1000320002i32);
+    pub const BODY_JOINT_LOCATIONS_HTC: StructureType = Self(1000320003i32);
+    pub const BODY_SKELETON_HTC: StructureType = Self(1000320004i32);
     pub const ACTIVE_ACTION_SET_PRIORITIES_EXT: StructureType = Self(1000373000i32);
     pub const SYSTEM_FORCE_FEEDBACK_CURL_PROPERTIES_MNDX: StructureType = Self(1000375000i32);
     pub const FORCE_FEEDBACK_CURL_APPLY_LOCATIONS_MNDX: StructureType = Self(1000375001i32);
+    pub const BODY_TRACKER_CREATE_INFO_BD: StructureType = Self(1000385001i32);
+    pub const BODY_JOINTS_LOCATE_INFO_BD: StructureType = Self(1000385002i32);
+    pub const BODY_JOINT_LOCATIONS_BD: StructureType = Self(1000385003i32);
+    pub const SYSTEM_BODY_TRACKING_PROPERTIES_BD: StructureType = Self(1000385004i32);
+    pub const SYSTEM_FACIAL_SIMULATION_PROPERTIES_BD: StructureType = Self(1000386001i32);
+    pub const FACE_TRACKER_CREATE_INFO_BD: StructureType = Self(1000386002i32);
+    pub const FACIAL_SIMULATION_DATA_GET_INFO_BD: StructureType = Self(1000386003i32);
+    pub const FACIAL_SIMULATION_DATA_BD: StructureType = Self(1000386004i32);
+    pub const LIP_EXPRESSION_DATA_BD: StructureType = Self(1000386005i32);
+    pub const SYSTEM_SPATIAL_SENSING_PROPERTIES_BD: StructureType = Self(1000389000i32);
+    pub const SPATIAL_ENTITY_COMPONENT_GET_INFO_BD: StructureType = Self(1000389001i32);
+    pub const SPATIAL_ENTITY_LOCATION_GET_INFO_BD: StructureType = Self(1000389002i32);
+    pub const SPATIAL_ENTITY_COMPONENT_DATA_LOCATION_BD: StructureType = Self(1000389003i32);
+    pub const SPATIAL_ENTITY_COMPONENT_DATA_SEMANTIC_BD: StructureType = Self(1000389004i32);
+    pub const SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_2D_BD: StructureType = Self(1000389005i32);
+    pub const SPATIAL_ENTITY_COMPONENT_DATA_POLYGON_BD: StructureType = Self(1000389006i32);
+    pub const SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_3D_BD: StructureType = Self(1000389007i32);
+    pub const SPATIAL_ENTITY_COMPONENT_DATA_TRIANGLE_MESH_BD: StructureType = Self(1000389008i32);
+    pub const SENSE_DATA_PROVIDER_CREATE_INFO_BD: StructureType = Self(1000389009i32);
+    pub const SENSE_DATA_PROVIDER_START_INFO_BD: StructureType = Self(1000389010i32);
+    pub const EVENT_DATA_SENSE_DATA_PROVIDER_STATE_CHANGED_BD: StructureType = Self(1000389011i32);
+    pub const EVENT_DATA_SENSE_DATA_UPDATED_BD: StructureType = Self(1000389012i32);
+    pub const SENSE_DATA_QUERY_INFO_BD: StructureType = Self(1000389013i32);
+    pub const SENSE_DATA_QUERY_COMPLETION_BD: StructureType = Self(1000389014i32);
+    pub const SENSE_DATA_FILTER_UUID_BD: StructureType = Self(1000389015i32);
+    pub const SENSE_DATA_FILTER_SEMANTIC_BD: StructureType = Self(1000389016i32);
+    pub const QUERIED_SENSE_DATA_GET_INFO_BD: StructureType = Self(1000389017i32);
+    pub const QUERIED_SENSE_DATA_BD: StructureType = Self(1000389018i32);
+    pub const SPATIAL_ENTITY_STATE_BD: StructureType = Self(1000389019i32);
+    pub const SPATIAL_ENTITY_ANCHOR_CREATE_INFO_BD: StructureType = Self(1000389020i32);
+    pub const ANCHOR_SPACE_CREATE_INFO_BD: StructureType = Self(1000389021i32);
+    pub const SYSTEM_SPATIAL_ANCHOR_PROPERTIES_BD: StructureType = Self(1000390000i32);
+    pub const SPATIAL_ANCHOR_CREATE_INFO_BD: StructureType = Self(1000390001i32);
+    pub const SPATIAL_ANCHOR_CREATE_COMPLETION_BD: StructureType = Self(1000390002i32);
+    pub const SPATIAL_ANCHOR_PERSIST_INFO_BD: StructureType = Self(1000390003i32);
+    pub const SPATIAL_ANCHOR_UNPERSIST_INFO_BD: StructureType = Self(1000390004i32);
+    pub const SYSTEM_SPATIAL_ANCHOR_SHARING_PROPERTIES_BD: StructureType = Self(1000391000i32);
+    pub const SPATIAL_ANCHOR_SHARE_INFO_BD: StructureType = Self(1000391001i32);
+    pub const SHARED_SPATIAL_ANCHOR_DOWNLOAD_INFO_BD: StructureType = Self(1000391002i32);
+    pub const SYSTEM_SPATIAL_SCENE_PROPERTIES_BD: StructureType = Self(1000392000i32);
+    pub const SCENE_CAPTURE_INFO_BD: StructureType = Self(1000392001i32);
+    pub const SYSTEM_SPATIAL_MESH_PROPERTIES_BD: StructureType = Self(1000393000i32);
+    pub const SENSE_DATA_PROVIDER_CREATE_INFO_SPATIAL_MESH_BD: StructureType = Self(1000393001i32);
+    pub const FUTURE_POLL_RESULT_PROGRESS_BD: StructureType = Self(1000394001i32);
+    #[doc = "XrSystemSpatialPlanePropertiesBD"]
+    pub const SYSTEM_SPATIAL_PLANE_PROPERTIES_BD: StructureType = Self(1000396000i32);
+    #[doc = "XrSpatialEntityComponentDataPlaneOrientationBD"]
+    pub const SPATIAL_ENTITY_COMPONENT_DATA_PLANE_ORIENTATION_BD: StructureType =
+        Self(1000396001i32);
+    #[doc = "XrSenseDataFilterPlaneOrientationBD"]
+    pub const SENSE_DATA_FILTER_PLANE_ORIENTATION_BD: StructureType = Self(1000396002i32);
     pub const HAND_TRACKING_DATA_SOURCE_INFO_EXT: StructureType = Self(1000428000i32);
     pub const HAND_TRACKING_DATA_SOURCE_STATE_EXT: StructureType = Self(1000428001i32);
     pub const PLANE_DETECTOR_CREATE_INFO_EXT: StructureType = Self(1000429001i32);
@@ -467,6 +714,27 @@ impl StructureType {
     pub const PLANE_DETECTOR_LOCATION_EXT: StructureType = Self(1000429005i32);
     pub const PLANE_DETECTOR_POLYGON_BUFFER_EXT: StructureType = Self(1000429006i32);
     pub const SYSTEM_PLANE_DETECTION_PROPERTIES_EXT: StructureType = Self(1000429007i32);
+    pub const TRACKABLE_GET_INFO_ANDROID: StructureType = Self(1000455000i32);
+    pub const ANCHOR_SPACE_CREATE_INFO_ANDROID: StructureType = Self(1000455001i32);
+    pub const TRACKABLE_PLANE_ANDROID: StructureType = Self(1000455003i32);
+    pub const TRACKABLE_TRACKER_CREATE_INFO_ANDROID: StructureType = Self(1000455004i32);
+    pub const SYSTEM_TRACKABLES_PROPERTIES_ANDROID: StructureType = Self(1000455005i32);
+    pub const PERSISTED_ANCHOR_SPACE_CREATE_INFO_ANDROID: StructureType = Self(1000457001i32);
+    pub const PERSISTED_ANCHOR_SPACE_INFO_ANDROID: StructureType = Self(1000457002i32);
+    pub const DEVICE_ANCHOR_PERSISTENCE_CREATE_INFO_ANDROID: StructureType = Self(1000457003i32);
+    pub const SYSTEM_DEVICE_ANCHOR_PERSISTENCE_PROPERTIES_ANDROID: StructureType =
+        Self(1000457004i32);
+    pub const FACE_TRACKER_CREATE_INFO_ANDROID: StructureType = Self(1000458000i32);
+    pub const FACE_STATE_GET_INFO_ANDROID: StructureType = Self(1000458001i32);
+    pub const FACE_STATE_ANDROID: StructureType = Self(1000458002i32);
+    pub const SYSTEM_FACE_TRACKING_PROPERTIES_ANDROID: StructureType = Self(1000458003i32);
+    pub const PASSTHROUGH_CAMERA_STATE_GET_INFO_ANDROID: StructureType = Self(1000460000i32);
+    pub const SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID: StructureType =
+        Self(1000460001i32);
+    pub const RAYCAST_INFO_ANDROID: StructureType = Self(1000463000i32);
+    pub const RAYCAST_HIT_RESULTS_ANDROID: StructureType = Self(1000463001i32);
+    pub const TRACKABLE_OBJECT_ANDROID: StructureType = Self(1000466000i32);
+    pub const TRACKABLE_OBJECT_CONFIGURATION_ANDROID: StructureType = Self(1000466001i32);
     pub const FUTURE_CANCEL_INFO_EXT: StructureType = Self(1000469000i32);
     pub const FUTURE_POLL_INFO_EXT: StructureType = Self(1000469001i32);
     pub const FUTURE_COMPLETION_EXT: StructureType = Self(1000469002i32);
@@ -476,6 +744,103 @@ impl StructureType {
     pub const SPACES_LOCATE_INFO_KHR: StructureType = Self::SPACES_LOCATE_INFO;
     pub const SPACE_LOCATIONS_KHR: StructureType = Self::SPACE_LOCATIONS;
     pub const SPACE_VELOCITIES_KHR: StructureType = Self::SPACE_VELOCITIES;
+    pub const SYSTEM_NOTIFICATIONS_SET_INFO_ML: StructureType = Self(1000473000i32);
+    pub const WORLD_MESH_DETECTOR_CREATE_INFO_ML: StructureType = Self(1000474001i32);
+    pub const WORLD_MESH_STATE_REQUEST_INFO_ML: StructureType = Self(1000474002i32);
+    pub const WORLD_MESH_BLOCK_STATE_ML: StructureType = Self(1000474003i32);
+    pub const WORLD_MESH_STATE_REQUEST_COMPLETION_ML: StructureType = Self(1000474004i32);
+    pub const WORLD_MESH_BUFFER_RECOMMENDED_SIZE_INFO_ML: StructureType = Self(1000474005i32);
+    pub const WORLD_MESH_BUFFER_SIZE_ML: StructureType = Self(1000474006i32);
+    pub const WORLD_MESH_BUFFER_ML: StructureType = Self(1000474007i32);
+    pub const WORLD_MESH_BLOCK_REQUEST_ML: StructureType = Self(1000474008i32);
+    pub const WORLD_MESH_GET_INFO_ML: StructureType = Self(1000474009i32);
+    pub const WORLD_MESH_BLOCK_ML: StructureType = Self(1000474010i32);
+    pub const WORLD_MESH_REQUEST_COMPLETION_ML: StructureType = Self(1000474011i32);
+    pub const WORLD_MESH_REQUEST_COMPLETION_INFO_ML: StructureType = Self(1000474012i32);
+    pub const SYSTEM_FACIAL_EXPRESSION_PROPERTIES_ML: StructureType = Self(1000482004i32);
+    pub const FACIAL_EXPRESSION_CLIENT_CREATE_INFO_ML: StructureType = Self(1000482005i32);
+    pub const FACIAL_EXPRESSION_BLEND_SHAPE_GET_INFO_ML: StructureType = Self(1000482006i32);
+    pub const FACIAL_EXPRESSION_BLEND_SHAPE_PROPERTIES_ML: StructureType = Self(1000482007i32);
+    pub const SYSTEM_SIMULTANEOUS_HANDS_AND_CONTROLLERS_PROPERTIES_META: StructureType =
+        Self(1000532001i32);
+    pub const SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_RESUME_INFO_META: StructureType =
+        Self(1000532002i32);
+    pub const SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_PAUSE_INFO_META: StructureType =
+        Self(1000532003i32);
+    pub const COLOCATION_DISCOVERY_START_INFO_META: StructureType = Self(1000571010i32);
+    pub const COLOCATION_DISCOVERY_STOP_INFO_META: StructureType = Self(1000571011i32);
+    pub const COLOCATION_ADVERTISEMENT_START_INFO_META: StructureType = Self(1000571012i32);
+    pub const COLOCATION_ADVERTISEMENT_STOP_INFO_META: StructureType = Self(1000571013i32);
+    pub const EVENT_DATA_START_COLOCATION_ADVERTISEMENT_COMPLETE_META: StructureType =
+        Self(1000571020i32);
+    pub const EVENT_DATA_STOP_COLOCATION_ADVERTISEMENT_COMPLETE_META: StructureType =
+        Self(1000571021i32);
+    pub const EVENT_DATA_COLOCATION_ADVERTISEMENT_COMPLETE_META: StructureType =
+        Self(1000571022i32);
+    pub const EVENT_DATA_START_COLOCATION_DISCOVERY_COMPLETE_META: StructureType =
+        Self(1000571023i32);
+    pub const EVENT_DATA_COLOCATION_DISCOVERY_RESULT_META: StructureType = Self(1000571024i32);
+    pub const EVENT_DATA_COLOCATION_DISCOVERY_COMPLETE_META: StructureType = Self(1000571025i32);
+    pub const EVENT_DATA_STOP_COLOCATION_DISCOVERY_COMPLETE_META: StructureType =
+        Self(1000571026i32);
+    pub const SYSTEM_COLOCATION_DISCOVERY_PROPERTIES_META: StructureType = Self(1000571030i32);
+    pub const SHARE_SPACES_RECIPIENT_GROUPS_META: StructureType = Self(1000572000i32);
+    pub const SPACE_GROUP_UUID_FILTER_INFO_META: StructureType = Self(1000572001i32);
+    pub const SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META: StructureType =
+        Self(1000572100i32);
+    pub const ANCHOR_SHARING_INFO_ANDROID: StructureType = Self(1000701000i32);
+    pub const ANCHOR_SHARING_TOKEN_ANDROID: StructureType = Self(1000701001i32);
+    pub const SYSTEM_ANCHOR_SHARING_EXPORT_PROPERTIES_ANDROID: StructureType = Self(1000701002i32);
+    pub const SYSTEM_MARKER_TRACKING_PROPERTIES_ANDROID: StructureType = Self(1000707000i32);
+    pub const TRACKABLE_MARKER_CONFIGURATION_ANDROID: StructureType = Self(1000707001i32);
+    pub const TRACKABLE_MARKER_ANDROID: StructureType = Self(1000707002i32);
+    pub const SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT: StructureType = Self(1000740000i32);
+    pub const SPATIAL_CONTEXT_CREATE_INFO_EXT: StructureType = Self(1000740001i32);
+    pub const CREATE_SPATIAL_CONTEXT_COMPLETION_EXT: StructureType = Self(1000740002i32);
+    pub const SPATIAL_DISCOVERY_SNAPSHOT_CREATE_INFO_EXT: StructureType = Self(1000740003i32);
+    pub const CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_INFO_EXT: StructureType =
+        Self(1000740004i32);
+    pub const CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_EXT: StructureType = Self(1000740005i32);
+    pub const SPATIAL_COMPONENT_DATA_QUERY_CONDITION_EXT: StructureType = Self(1000740006i32);
+    pub const SPATIAL_COMPONENT_DATA_QUERY_RESULT_EXT: StructureType = Self(1000740007i32);
+    pub const SPATIAL_BUFFER_GET_INFO_EXT: StructureType = Self(1000740008i32);
+    pub const SPATIAL_COMPONENT_BOUNDED_2D_LIST_EXT: StructureType = Self(1000740009i32);
+    pub const SPATIAL_COMPONENT_BOUNDED_3D_LIST_EXT: StructureType = Self(1000740010i32);
+    pub const SPATIAL_COMPONENT_PARENT_LIST_EXT: StructureType = Self(1000740011i32);
+    pub const SPATIAL_COMPONENT_MESH_3D_LIST_EXT: StructureType = Self(1000740012i32);
+    pub const SPATIAL_ENTITY_FROM_ID_CREATE_INFO_EXT: StructureType = Self(1000740013i32);
+    pub const SPATIAL_UPDATE_SNAPSHOT_CREATE_INFO_EXT: StructureType = Self(1000740014i32);
+    pub const EVENT_DATA_SPATIAL_DISCOVERY_RECOMMENDED_EXT: StructureType = Self(1000740015i32);
+    pub const SPATIAL_FILTER_TRACKING_STATE_EXT: StructureType = Self(1000740016i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_PLANE_TRACKING_EXT: StructureType =
+        Self(1000741000i32);
+    pub const SPATIAL_COMPONENT_PLANE_ALIGNMENT_LIST_EXT: StructureType = Self(1000741001i32);
+    pub const SPATIAL_COMPONENT_MESH_2D_LIST_EXT: StructureType = Self(1000741002i32);
+    pub const SPATIAL_COMPONENT_POLYGON_2D_LIST_EXT: StructureType = Self(1000741003i32);
+    pub const SPATIAL_COMPONENT_PLANE_SEMANTIC_LABEL_LIST_EXT: StructureType = Self(1000741004i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_QR_CODE_EXT: StructureType = Self(1000743000i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_MICRO_QR_CODE_EXT: StructureType =
+        Self(1000743001i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_ARUCO_MARKER_EXT: StructureType =
+        Self(1000743002i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_APRIL_TAG_EXT: StructureType = Self(1000743003i32);
+    pub const SPATIAL_MARKER_SIZE_EXT: StructureType = Self(1000743004i32);
+    pub const SPATIAL_MARKER_STATIC_OPTIMIZATION_EXT: StructureType = Self(1000743005i32);
+    pub const SPATIAL_COMPONENT_MARKER_LIST_EXT: StructureType = Self(1000743006i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_ANCHOR_EXT: StructureType = Self(1000762000i32);
+    pub const SPATIAL_COMPONENT_ANCHOR_LIST_EXT: StructureType = Self(1000762001i32);
+    pub const SPATIAL_ANCHOR_CREATE_INFO_EXT: StructureType = Self(1000762002i32);
+    pub const SPATIAL_PERSISTENCE_CONTEXT_CREATE_INFO_EXT: StructureType = Self(1000763000i32);
+    pub const CREATE_SPATIAL_PERSISTENCE_CONTEXT_COMPLETION_EXT: StructureType =
+        Self(1000763001i32);
+    pub const SPATIAL_CONTEXT_PERSISTENCE_CONFIG_EXT: StructureType = Self(1000763002i32);
+    pub const SPATIAL_DISCOVERY_PERSISTENCE_UUID_FILTER_EXT: StructureType = Self(1000763003i32);
+    pub const SPATIAL_COMPONENT_PERSISTENCE_LIST_EXT: StructureType = Self(1000763004i32);
+    pub const SPATIAL_ENTITY_PERSIST_INFO_EXT: StructureType = Self(1000781000i32);
+    pub const PERSIST_SPATIAL_ENTITY_COMPLETION_EXT: StructureType = Self(1000781001i32);
+    pub const SPATIAL_ENTITY_UNPERSIST_INFO_EXT: StructureType = Self(1000781002i32);
+    pub const UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT: StructureType = Self(1000781003i32);
+    pub const LOADER_INIT_INFO_PROPERTIES_EXT: StructureType = Self(1000838000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -837,6 +1202,48 @@ impl fmt::Debug for StructureType {
             Self::MAP_LOCALIZATION_REQUEST_INFO_ML => Some("MAP_LOCALIZATION_REQUEST_INFO_ML"),
             Self::LOCALIZATION_MAP_IMPORT_INFO_ML => Some("LOCALIZATION_MAP_IMPORT_INFO_ML"),
             Self::LOCALIZATION_ENABLE_EVENTS_INFO_ML => Some("LOCALIZATION_ENABLE_EVENTS_INFO_ML"),
+            Self::SPATIAL_ANCHORS_CREATE_INFO_FROM_POSE_ML => {
+                Some("SPATIAL_ANCHORS_CREATE_INFO_FROM_POSE_ML")
+            }
+            Self::CREATE_SPATIAL_ANCHORS_COMPLETION_ML => {
+                Some("CREATE_SPATIAL_ANCHORS_COMPLETION_ML")
+            }
+            Self::SPATIAL_ANCHOR_STATE_ML => Some("SPATIAL_ANCHOR_STATE_ML"),
+            Self::SPATIAL_ANCHORS_CREATE_STORAGE_INFO_ML => {
+                Some("SPATIAL_ANCHORS_CREATE_STORAGE_INFO_ML")
+            }
+            Self::SPATIAL_ANCHORS_QUERY_INFO_RADIUS_ML => {
+                Some("SPATIAL_ANCHORS_QUERY_INFO_RADIUS_ML")
+            }
+            Self::SPATIAL_ANCHORS_QUERY_COMPLETION_ML => {
+                Some("SPATIAL_ANCHORS_QUERY_COMPLETION_ML")
+            }
+            Self::SPATIAL_ANCHORS_CREATE_INFO_FROM_UUIDS_ML => {
+                Some("SPATIAL_ANCHORS_CREATE_INFO_FROM_UUIDS_ML")
+            }
+            Self::SPATIAL_ANCHORS_PUBLISH_INFO_ML => Some("SPATIAL_ANCHORS_PUBLISH_INFO_ML"),
+            Self::SPATIAL_ANCHORS_PUBLISH_COMPLETION_ML => {
+                Some("SPATIAL_ANCHORS_PUBLISH_COMPLETION_ML")
+            }
+            Self::SPATIAL_ANCHORS_DELETE_INFO_ML => Some("SPATIAL_ANCHORS_DELETE_INFO_ML"),
+            Self::SPATIAL_ANCHORS_DELETE_COMPLETION_ML => {
+                Some("SPATIAL_ANCHORS_DELETE_COMPLETION_ML")
+            }
+            Self::SPATIAL_ANCHORS_UPDATE_EXPIRATION_INFO_ML => {
+                Some("SPATIAL_ANCHORS_UPDATE_EXPIRATION_INFO_ML")
+            }
+            Self::SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_ML => {
+                Some("SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_ML")
+            }
+            Self::SPATIAL_ANCHORS_PUBLISH_COMPLETION_DETAILS_ML => {
+                Some("SPATIAL_ANCHORS_PUBLISH_COMPLETION_DETAILS_ML")
+            }
+            Self::SPATIAL_ANCHORS_DELETE_COMPLETION_DETAILS_ML => {
+                Some("SPATIAL_ANCHORS_DELETE_COMPLETION_DETAILS_ML")
+            }
+            Self::SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_DETAILS_ML => {
+                Some("SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_DETAILS_ML")
+            }
             Self::EVENT_DATA_HEADSET_FIT_CHANGED_ML => Some("EVENT_DATA_HEADSET_FIT_CHANGED_ML"),
             Self::EVENT_DATA_EYE_CALIBRATION_CHANGED_ML => {
                 Some("EVENT_DATA_EYE_CALIBRATION_CHANGED_ML")
@@ -918,6 +1325,8 @@ impl fmt::Debug for StructureType {
             Self::COMPOSITION_LAYER_SETTINGS_FB => Some("COMPOSITION_LAYER_SETTINGS_FB"),
             Self::HAPTIC_PCM_VIBRATION_FB => Some("HAPTIC_PCM_VIBRATION_FB"),
             Self::DEVICE_PCM_SAMPLE_RATE_STATE_FB => Some("DEVICE_PCM_SAMPLE_RATE_STATE_FB"),
+            Self::FRAME_SYNTHESIS_INFO_EXT => Some("FRAME_SYNTHESIS_INFO_EXT"),
+            Self::FRAME_SYNTHESIS_CONFIG_VIEW_EXT => Some("FRAME_SYNTHESIS_CONFIG_VIEW_EXT"),
             Self::COMPOSITION_LAYER_DEPTH_TEST_FB => Some("COMPOSITION_LAYER_DEPTH_TEST_FB"),
             Self::LOCAL_DIMMING_FRAME_END_INFO_META => Some("LOCAL_DIMMING_FRAME_END_INFO_META"),
             Self::PASSTHROUGH_PREFERENCES_META => Some("PASSTHROUGH_PREFERENCES_META"),
@@ -970,9 +1379,32 @@ impl fmt::Debug for StructureType {
             }
             Self::SPACE_USER_CREATE_INFO_FB => Some("SPACE_USER_CREATE_INFO_FB"),
             Self::SYSTEM_HEADSET_ID_PROPERTIES_META => Some("SYSTEM_HEADSET_ID_PROPERTIES_META"),
+            Self::SYSTEM_SPACE_DISCOVERY_PROPERTIES_META => {
+                Some("SYSTEM_SPACE_DISCOVERY_PROPERTIES_META")
+            }
+            Self::SPACE_DISCOVERY_INFO_META => Some("SPACE_DISCOVERY_INFO_META"),
+            Self::SPACE_FILTER_UUID_META => Some("SPACE_FILTER_UUID_META"),
+            Self::SPACE_FILTER_COMPONENT_META => Some("SPACE_FILTER_COMPONENT_META"),
+            Self::SPACE_DISCOVERY_RESULT_META => Some("SPACE_DISCOVERY_RESULT_META"),
+            Self::SPACE_DISCOVERY_RESULTS_META => Some("SPACE_DISCOVERY_RESULTS_META"),
+            Self::EVENT_DATA_SPACE_DISCOVERY_RESULTS_AVAILABLE_META => {
+                Some("EVENT_DATA_SPACE_DISCOVERY_RESULTS_AVAILABLE_META")
+            }
+            Self::EVENT_DATA_SPACE_DISCOVERY_COMPLETE_META => {
+                Some("EVENT_DATA_SPACE_DISCOVERY_COMPLETE_META")
+            }
             Self::RECOMMENDED_LAYER_RESOLUTION_META => Some("RECOMMENDED_LAYER_RESOLUTION_META"),
             Self::RECOMMENDED_LAYER_RESOLUTION_GET_INFO_META => {
                 Some("RECOMMENDED_LAYER_RESOLUTION_GET_INFO_META")
+            }
+            Self::SYSTEM_SPACE_PERSISTENCE_PROPERTIES_META => {
+                Some("SYSTEM_SPACE_PERSISTENCE_PROPERTIES_META")
+            }
+            Self::SPACES_SAVE_INFO_META => Some("SPACES_SAVE_INFO_META"),
+            Self::EVENT_DATA_SPACES_SAVE_RESULT_META => Some("EVENT_DATA_SPACES_SAVE_RESULT_META"),
+            Self::SPACES_ERASE_INFO_META => Some("SPACES_ERASE_INFO_META"),
+            Self::EVENT_DATA_SPACES_ERASE_RESULT_META => {
+                Some("EVENT_DATA_SPACES_ERASE_RESULT_META")
             }
             Self::SYSTEM_PASSTHROUGH_COLOR_LUT_PROPERTIES_META => {
                 Some("SYSTEM_PASSTHROUGH_COLOR_LUT_PROPERTIES_META")
@@ -989,12 +1421,34 @@ impl fmt::Debug for StructureType {
             }
             Self::SPACE_TRIANGLE_MESH_GET_INFO_META => Some("SPACE_TRIANGLE_MESH_GET_INFO_META"),
             Self::SPACE_TRIANGLE_MESH_META => Some("SPACE_TRIANGLE_MESH_META"),
+            Self::SYSTEM_PROPERTIES_BODY_TRACKING_FULL_BODY_META => {
+                Some("SYSTEM_PROPERTIES_BODY_TRACKING_FULL_BODY_META")
+            }
+            Self::EVENT_DATA_PASSTHROUGH_LAYER_RESUMED_META => {
+                Some("EVENT_DATA_PASSTHROUGH_LAYER_RESUMED_META")
+            }
+            Self::BODY_TRACKING_CALIBRATION_INFO_META => {
+                Some("BODY_TRACKING_CALIBRATION_INFO_META")
+            }
+            Self::BODY_TRACKING_CALIBRATION_STATUS_META => {
+                Some("BODY_TRACKING_CALIBRATION_STATUS_META")
+            }
+            Self::SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META => {
+                Some("SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META")
+            }
             Self::SYSTEM_FACE_TRACKING_PROPERTIES2_FB => {
                 Some("SYSTEM_FACE_TRACKING_PROPERTIES2_FB")
             }
             Self::FACE_TRACKER_CREATE_INFO2_FB => Some("FACE_TRACKER_CREATE_INFO2_FB"),
             Self::FACE_EXPRESSION_INFO2_FB => Some("FACE_EXPRESSION_INFO2_FB"),
             Self::FACE_EXPRESSION_WEIGHTS2_FB => Some("FACE_EXPRESSION_WEIGHTS2_FB"),
+            Self::SYSTEM_SPATIAL_ENTITY_SHARING_PROPERTIES_META => {
+                Some("SYSTEM_SPATIAL_ENTITY_SHARING_PROPERTIES_META")
+            }
+            Self::SHARE_SPACES_INFO_META => Some("SHARE_SPACES_INFO_META"),
+            Self::EVENT_DATA_SHARE_SPACES_COMPLETE_META => {
+                Some("EVENT_DATA_SHARE_SPACES_COMPLETE_META")
+            }
             Self::ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META => {
                 Some("ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META")
             }
@@ -1015,6 +1469,38 @@ impl fmt::Debug for StructureType {
             Self::SYSTEM_ENVIRONMENT_DEPTH_PROPERTIES_META => {
                 Some("SYSTEM_ENVIRONMENT_DEPTH_PROPERTIES_META")
             }
+            Self::ENVIRONMENT_DEPTH_IMAGE_TIMESTAMP_META => {
+                Some("ENVIRONMENT_DEPTH_IMAGE_TIMESTAMP_META")
+            }
+            Self::RENDER_MODEL_CREATE_INFO_EXT => Some("RENDER_MODEL_CREATE_INFO_EXT"),
+            Self::RENDER_MODEL_PROPERTIES_GET_INFO_EXT => {
+                Some("RENDER_MODEL_PROPERTIES_GET_INFO_EXT")
+            }
+            Self::RENDER_MODEL_PROPERTIES_EXT => Some("RENDER_MODEL_PROPERTIES_EXT"),
+            Self::RENDER_MODEL_SPACE_CREATE_INFO_EXT => Some("RENDER_MODEL_SPACE_CREATE_INFO_EXT"),
+            Self::RENDER_MODEL_STATE_GET_INFO_EXT => Some("RENDER_MODEL_STATE_GET_INFO_EXT"),
+            Self::RENDER_MODEL_STATE_EXT => Some("RENDER_MODEL_STATE_EXT"),
+            Self::RENDER_MODEL_ASSET_CREATE_INFO_EXT => Some("RENDER_MODEL_ASSET_CREATE_INFO_EXT"),
+            Self::RENDER_MODEL_ASSET_DATA_GET_INFO_EXT => {
+                Some("RENDER_MODEL_ASSET_DATA_GET_INFO_EXT")
+            }
+            Self::RENDER_MODEL_ASSET_DATA_EXT => Some("RENDER_MODEL_ASSET_DATA_EXT"),
+            Self::RENDER_MODEL_ASSET_PROPERTIES_GET_INFO_EXT => {
+                Some("RENDER_MODEL_ASSET_PROPERTIES_GET_INFO_EXT")
+            }
+            Self::RENDER_MODEL_ASSET_PROPERTIES_EXT => Some("RENDER_MODEL_ASSET_PROPERTIES_EXT"),
+            Self::INTERACTION_RENDER_MODEL_IDS_ENUMERATE_INFO_EXT => {
+                Some("INTERACTION_RENDER_MODEL_IDS_ENUMERATE_INFO_EXT")
+            }
+            Self::INTERACTION_RENDER_MODEL_SUBACTION_PATH_INFO_EXT => {
+                Some("INTERACTION_RENDER_MODEL_SUBACTION_PATH_INFO_EXT")
+            }
+            Self::EVENT_DATA_INTERACTION_RENDER_MODELS_CHANGED_EXT => {
+                Some("EVENT_DATA_INTERACTION_RENDER_MODELS_CHANGED_EXT")
+            }
+            Self::INTERACTION_RENDER_MODEL_TOP_LEVEL_USER_PATH_GET_INFO_EXT => {
+                Some("INTERACTION_RENDER_MODEL_TOP_LEVEL_USER_PATH_GET_INFO_EXT")
+            }
             Self::PASSTHROUGH_CREATE_INFO_HTC => Some("PASSTHROUGH_CREATE_INFO_HTC"),
             Self::PASSTHROUGH_COLOR_HTC => Some("PASSTHROUGH_COLOR_HTC"),
             Self::PASSTHROUGH_MESH_TRANSFORM_INFO_HTC => {
@@ -1026,12 +1512,104 @@ impl fmt::Debug for StructureType {
             Self::FOVEATION_CUSTOM_MODE_INFO_HTC => Some("FOVEATION_CUSTOM_MODE_INFO_HTC"),
             Self::SYSTEM_ANCHOR_PROPERTIES_HTC => Some("SYSTEM_ANCHOR_PROPERTIES_HTC"),
             Self::SPATIAL_ANCHOR_CREATE_INFO_HTC => Some("SPATIAL_ANCHOR_CREATE_INFO_HTC"),
+            Self::SYSTEM_BODY_TRACKING_PROPERTIES_HTC => {
+                Some("SYSTEM_BODY_TRACKING_PROPERTIES_HTC")
+            }
+            Self::BODY_TRACKER_CREATE_INFO_HTC => Some("BODY_TRACKER_CREATE_INFO_HTC"),
+            Self::BODY_JOINTS_LOCATE_INFO_HTC => Some("BODY_JOINTS_LOCATE_INFO_HTC"),
+            Self::BODY_JOINT_LOCATIONS_HTC => Some("BODY_JOINT_LOCATIONS_HTC"),
+            Self::BODY_SKELETON_HTC => Some("BODY_SKELETON_HTC"),
             Self::ACTIVE_ACTION_SET_PRIORITIES_EXT => Some("ACTIVE_ACTION_SET_PRIORITIES_EXT"),
             Self::SYSTEM_FORCE_FEEDBACK_CURL_PROPERTIES_MNDX => {
                 Some("SYSTEM_FORCE_FEEDBACK_CURL_PROPERTIES_MNDX")
             }
             Self::FORCE_FEEDBACK_CURL_APPLY_LOCATIONS_MNDX => {
                 Some("FORCE_FEEDBACK_CURL_APPLY_LOCATIONS_MNDX")
+            }
+            Self::BODY_TRACKER_CREATE_INFO_BD => Some("BODY_TRACKER_CREATE_INFO_BD"),
+            Self::BODY_JOINTS_LOCATE_INFO_BD => Some("BODY_JOINTS_LOCATE_INFO_BD"),
+            Self::BODY_JOINT_LOCATIONS_BD => Some("BODY_JOINT_LOCATIONS_BD"),
+            Self::SYSTEM_BODY_TRACKING_PROPERTIES_BD => Some("SYSTEM_BODY_TRACKING_PROPERTIES_BD"),
+            Self::SYSTEM_FACIAL_SIMULATION_PROPERTIES_BD => {
+                Some("SYSTEM_FACIAL_SIMULATION_PROPERTIES_BD")
+            }
+            Self::FACE_TRACKER_CREATE_INFO_BD => Some("FACE_TRACKER_CREATE_INFO_BD"),
+            Self::FACIAL_SIMULATION_DATA_GET_INFO_BD => Some("FACIAL_SIMULATION_DATA_GET_INFO_BD"),
+            Self::FACIAL_SIMULATION_DATA_BD => Some("FACIAL_SIMULATION_DATA_BD"),
+            Self::LIP_EXPRESSION_DATA_BD => Some("LIP_EXPRESSION_DATA_BD"),
+            Self::SYSTEM_SPATIAL_SENSING_PROPERTIES_BD => {
+                Some("SYSTEM_SPATIAL_SENSING_PROPERTIES_BD")
+            }
+            Self::SPATIAL_ENTITY_COMPONENT_GET_INFO_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_GET_INFO_BD")
+            }
+            Self::SPATIAL_ENTITY_LOCATION_GET_INFO_BD => {
+                Some("SPATIAL_ENTITY_LOCATION_GET_INFO_BD")
+            }
+            Self::SPATIAL_ENTITY_COMPONENT_DATA_LOCATION_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_DATA_LOCATION_BD")
+            }
+            Self::SPATIAL_ENTITY_COMPONENT_DATA_SEMANTIC_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_DATA_SEMANTIC_BD")
+            }
+            Self::SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_2D_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_2D_BD")
+            }
+            Self::SPATIAL_ENTITY_COMPONENT_DATA_POLYGON_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_DATA_POLYGON_BD")
+            }
+            Self::SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_3D_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_3D_BD")
+            }
+            Self::SPATIAL_ENTITY_COMPONENT_DATA_TRIANGLE_MESH_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_DATA_TRIANGLE_MESH_BD")
+            }
+            Self::SENSE_DATA_PROVIDER_CREATE_INFO_BD => Some("SENSE_DATA_PROVIDER_CREATE_INFO_BD"),
+            Self::SENSE_DATA_PROVIDER_START_INFO_BD => Some("SENSE_DATA_PROVIDER_START_INFO_BD"),
+            Self::EVENT_DATA_SENSE_DATA_PROVIDER_STATE_CHANGED_BD => {
+                Some("EVENT_DATA_SENSE_DATA_PROVIDER_STATE_CHANGED_BD")
+            }
+            Self::EVENT_DATA_SENSE_DATA_UPDATED_BD => Some("EVENT_DATA_SENSE_DATA_UPDATED_BD"),
+            Self::SENSE_DATA_QUERY_INFO_BD => Some("SENSE_DATA_QUERY_INFO_BD"),
+            Self::SENSE_DATA_QUERY_COMPLETION_BD => Some("SENSE_DATA_QUERY_COMPLETION_BD"),
+            Self::SENSE_DATA_FILTER_UUID_BD => Some("SENSE_DATA_FILTER_UUID_BD"),
+            Self::SENSE_DATA_FILTER_SEMANTIC_BD => Some("SENSE_DATA_FILTER_SEMANTIC_BD"),
+            Self::QUERIED_SENSE_DATA_GET_INFO_BD => Some("QUERIED_SENSE_DATA_GET_INFO_BD"),
+            Self::QUERIED_SENSE_DATA_BD => Some("QUERIED_SENSE_DATA_BD"),
+            Self::SPATIAL_ENTITY_STATE_BD => Some("SPATIAL_ENTITY_STATE_BD"),
+            Self::SPATIAL_ENTITY_ANCHOR_CREATE_INFO_BD => {
+                Some("SPATIAL_ENTITY_ANCHOR_CREATE_INFO_BD")
+            }
+            Self::ANCHOR_SPACE_CREATE_INFO_BD => Some("ANCHOR_SPACE_CREATE_INFO_BD"),
+            Self::SYSTEM_SPATIAL_ANCHOR_PROPERTIES_BD => {
+                Some("SYSTEM_SPATIAL_ANCHOR_PROPERTIES_BD")
+            }
+            Self::SPATIAL_ANCHOR_CREATE_INFO_BD => Some("SPATIAL_ANCHOR_CREATE_INFO_BD"),
+            Self::SPATIAL_ANCHOR_CREATE_COMPLETION_BD => {
+                Some("SPATIAL_ANCHOR_CREATE_COMPLETION_BD")
+            }
+            Self::SPATIAL_ANCHOR_PERSIST_INFO_BD => Some("SPATIAL_ANCHOR_PERSIST_INFO_BD"),
+            Self::SPATIAL_ANCHOR_UNPERSIST_INFO_BD => Some("SPATIAL_ANCHOR_UNPERSIST_INFO_BD"),
+            Self::SYSTEM_SPATIAL_ANCHOR_SHARING_PROPERTIES_BD => {
+                Some("SYSTEM_SPATIAL_ANCHOR_SHARING_PROPERTIES_BD")
+            }
+            Self::SPATIAL_ANCHOR_SHARE_INFO_BD => Some("SPATIAL_ANCHOR_SHARE_INFO_BD"),
+            Self::SHARED_SPATIAL_ANCHOR_DOWNLOAD_INFO_BD => {
+                Some("SHARED_SPATIAL_ANCHOR_DOWNLOAD_INFO_BD")
+            }
+            Self::SYSTEM_SPATIAL_SCENE_PROPERTIES_BD => Some("SYSTEM_SPATIAL_SCENE_PROPERTIES_BD"),
+            Self::SCENE_CAPTURE_INFO_BD => Some("SCENE_CAPTURE_INFO_BD"),
+            Self::SYSTEM_SPATIAL_MESH_PROPERTIES_BD => Some("SYSTEM_SPATIAL_MESH_PROPERTIES_BD"),
+            Self::SENSE_DATA_PROVIDER_CREATE_INFO_SPATIAL_MESH_BD => {
+                Some("SENSE_DATA_PROVIDER_CREATE_INFO_SPATIAL_MESH_BD")
+            }
+            Self::FUTURE_POLL_RESULT_PROGRESS_BD => Some("FUTURE_POLL_RESULT_PROGRESS_BD"),
+            Self::SYSTEM_SPATIAL_PLANE_PROPERTIES_BD => Some("SYSTEM_SPATIAL_PLANE_PROPERTIES_BD"),
+            Self::SPATIAL_ENTITY_COMPONENT_DATA_PLANE_ORIENTATION_BD => {
+                Some("SPATIAL_ENTITY_COMPONENT_DATA_PLANE_ORIENTATION_BD")
+            }
+            Self::SENSE_DATA_FILTER_PLANE_ORIENTATION_BD => {
+                Some("SENSE_DATA_FILTER_PLANE_ORIENTATION_BD")
             }
             Self::HAND_TRACKING_DATA_SOURCE_INFO_EXT => Some("HAND_TRACKING_DATA_SOURCE_INFO_EXT"),
             Self::HAND_TRACKING_DATA_SOURCE_STATE_EXT => {
@@ -1046,6 +1624,45 @@ impl fmt::Debug for StructureType {
             Self::SYSTEM_PLANE_DETECTION_PROPERTIES_EXT => {
                 Some("SYSTEM_PLANE_DETECTION_PROPERTIES_EXT")
             }
+            Self::TRACKABLE_GET_INFO_ANDROID => Some("TRACKABLE_GET_INFO_ANDROID"),
+            Self::ANCHOR_SPACE_CREATE_INFO_ANDROID => Some("ANCHOR_SPACE_CREATE_INFO_ANDROID"),
+            Self::TRACKABLE_PLANE_ANDROID => Some("TRACKABLE_PLANE_ANDROID"),
+            Self::TRACKABLE_TRACKER_CREATE_INFO_ANDROID => {
+                Some("TRACKABLE_TRACKER_CREATE_INFO_ANDROID")
+            }
+            Self::SYSTEM_TRACKABLES_PROPERTIES_ANDROID => {
+                Some("SYSTEM_TRACKABLES_PROPERTIES_ANDROID")
+            }
+            Self::PERSISTED_ANCHOR_SPACE_CREATE_INFO_ANDROID => {
+                Some("PERSISTED_ANCHOR_SPACE_CREATE_INFO_ANDROID")
+            }
+            Self::PERSISTED_ANCHOR_SPACE_INFO_ANDROID => {
+                Some("PERSISTED_ANCHOR_SPACE_INFO_ANDROID")
+            }
+            Self::DEVICE_ANCHOR_PERSISTENCE_CREATE_INFO_ANDROID => {
+                Some("DEVICE_ANCHOR_PERSISTENCE_CREATE_INFO_ANDROID")
+            }
+            Self::SYSTEM_DEVICE_ANCHOR_PERSISTENCE_PROPERTIES_ANDROID => {
+                Some("SYSTEM_DEVICE_ANCHOR_PERSISTENCE_PROPERTIES_ANDROID")
+            }
+            Self::FACE_TRACKER_CREATE_INFO_ANDROID => Some("FACE_TRACKER_CREATE_INFO_ANDROID"),
+            Self::FACE_STATE_GET_INFO_ANDROID => Some("FACE_STATE_GET_INFO_ANDROID"),
+            Self::FACE_STATE_ANDROID => Some("FACE_STATE_ANDROID"),
+            Self::SYSTEM_FACE_TRACKING_PROPERTIES_ANDROID => {
+                Some("SYSTEM_FACE_TRACKING_PROPERTIES_ANDROID")
+            }
+            Self::PASSTHROUGH_CAMERA_STATE_GET_INFO_ANDROID => {
+                Some("PASSTHROUGH_CAMERA_STATE_GET_INFO_ANDROID")
+            }
+            Self::SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID => {
+                Some("SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID")
+            }
+            Self::RAYCAST_INFO_ANDROID => Some("RAYCAST_INFO_ANDROID"),
+            Self::RAYCAST_HIT_RESULTS_ANDROID => Some("RAYCAST_HIT_RESULTS_ANDROID"),
+            Self::TRACKABLE_OBJECT_ANDROID => Some("TRACKABLE_OBJECT_ANDROID"),
+            Self::TRACKABLE_OBJECT_CONFIGURATION_ANDROID => {
+                Some("TRACKABLE_OBJECT_CONFIGURATION_ANDROID")
+            }
             Self::FUTURE_CANCEL_INFO_EXT => Some("FUTURE_CANCEL_INFO_EXT"),
             Self::FUTURE_POLL_INFO_EXT => Some("FUTURE_POLL_INFO_EXT"),
             Self::FUTURE_COMPLETION_EXT => Some("FUTURE_COMPLETION_EXT"),
@@ -1056,6 +1673,199 @@ impl fmt::Debug for StructureType {
             Self::SYSTEM_USER_PRESENCE_PROPERTIES_EXT => {
                 Some("SYSTEM_USER_PRESENCE_PROPERTIES_EXT")
             }
+            Self::SYSTEM_NOTIFICATIONS_SET_INFO_ML => Some("SYSTEM_NOTIFICATIONS_SET_INFO_ML"),
+            Self::WORLD_MESH_DETECTOR_CREATE_INFO_ML => Some("WORLD_MESH_DETECTOR_CREATE_INFO_ML"),
+            Self::WORLD_MESH_STATE_REQUEST_INFO_ML => Some("WORLD_MESH_STATE_REQUEST_INFO_ML"),
+            Self::WORLD_MESH_BLOCK_STATE_ML => Some("WORLD_MESH_BLOCK_STATE_ML"),
+            Self::WORLD_MESH_STATE_REQUEST_COMPLETION_ML => {
+                Some("WORLD_MESH_STATE_REQUEST_COMPLETION_ML")
+            }
+            Self::WORLD_MESH_BUFFER_RECOMMENDED_SIZE_INFO_ML => {
+                Some("WORLD_MESH_BUFFER_RECOMMENDED_SIZE_INFO_ML")
+            }
+            Self::WORLD_MESH_BUFFER_SIZE_ML => Some("WORLD_MESH_BUFFER_SIZE_ML"),
+            Self::WORLD_MESH_BUFFER_ML => Some("WORLD_MESH_BUFFER_ML"),
+            Self::WORLD_MESH_BLOCK_REQUEST_ML => Some("WORLD_MESH_BLOCK_REQUEST_ML"),
+            Self::WORLD_MESH_GET_INFO_ML => Some("WORLD_MESH_GET_INFO_ML"),
+            Self::WORLD_MESH_BLOCK_ML => Some("WORLD_MESH_BLOCK_ML"),
+            Self::WORLD_MESH_REQUEST_COMPLETION_ML => Some("WORLD_MESH_REQUEST_COMPLETION_ML"),
+            Self::WORLD_MESH_REQUEST_COMPLETION_INFO_ML => {
+                Some("WORLD_MESH_REQUEST_COMPLETION_INFO_ML")
+            }
+            Self::SYSTEM_FACIAL_EXPRESSION_PROPERTIES_ML => {
+                Some("SYSTEM_FACIAL_EXPRESSION_PROPERTIES_ML")
+            }
+            Self::FACIAL_EXPRESSION_CLIENT_CREATE_INFO_ML => {
+                Some("FACIAL_EXPRESSION_CLIENT_CREATE_INFO_ML")
+            }
+            Self::FACIAL_EXPRESSION_BLEND_SHAPE_GET_INFO_ML => {
+                Some("FACIAL_EXPRESSION_BLEND_SHAPE_GET_INFO_ML")
+            }
+            Self::FACIAL_EXPRESSION_BLEND_SHAPE_PROPERTIES_ML => {
+                Some("FACIAL_EXPRESSION_BLEND_SHAPE_PROPERTIES_ML")
+            }
+            Self::SYSTEM_SIMULTANEOUS_HANDS_AND_CONTROLLERS_PROPERTIES_META => {
+                Some("SYSTEM_SIMULTANEOUS_HANDS_AND_CONTROLLERS_PROPERTIES_META")
+            }
+            Self::SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_RESUME_INFO_META => {
+                Some("SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_RESUME_INFO_META")
+            }
+            Self::SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_PAUSE_INFO_META => {
+                Some("SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_PAUSE_INFO_META")
+            }
+            Self::COLOCATION_DISCOVERY_START_INFO_META => {
+                Some("COLOCATION_DISCOVERY_START_INFO_META")
+            }
+            Self::COLOCATION_DISCOVERY_STOP_INFO_META => {
+                Some("COLOCATION_DISCOVERY_STOP_INFO_META")
+            }
+            Self::COLOCATION_ADVERTISEMENT_START_INFO_META => {
+                Some("COLOCATION_ADVERTISEMENT_START_INFO_META")
+            }
+            Self::COLOCATION_ADVERTISEMENT_STOP_INFO_META => {
+                Some("COLOCATION_ADVERTISEMENT_STOP_INFO_META")
+            }
+            Self::EVENT_DATA_START_COLOCATION_ADVERTISEMENT_COMPLETE_META => {
+                Some("EVENT_DATA_START_COLOCATION_ADVERTISEMENT_COMPLETE_META")
+            }
+            Self::EVENT_DATA_STOP_COLOCATION_ADVERTISEMENT_COMPLETE_META => {
+                Some("EVENT_DATA_STOP_COLOCATION_ADVERTISEMENT_COMPLETE_META")
+            }
+            Self::EVENT_DATA_COLOCATION_ADVERTISEMENT_COMPLETE_META => {
+                Some("EVENT_DATA_COLOCATION_ADVERTISEMENT_COMPLETE_META")
+            }
+            Self::EVENT_DATA_START_COLOCATION_DISCOVERY_COMPLETE_META => {
+                Some("EVENT_DATA_START_COLOCATION_DISCOVERY_COMPLETE_META")
+            }
+            Self::EVENT_DATA_COLOCATION_DISCOVERY_RESULT_META => {
+                Some("EVENT_DATA_COLOCATION_DISCOVERY_RESULT_META")
+            }
+            Self::EVENT_DATA_COLOCATION_DISCOVERY_COMPLETE_META => {
+                Some("EVENT_DATA_COLOCATION_DISCOVERY_COMPLETE_META")
+            }
+            Self::EVENT_DATA_STOP_COLOCATION_DISCOVERY_COMPLETE_META => {
+                Some("EVENT_DATA_STOP_COLOCATION_DISCOVERY_COMPLETE_META")
+            }
+            Self::SYSTEM_COLOCATION_DISCOVERY_PROPERTIES_META => {
+                Some("SYSTEM_COLOCATION_DISCOVERY_PROPERTIES_META")
+            }
+            Self::SHARE_SPACES_RECIPIENT_GROUPS_META => Some("SHARE_SPACES_RECIPIENT_GROUPS_META"),
+            Self::SPACE_GROUP_UUID_FILTER_INFO_META => Some("SPACE_GROUP_UUID_FILTER_INFO_META"),
+            Self::SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META => {
+                Some("SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META")
+            }
+            Self::ANCHOR_SHARING_INFO_ANDROID => Some("ANCHOR_SHARING_INFO_ANDROID"),
+            Self::ANCHOR_SHARING_TOKEN_ANDROID => Some("ANCHOR_SHARING_TOKEN_ANDROID"),
+            Self::SYSTEM_ANCHOR_SHARING_EXPORT_PROPERTIES_ANDROID => {
+                Some("SYSTEM_ANCHOR_SHARING_EXPORT_PROPERTIES_ANDROID")
+            }
+            Self::SYSTEM_MARKER_TRACKING_PROPERTIES_ANDROID => {
+                Some("SYSTEM_MARKER_TRACKING_PROPERTIES_ANDROID")
+            }
+            Self::TRACKABLE_MARKER_CONFIGURATION_ANDROID => {
+                Some("TRACKABLE_MARKER_CONFIGURATION_ANDROID")
+            }
+            Self::TRACKABLE_MARKER_ANDROID => Some("TRACKABLE_MARKER_ANDROID"),
+            Self::SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT => {
+                Some("SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT")
+            }
+            Self::SPATIAL_CONTEXT_CREATE_INFO_EXT => Some("SPATIAL_CONTEXT_CREATE_INFO_EXT"),
+            Self::CREATE_SPATIAL_CONTEXT_COMPLETION_EXT => {
+                Some("CREATE_SPATIAL_CONTEXT_COMPLETION_EXT")
+            }
+            Self::SPATIAL_DISCOVERY_SNAPSHOT_CREATE_INFO_EXT => {
+                Some("SPATIAL_DISCOVERY_SNAPSHOT_CREATE_INFO_EXT")
+            }
+            Self::CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_INFO_EXT => {
+                Some("CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_INFO_EXT")
+            }
+            Self::CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_EXT => {
+                Some("CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_EXT")
+            }
+            Self::SPATIAL_COMPONENT_DATA_QUERY_CONDITION_EXT => {
+                Some("SPATIAL_COMPONENT_DATA_QUERY_CONDITION_EXT")
+            }
+            Self::SPATIAL_COMPONENT_DATA_QUERY_RESULT_EXT => {
+                Some("SPATIAL_COMPONENT_DATA_QUERY_RESULT_EXT")
+            }
+            Self::SPATIAL_BUFFER_GET_INFO_EXT => Some("SPATIAL_BUFFER_GET_INFO_EXT"),
+            Self::SPATIAL_COMPONENT_BOUNDED_2D_LIST_EXT => {
+                Some("SPATIAL_COMPONENT_BOUNDED_2D_LIST_EXT")
+            }
+            Self::SPATIAL_COMPONENT_BOUNDED_3D_LIST_EXT => {
+                Some("SPATIAL_COMPONENT_BOUNDED_3D_LIST_EXT")
+            }
+            Self::SPATIAL_COMPONENT_PARENT_LIST_EXT => Some("SPATIAL_COMPONENT_PARENT_LIST_EXT"),
+            Self::SPATIAL_COMPONENT_MESH_3D_LIST_EXT => Some("SPATIAL_COMPONENT_MESH_3D_LIST_EXT"),
+            Self::SPATIAL_ENTITY_FROM_ID_CREATE_INFO_EXT => {
+                Some("SPATIAL_ENTITY_FROM_ID_CREATE_INFO_EXT")
+            }
+            Self::SPATIAL_UPDATE_SNAPSHOT_CREATE_INFO_EXT => {
+                Some("SPATIAL_UPDATE_SNAPSHOT_CREATE_INFO_EXT")
+            }
+            Self::EVENT_DATA_SPATIAL_DISCOVERY_RECOMMENDED_EXT => {
+                Some("EVENT_DATA_SPATIAL_DISCOVERY_RECOMMENDED_EXT")
+            }
+            Self::SPATIAL_FILTER_TRACKING_STATE_EXT => Some("SPATIAL_FILTER_TRACKING_STATE_EXT"),
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_PLANE_TRACKING_EXT => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_PLANE_TRACKING_EXT")
+            }
+            Self::SPATIAL_COMPONENT_PLANE_ALIGNMENT_LIST_EXT => {
+                Some("SPATIAL_COMPONENT_PLANE_ALIGNMENT_LIST_EXT")
+            }
+            Self::SPATIAL_COMPONENT_MESH_2D_LIST_EXT => Some("SPATIAL_COMPONENT_MESH_2D_LIST_EXT"),
+            Self::SPATIAL_COMPONENT_POLYGON_2D_LIST_EXT => {
+                Some("SPATIAL_COMPONENT_POLYGON_2D_LIST_EXT")
+            }
+            Self::SPATIAL_COMPONENT_PLANE_SEMANTIC_LABEL_LIST_EXT => {
+                Some("SPATIAL_COMPONENT_PLANE_SEMANTIC_LABEL_LIST_EXT")
+            }
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_QR_CODE_EXT => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_QR_CODE_EXT")
+            }
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_MICRO_QR_CODE_EXT => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_MICRO_QR_CODE_EXT")
+            }
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_ARUCO_MARKER_EXT => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_ARUCO_MARKER_EXT")
+            }
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_APRIL_TAG_EXT => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_APRIL_TAG_EXT")
+            }
+            Self::SPATIAL_MARKER_SIZE_EXT => Some("SPATIAL_MARKER_SIZE_EXT"),
+            Self::SPATIAL_MARKER_STATIC_OPTIMIZATION_EXT => {
+                Some("SPATIAL_MARKER_STATIC_OPTIMIZATION_EXT")
+            }
+            Self::SPATIAL_COMPONENT_MARKER_LIST_EXT => Some("SPATIAL_COMPONENT_MARKER_LIST_EXT"),
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_ANCHOR_EXT => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_ANCHOR_EXT")
+            }
+            Self::SPATIAL_COMPONENT_ANCHOR_LIST_EXT => Some("SPATIAL_COMPONENT_ANCHOR_LIST_EXT"),
+            Self::SPATIAL_ANCHOR_CREATE_INFO_EXT => Some("SPATIAL_ANCHOR_CREATE_INFO_EXT"),
+            Self::SPATIAL_PERSISTENCE_CONTEXT_CREATE_INFO_EXT => {
+                Some("SPATIAL_PERSISTENCE_CONTEXT_CREATE_INFO_EXT")
+            }
+            Self::CREATE_SPATIAL_PERSISTENCE_CONTEXT_COMPLETION_EXT => {
+                Some("CREATE_SPATIAL_PERSISTENCE_CONTEXT_COMPLETION_EXT")
+            }
+            Self::SPATIAL_CONTEXT_PERSISTENCE_CONFIG_EXT => {
+                Some("SPATIAL_CONTEXT_PERSISTENCE_CONFIG_EXT")
+            }
+            Self::SPATIAL_DISCOVERY_PERSISTENCE_UUID_FILTER_EXT => {
+                Some("SPATIAL_DISCOVERY_PERSISTENCE_UUID_FILTER_EXT")
+            }
+            Self::SPATIAL_COMPONENT_PERSISTENCE_LIST_EXT => {
+                Some("SPATIAL_COMPONENT_PERSISTENCE_LIST_EXT")
+            }
+            Self::SPATIAL_ENTITY_PERSIST_INFO_EXT => Some("SPATIAL_ENTITY_PERSIST_INFO_EXT"),
+            Self::PERSIST_SPATIAL_ENTITY_COMPLETION_EXT => {
+                Some("PERSIST_SPATIAL_ENTITY_COMPLETION_EXT")
+            }
+            Self::SPATIAL_ENTITY_UNPERSIST_INFO_EXT => Some("SPATIAL_ENTITY_UNPERSIST_INFO_EXT"),
+            Self::UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT => {
+                Some("UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT")
+            }
+            Self::LOADER_INIT_INFO_PROPERTIES_EXT => Some("LOADER_INIT_INFO_PROPERTIES_EXT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1063,7 +1873,7 @@ impl fmt::Debug for StructureType {
 }
 #[doc = "Error and return codes - see [XrResult](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrResult)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct Result(i32);
 impl Result {
     #[doc = "Function successfully completed."]
@@ -1172,7 +1982,7 @@ impl Result {
     pub const ERROR_LOCALIZED_NAME_DUPLICATED: Result = Self(-48i32);
     #[doc = "The localized name provided was invalid."]
     pub const ERROR_LOCALIZED_NAME_INVALID: Result = Self(-49i32);
-    #[doc = "The xrGetGraphicsRequirements* call was not made before calling xrCreateSession."]
+    #[doc = "The xrGet*GraphicsRequirements call was not made before calling xrCreateSession."]
     pub const ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING: Result = Self(-50i32);
     #[doc = "The loader was unable to find or load a runtime."]
     pub const ERROR_RUNTIME_UNAVAILABLE: Result = Self(-51i32);
@@ -1262,6 +2072,16 @@ impl Result {
     pub const ERROR_LOCALIZATION_MAP_ALREADY_EXISTS_ML: Result = Self(-1000139005i32);
     #[doc = "The map localization service cannot export cloud based maps."]
     pub const ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML: Result = Self(-1000139006i32);
+    #[doc = "The com.magicleap.permission.SPATIAL_ANCHOR permission was not granted."]
+    pub const ERROR_SPATIAL_ANCHORS_PERMISSION_DENIED_ML: Result = Self(-1000140000i32);
+    #[doc = "Operation failed because the system is not localized into a localization map."]
+    pub const ERROR_SPATIAL_ANCHORS_NOT_LOCALIZED_ML: Result = Self(-1000140001i32);
+    #[doc = "Operation failed because it is performed outside of the localization map."]
+    pub const ERROR_SPATIAL_ANCHORS_OUT_OF_MAP_BOUNDS_ML: Result = Self(-1000140002i32);
+    #[doc = "Operation failed because the space referenced cannot be located."]
+    pub const ERROR_SPATIAL_ANCHORS_SPACE_NOT_LOCATABLE_ML: Result = Self(-1000140003i32);
+    #[doc = "The anchor references was not found."]
+    pub const ERROR_SPATIAL_ANCHORS_ANCHOR_NOT_FOUND_ML: Result = Self(-1000141000i32);
     #[doc = "A spatial anchor was not found associated with the spatial anchor name provided"]
     pub const ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT: Result = Self(-1000142001i32);
     #[doc = "The spatial anchor name provided was not valid"]
@@ -1278,25 +2098,119 @@ impl Result {
     pub const ERROR_SPACE_NETWORK_REQUEST_FAILED_FB: Result = Self(-1000169003i32);
     #[doc = "Cloud storage is required for this operation but is currently disabled."]
     pub const ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB: Result = Self(-1000169004i32);
+    #[doc = "Resource limitation prevented this operation from executing. Recommend retrying, perhaps after a short delay and/or reducing memory consumption."]
+    pub const ERROR_SPACE_INSUFFICIENT_RESOURCES_META: Result = Self(-1000259000i32);
+    #[doc = "Operation could not be completed until resources used are reduced or storage expanded."]
+    pub const ERROR_SPACE_STORAGE_AT_CAPACITY_META: Result = Self(-1000259001i32);
+    #[doc = "Look around the environment more for space tracking to function."]
+    pub const ERROR_SPACE_INSUFFICIENT_VIEW_META: Result = Self(-1000259002i32);
+    #[doc = "Space operation permission insufficient. Recommend confirming the status of the required permissions needed for using Space APIs."]
+    pub const ERROR_SPACE_PERMISSION_INSUFFICIENT_META: Result = Self(-1000259003i32);
+    #[doc = "Operation cancelled due to rate limiting. Recommend retrying after a short delay."]
+    pub const ERROR_SPACE_RATE_LIMITED_META: Result = Self(-1000259004i32);
+    #[doc = "Environment too dark for tracking to complete operation."]
+    pub const ERROR_SPACE_TOO_DARK_META: Result = Self(-1000259005i32);
+    #[doc = "Environment too bright for tracking to complete operation."]
+    pub const ERROR_SPACE_TOO_BRIGHT_META: Result = Self(-1000259006i32);
     #[doc = "The provided data buffer did not match the required size."]
     pub const ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META: Result = Self(-1000266000i32);
     #[doc = "Warning: The requested depth image is not yet available."]
     pub const ENVIRONMENT_DEPTH_NOT_AVAILABLE_META: Result = Self(1000291000i32);
+    #[doc = "The render model ID is invalid."]
+    pub const ERROR_RENDER_MODEL_ID_INVALID_EXT: Result = Self(-1000300000i32);
+    #[doc = "The render model asset is unavailable."]
+    pub const ERROR_RENDER_MODEL_ASSET_UNAVAILABLE_EXT: Result = Self(-1000300001i32);
+    #[doc = "A glTF extension is required."]
+    pub const ERROR_RENDER_MODEL_GLTF_EXTENSION_REQUIRED_EXT: Result = Self(-1000300002i32);
+    #[doc = "The provided XrRenderModelEXT was not created from a XrRenderModelIdEXT from `<<XR_EXT_interaction_render_model>>`"]
+    pub const ERROR_NOT_INTERACTION_RENDER_MODEL_EXT: Result = Self(-1000301000i32);
     #[doc = "Tracking optimization hint is already set for the domain."]
     pub const ERROR_HINT_ALREADY_SET_QCOM: Result = Self(-1000306000i32);
     #[doc = "The provided space is valid but not an anchor."]
     pub const ERROR_NOT_AN_ANCHOR_HTC: Result = Self(-1000319000i32);
+    #[doc = "The spatial entity id is invalid."]
+    pub const ERROR_SPATIAL_ENTITY_ID_INVALID_BD: Result = Self(-1000389000i32);
+    #[doc = "The spatial sensing service is unavailable."]
+    pub const ERROR_SPATIAL_SENSING_SERVICE_UNAVAILABLE_BD: Result = Self(-1000389001i32);
+    #[doc = "The spatial entity does not support anchor."]
+    pub const ERROR_ANCHOR_NOT_SUPPORTED_FOR_ENTITY_BD: Result = Self(-1000389002i32);
+    #[doc = "The spatial anchor is not found."]
+    pub const ERROR_SPATIAL_ANCHOR_NOT_FOUND_BD: Result = Self(-1000390000i32);
+    #[doc = "The network transmission timeout."]
+    pub const ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_TIMEOUT_BD: Result = Self(-1000391000i32);
+    #[doc = "The authentication for the user account failed."]
+    pub const ERROR_SPATIAL_ANCHOR_SHARING_AUTHENTICATION_FAILURE_BD: Result = Self(-1000391001i32);
+    #[doc = "The network connection failed, e.g. the connection is unstable or disconnected."]
+    pub const ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_FAILURE_BD: Result = Self(-1000391002i32);
+    #[doc = "The spatial anchor localization failed."]
+    pub const ERROR_SPATIAL_ANCHOR_SHARING_LOCALIZATION_FAIL_BD: Result = Self(-1000391003i32);
+    #[doc = "The feature points of spatial anchor map are insufficient."]
+    pub const ERROR_SPATIAL_ANCHOR_SHARING_MAP_INSUFFICIENT_BD: Result = Self(-1000391004i32);
+    #[doc = "The scene capture is failed, for example exiting abnormally."]
+    pub const ERROR_SCENE_CAPTURE_FAILURE_BD: Result = Self(-1000392000i32);
     #[doc = "The space passed to the function was not locatable."]
     pub const ERROR_SPACE_NOT_LOCATABLE_EXT: Result = Self(-1000429000i32);
     #[doc = "The permission for this resource was not granted."]
     pub const ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT: Result = Self(-1000429001i32);
+    #[doc = "Indicates that the parameters contains multiple trackable types."]
+    pub const ERROR_MISMATCHING_TRACKABLE_TYPE_ANDROID: Result = Self(-1000455000i32);
+    #[doc = "Indicates that the function is not supported by the given trackable type."]
+    pub const ERROR_TRACKABLE_TYPE_NOT_SUPPORTED_ANDROID: Result = Self(-1000455001i32);
+    #[doc = "XrUuidExt passed to the function was not found to be a persisted anchor."]
+    pub const ERROR_ANCHOR_ID_NOT_FOUND_ANDROID: Result = Self(-1000457000i32);
+    #[doc = "XrUuidExt passed to the function was already marked to be persisted."]
+    pub const ERROR_ANCHOR_ALREADY_PERSISTED_ANDROID: Result = Self(-1000457001i32);
+    #[doc = "ANchor cannot be persisted because it is not tracking."]
+    pub const ERROR_ANCHOR_NOT_TRACKING_ANDROID: Result = Self(-1000457002i32);
+    #[doc = "Persisted data stored by this app has not been loaded yet."]
+    pub const ERROR_PERSISTED_DATA_NOT_READY_ANDROID: Result = Self(-1000457003i32);
+    #[doc = "The underlying tracking service is not yet ready."]
+    pub const ERROR_SERVICE_NOT_READY_ANDROID: Result = Self(-1000458000i32);
     #[doc = "Returned by completion function to indicate future is not ready."]
     pub const ERROR_FUTURE_PENDING_EXT: Result = Self(-1000469001i32);
     #[doc = "Returned by completion function to indicate future is not valid."]
     pub const ERROR_FUTURE_INVALID_EXT: Result = Self(-1000469002i32);
+    #[doc = "The com.magicleap.permission.SYSTEM_NOTIFICATION permission was not granted."]
+    pub const ERROR_SYSTEM_NOTIFICATION_PERMISSION_DENIED_ML: Result = Self(-1000473000i32);
+    #[doc = "Incompatible SKU detected."]
+    pub const ERROR_SYSTEM_NOTIFICATION_INCOMPATIBLE_SKU_ML: Result = Self(-1000473001i32);
+    #[doc = "The world mesh detector permission was not granted."]
+    pub const ERROR_WORLD_MESH_DETECTOR_PERMISSION_DENIED_ML: Result = Self(-1000474000i32);
+    #[doc = "At the time of the call the runtime was unable to locate the space and cannot fulfill your request."]
+    pub const ERROR_WORLD_MESH_DETECTOR_SPACE_NOT_LOCATABLE_ML: Result = Self(-1000474001i32);
+    #[doc = "Permission to track facial expressions was not granted"]
+    pub const ERROR_FACIAL_EXPRESSION_PERMISSION_DENIED_ML: Result = Self(1000482000i32);
+    #[doc = "The network request failed."]
+    pub const ERROR_COLOCATION_DISCOVERY_NETWORK_FAILED_META: Result = Self(-1000571001i32);
+    #[doc = "The runtime does not have any methods available to perform discovery."]
+    pub const ERROR_COLOCATION_DISCOVERY_NO_DISCOVERY_METHOD_META: Result = Self(-1000571002i32);
+    #[doc = "Colocation advertisement has already been enabled"]
+    pub const COLOCATION_DISCOVERY_ALREADY_ADVERTISING_META: Result = Self(1000571003i32);
+    #[doc = "Colocation discovery has already been enabled"]
+    pub const COLOCATION_DISCOVERY_ALREADY_DISCOVERING_META: Result = Self(1000571004i32);
+    #[doc = "The group UUID was not found within the runtime"]
+    pub const ERROR_SPACE_GROUP_NOT_FOUND_META: Result = Self(-1000572002i32);
+    #[doc = "Operation not allowed because anchor is not owned by the XrSession in which the function is being called."]
+    pub const ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID: Result = Self(-1000701000i32);
     pub const ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR: Result =
         Self::ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED;
     pub const ERROR_PERMISSION_INSUFFICIENT_KHR: Result = Self::ERROR_PERMISSION_INSUFFICIENT;
+    #[doc = "The specified spatial capability is not supported by the runtime or the system."]
+    pub const ERROR_SPATIAL_CAPABILITY_UNSUPPORTED_EXT: Result = Self(-1000740001i32);
+    #[doc = "The specified spatial entity id is invalid or an entity with that id does not exist in the environment."]
+    pub const ERROR_SPATIAL_ENTITY_ID_INVALID_EXT: Result = Self(-1000740002i32);
+    #[doc = "The specified spatial buffer id is invalid or does not exist in the spatial snapshot being used to query for the buffer data."]
+    pub const ERROR_SPATIAL_BUFFER_ID_INVALID_EXT: Result = Self(-1000740003i32);
+    #[doc = "The specified spatial component is not supported by the runtime or the system for the given capability."]
+    pub const ERROR_SPATIAL_COMPONENT_UNSUPPORTED_FOR_CAPABILITY_EXT: Result = Self(-1000740004i32);
+    #[doc = "The specified spatial capability configuration is invalid."]
+    pub const ERROR_SPATIAL_CAPABILITY_CONFIGURATION_INVALID_EXT: Result = Self(-1000740005i32);
+    #[doc = "The specified spatial component is not enabled for the spatial context."]
+    pub const ERROR_SPATIAL_COMPONENT_NOT_ENABLED_EXT: Result = Self(-1000740006i32);
+    #[doc = "The specified spatial persistence scope is not supported by the runtime or the system."]
+    pub const ERROR_SPATIAL_PERSISTENCE_SCOPE_UNSUPPORTED_EXT: Result = Self(-1000763001i32);
+    #[doc = "The scope configured for the persistence context is incompatible for the current spatial entity."]
+    pub const ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT: Result = Self(-1000781001i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -1474,6 +2388,21 @@ impl fmt::Debug for Result {
             Self::ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML => {
                 Some("ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML")
             }
+            Self::ERROR_SPATIAL_ANCHORS_PERMISSION_DENIED_ML => {
+                Some("ERROR_SPATIAL_ANCHORS_PERMISSION_DENIED_ML")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_NOT_LOCALIZED_ML => {
+                Some("ERROR_SPATIAL_ANCHORS_NOT_LOCALIZED_ML")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_OUT_OF_MAP_BOUNDS_ML => {
+                Some("ERROR_SPATIAL_ANCHORS_OUT_OF_MAP_BOUNDS_ML")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_SPACE_NOT_LOCATABLE_ML => {
+                Some("ERROR_SPATIAL_ANCHORS_SPACE_NOT_LOCATABLE_ML")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_ANCHOR_NOT_FOUND_ML => {
+                Some("ERROR_SPATIAL_ANCHORS_ANCHOR_NOT_FOUND_ML")
+            }
             Self::ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => {
                 Some("ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT")
             }
@@ -1492,20 +2421,137 @@ impl fmt::Debug for Result {
             Self::ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB => {
                 Some("ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB")
             }
+            Self::ERROR_SPACE_INSUFFICIENT_RESOURCES_META => {
+                Some("ERROR_SPACE_INSUFFICIENT_RESOURCES_META")
+            }
+            Self::ERROR_SPACE_STORAGE_AT_CAPACITY_META => {
+                Some("ERROR_SPACE_STORAGE_AT_CAPACITY_META")
+            }
+            Self::ERROR_SPACE_INSUFFICIENT_VIEW_META => Some("ERROR_SPACE_INSUFFICIENT_VIEW_META"),
+            Self::ERROR_SPACE_PERMISSION_INSUFFICIENT_META => {
+                Some("ERROR_SPACE_PERMISSION_INSUFFICIENT_META")
+            }
+            Self::ERROR_SPACE_RATE_LIMITED_META => Some("ERROR_SPACE_RATE_LIMITED_META"),
+            Self::ERROR_SPACE_TOO_DARK_META => Some("ERROR_SPACE_TOO_DARK_META"),
+            Self::ERROR_SPACE_TOO_BRIGHT_META => Some("ERROR_SPACE_TOO_BRIGHT_META"),
             Self::ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META => {
                 Some("ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META")
             }
             Self::ENVIRONMENT_DEPTH_NOT_AVAILABLE_META => {
                 Some("ENVIRONMENT_DEPTH_NOT_AVAILABLE_META")
             }
+            Self::ERROR_RENDER_MODEL_ID_INVALID_EXT => Some("ERROR_RENDER_MODEL_ID_INVALID_EXT"),
+            Self::ERROR_RENDER_MODEL_ASSET_UNAVAILABLE_EXT => {
+                Some("ERROR_RENDER_MODEL_ASSET_UNAVAILABLE_EXT")
+            }
+            Self::ERROR_RENDER_MODEL_GLTF_EXTENSION_REQUIRED_EXT => {
+                Some("ERROR_RENDER_MODEL_GLTF_EXTENSION_REQUIRED_EXT")
+            }
+            Self::ERROR_NOT_INTERACTION_RENDER_MODEL_EXT => {
+                Some("ERROR_NOT_INTERACTION_RENDER_MODEL_EXT")
+            }
             Self::ERROR_HINT_ALREADY_SET_QCOM => Some("ERROR_HINT_ALREADY_SET_QCOM"),
             Self::ERROR_NOT_AN_ANCHOR_HTC => Some("ERROR_NOT_AN_ANCHOR_HTC"),
+            Self::ERROR_SPATIAL_ENTITY_ID_INVALID_BD => Some("ERROR_SPATIAL_ENTITY_ID_INVALID_BD"),
+            Self::ERROR_SPATIAL_SENSING_SERVICE_UNAVAILABLE_BD => {
+                Some("ERROR_SPATIAL_SENSING_SERVICE_UNAVAILABLE_BD")
+            }
+            Self::ERROR_ANCHOR_NOT_SUPPORTED_FOR_ENTITY_BD => {
+                Some("ERROR_ANCHOR_NOT_SUPPORTED_FOR_ENTITY_BD")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_NOT_FOUND_BD => Some("ERROR_SPATIAL_ANCHOR_NOT_FOUND_BD"),
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_TIMEOUT_BD => {
+                Some("ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_TIMEOUT_BD")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_AUTHENTICATION_FAILURE_BD => {
+                Some("ERROR_SPATIAL_ANCHOR_SHARING_AUTHENTICATION_FAILURE_BD")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_FAILURE_BD => {
+                Some("ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_FAILURE_BD")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_LOCALIZATION_FAIL_BD => {
+                Some("ERROR_SPATIAL_ANCHOR_SHARING_LOCALIZATION_FAIL_BD")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_MAP_INSUFFICIENT_BD => {
+                Some("ERROR_SPATIAL_ANCHOR_SHARING_MAP_INSUFFICIENT_BD")
+            }
+            Self::ERROR_SCENE_CAPTURE_FAILURE_BD => Some("ERROR_SCENE_CAPTURE_FAILURE_BD"),
             Self::ERROR_SPACE_NOT_LOCATABLE_EXT => Some("ERROR_SPACE_NOT_LOCATABLE_EXT"),
             Self::ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT => {
                 Some("ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT")
             }
+            Self::ERROR_MISMATCHING_TRACKABLE_TYPE_ANDROID => {
+                Some("ERROR_MISMATCHING_TRACKABLE_TYPE_ANDROID")
+            }
+            Self::ERROR_TRACKABLE_TYPE_NOT_SUPPORTED_ANDROID => {
+                Some("ERROR_TRACKABLE_TYPE_NOT_SUPPORTED_ANDROID")
+            }
+            Self::ERROR_ANCHOR_ID_NOT_FOUND_ANDROID => Some("ERROR_ANCHOR_ID_NOT_FOUND_ANDROID"),
+            Self::ERROR_ANCHOR_ALREADY_PERSISTED_ANDROID => {
+                Some("ERROR_ANCHOR_ALREADY_PERSISTED_ANDROID")
+            }
+            Self::ERROR_ANCHOR_NOT_TRACKING_ANDROID => Some("ERROR_ANCHOR_NOT_TRACKING_ANDROID"),
+            Self::ERROR_PERSISTED_DATA_NOT_READY_ANDROID => {
+                Some("ERROR_PERSISTED_DATA_NOT_READY_ANDROID")
+            }
+            Self::ERROR_SERVICE_NOT_READY_ANDROID => Some("ERROR_SERVICE_NOT_READY_ANDROID"),
             Self::ERROR_FUTURE_PENDING_EXT => Some("ERROR_FUTURE_PENDING_EXT"),
             Self::ERROR_FUTURE_INVALID_EXT => Some("ERROR_FUTURE_INVALID_EXT"),
+            Self::ERROR_SYSTEM_NOTIFICATION_PERMISSION_DENIED_ML => {
+                Some("ERROR_SYSTEM_NOTIFICATION_PERMISSION_DENIED_ML")
+            }
+            Self::ERROR_SYSTEM_NOTIFICATION_INCOMPATIBLE_SKU_ML => {
+                Some("ERROR_SYSTEM_NOTIFICATION_INCOMPATIBLE_SKU_ML")
+            }
+            Self::ERROR_WORLD_MESH_DETECTOR_PERMISSION_DENIED_ML => {
+                Some("ERROR_WORLD_MESH_DETECTOR_PERMISSION_DENIED_ML")
+            }
+            Self::ERROR_WORLD_MESH_DETECTOR_SPACE_NOT_LOCATABLE_ML => {
+                Some("ERROR_WORLD_MESH_DETECTOR_SPACE_NOT_LOCATABLE_ML")
+            }
+            Self::ERROR_FACIAL_EXPRESSION_PERMISSION_DENIED_ML => {
+                Some("ERROR_FACIAL_EXPRESSION_PERMISSION_DENIED_ML")
+            }
+            Self::ERROR_COLOCATION_DISCOVERY_NETWORK_FAILED_META => {
+                Some("ERROR_COLOCATION_DISCOVERY_NETWORK_FAILED_META")
+            }
+            Self::ERROR_COLOCATION_DISCOVERY_NO_DISCOVERY_METHOD_META => {
+                Some("ERROR_COLOCATION_DISCOVERY_NO_DISCOVERY_METHOD_META")
+            }
+            Self::COLOCATION_DISCOVERY_ALREADY_ADVERTISING_META => {
+                Some("COLOCATION_DISCOVERY_ALREADY_ADVERTISING_META")
+            }
+            Self::COLOCATION_DISCOVERY_ALREADY_DISCOVERING_META => {
+                Some("COLOCATION_DISCOVERY_ALREADY_DISCOVERING_META")
+            }
+            Self::ERROR_SPACE_GROUP_NOT_FOUND_META => Some("ERROR_SPACE_GROUP_NOT_FOUND_META"),
+            Self::ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID => {
+                Some("ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID")
+            }
+            Self::ERROR_SPATIAL_CAPABILITY_UNSUPPORTED_EXT => {
+                Some("ERROR_SPATIAL_CAPABILITY_UNSUPPORTED_EXT")
+            }
+            Self::ERROR_SPATIAL_ENTITY_ID_INVALID_EXT => {
+                Some("ERROR_SPATIAL_ENTITY_ID_INVALID_EXT")
+            }
+            Self::ERROR_SPATIAL_BUFFER_ID_INVALID_EXT => {
+                Some("ERROR_SPATIAL_BUFFER_ID_INVALID_EXT")
+            }
+            Self::ERROR_SPATIAL_COMPONENT_UNSUPPORTED_FOR_CAPABILITY_EXT => {
+                Some("ERROR_SPATIAL_COMPONENT_UNSUPPORTED_FOR_CAPABILITY_EXT")
+            }
+            Self::ERROR_SPATIAL_CAPABILITY_CONFIGURATION_INVALID_EXT => {
+                Some("ERROR_SPATIAL_CAPABILITY_CONFIGURATION_INVALID_EXT")
+            }
+            Self::ERROR_SPATIAL_COMPONENT_NOT_ENABLED_EXT => {
+                Some("ERROR_SPATIAL_COMPONENT_NOT_ENABLED_EXT")
+            }
+            Self::ERROR_SPATIAL_PERSISTENCE_SCOPE_UNSUPPORTED_EXT => {
+                Some("ERROR_SPATIAL_PERSISTENCE_SCOPE_UNSUPPORTED_EXT")
+            }
+            Self::ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT => {
+                Some("ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT")
+            }
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1628,7 +2674,7 @@ impl fmt::Display for Result {
             }
             Self::ERROR_LOCALIZED_NAME_INVALID => Some("the localized name provided was invalid"),
             Self::ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING => Some(
-                "the xrGetGraphicsRequirements* call was not made before calling xrCreateSession",
+                "the xrGet*GraphicsRequirements call was not made before calling xrCreateSession",
             ),
             Self::ERROR_RUNTIME_UNAVAILABLE => {
                 Some("the loader was unable to find or load a runtime")
@@ -1747,6 +2793,21 @@ impl fmt::Display for Result {
             Self::ERROR_LOCALIZATION_MAP_CANNOT_EXPORT_CLOUD_MAP_ML => {
                 Some("the map localization service cannot export cloud based maps")
             }
+            Self::ERROR_SPATIAL_ANCHORS_PERMISSION_DENIED_ML => {
+                Some("the com.magicleap.permission.SPATIAL_ANCHOR permission was not granted")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_NOT_LOCALIZED_ML => {
+                Some("operation failed because the system is not localized into a localization map")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_OUT_OF_MAP_BOUNDS_ML => {
+                Some("operation failed because it is performed outside of the localization map")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_SPACE_NOT_LOCATABLE_ML => {
+                Some("operation failed because the space referenced cannot be located")
+            }
+            Self::ERROR_SPATIAL_ANCHORS_ANCHOR_NOT_FOUND_ML => {
+                Some("the anchor references was not found")
+            }
             Self::ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT => Some(
                 "a spatial anchor was not found associated with the spatial anchor name provided",
             ),
@@ -1767,21 +2828,99 @@ impl fmt::Display for Result {
             Self::ERROR_SPACE_CLOUD_STORAGE_DISABLED_FB => {
                 Some("cloud storage is required for this operation but is currently disabled")
             }
+            Self::ERROR_SPACE_INSUFFICIENT_RESOURCES_META => Some(
+                "resource limitation prevented this operation from executing. Recommend retrying, perhaps after a short delay and/or reducing memory consumption",
+            ),
+            Self::ERROR_SPACE_STORAGE_AT_CAPACITY_META => Some(
+                "operation could not be completed until resources used are reduced or storage expanded",
+            ),
+            Self::ERROR_SPACE_INSUFFICIENT_VIEW_META => {
+                Some("look around the environment more for space tracking to function")
+            }
+            Self::ERROR_SPACE_PERMISSION_INSUFFICIENT_META => Some(
+                "space operation permission insufficient. Recommend confirming the status of the required permissions needed for using Space APIs",
+            ),
+            Self::ERROR_SPACE_RATE_LIMITED_META => Some(
+                "operation cancelled due to rate limiting. Recommend retrying after a short delay",
+            ),
+            Self::ERROR_SPACE_TOO_DARK_META => {
+                Some("environment too dark for tracking to complete operation")
+            }
+            Self::ERROR_SPACE_TOO_BRIGHT_META => {
+                Some("environment too bright for tracking to complete operation")
+            }
             Self::ERROR_PASSTHROUGH_COLOR_LUT_BUFFER_SIZE_MISMATCH_META => {
                 Some("the provided data buffer did not match the required size")
             }
             Self::ENVIRONMENT_DEPTH_NOT_AVAILABLE_META => {
                 Some("warning: The requested depth image is not yet available")
             }
+            Self::ERROR_RENDER_MODEL_ID_INVALID_EXT => Some("the render model ID is invalid"),
+            Self::ERROR_RENDER_MODEL_ASSET_UNAVAILABLE_EXT => {
+                Some("the render model asset is unavailable")
+            }
+            Self::ERROR_RENDER_MODEL_GLTF_EXTENSION_REQUIRED_EXT => {
+                Some("a glTF extension is required")
+            }
+            Self::ERROR_NOT_INTERACTION_RENDER_MODEL_EXT => Some(
+                "the provided XrRenderModelEXT was not created from a XrRenderModelIdEXT from `<<XR_EXT_interaction_render_model>>`",
+            ),
             Self::ERROR_HINT_ALREADY_SET_QCOM => {
                 Some("tracking optimization hint is already set for the domain")
             }
             Self::ERROR_NOT_AN_ANCHOR_HTC => Some("the provided space is valid but not an anchor"),
+            Self::ERROR_SPATIAL_ENTITY_ID_INVALID_BD => Some("the spatial entity id is invalid"),
+            Self::ERROR_SPATIAL_SENSING_SERVICE_UNAVAILABLE_BD => {
+                Some("the spatial sensing service is unavailable")
+            }
+            Self::ERROR_ANCHOR_NOT_SUPPORTED_FOR_ENTITY_BD => {
+                Some("the spatial entity does not support anchor")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_NOT_FOUND_BD => Some("the spatial anchor is not found"),
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_TIMEOUT_BD => {
+                Some("the network transmission timeout")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_AUTHENTICATION_FAILURE_BD => {
+                Some("the authentication for the user account failed")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_NETWORK_FAILURE_BD => Some(
+                "the network connection failed, e.g. the connection is unstable or disconnected",
+            ),
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_LOCALIZATION_FAIL_BD => {
+                Some("the spatial anchor localization failed")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_SHARING_MAP_INSUFFICIENT_BD => {
+                Some("the feature points of spatial anchor map are insufficient")
+            }
+            Self::ERROR_SCENE_CAPTURE_FAILURE_BD => {
+                Some("the scene capture is failed, for example exiting abnormally")
+            }
             Self::ERROR_SPACE_NOT_LOCATABLE_EXT => {
                 Some("the space passed to the function was not locatable")
             }
             Self::ERROR_PLANE_DETECTION_PERMISSION_DENIED_EXT => {
                 Some("the permission for this resource was not granted")
+            }
+            Self::ERROR_MISMATCHING_TRACKABLE_TYPE_ANDROID => {
+                Some("indicates that the parameters contains multiple trackable types")
+            }
+            Self::ERROR_TRACKABLE_TYPE_NOT_SUPPORTED_ANDROID => {
+                Some("indicates that the function is not supported by the given trackable type")
+            }
+            Self::ERROR_ANCHOR_ID_NOT_FOUND_ANDROID => {
+                Some("xrUuidExt passed to the function was not found to be a persisted anchor")
+            }
+            Self::ERROR_ANCHOR_ALREADY_PERSISTED_ANDROID => {
+                Some("xrUuidExt passed to the function was already marked to be persisted")
+            }
+            Self::ERROR_ANCHOR_NOT_TRACKING_ANDROID => {
+                Some("aNchor cannot be persisted because it is not tracking")
+            }
+            Self::ERROR_PERSISTED_DATA_NOT_READY_ANDROID => {
+                Some("persisted data stored by this app has not been loaded yet")
+            }
+            Self::ERROR_SERVICE_NOT_READY_ANDROID => {
+                Some("the underlying tracking service is not yet ready")
             }
             Self::ERROR_FUTURE_PENDING_EXT => {
                 Some("returned by completion function to indicate future is not ready")
@@ -1789,10 +2928,67 @@ impl fmt::Display for Result {
             Self::ERROR_FUTURE_INVALID_EXT => {
                 Some("returned by completion function to indicate future is not valid")
             }
+            Self::ERROR_SYSTEM_NOTIFICATION_PERMISSION_DENIED_ML => {
+                Some("the com.magicleap.permission.SYSTEM_NOTIFICATION permission was not granted")
+            }
+            Self::ERROR_SYSTEM_NOTIFICATION_INCOMPATIBLE_SKU_ML => {
+                Some("incompatible SKU detected")
+            }
+            Self::ERROR_WORLD_MESH_DETECTOR_PERMISSION_DENIED_ML => {
+                Some("the world mesh detector permission was not granted")
+            }
+            Self::ERROR_WORLD_MESH_DETECTOR_SPACE_NOT_LOCATABLE_ML => Some(
+                "at the time of the call the runtime was unable to locate the space and cannot fulfill your request",
+            ),
+            Self::ERROR_FACIAL_EXPRESSION_PERMISSION_DENIED_ML => {
+                Some("permission to track facial expressions was not granted")
+            }
+            Self::ERROR_COLOCATION_DISCOVERY_NETWORK_FAILED_META => {
+                Some("the network request failed")
+            }
+            Self::ERROR_COLOCATION_DISCOVERY_NO_DISCOVERY_METHOD_META => {
+                Some("the runtime does not have any methods available to perform discovery")
+            }
+            Self::COLOCATION_DISCOVERY_ALREADY_ADVERTISING_META => {
+                Some("colocation advertisement has already been enabled")
+            }
+            Self::COLOCATION_DISCOVERY_ALREADY_DISCOVERING_META => {
+                Some("colocation discovery has already been enabled")
+            }
+            Self::ERROR_SPACE_GROUP_NOT_FOUND_META => {
+                Some("the group UUID was not found within the runtime")
+            }
+            Self::ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID => Some(
+                "operation not allowed because anchor is not owned by the XrSession in which the function is being called",
+            ),
             Self::ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR => {
                 Some("ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR")
             }
             Self::ERROR_PERMISSION_INSUFFICIENT_KHR => Some("ERROR_PERMISSION_INSUFFICIENT_KHR"),
+            Self::ERROR_SPATIAL_CAPABILITY_UNSUPPORTED_EXT => Some(
+                "the specified spatial capability is not supported by the runtime or the system",
+            ),
+            Self::ERROR_SPATIAL_ENTITY_ID_INVALID_EXT => Some(
+                "the specified spatial entity id is invalid or an entity with that id does not exist in the environment",
+            ),
+            Self::ERROR_SPATIAL_BUFFER_ID_INVALID_EXT => Some(
+                "the specified spatial buffer id is invalid or does not exist in the spatial snapshot being used to query for the buffer data",
+            ),
+            Self::ERROR_SPATIAL_COMPONENT_UNSUPPORTED_FOR_CAPABILITY_EXT => Some(
+                "the specified spatial component is not supported by the runtime or the system for the given capability",
+            ),
+            Self::ERROR_SPATIAL_CAPABILITY_CONFIGURATION_INVALID_EXT => {
+                Some("the specified spatial capability configuration is invalid")
+            }
+            Self::ERROR_SPATIAL_COMPONENT_NOT_ENABLED_EXT => {
+                Some("the specified spatial component is not enabled for the spatial context")
+            }
+            Self::ERROR_SPATIAL_PERSISTENCE_SCOPE_UNSUPPORTED_EXT => Some(
+                "the specified spatial persistence scope is not supported by the runtime or the system",
+            ),
+            Self::ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT => Some(
+                "the scope configured for the persistence context is incompatible for the current spatial entity",
+            ),
             _ => None,
         };
         if let Some(reason) = reason {
@@ -1805,7 +3001,7 @@ impl fmt::Display for Result {
 impl std::error::Error for Result {}
 #[doc = "Enums to track objects of various types - see [XrObjectType](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrObjectType)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct ObjectType(i32);
 impl ObjectType {
     pub const UNKNOWN: ObjectType = Self(0i32);
@@ -1851,6 +3047,8 @@ impl ObjectType {
     pub const MARKER_DETECTOR_ML: ObjectType = Self(1000138000i32);
     #[doc = "XrExportedLocalizationMapML"]
     pub const EXPORTED_LOCALIZATION_MAP_ML: ObjectType = Self(1000139000i32);
+    #[doc = "XrSpatialAnchorsStorageML"]
+    pub const SPATIAL_ANCHORS_STORAGE_ML: ObjectType = Self(1000141000i32);
     #[doc = "XrSpatialAnchorStoreConnectionMSFT"]
     pub const SPATIAL_ANCHOR_STORE_CONNECTION_MSFT: ObjectType = Self(1000142000i32);
     #[doc = "XrFaceTrackerFB"]
@@ -1869,10 +3067,44 @@ impl ObjectType {
     pub const ENVIRONMENT_DEPTH_PROVIDER_META: ObjectType = Self(1000291000i32);
     #[doc = "XrEnvironmentDepthSwapchainMETA"]
     pub const ENVIRONMENT_DEPTH_SWAPCHAIN_META: ObjectType = Self(1000291001i32);
+    #[doc = "XrRenderModelEXT"]
+    pub const RENDER_MODEL_EXT: ObjectType = Self(1000300000i32);
+    #[doc = "XrRenderModelAssetEXT"]
+    pub const RENDER_MODEL_ASSET_EXT: ObjectType = Self(1000300001i32);
     #[doc = "XrPassthroughHTC"]
     pub const PASSTHROUGH_HTC: ObjectType = Self(1000317000i32);
+    #[doc = "XrBodyTrackerHTC"]
+    pub const BODY_TRACKER_HTC: ObjectType = Self(1000320000i32);
+    #[doc = "XrBodyTrackerBD"]
+    pub const BODY_TRACKER_BD: ObjectType = Self(1000385000i32);
+    #[doc = "XrFaceTrackerBD"]
+    pub const FACE_TRACKER_BD: ObjectType = Self(1000386000i32);
+    #[doc = "XrSenseDataProviderBD"]
+    pub const SENSE_DATA_PROVIDER_BD: ObjectType = Self(1000389000i32);
+    #[doc = "XrSenseDataSnapshotBD"]
+    pub const SENSE_DATA_SNAPSHOT_BD: ObjectType = Self(1000389001i32);
+    #[doc = "XrAnchorBD"]
+    pub const ANCHOR_BD: ObjectType = Self(1000389002i32);
     #[doc = "XrPlaneDetectorEXT"]
     pub const PLANE_DETECTOR_EXT: ObjectType = Self(1000429000i32);
+    #[doc = "XrTrackableTrackerANDROID"]
+    pub const TRACKABLE_TRACKER_ANDROID: ObjectType = Self(1000455001i32);
+    #[doc = "XrDeviceAnchorPersistenceANDROID"]
+    pub const DEVICE_ANCHOR_PERSISTENCE_ANDROID: ObjectType = Self(1000457000i32);
+    #[doc = "XrFaceTrackerANDROID"]
+    pub const FACE_TRACKER_ANDROID: ObjectType = Self(1000458000i32);
+    #[doc = "XrWorldMeshDetectorML"]
+    pub const WORLD_MESH_DETECTOR_ML: ObjectType = Self(1000474000i32);
+    #[doc = "XrFacialExpressionClientML"]
+    pub const FACIAL_EXPRESSION_CLIENT_ML: ObjectType = Self(1000482000i32);
+    #[doc = "XrSpatialEntityEXT"]
+    pub const SPATIAL_ENTITY_EXT: ObjectType = Self(1000740000i32);
+    #[doc = "XrSpatialContextEXT"]
+    pub const SPATIAL_CONTEXT_EXT: ObjectType = Self(1000740001i32);
+    #[doc = "XrSpatialSnapshotEXT"]
+    pub const SPATIAL_SNAPSHOT_EXT: ObjectType = Self(1000740002i32);
+    #[doc = "XrSpatialPersistenceContextEXT"]
+    pub const SPATIAL_PERSISTENCE_CONTEXT_EXT: ObjectType = Self(1000763000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -1905,6 +3137,7 @@ impl fmt::Debug for ObjectType {
             Self::GEOMETRY_INSTANCE_FB => Some("GEOMETRY_INSTANCE_FB"),
             Self::MARKER_DETECTOR_ML => Some("MARKER_DETECTOR_ML"),
             Self::EXPORTED_LOCALIZATION_MAP_ML => Some("EXPORTED_LOCALIZATION_MAP_ML"),
+            Self::SPATIAL_ANCHORS_STORAGE_ML => Some("SPATIAL_ANCHORS_STORAGE_ML"),
             Self::SPATIAL_ANCHOR_STORE_CONNECTION_MSFT => {
                 Some("SPATIAL_ANCHOR_STORE_CONNECTION_MSFT")
             }
@@ -1916,8 +3149,25 @@ impl fmt::Debug for ObjectType {
             Self::FACE_TRACKER2_FB => Some("FACE_TRACKER2_FB"),
             Self::ENVIRONMENT_DEPTH_PROVIDER_META => Some("ENVIRONMENT_DEPTH_PROVIDER_META"),
             Self::ENVIRONMENT_DEPTH_SWAPCHAIN_META => Some("ENVIRONMENT_DEPTH_SWAPCHAIN_META"),
+            Self::RENDER_MODEL_EXT => Some("RENDER_MODEL_EXT"),
+            Self::RENDER_MODEL_ASSET_EXT => Some("RENDER_MODEL_ASSET_EXT"),
             Self::PASSTHROUGH_HTC => Some("PASSTHROUGH_HTC"),
+            Self::BODY_TRACKER_HTC => Some("BODY_TRACKER_HTC"),
+            Self::BODY_TRACKER_BD => Some("BODY_TRACKER_BD"),
+            Self::FACE_TRACKER_BD => Some("FACE_TRACKER_BD"),
+            Self::SENSE_DATA_PROVIDER_BD => Some("SENSE_DATA_PROVIDER_BD"),
+            Self::SENSE_DATA_SNAPSHOT_BD => Some("SENSE_DATA_SNAPSHOT_BD"),
+            Self::ANCHOR_BD => Some("ANCHOR_BD"),
             Self::PLANE_DETECTOR_EXT => Some("PLANE_DETECTOR_EXT"),
+            Self::TRACKABLE_TRACKER_ANDROID => Some("TRACKABLE_TRACKER_ANDROID"),
+            Self::DEVICE_ANCHOR_PERSISTENCE_ANDROID => Some("DEVICE_ANCHOR_PERSISTENCE_ANDROID"),
+            Self::FACE_TRACKER_ANDROID => Some("FACE_TRACKER_ANDROID"),
+            Self::WORLD_MESH_DETECTOR_ML => Some("WORLD_MESH_DETECTOR_ML"),
+            Self::FACIAL_EXPRESSION_CLIENT_ML => Some("FACIAL_EXPRESSION_CLIENT_ML"),
+            Self::SPATIAL_ENTITY_EXT => Some("SPATIAL_ENTITY_EXT"),
+            Self::SPATIAL_CONTEXT_EXT => Some("SPATIAL_CONTEXT_EXT"),
+            Self::SPATIAL_SNAPSHOT_EXT => Some("SPATIAL_SNAPSHOT_EXT"),
+            Self::SPATIAL_PERSISTENCE_CONTEXT_EXT => Some("SPATIAL_PERSISTENCE_CONTEXT_EXT"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -1953,7 +3203,7 @@ impl fmt::Debug for AndroidThreadTypeKHR {
 }
 #[doc = "eye visibility selector - see [XrEyeVisibility](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEyeVisibility)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct EyeVisibility(i32);
 impl EyeVisibility {
     #[doc = "Display in both eyes."]
@@ -2129,7 +3379,7 @@ impl fmt::Debug for EnvironmentBlendMode {
 }
 #[doc = "See [XrSessionState](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSessionState)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct SessionState(i32);
 impl SessionState {
     pub const UNKNOWN: SessionState = Self(0i32);
@@ -2222,7 +3472,7 @@ impl fmt::Debug for PerfSettingsSubDomainEXT {
 }
 #[doc = "See [XrPerfSettingsLevelEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerfSettingsLevelEXT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PerfSettingsLevelEXT(i32);
 impl PerfSettingsLevelEXT {
     #[doc = "Performance settings hint used by the application to indicate that it enters a non-XR section (head-locked / static screen), during which power savings are to be prioritized"]
@@ -2254,7 +3504,7 @@ impl fmt::Debug for PerfSettingsLevelEXT {
 }
 #[doc = "See [XrPerfSettingsNotificationLevelEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerfSettingsNotificationLevelEXT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PerfSettingsNotificationLevelEXT(i32);
 impl PerfSettingsNotificationLevelEXT {
     #[doc = "Notifies that the sub-domain has reached a level where no further actions other than currently applied are necessary"]
@@ -2336,7 +3586,7 @@ impl fmt::Debug for SpatialGraphNodeTypeMSFT {
 }
 #[doc = "See [XrBlendFactorFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBlendFactorFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct BlendFactorFB(i32);
 impl BlendFactorFB {
     pub const ZERO: BlendFactorFB = Self(0i32);
@@ -2368,7 +3618,7 @@ impl fmt::Debug for BlendFactorFB {
 }
 #[doc = "See [XrSpaceComponentTypeFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceComponentTypeFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct SpaceComponentTypeFB(i32);
 impl SpaceComponentTypeFB {
     #[doc = "Enables tracking the 6 DOF pose of the XrSpace with xrLocateSpace."]
@@ -2387,6 +3637,7 @@ impl SpaceComponentTypeFB {
     pub const ROOM_LAYOUT: SpaceComponentTypeFB = Self(6i32);
     #[doc = "Space container component."]
     pub const SPACE_CONTAINER: SpaceComponentTypeFB = Self(7i32);
+    #[doc = "Triangle mesh component."]
     pub const TRIANGLE_MESH_M: SpaceComponentTypeFB = Self(1000269000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
@@ -2414,7 +3665,7 @@ impl fmt::Debug for SpaceComponentTypeFB {
 }
 #[doc = "See [XrWindingOrderFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWindingOrderFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct WindingOrderFB(i32);
 impl WindingOrderFB {
     #[doc = "Winding order is unknown and the runtime cannot make any assumptions on the triangle orientation"]
@@ -2443,7 +3694,7 @@ impl fmt::Debug for WindingOrderFB {
 }
 #[doc = "See [XrPassthroughLayerPurposeFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughLayerPurposeFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PassthroughLayerPurposeFB(i32);
 impl PassthroughLayerPurposeFB {
     #[doc = "Reconstruction passthrough (full screen environment)"]
@@ -2475,7 +3726,7 @@ impl fmt::Debug for PassthroughLayerPurposeFB {
 }
 #[doc = "See [XrSpaceQueryActionFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceQueryActionFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct SpaceQueryActionFB(i32);
 impl SpaceQueryActionFB {
     #[doc = "Tells the query to perform a load operation on any XrSpace returned by the query."]
@@ -2498,7 +3749,7 @@ impl fmt::Debug for SpaceQueryActionFB {
 }
 #[doc = "See [XrSpaceStorageLocationFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceStorageLocationFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct SpaceStorageLocationFB(i32);
 impl SpaceStorageLocationFB {
     #[doc = "Invalid storage location"]
@@ -2527,7 +3778,7 @@ impl fmt::Debug for SpaceStorageLocationFB {
 }
 #[doc = "See [XrSpacePersistenceModeFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpacePersistenceModeFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct SpacePersistenceModeFB(i32);
 impl SpacePersistenceModeFB {
     #[doc = "Invalid storage persistence"]
@@ -2553,7 +3804,7 @@ impl fmt::Debug for SpacePersistenceModeFB {
 }
 #[doc = "See [XrExternalCameraAttachedToDeviceOCULUS](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrExternalCameraAttachedToDeviceOCULUS)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct ExternalCameraAttachedToDeviceOCULUS(i32);
 impl ExternalCameraAttachedToDeviceOCULUS {
     #[doc = "External camera is at a fixed point in LOCAL space"]
@@ -2609,7 +3860,7 @@ impl fmt::Debug for PassthroughColorLutChannelsMETA {
 }
 #[doc = "See [XrPerformanceMetricsCounterUnitMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerformanceMetricsCounterUnitMETA)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PerformanceMetricsCounterUnitMETA(i32);
 impl PerformanceMetricsCounterUnitMETA {
     #[doc = "the performance counter unit is generic (unspecified)."]
@@ -2670,7 +3921,7 @@ impl fmt::Debug for FacialTrackingTypeHTC {
 }
 #[doc = "See [XrEyeExpressionHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEyeExpressionHTC)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct EyeExpressionHTC(i32);
 impl EyeExpressionHTC {
     pub const LEFT_BLINK: EyeExpressionHTC = Self(0i32);
@@ -2718,7 +3969,7 @@ impl fmt::Debug for EyeExpressionHTC {
 }
 #[doc = "See [XrLipExpressionHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLipExpressionHTC)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct LipExpressionHTC(i32);
 impl LipExpressionHTC {
     pub const JAW_RIGHT: LipExpressionHTC = Self(0i32);
@@ -2733,10 +3984,10 @@ impl LipExpressionHTC {
     pub const MOUTH_UPPER_OVERTURN: LipExpressionHTC = Self(9i32);
     pub const MOUTH_LOWER_OVERTURN: LipExpressionHTC = Self(10i32);
     pub const MOUTH_POUT: LipExpressionHTC = Self(11i32);
-    pub const MOUTH_SMILE_RIGHT: LipExpressionHTC = Self(12i32);
-    pub const MOUTH_SMILE_LEFT: LipExpressionHTC = Self(13i32);
-    pub const MOUTH_SAD_RIGHT: LipExpressionHTC = Self(14i32);
-    pub const MOUTH_SAD_LEFT: LipExpressionHTC = Self(15i32);
+    pub const MOUTH_RAISER_RIGHT: LipExpressionHTC = Self(12i32);
+    pub const MOUTH_RAISER_LEFT: LipExpressionHTC = Self(13i32);
+    pub const MOUTH_STRETCHER_RIGHT: LipExpressionHTC = Self(14i32);
+    pub const MOUTH_STRETCHER_LEFT: LipExpressionHTC = Self(15i32);
     pub const CHEEK_PUFF_RIGHT: LipExpressionHTC = Self(16i32);
     pub const CHEEK_PUFF_LEFT: LipExpressionHTC = Self(17i32);
     pub const CHEEK_SUCK: LipExpressionHTC = Self(18i32);
@@ -2758,6 +4009,14 @@ impl LipExpressionHTC {
     pub const TONGUE_UPLEFT_MORPH: LipExpressionHTC = Self(34i32);
     pub const TONGUE_DOWNRIGHT_MORPH: LipExpressionHTC = Self(35i32);
     pub const TONGUE_DOWNLEFT_MORPH: LipExpressionHTC = Self(36i32);
+    #[doc = "Backward-compatibility alias for deprecated name."]
+    pub const MOUTH_SMILE_RIGHT: LipExpressionHTC = Self::MOUTH_RAISER_RIGHT;
+    #[doc = "Backward-compatibility alias for deprecated name."]
+    pub const MOUTH_SMILE_LEFT: LipExpressionHTC = Self::MOUTH_RAISER_LEFT;
+    #[doc = "Backward-compatibility alias for deprecated name."]
+    pub const MOUTH_SAD_RIGHT: LipExpressionHTC = Self::MOUTH_STRETCHER_RIGHT;
+    #[doc = "Backward-compatibility alias for deprecated name."]
+    pub const MOUTH_SAD_LEFT: LipExpressionHTC = Self::MOUTH_STRETCHER_LEFT;
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -2780,10 +4039,10 @@ impl fmt::Debug for LipExpressionHTC {
             Self::MOUTH_UPPER_OVERTURN => Some("MOUTH_UPPER_OVERTURN"),
             Self::MOUTH_LOWER_OVERTURN => Some("MOUTH_LOWER_OVERTURN"),
             Self::MOUTH_POUT => Some("MOUTH_POUT"),
-            Self::MOUTH_SMILE_RIGHT => Some("MOUTH_SMILE_RIGHT"),
-            Self::MOUTH_SMILE_LEFT => Some("MOUTH_SMILE_LEFT"),
-            Self::MOUTH_SAD_RIGHT => Some("MOUTH_SAD_RIGHT"),
-            Self::MOUTH_SAD_LEFT => Some("MOUTH_SAD_LEFT"),
+            Self::MOUTH_RAISER_RIGHT => Some("MOUTH_RAISER_RIGHT"),
+            Self::MOUTH_RAISER_LEFT => Some("MOUTH_RAISER_LEFT"),
+            Self::MOUTH_STRETCHER_RIGHT => Some("MOUTH_STRETCHER_RIGHT"),
+            Self::MOUTH_STRETCHER_LEFT => Some("MOUTH_STRETCHER_LEFT"),
             Self::CHEEK_PUFF_RIGHT => Some("CHEEK_PUFF_RIGHT"),
             Self::CHEEK_PUFF_LEFT => Some("CHEEK_PUFF_LEFT"),
             Self::CHEEK_SUCK => Some("CHEEK_SUCK"),
@@ -2812,7 +4071,7 @@ impl fmt::Debug for LipExpressionHTC {
 }
 #[doc = "See [XrPassthroughFormHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughFormHTC)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PassthroughFormHTC(i32);
 impl PassthroughFormHTC {
     #[doc = "Presents the passthrough with full of the entire screen."]
@@ -2838,7 +4097,7 @@ impl fmt::Debug for PassthroughFormHTC {
 }
 #[doc = "See [XrFoveationModeHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFoveationModeHTC)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FoveationModeHTC(i32);
 impl FoveationModeHTC {
     #[doc = "No foveation"]
@@ -2870,7 +4129,7 @@ impl fmt::Debug for FoveationModeHTC {
 }
 #[doc = "See [XrFoveationLevelHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFoveationLevelHTC)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FoveationLevelHTC(i32);
 impl FoveationLevelHTC {
     #[doc = "No foveation"]
@@ -2900,9 +4159,483 @@ impl fmt::Debug for FoveationLevelHTC {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrFaceParameterIndicesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceParameterIndicesANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct FaceParameterIndicesANDROID(i32);
+impl FaceParameterIndicesANDROID {
+    #[doc = "The left brow lowerer blendshape parameter."]
+    pub const BROW_LOWERER_L: FaceParameterIndicesANDROID = Self(0i32);
+    #[doc = "The right brow lowerer blendshape parameter."]
+    pub const BROW_LOWERER_R: FaceParameterIndicesANDROID = Self(1i32);
+    #[doc = "The left cheek puff blendshape parameter."]
+    pub const CHEEK_PUFF_L: FaceParameterIndicesANDROID = Self(2i32);
+    #[doc = "The right cheek puff blendshape parameter."]
+    pub const CHEEK_PUFF_R: FaceParameterIndicesANDROID = Self(3i32);
+    #[doc = "The left cheek raiser blendshape parameter."]
+    pub const CHEEK_RAISER_L: FaceParameterIndicesANDROID = Self(4i32);
+    #[doc = "The right cheek raiser blendshape parameter."]
+    pub const CHEEK_RAISER_R: FaceParameterIndicesANDROID = Self(5i32);
+    #[doc = "The left cheek suck blendshape parameter."]
+    pub const CHEEK_SUCK_L: FaceParameterIndicesANDROID = Self(6i32);
+    #[doc = "The right cheek suck blendshape parameter."]
+    pub const CHEEK_SUCK_R: FaceParameterIndicesANDROID = Self(7i32);
+    #[doc = "The bottom chin raiser blendshape parameter."]
+    pub const CHIN_RAISER_B: FaceParameterIndicesANDROID = Self(8i32);
+    #[doc = "The top chin raiser blendshape parameter."]
+    pub const CHIN_RAISER_T: FaceParameterIndicesANDROID = Self(9i32);
+    #[doc = "The left dimpler blendshape parameter."]
+    pub const DIMPLER_L: FaceParameterIndicesANDROID = Self(10i32);
+    #[doc = "The right dimpler lowerer blendshape parameter."]
+    pub const DIMPLER_R: FaceParameterIndicesANDROID = Self(11i32);
+    #[doc = "The left eyes closed blendshape parameter."]
+    pub const EYES_CLOSED_L: FaceParameterIndicesANDROID = Self(12i32);
+    #[doc = "The right eyes closed blendshape parameter."]
+    pub const EYES_CLOSED_R: FaceParameterIndicesANDROID = Self(13i32);
+    #[doc = "The left eyes look down blendshape parameter."]
+    pub const EYES_LOOK_DOWN_L: FaceParameterIndicesANDROID = Self(14i32);
+    #[doc = "The right eyes look down blendshape parameter."]
+    pub const EYES_LOOK_DOWN_R: FaceParameterIndicesANDROID = Self(15i32);
+    #[doc = "The left look left blendshape parameter."]
+    pub const EYES_LOOK_LEFT_L: FaceParameterIndicesANDROID = Self(16i32);
+    #[doc = "The left look right blendshape parameter."]
+    pub const EYES_LOOK_LEFT_R: FaceParameterIndicesANDROID = Self(17i32);
+    #[doc = "The right look left blendshape parameter."]
+    pub const EYES_LOOK_RIGHT_L: FaceParameterIndicesANDROID = Self(18i32);
+    #[doc = "The right look right blendshape parameter."]
+    pub const EYES_LOOK_RIGHT_R: FaceParameterIndicesANDROID = Self(19i32);
+    #[doc = "The left eyes look up blendshape parameter."]
+    pub const EYES_LOOK_UP_L: FaceParameterIndicesANDROID = Self(20i32);
+    #[doc = "The right eyes look up blendshape parameter."]
+    pub const EYES_LOOK_UP_R: FaceParameterIndicesANDROID = Self(21i32);
+    #[doc = "The left inner brow raiser blendshape parameter."]
+    pub const INNER_BROW_RAISER_L: FaceParameterIndicesANDROID = Self(22i32);
+    #[doc = "The right inner brow raiser blendshape parameter."]
+    pub const INNER_BROW_RAISER_R: FaceParameterIndicesANDROID = Self(23i32);
+    #[doc = "The jaw drop blendshape parameter."]
+    pub const JAW_DROP: FaceParameterIndicesANDROID = Self(24i32);
+    #[doc = "The left jaw sideways blendshape parameter."]
+    pub const JAW_SIDEWAYS_LEFT: FaceParameterIndicesANDROID = Self(25i32);
+    #[doc = "The right jaw sideways blendshape parameter."]
+    pub const JAW_SIDEWAYS_RIGHT: FaceParameterIndicesANDROID = Self(26i32);
+    #[doc = "The jaw thrust blendshape parameter."]
+    pub const JAW_THRUST: FaceParameterIndicesANDROID = Self(27i32);
+    #[doc = "The left lid tightener blendshape parameter."]
+    pub const LID_TIGHTENER_L: FaceParameterIndicesANDROID = Self(28i32);
+    #[doc = "The right lid tightener blendshape parameter."]
+    pub const LID_TIGHTENER_R: FaceParameterIndicesANDROID = Self(29i32);
+    #[doc = "The left corner lip depressor blendshape parameter."]
+    pub const LIP_CORNER_DEPRESSOR_L: FaceParameterIndicesANDROID = Self(30i32);
+    #[doc = "The right corner lip depressor blendshape parameter."]
+    pub const LIP_CORNER_DEPRESSOR_R: FaceParameterIndicesANDROID = Self(31i32);
+    #[doc = "The left corner lip puller blendshape parameter."]
+    pub const LIP_CORNER_PULLER_L: FaceParameterIndicesANDROID = Self(32i32);
+    #[doc = "The right corner lip puller blendshape parameter."]
+    pub const LIP_CORNER_PULLER_R: FaceParameterIndicesANDROID = Self(33i32);
+    #[doc = "The left bottom lip funneler blendshape parameter."]
+    pub const LIP_FUNNELER_LB: FaceParameterIndicesANDROID = Self(34i32);
+    #[doc = "The left top lip funneler blendshape parameter."]
+    pub const LIP_FUNNELER_LT: FaceParameterIndicesANDROID = Self(35i32);
+    #[doc = "The right bottom lip funneler blendshape parameter."]
+    pub const LIP_FUNNELER_RB: FaceParameterIndicesANDROID = Self(36i32);
+    #[doc = "The right top lip funneler blendshape parameter."]
+    pub const LIP_FUNNELER_RT: FaceParameterIndicesANDROID = Self(37i32);
+    #[doc = "The left lip pressor blendshape parameter."]
+    pub const LIP_PRESSOR_L: FaceParameterIndicesANDROID = Self(38i32);
+    #[doc = "The right lip pressor blendshape parameter."]
+    pub const LIP_PRESSOR_R: FaceParameterIndicesANDROID = Self(39i32);
+    #[doc = "The left lip pucker blendshape parameter."]
+    pub const LIP_PUCKER_L: FaceParameterIndicesANDROID = Self(40i32);
+    #[doc = "The right lip pucker blendshape parameter."]
+    pub const LIP_PUCKER_R: FaceParameterIndicesANDROID = Self(41i32);
+    #[doc = "The left lip stretcher blendshape parameter."]
+    pub const LIP_STRETCHER_L: FaceParameterIndicesANDROID = Self(42i32);
+    #[doc = "The right lip stretcher blendshape parameter."]
+    pub const LIP_STRETCHER_R: FaceParameterIndicesANDROID = Self(43i32);
+    #[doc = "The left bottom lip suck blendshape parameter."]
+    pub const LIP_SUCK_LB: FaceParameterIndicesANDROID = Self(44i32);
+    #[doc = "The left top lip suck blendshape parameter."]
+    pub const LIP_SUCK_LT: FaceParameterIndicesANDROID = Self(45i32);
+    #[doc = "The right bottom lip suck blendshape parameter."]
+    pub const LIP_SUCK_RB: FaceParameterIndicesANDROID = Self(46i32);
+    #[doc = "The right top lip suck blendshape parameter."]
+    pub const LIP_SUCK_RT: FaceParameterIndicesANDROID = Self(47i32);
+    #[doc = "The left lip tightener blendshape parameter."]
+    pub const LIP_TIGHTENER_L: FaceParameterIndicesANDROID = Self(48i32);
+    #[doc = "The right lip tightener blendshape parameter."]
+    pub const LIP_TIGHTENER_R: FaceParameterIndicesANDROID = Self(49i32);
+    #[doc = "The lips toward blendshape parameter."]
+    pub const LIPS_TOWARD: FaceParameterIndicesANDROID = Self(50i32);
+    #[doc = "The left lower lip depressor blendshape parameter."]
+    pub const LOWER_LIP_DEPRESSOR_L: FaceParameterIndicesANDROID = Self(51i32);
+    #[doc = "The right lower lip depressor blendshape parameter."]
+    pub const LOWER_LIP_DEPRESSOR_R: FaceParameterIndicesANDROID = Self(52i32);
+    #[doc = "The mouth move left blendshape parameter."]
+    pub const MOUTH_LEFT: FaceParameterIndicesANDROID = Self(53i32);
+    #[doc = "The mouth move right blendshape parameter."]
+    pub const MOUTH_RIGHT: FaceParameterIndicesANDROID = Self(54i32);
+    #[doc = "The left nose wrinkler blendshape parameter."]
+    pub const NOSE_WRINKLER_L: FaceParameterIndicesANDROID = Self(55i32);
+    #[doc = "The right nose wrinkler blendshape parameter."]
+    pub const NOSE_WRINKLER_R: FaceParameterIndicesANDROID = Self(56i32);
+    #[doc = "The left outer brow raiser blendshape parameter."]
+    pub const OUTER_BROW_RAISER_L: FaceParameterIndicesANDROID = Self(57i32);
+    #[doc = "The right outer brow raiser blendshape parameter."]
+    pub const OUTER_BROW_RAISER_R: FaceParameterIndicesANDROID = Self(58i32);
+    #[doc = "The left lid raiser blendshape parameter."]
+    pub const UPPER_LID_RAISER_L: FaceParameterIndicesANDROID = Self(59i32);
+    #[doc = "The right lid raiser blendshape parameter."]
+    pub const UPPER_LID_RAISER_R: FaceParameterIndicesANDROID = Self(60i32);
+    #[doc = "The left lip raiser blendshape parameter."]
+    pub const UPPER_LIP_RAISER_L: FaceParameterIndicesANDROID = Self(61i32);
+    #[doc = "The right lip raiser blendshape parameter."]
+    pub const UPPER_LIP_RAISER_R: FaceParameterIndicesANDROID = Self(62i32);
+    #[doc = "The tongue out blendshape parameter."]
+    pub const TONGUE_OUT: FaceParameterIndicesANDROID = Self(63i32);
+    #[doc = "The tongue left puller blendshape parameter."]
+    pub const TONGUE_LEFT: FaceParameterIndicesANDROID = Self(64i32);
+    #[doc = "The right right puller blendshape parameter."]
+    pub const TONGUE_RIGHT: FaceParameterIndicesANDROID = Self(65i32);
+    #[doc = "The right up puller blendshape parameter."]
+    pub const TONGUE_UP: FaceParameterIndicesANDROID = Self(66i32);
+    #[doc = "The right down puller blendshape parameter."]
+    pub const TONGUE_DOWN: FaceParameterIndicesANDROID = Self(67i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceParameterIndicesANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::BROW_LOWERER_L => Some("BROW_LOWERER_L"),
+            Self::BROW_LOWERER_R => Some("BROW_LOWERER_R"),
+            Self::CHEEK_PUFF_L => Some("CHEEK_PUFF_L"),
+            Self::CHEEK_PUFF_R => Some("CHEEK_PUFF_R"),
+            Self::CHEEK_RAISER_L => Some("CHEEK_RAISER_L"),
+            Self::CHEEK_RAISER_R => Some("CHEEK_RAISER_R"),
+            Self::CHEEK_SUCK_L => Some("CHEEK_SUCK_L"),
+            Self::CHEEK_SUCK_R => Some("CHEEK_SUCK_R"),
+            Self::CHIN_RAISER_B => Some("CHIN_RAISER_B"),
+            Self::CHIN_RAISER_T => Some("CHIN_RAISER_T"),
+            Self::DIMPLER_L => Some("DIMPLER_L"),
+            Self::DIMPLER_R => Some("DIMPLER_R"),
+            Self::EYES_CLOSED_L => Some("EYES_CLOSED_L"),
+            Self::EYES_CLOSED_R => Some("EYES_CLOSED_R"),
+            Self::EYES_LOOK_DOWN_L => Some("EYES_LOOK_DOWN_L"),
+            Self::EYES_LOOK_DOWN_R => Some("EYES_LOOK_DOWN_R"),
+            Self::EYES_LOOK_LEFT_L => Some("EYES_LOOK_LEFT_L"),
+            Self::EYES_LOOK_LEFT_R => Some("EYES_LOOK_LEFT_R"),
+            Self::EYES_LOOK_RIGHT_L => Some("EYES_LOOK_RIGHT_L"),
+            Self::EYES_LOOK_RIGHT_R => Some("EYES_LOOK_RIGHT_R"),
+            Self::EYES_LOOK_UP_L => Some("EYES_LOOK_UP_L"),
+            Self::EYES_LOOK_UP_R => Some("EYES_LOOK_UP_R"),
+            Self::INNER_BROW_RAISER_L => Some("INNER_BROW_RAISER_L"),
+            Self::INNER_BROW_RAISER_R => Some("INNER_BROW_RAISER_R"),
+            Self::JAW_DROP => Some("JAW_DROP"),
+            Self::JAW_SIDEWAYS_LEFT => Some("JAW_SIDEWAYS_LEFT"),
+            Self::JAW_SIDEWAYS_RIGHT => Some("JAW_SIDEWAYS_RIGHT"),
+            Self::JAW_THRUST => Some("JAW_THRUST"),
+            Self::LID_TIGHTENER_L => Some("LID_TIGHTENER_L"),
+            Self::LID_TIGHTENER_R => Some("LID_TIGHTENER_R"),
+            Self::LIP_CORNER_DEPRESSOR_L => Some("LIP_CORNER_DEPRESSOR_L"),
+            Self::LIP_CORNER_DEPRESSOR_R => Some("LIP_CORNER_DEPRESSOR_R"),
+            Self::LIP_CORNER_PULLER_L => Some("LIP_CORNER_PULLER_L"),
+            Self::LIP_CORNER_PULLER_R => Some("LIP_CORNER_PULLER_R"),
+            Self::LIP_FUNNELER_LB => Some("LIP_FUNNELER_LB"),
+            Self::LIP_FUNNELER_LT => Some("LIP_FUNNELER_LT"),
+            Self::LIP_FUNNELER_RB => Some("LIP_FUNNELER_RB"),
+            Self::LIP_FUNNELER_RT => Some("LIP_FUNNELER_RT"),
+            Self::LIP_PRESSOR_L => Some("LIP_PRESSOR_L"),
+            Self::LIP_PRESSOR_R => Some("LIP_PRESSOR_R"),
+            Self::LIP_PUCKER_L => Some("LIP_PUCKER_L"),
+            Self::LIP_PUCKER_R => Some("LIP_PUCKER_R"),
+            Self::LIP_STRETCHER_L => Some("LIP_STRETCHER_L"),
+            Self::LIP_STRETCHER_R => Some("LIP_STRETCHER_R"),
+            Self::LIP_SUCK_LB => Some("LIP_SUCK_LB"),
+            Self::LIP_SUCK_LT => Some("LIP_SUCK_LT"),
+            Self::LIP_SUCK_RB => Some("LIP_SUCK_RB"),
+            Self::LIP_SUCK_RT => Some("LIP_SUCK_RT"),
+            Self::LIP_TIGHTENER_L => Some("LIP_TIGHTENER_L"),
+            Self::LIP_TIGHTENER_R => Some("LIP_TIGHTENER_R"),
+            Self::LIPS_TOWARD => Some("LIPS_TOWARD"),
+            Self::LOWER_LIP_DEPRESSOR_L => Some("LOWER_LIP_DEPRESSOR_L"),
+            Self::LOWER_LIP_DEPRESSOR_R => Some("LOWER_LIP_DEPRESSOR_R"),
+            Self::MOUTH_LEFT => Some("MOUTH_LEFT"),
+            Self::MOUTH_RIGHT => Some("MOUTH_RIGHT"),
+            Self::NOSE_WRINKLER_L => Some("NOSE_WRINKLER_L"),
+            Self::NOSE_WRINKLER_R => Some("NOSE_WRINKLER_R"),
+            Self::OUTER_BROW_RAISER_L => Some("OUTER_BROW_RAISER_L"),
+            Self::OUTER_BROW_RAISER_R => Some("OUTER_BROW_RAISER_R"),
+            Self::UPPER_LID_RAISER_L => Some("UPPER_LID_RAISER_L"),
+            Self::UPPER_LID_RAISER_R => Some("UPPER_LID_RAISER_R"),
+            Self::UPPER_LIP_RAISER_L => Some("UPPER_LIP_RAISER_L"),
+            Self::UPPER_LIP_RAISER_R => Some("UPPER_LIP_RAISER_R"),
+            Self::TONGUE_OUT => Some("TONGUE_OUT"),
+            Self::TONGUE_LEFT => Some("TONGUE_LEFT"),
+            Self::TONGUE_RIGHT => Some("TONGUE_RIGHT"),
+            Self::TONGUE_UP => Some("TONGUE_UP"),
+            Self::TONGUE_DOWN => Some("TONGUE_DOWN"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFaceTrackingStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackingStateANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct FaceTrackingStateANDROID(i32);
+impl FaceTrackingStateANDROID {
+    #[doc = "Indicates that face tracking is paused but may be resumed in the future."]
+    pub const PAUSED: FaceTrackingStateANDROID = Self(0i32);
+    #[doc = "Tracking has stopped but the client still has an active face tracker."]
+    pub const STOPPED: FaceTrackingStateANDROID = Self(1i32);
+    #[doc = "The face is currently tracked and its pose is current."]
+    pub const TRACKING: FaceTrackingStateANDROID = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceTrackingStateANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PAUSED => Some("PAUSED"),
+            Self::STOPPED => Some("STOPPED"),
+            Self::TRACKING => Some("TRACKING"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFaceConfidenceRegionsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceConfidenceRegionsANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct FaceConfidenceRegionsANDROID(i32);
+impl FaceConfidenceRegionsANDROID {
+    #[doc = "Confidence corresponding to the lower region."]
+    pub const LOWER: FaceConfidenceRegionsANDROID = Self(0i32);
+    #[doc = "Confidence corresponding to the left upper region."]
+    pub const LEFT_UPPER: FaceConfidenceRegionsANDROID = Self(1i32);
+    #[doc = "Confidence corresponding to the right upper region."]
+    pub const RIGHT_UPPER: FaceConfidenceRegionsANDROID = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceConfidenceRegionsANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOWER => Some("LOWER"),
+            Self::LEFT_UPPER => Some("LEFT_UPPER"),
+            Self::RIGHT_UPPER => Some("RIGHT_UPPER"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrTrackingStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackingStateANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct TrackingStateANDROID(i32);
+impl TrackingStateANDROID {
+    #[doc = "Indicates that the trackable or anchor tracking is paused but may be resumed in the future."]
+    pub const PAUSED: TrackingStateANDROID = Self(0i32);
+    #[doc = "Tracking has stopped on this Trackable and will never be resumed."]
+    pub const STOPPED: TrackingStateANDROID = Self(1i32);
+    #[doc = "The object is currently tracked and its pose is current."]
+    pub const TRACKING: TrackingStateANDROID = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for TrackingStateANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PAUSED => Some("PAUSED"),
+            Self::STOPPED => Some("STOPPED"),
+            Self::TRACKING => Some("TRACKING"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrTrackableTypeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableTypeANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct TrackableTypeANDROID(i32);
+impl TrackableTypeANDROID {
+    #[doc = "Indicates that the trackable is not valid."]
+    pub const NOT_VALID: TrackableTypeANDROID = Self(0i32);
+    #[doc = "Indicates that the trackable is a plane."]
+    pub const PLANE: TrackableTypeANDROID = Self(1i32);
+    #[doc = "Indicates that the trackable is the perception depth buffer."]
+    pub const DEPTH: TrackableTypeANDROID = Self(1000463000i32);
+    #[doc = "Indicates that the trackable is the object."]
+    pub const OBJECT: TrackableTypeANDROID = Self(1000466000i32);
+    #[doc = "Indicates that the trackable is a marker."]
+    pub const MARKER: TrackableTypeANDROID = Self(1000707000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for TrackableTypeANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NOT_VALID => Some("NOT_VALID"),
+            Self::PLANE => Some("PLANE"),
+            Self::DEPTH => Some("DEPTH"),
+            Self::OBJECT => Some("OBJECT"),
+            Self::MARKER => Some("MARKER"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrPlaneTypeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPlaneTypeANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct PlaneTypeANDROID(i32);
+impl PlaneTypeANDROID {
+    #[doc = "A horizontal plane facing downward (for example a ceiling)."]
+    pub const HORIZONTAL_DOWNWARD_FACING: PlaneTypeANDROID = Self(0i32);
+    #[doc = "A horizontal plane facing upward (for example a floor or tabletop)."]
+    pub const HORIZONTAL_UPWARD_FACING: PlaneTypeANDROID = Self(1i32);
+    #[doc = "A vertical plane (for example a wall)."]
+    pub const VERTICAL: PlaneTypeANDROID = Self(2i32);
+    #[doc = "A plane with an arbitrary orientation."]
+    pub const ARBITRARY: PlaneTypeANDROID = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for PlaneTypeANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::HORIZONTAL_DOWNWARD_FACING => Some("HORIZONTAL_DOWNWARD_FACING"),
+            Self::HORIZONTAL_UPWARD_FACING => Some("HORIZONTAL_UPWARD_FACING"),
+            Self::VERTICAL => Some("VERTICAL"),
+            Self::ARBITRARY => Some("ARBITRARY"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrPlaneLabelANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPlaneLabelANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct PlaneLabelANDROID(i32);
+impl PlaneLabelANDROID {
+    #[doc = "It was not possible to label the plane"]
+    pub const UNKNOWN: PlaneLabelANDROID = Self(0i32);
+    #[doc = "The plane is a wall."]
+    pub const WALL: PlaneLabelANDROID = Self(1i32);
+    #[doc = "The plane is a floor."]
+    pub const FLOOR: PlaneLabelANDROID = Self(2i32);
+    #[doc = "The plane is a ceiling."]
+    pub const CEILING: PlaneLabelANDROID = Self(3i32);
+    #[doc = "The plane is a table."]
+    pub const TABLE: PlaneLabelANDROID = Self(4i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for PlaneLabelANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNKNOWN => Some("UNKNOWN"),
+            Self::WALL => Some("WALL"),
+            Self::FLOOR => Some("FLOOR"),
+            Self::CEILING => Some("CEILING"),
+            Self::TABLE => Some("TABLE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrObjectLabelANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrObjectLabelANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct ObjectLabelANDROID(i32);
+impl ObjectLabelANDROID {
+    #[doc = "It was not possible to label the object."]
+    pub const UNKNOWN: ObjectLabelANDROID = Self(0i32);
+    #[doc = "The object is a keyboard."]
+    pub const KEYBOARD: ObjectLabelANDROID = Self(1i32);
+    #[doc = "The object is a mouse."]
+    pub const MOUSE: ObjectLabelANDROID = Self(2i32);
+    #[doc = "The object is a laptop."]
+    pub const LAPTOP: ObjectLabelANDROID = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for ObjectLabelANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNKNOWN => Some("UNKNOWN"),
+            Self::KEYBOARD => Some("KEYBOARD"),
+            Self::MOUSE => Some("MOUSE"),
+            Self::LAPTOP => Some("LAPTOP"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrAnchorPersistStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorPersistStateANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct AnchorPersistStateANDROID(i32);
+impl AnchorPersistStateANDROID {
+    #[doc = "Anchor has not been requested to be persisted by the app."]
+    pub const PERSIST_NOT_REQUESTED: AnchorPersistStateANDROID = Self(0i32);
+    #[doc = "Anchor has been requested to be persisted but not persisted yet."]
+    pub const PERSIST_PENDING: AnchorPersistStateANDROID = Self(1i32);
+    #[doc = "Anchor has been successfully persisted by the runtime."]
+    pub const PERSISTED: AnchorPersistStateANDROID = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for AnchorPersistStateANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PERSIST_NOT_REQUESTED => Some("PERSIST_NOT_REQUESTED"),
+            Self::PERSIST_PENDING => Some("PERSIST_PENDING"),
+            Self::PERSISTED => Some("PERSISTED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrLocalDimmingModeMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLocalDimmingModeMETA)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct LocalDimmingModeMETA(i32);
 impl LocalDimmingModeMETA {
     #[doc = "Local dimming is turned off by default for the current submitted frame. This is the same as not chaining XrLocalDimmingModeMETA."]
@@ -2928,7 +4661,7 @@ impl fmt::Debug for LocalDimmingModeMETA {
 }
 #[doc = "See [XrFaceExpressionFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceExpressionFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FaceExpressionFB(i32);
 impl FaceExpressionFB {
     pub const BROW_LOWERER_L: FaceExpressionFB = Self(0i32);
@@ -3076,7 +4809,7 @@ impl fmt::Debug for FaceExpressionFB {
 }
 #[doc = "See [XrFaceExpressionSetFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceExpressionSetFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FaceExpressionSetFB(i32);
 impl FaceExpressionSetFB {
     #[doc = "indicates that the created XrFaceTrackerFB tracks the set of blend shapes described by XrFaceExpressionFB enum, i.e. the xrGetFaceExpressionWeightsFB function returns an array of blend shapes with the count of XR_FACE_EXPRESSION_COUNT_FB and can: be indexed using XrFaceExpressionFB."]
@@ -3099,7 +4832,7 @@ impl fmt::Debug for FaceExpressionSetFB {
 }
 #[doc = "See [XrFaceConfidenceFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceConfidenceFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FaceConfidenceFB(i32);
 impl FaceConfidenceFB {
     pub const LOWER_FACE: FaceConfidenceFB = Self(0i32);
@@ -3125,7 +4858,7 @@ impl fmt::Debug for FaceConfidenceFB {
 }
 #[doc = "See [XrFaceExpression2FB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceExpression2FB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FaceExpression2FB(i32);
 impl FaceExpression2FB {
     pub const BROW_LOWERER_L: FaceExpression2FB = Self(0i32);
@@ -3287,7 +5020,7 @@ impl fmt::Debug for FaceExpression2FB {
 }
 #[doc = "See [XrFaceExpressionSet2FB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceExpressionSet2FB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FaceExpressionSet2FB(i32);
 impl FaceExpressionSet2FB {
     #[doc = "indicates that the created XrFaceTracker2FB tracks the set of blend shapes described by XrFaceExpression2FB enum, i.e. the xrGetFaceExpressionWeights2FB function returns an array of blend shapes with the count of XR_FACE_EXPRESSION2_COUNT_FB and can: be indexed using XrFaceExpression2FB."]
@@ -3310,7 +5043,7 @@ impl fmt::Debug for FaceExpressionSet2FB {
 }
 #[doc = "See [XrFaceTrackingDataSource2FB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackingDataSource2FB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FaceTrackingDataSource2FB(i32);
 impl FaceTrackingDataSource2FB {
     #[doc = "face tracking uses visual data to estimate expressions. Face tracking may use audio to further improve the quality of face tracking."]
@@ -3336,7 +5069,7 @@ impl fmt::Debug for FaceTrackingDataSource2FB {
 }
 #[doc = "See [XrFaceConfidence2FB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceConfidence2FB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FaceConfidence2FB(i32);
 impl FaceConfidence2FB {
     pub const LOWER_FACE: FaceConfidence2FB = Self(0i32);
@@ -3362,7 +5095,7 @@ impl fmt::Debug for FaceConfidence2FB {
 }
 #[doc = "See [XrBodyJointFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct BodyJointFB(i32);
 impl BodyJointFB {
     pub const ROOT: BodyJointFB = Self(0i32);
@@ -3526,11 +5259,13 @@ impl fmt::Debug for BodyJointFB {
 }
 #[doc = "Describes the set of body joints to track when creating an XrBodyTrackerFB. - see [XrBodyJointSetFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointSetFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct BodyJointSetFB(i32);
 impl BodyJointSetFB {
-    #[doc = "Indicates that the created XrBodyTrackerFB tracks the set of body joints described by XrBodyJointFB enum, i.e. the xrLocateBodyJointsFB function returns an array of joint locations with the count of XR_BODY_JOINT_COUNT_FB and can be indexed using XrBodyJointFB."]
+    #[doc = "Indicates that the created XrBodyTrackerFB tracks the set of body joints described by XrBodyJointFB enum, i.e. the xrLocateBodyJointsFB function returns an array of joint locations with the count of XR_BODY_JOINT_COUNT_FB and can be indexed using XrBodyJointFB. This includes the upper body, both hands, and torso."]
     pub const DEFAULT: BodyJointSetFB = Self(0i32);
+    #[doc = "Indicates that the created XrBodyTrackerFB tracks the set of body joints described by XrFullBodyJointMETA enum, i.e. the xrLocateBodyJointsFB function returns an array of joint locations with the count of XR_FULL_BODY_JOINT_COUNT_META and can be indexed using XrFullBodyJointMETA. This extends the joints of XR_BODY_JOINT_SET_DEFAULT_FB by also including the lower body."]
+    pub const FULL_BODY_M: BodyJointSetFB = Self(1000274000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -3542,6 +5277,228 @@ impl fmt::Debug for BodyJointSetFB {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let name = match *self {
             Self::DEFAULT => Some("DEFAULT"),
+            Self::FULL_BODY_M => Some("FULL_BODY_M"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFullBodyJointMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFullBodyJointMETA)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct FullBodyJointMETA(i32);
+impl FullBodyJointMETA {
+    pub const ROOT: FullBodyJointMETA = Self(0i32);
+    pub const HIPS: FullBodyJointMETA = Self(1i32);
+    pub const SPINE_LOWER: FullBodyJointMETA = Self(2i32);
+    pub const SPINE_MIDDLE: FullBodyJointMETA = Self(3i32);
+    pub const SPINE_UPPER: FullBodyJointMETA = Self(4i32);
+    pub const CHEST: FullBodyJointMETA = Self(5i32);
+    pub const NECK: FullBodyJointMETA = Self(6i32);
+    pub const HEAD: FullBodyJointMETA = Self(7i32);
+    pub const LEFT_SHOULDER: FullBodyJointMETA = Self(8i32);
+    pub const LEFT_SCAPULA: FullBodyJointMETA = Self(9i32);
+    pub const LEFT_ARM_UPPER: FullBodyJointMETA = Self(10i32);
+    pub const LEFT_ARM_LOWER: FullBodyJointMETA = Self(11i32);
+    pub const LEFT_HAND_WRIST_TWIST: FullBodyJointMETA = Self(12i32);
+    pub const RIGHT_SHOULDER: FullBodyJointMETA = Self(13i32);
+    pub const RIGHT_SCAPULA: FullBodyJointMETA = Self(14i32);
+    pub const RIGHT_ARM_UPPER: FullBodyJointMETA = Self(15i32);
+    pub const RIGHT_ARM_LOWER: FullBodyJointMETA = Self(16i32);
+    pub const RIGHT_HAND_WRIST_TWIST: FullBodyJointMETA = Self(17i32);
+    pub const LEFT_HAND_PALM: FullBodyJointMETA = Self(18i32);
+    pub const LEFT_HAND_WRIST: FullBodyJointMETA = Self(19i32);
+    pub const LEFT_HAND_THUMB_METACARPAL: FullBodyJointMETA = Self(20i32);
+    pub const LEFT_HAND_THUMB_PROXIMAL: FullBodyJointMETA = Self(21i32);
+    pub const LEFT_HAND_THUMB_DISTAL: FullBodyJointMETA = Self(22i32);
+    pub const LEFT_HAND_THUMB_TIP: FullBodyJointMETA = Self(23i32);
+    pub const LEFT_HAND_INDEX_METACARPAL: FullBodyJointMETA = Self(24i32);
+    pub const LEFT_HAND_INDEX_PROXIMAL: FullBodyJointMETA = Self(25i32);
+    pub const LEFT_HAND_INDEX_INTERMEDIATE: FullBodyJointMETA = Self(26i32);
+    pub const LEFT_HAND_INDEX_DISTAL: FullBodyJointMETA = Self(27i32);
+    pub const LEFT_HAND_INDEX_TIP: FullBodyJointMETA = Self(28i32);
+    pub const LEFT_HAND_MIDDLE_METACARPAL: FullBodyJointMETA = Self(29i32);
+    pub const LEFT_HAND_MIDDLE_PROXIMAL: FullBodyJointMETA = Self(30i32);
+    pub const LEFT_HAND_MIDDLE_INTERMEDIATE: FullBodyJointMETA = Self(31i32);
+    pub const LEFT_HAND_MIDDLE_DISTAL: FullBodyJointMETA = Self(32i32);
+    pub const LEFT_HAND_MIDDLE_TIP: FullBodyJointMETA = Self(33i32);
+    pub const LEFT_HAND_RING_METACARPAL: FullBodyJointMETA = Self(34i32);
+    pub const LEFT_HAND_RING_PROXIMAL: FullBodyJointMETA = Self(35i32);
+    pub const LEFT_HAND_RING_INTERMEDIATE: FullBodyJointMETA = Self(36i32);
+    pub const LEFT_HAND_RING_DISTAL: FullBodyJointMETA = Self(37i32);
+    pub const LEFT_HAND_RING_TIP: FullBodyJointMETA = Self(38i32);
+    pub const LEFT_HAND_LITTLE_METACARPAL: FullBodyJointMETA = Self(39i32);
+    pub const LEFT_HAND_LITTLE_PROXIMAL: FullBodyJointMETA = Self(40i32);
+    pub const LEFT_HAND_LITTLE_INTERMEDIATE: FullBodyJointMETA = Self(41i32);
+    pub const LEFT_HAND_LITTLE_DISTAL: FullBodyJointMETA = Self(42i32);
+    pub const LEFT_HAND_LITTLE_TIP: FullBodyJointMETA = Self(43i32);
+    pub const RIGHT_HAND_PALM: FullBodyJointMETA = Self(44i32);
+    pub const RIGHT_HAND_WRIST: FullBodyJointMETA = Self(45i32);
+    pub const RIGHT_HAND_THUMB_METACARPAL: FullBodyJointMETA = Self(46i32);
+    pub const RIGHT_HAND_THUMB_PROXIMAL: FullBodyJointMETA = Self(47i32);
+    pub const RIGHT_HAND_THUMB_DISTAL: FullBodyJointMETA = Self(48i32);
+    pub const RIGHT_HAND_THUMB_TIP: FullBodyJointMETA = Self(49i32);
+    pub const RIGHT_HAND_INDEX_METACARPAL: FullBodyJointMETA = Self(50i32);
+    pub const RIGHT_HAND_INDEX_PROXIMAL: FullBodyJointMETA = Self(51i32);
+    pub const RIGHT_HAND_INDEX_INTERMEDIATE: FullBodyJointMETA = Self(52i32);
+    pub const RIGHT_HAND_INDEX_DISTAL: FullBodyJointMETA = Self(53i32);
+    pub const RIGHT_HAND_INDEX_TIP: FullBodyJointMETA = Self(54i32);
+    pub const RIGHT_HAND_MIDDLE_METACARPAL: FullBodyJointMETA = Self(55i32);
+    pub const RIGHT_HAND_MIDDLE_PROXIMAL: FullBodyJointMETA = Self(56i32);
+    pub const RIGHT_HAND_MIDDLE_INTERMEDIATE: FullBodyJointMETA = Self(57i32);
+    pub const RIGHT_HAND_MIDDLE_DISTAL: FullBodyJointMETA = Self(58i32);
+    pub const RIGHT_HAND_MIDDLE_TIP: FullBodyJointMETA = Self(59i32);
+    pub const RIGHT_HAND_RING_METACARPAL: FullBodyJointMETA = Self(60i32);
+    pub const RIGHT_HAND_RING_PROXIMAL: FullBodyJointMETA = Self(61i32);
+    pub const RIGHT_HAND_RING_INTERMEDIATE: FullBodyJointMETA = Self(62i32);
+    pub const RIGHT_HAND_RING_DISTAL: FullBodyJointMETA = Self(63i32);
+    pub const RIGHT_HAND_RING_TIP: FullBodyJointMETA = Self(64i32);
+    pub const RIGHT_HAND_LITTLE_METACARPAL: FullBodyJointMETA = Self(65i32);
+    pub const RIGHT_HAND_LITTLE_PROXIMAL: FullBodyJointMETA = Self(66i32);
+    pub const RIGHT_HAND_LITTLE_INTERMEDIATE: FullBodyJointMETA = Self(67i32);
+    pub const RIGHT_HAND_LITTLE_DISTAL: FullBodyJointMETA = Self(68i32);
+    pub const RIGHT_HAND_LITTLE_TIP: FullBodyJointMETA = Self(69i32);
+    pub const LEFT_UPPER_LEG: FullBodyJointMETA = Self(70i32);
+    pub const LEFT_LOWER_LEG: FullBodyJointMETA = Self(71i32);
+    pub const LEFT_FOOT_ANKLE_TWIST: FullBodyJointMETA = Self(72i32);
+    pub const LEFT_FOOT_ANKLE: FullBodyJointMETA = Self(73i32);
+    pub const LEFT_FOOT_SUBTALAR: FullBodyJointMETA = Self(74i32);
+    pub const LEFT_FOOT_TRANSVERSE: FullBodyJointMETA = Self(75i32);
+    pub const LEFT_FOOT_BALL: FullBodyJointMETA = Self(76i32);
+    pub const RIGHT_UPPER_LEG: FullBodyJointMETA = Self(77i32);
+    pub const RIGHT_LOWER_LEG: FullBodyJointMETA = Self(78i32);
+    pub const RIGHT_FOOT_ANKLE_TWIST: FullBodyJointMETA = Self(79i32);
+    pub const RIGHT_FOOT_ANKLE: FullBodyJointMETA = Self(80i32);
+    pub const RIGHT_FOOT_SUBTALAR: FullBodyJointMETA = Self(81i32);
+    pub const RIGHT_FOOT_TRANSVERSE: FullBodyJointMETA = Self(82i32);
+    pub const RIGHT_FOOT_BALL: FullBodyJointMETA = Self(83i32);
+    pub const COUNT: FullBodyJointMETA = Self(84i32);
+    pub const NONE: FullBodyJointMETA = Self(85i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FullBodyJointMETA {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::ROOT => Some("ROOT"),
+            Self::HIPS => Some("HIPS"),
+            Self::SPINE_LOWER => Some("SPINE_LOWER"),
+            Self::SPINE_MIDDLE => Some("SPINE_MIDDLE"),
+            Self::SPINE_UPPER => Some("SPINE_UPPER"),
+            Self::CHEST => Some("CHEST"),
+            Self::NECK => Some("NECK"),
+            Self::HEAD => Some("HEAD"),
+            Self::LEFT_SHOULDER => Some("LEFT_SHOULDER"),
+            Self::LEFT_SCAPULA => Some("LEFT_SCAPULA"),
+            Self::LEFT_ARM_UPPER => Some("LEFT_ARM_UPPER"),
+            Self::LEFT_ARM_LOWER => Some("LEFT_ARM_LOWER"),
+            Self::LEFT_HAND_WRIST_TWIST => Some("LEFT_HAND_WRIST_TWIST"),
+            Self::RIGHT_SHOULDER => Some("RIGHT_SHOULDER"),
+            Self::RIGHT_SCAPULA => Some("RIGHT_SCAPULA"),
+            Self::RIGHT_ARM_UPPER => Some("RIGHT_ARM_UPPER"),
+            Self::RIGHT_ARM_LOWER => Some("RIGHT_ARM_LOWER"),
+            Self::RIGHT_HAND_WRIST_TWIST => Some("RIGHT_HAND_WRIST_TWIST"),
+            Self::LEFT_HAND_PALM => Some("LEFT_HAND_PALM"),
+            Self::LEFT_HAND_WRIST => Some("LEFT_HAND_WRIST"),
+            Self::LEFT_HAND_THUMB_METACARPAL => Some("LEFT_HAND_THUMB_METACARPAL"),
+            Self::LEFT_HAND_THUMB_PROXIMAL => Some("LEFT_HAND_THUMB_PROXIMAL"),
+            Self::LEFT_HAND_THUMB_DISTAL => Some("LEFT_HAND_THUMB_DISTAL"),
+            Self::LEFT_HAND_THUMB_TIP => Some("LEFT_HAND_THUMB_TIP"),
+            Self::LEFT_HAND_INDEX_METACARPAL => Some("LEFT_HAND_INDEX_METACARPAL"),
+            Self::LEFT_HAND_INDEX_PROXIMAL => Some("LEFT_HAND_INDEX_PROXIMAL"),
+            Self::LEFT_HAND_INDEX_INTERMEDIATE => Some("LEFT_HAND_INDEX_INTERMEDIATE"),
+            Self::LEFT_HAND_INDEX_DISTAL => Some("LEFT_HAND_INDEX_DISTAL"),
+            Self::LEFT_HAND_INDEX_TIP => Some("LEFT_HAND_INDEX_TIP"),
+            Self::LEFT_HAND_MIDDLE_METACARPAL => Some("LEFT_HAND_MIDDLE_METACARPAL"),
+            Self::LEFT_HAND_MIDDLE_PROXIMAL => Some("LEFT_HAND_MIDDLE_PROXIMAL"),
+            Self::LEFT_HAND_MIDDLE_INTERMEDIATE => Some("LEFT_HAND_MIDDLE_INTERMEDIATE"),
+            Self::LEFT_HAND_MIDDLE_DISTAL => Some("LEFT_HAND_MIDDLE_DISTAL"),
+            Self::LEFT_HAND_MIDDLE_TIP => Some("LEFT_HAND_MIDDLE_TIP"),
+            Self::LEFT_HAND_RING_METACARPAL => Some("LEFT_HAND_RING_METACARPAL"),
+            Self::LEFT_HAND_RING_PROXIMAL => Some("LEFT_HAND_RING_PROXIMAL"),
+            Self::LEFT_HAND_RING_INTERMEDIATE => Some("LEFT_HAND_RING_INTERMEDIATE"),
+            Self::LEFT_HAND_RING_DISTAL => Some("LEFT_HAND_RING_DISTAL"),
+            Self::LEFT_HAND_RING_TIP => Some("LEFT_HAND_RING_TIP"),
+            Self::LEFT_HAND_LITTLE_METACARPAL => Some("LEFT_HAND_LITTLE_METACARPAL"),
+            Self::LEFT_HAND_LITTLE_PROXIMAL => Some("LEFT_HAND_LITTLE_PROXIMAL"),
+            Self::LEFT_HAND_LITTLE_INTERMEDIATE => Some("LEFT_HAND_LITTLE_INTERMEDIATE"),
+            Self::LEFT_HAND_LITTLE_DISTAL => Some("LEFT_HAND_LITTLE_DISTAL"),
+            Self::LEFT_HAND_LITTLE_TIP => Some("LEFT_HAND_LITTLE_TIP"),
+            Self::RIGHT_HAND_PALM => Some("RIGHT_HAND_PALM"),
+            Self::RIGHT_HAND_WRIST => Some("RIGHT_HAND_WRIST"),
+            Self::RIGHT_HAND_THUMB_METACARPAL => Some("RIGHT_HAND_THUMB_METACARPAL"),
+            Self::RIGHT_HAND_THUMB_PROXIMAL => Some("RIGHT_HAND_THUMB_PROXIMAL"),
+            Self::RIGHT_HAND_THUMB_DISTAL => Some("RIGHT_HAND_THUMB_DISTAL"),
+            Self::RIGHT_HAND_THUMB_TIP => Some("RIGHT_HAND_THUMB_TIP"),
+            Self::RIGHT_HAND_INDEX_METACARPAL => Some("RIGHT_HAND_INDEX_METACARPAL"),
+            Self::RIGHT_HAND_INDEX_PROXIMAL => Some("RIGHT_HAND_INDEX_PROXIMAL"),
+            Self::RIGHT_HAND_INDEX_INTERMEDIATE => Some("RIGHT_HAND_INDEX_INTERMEDIATE"),
+            Self::RIGHT_HAND_INDEX_DISTAL => Some("RIGHT_HAND_INDEX_DISTAL"),
+            Self::RIGHT_HAND_INDEX_TIP => Some("RIGHT_HAND_INDEX_TIP"),
+            Self::RIGHT_HAND_MIDDLE_METACARPAL => Some("RIGHT_HAND_MIDDLE_METACARPAL"),
+            Self::RIGHT_HAND_MIDDLE_PROXIMAL => Some("RIGHT_HAND_MIDDLE_PROXIMAL"),
+            Self::RIGHT_HAND_MIDDLE_INTERMEDIATE => Some("RIGHT_HAND_MIDDLE_INTERMEDIATE"),
+            Self::RIGHT_HAND_MIDDLE_DISTAL => Some("RIGHT_HAND_MIDDLE_DISTAL"),
+            Self::RIGHT_HAND_MIDDLE_TIP => Some("RIGHT_HAND_MIDDLE_TIP"),
+            Self::RIGHT_HAND_RING_METACARPAL => Some("RIGHT_HAND_RING_METACARPAL"),
+            Self::RIGHT_HAND_RING_PROXIMAL => Some("RIGHT_HAND_RING_PROXIMAL"),
+            Self::RIGHT_HAND_RING_INTERMEDIATE => Some("RIGHT_HAND_RING_INTERMEDIATE"),
+            Self::RIGHT_HAND_RING_DISTAL => Some("RIGHT_HAND_RING_DISTAL"),
+            Self::RIGHT_HAND_RING_TIP => Some("RIGHT_HAND_RING_TIP"),
+            Self::RIGHT_HAND_LITTLE_METACARPAL => Some("RIGHT_HAND_LITTLE_METACARPAL"),
+            Self::RIGHT_HAND_LITTLE_PROXIMAL => Some("RIGHT_HAND_LITTLE_PROXIMAL"),
+            Self::RIGHT_HAND_LITTLE_INTERMEDIATE => Some("RIGHT_HAND_LITTLE_INTERMEDIATE"),
+            Self::RIGHT_HAND_LITTLE_DISTAL => Some("RIGHT_HAND_LITTLE_DISTAL"),
+            Self::RIGHT_HAND_LITTLE_TIP => Some("RIGHT_HAND_LITTLE_TIP"),
+            Self::LEFT_UPPER_LEG => Some("LEFT_UPPER_LEG"),
+            Self::LEFT_LOWER_LEG => Some("LEFT_LOWER_LEG"),
+            Self::LEFT_FOOT_ANKLE_TWIST => Some("LEFT_FOOT_ANKLE_TWIST"),
+            Self::LEFT_FOOT_ANKLE => Some("LEFT_FOOT_ANKLE"),
+            Self::LEFT_FOOT_SUBTALAR => Some("LEFT_FOOT_SUBTALAR"),
+            Self::LEFT_FOOT_TRANSVERSE => Some("LEFT_FOOT_TRANSVERSE"),
+            Self::LEFT_FOOT_BALL => Some("LEFT_FOOT_BALL"),
+            Self::RIGHT_UPPER_LEG => Some("RIGHT_UPPER_LEG"),
+            Self::RIGHT_LOWER_LEG => Some("RIGHT_LOWER_LEG"),
+            Self::RIGHT_FOOT_ANKLE_TWIST => Some("RIGHT_FOOT_ANKLE_TWIST"),
+            Self::RIGHT_FOOT_ANKLE => Some("RIGHT_FOOT_ANKLE"),
+            Self::RIGHT_FOOT_SUBTALAR => Some("RIGHT_FOOT_SUBTALAR"),
+            Self::RIGHT_FOOT_TRANSVERSE => Some("RIGHT_FOOT_TRANSVERSE"),
+            Self::RIGHT_FOOT_BALL => Some("RIGHT_FOOT_BALL"),
+            Self::COUNT => Some("COUNT"),
+            Self::NONE => Some("NONE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrBodyTrackingCalibrationStateMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackingCalibrationStateMETA)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct BodyTrackingCalibrationStateMETA(i32);
+impl BodyTrackingCalibrationStateMETA {
+    #[doc = "Valid calibration, body tracking expected to be stable."]
+    pub const VALID: BodyTrackingCalibrationStateMETA = Self(1i32);
+    #[doc = "Calibration is in progress, body joint poses from XR_FB_body_tracking are valid to read and internally consistent within a single call, but may: be more variable than normal, shifting dramatically before calibration ends."]
+    pub const CALIBRATING: BodyTrackingCalibrationStateMETA = Self(2i32);
+    #[doc = "Calibration is invalid, accessing the body joint poses from XR_FB_body_tracking is defined behavior but their contents are unspecified. Tracking data may: be read but must: not be interpreted as body tracking poses."]
+    pub const INVALID: BodyTrackingCalibrationStateMETA = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for BodyTrackingCalibrationStateMETA {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::VALID => Some("VALID"),
+            Self::CALIBRATING => Some("CALIBRATING"),
+            Self::INVALID => Some("INVALID"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -3549,13 +5506,14 @@ impl fmt::Debug for BodyJointSetFB {
 }
 #[doc = "See [XrEyePositionFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEyePositionFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct EyePositionFB(i32);
 impl EyePositionFB {
     #[doc = "Specifies the position of the left eye."]
     pub const LEFT: EyePositionFB = Self(0i32);
     #[doc = "Specifies the position of the right eye."]
     pub const RIGHT: EyePositionFB = Self(1i32);
+    #[doc = "Specifies the number of eyes tracked."]
     pub const COUNT: EyePositionFB = Self(2i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
@@ -3600,7 +5558,7 @@ impl fmt::Debug for TrackingOptimizationSettingsDomainQCOM {
 }
 #[doc = "See [XrTrackingOptimizationSettingsHintQCOM](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackingOptimizationSettingsHintQCOM)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct TrackingOptimizationSettingsHintQCOM(i32);
 impl TrackingOptimizationSettingsHintQCOM {
     #[doc = "Used by the application to indicate that it does not have a preference to optimize for. The run-time is understood to choose a balanced approach."]
@@ -3635,7 +5593,7 @@ impl fmt::Debug for TrackingOptimizationSettingsHintQCOM {
 }
 #[doc = "See [XrForceFeedbackCurlLocationMNDX](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrForceFeedbackCurlLocationMNDX)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct ForceFeedbackCurlLocationMNDX(i32);
 impl ForceFeedbackCurlLocationMNDX {
     #[doc = "force feedback for thumb curl"]
@@ -3670,7 +5628,7 @@ impl fmt::Debug for ForceFeedbackCurlLocationMNDX {
 }
 #[doc = "See [XrPlaneDetectionStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPlaneDetectionStateEXT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PlaneDetectionStateEXT(i32);
 impl PlaneDetectionStateEXT {
     pub const NONE: PlaneDetectionStateEXT = Self(0i32);
@@ -3700,7 +5658,7 @@ impl fmt::Debug for PlaneDetectionStateEXT {
 }
 #[doc = "See [XrPlaneDetectorOrientationEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPlaneDetectorOrientationEXT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PlaneDetectorOrientationEXT(i32);
 impl PlaneDetectorOrientationEXT {
     #[doc = "The detected plane is horizontal and faces upward (e.g. floor)."]
@@ -3732,7 +5690,7 @@ impl fmt::Debug for PlaneDetectorOrientationEXT {
 }
 #[doc = "See [XrPlaneDetectorSemanticTypeEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPlaneDetectorSemanticTypeEXT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct PlaneDetectorSemanticTypeEXT(i32);
 impl PlaneDetectorSemanticTypeEXT {
     #[doc = "The runtime was unable to classify this plane."]
@@ -3767,7 +5725,7 @@ impl fmt::Debug for PlaneDetectorSemanticTypeEXT {
 }
 #[doc = "See [XrVirtualKeyboardLocationTypeMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrVirtualKeyboardLocationTypeMETA)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct VirtualKeyboardLocationTypeMETA(i32);
 impl VirtualKeyboardLocationTypeMETA {
     #[doc = "Indicates that the application will provide the position and scale of the keyboard."]
@@ -3840,7 +5798,7 @@ impl fmt::Debug for VirtualKeyboardInputSourceMETA {
 }
 #[doc = "See [XrHeadsetFitStatusML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrHeadsetFitStatusML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct HeadsetFitStatusML(i32);
 impl HeadsetFitStatusML {
     #[doc = "Headset fit status not available for unknown reason."]
@@ -3872,7 +5830,7 @@ impl fmt::Debug for HeadsetFitStatusML {
 }
 #[doc = "See [XrEyeCalibrationStatusML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEyeCalibrationStatusML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct EyeCalibrationStatusML(i32);
 impl EyeCalibrationStatusML {
     #[doc = "Eye calibration status not available for unknown reason."]
@@ -3904,7 +5862,7 @@ impl fmt::Debug for EyeCalibrationStatusML {
 }
 #[doc = "See [XrLocalizationMapStateML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLocalizationMapStateML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct LocalizationMapStateML(i32);
 impl LocalizationMapStateML {
     #[doc = "The system is not localized into a map. Features like Spatial Anchors relying on localization will not work."]
@@ -3936,7 +5894,7 @@ impl fmt::Debug for LocalizationMapStateML {
 }
 #[doc = "See [XrLocalizationMapTypeML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLocalizationMapTypeML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct LocalizationMapTypeML(i32);
 impl LocalizationMapTypeML {
     #[doc = "The system is localized into an On-Device map, published anchors are not shared between different devices."]
@@ -3962,7 +5920,7 @@ impl fmt::Debug for LocalizationMapTypeML {
 }
 #[doc = "See [XrLocalizationMapConfidenceML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLocalizationMapConfidenceML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct LocalizationMapConfidenceML(i32);
 impl LocalizationMapConfidenceML {
     #[doc = "The localization map has poor confidence, systems relying on the localization map are likely to have poor performance."]
@@ -3994,7 +5952,7 @@ impl fmt::Debug for LocalizationMapConfidenceML {
 }
 #[doc = "See [XrMarkerDetectorProfileML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerDetectorProfileML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerDetectorProfileML(i32);
 impl MarkerDetectorProfileML {
     #[doc = "Tracker profile that covers standard use cases. If this does not suite the needs of the application try the other profiles listed below."]
@@ -4032,7 +5990,7 @@ impl fmt::Debug for MarkerDetectorProfileML {
 }
 #[doc = "See [XrMarkerTypeML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerTypeML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerTypeML(i32);
 impl MarkerTypeML {
     #[doc = "Aruco Marker detection and localization. The marker id of the Aruco marker is available via xrGetMarkerNumberML."]
@@ -4070,7 +6028,7 @@ impl fmt::Debug for MarkerTypeML {
 }
 #[doc = "See [XrMarkerArucoDictML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerArucoDictML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerArucoDictML(i32);
 impl MarkerArucoDictML {
     #[doc = "4 by 4 pixel Aruco marker dictionary with 50 IDs."]
@@ -4138,7 +6096,7 @@ impl fmt::Debug for MarkerArucoDictML {
 }
 #[doc = "See [XrMarkerAprilTagDictML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerAprilTagDictML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerAprilTagDictML(i32);
 impl MarkerAprilTagDictML {
     #[doc = "4 by 4 bits, minimum Hamming distance between any two codes = 5, 30 codes."]
@@ -4170,7 +6128,7 @@ impl fmt::Debug for MarkerAprilTagDictML {
 }
 #[doc = "See [XrMarkerDetectorFpsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerDetectorFpsML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerDetectorFpsML(i32);
 impl MarkerDetectorFpsML {
     #[doc = "Low FPS."]
@@ -4202,7 +6160,7 @@ impl fmt::Debug for MarkerDetectorFpsML {
 }
 #[doc = "See [XrMarkerDetectorResolutionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerDetectorResolutionML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerDetectorResolutionML(i32);
 impl MarkerDetectorResolutionML {
     #[doc = "Low Resolution."]
@@ -4231,7 +6189,7 @@ impl fmt::Debug for MarkerDetectorResolutionML {
 }
 #[doc = "See [XrMarkerDetectorCameraML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerDetectorCameraML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerDetectorCameraML(i32);
 impl MarkerDetectorCameraML {
     #[doc = "Single RGB camera."]
@@ -4257,7 +6215,7 @@ impl fmt::Debug for MarkerDetectorCameraML {
 }
 #[doc = "See [XrMarkerDetectorCornerRefineMethodML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerDetectorCornerRefineMethodML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerDetectorCornerRefineMethodML(i32);
 impl MarkerDetectorCornerRefineMethodML {
     #[doc = "No refinement. Inaccurate corners."]
@@ -4289,7 +6247,7 @@ impl fmt::Debug for MarkerDetectorCornerRefineMethodML {
 }
 #[doc = "See [XrMarkerDetectorFullAnalysisIntervalML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerDetectorFullAnalysisIntervalML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerDetectorFullAnalysisIntervalML(i32);
 impl MarkerDetectorFullAnalysisIntervalML {
     #[doc = "Detector analyzes every frame fully."]
@@ -4321,7 +6279,7 @@ impl fmt::Debug for MarkerDetectorFullAnalysisIntervalML {
 }
 #[doc = "See [XrMarkerDetectorStatusML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrMarkerDetectorStatusML)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct MarkerDetectorStatusML(i32);
 impl MarkerDetectorStatusML {
     #[doc = "The marker detector is working on a new snapshot."]
@@ -4348,6 +6306,118 @@ impl fmt::Debug for MarkerDetectorStatusML {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "Each facial blend shape describes an area/region of a face. - see [XrFacialBlendShapeML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialBlendShapeML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct FacialBlendShapeML(i32);
+impl FacialBlendShapeML {
+    pub const BROW_LOWERER_L: FacialBlendShapeML = Self(0i32);
+    pub const BROW_LOWERER_R: FacialBlendShapeML = Self(1i32);
+    pub const CHEEK_RAISER_L: FacialBlendShapeML = Self(2i32);
+    pub const CHEEK_RAISER_R: FacialBlendShapeML = Self(3i32);
+    pub const CHIN_RAISER: FacialBlendShapeML = Self(4i32);
+    pub const DIMPLER_L: FacialBlendShapeML = Self(5i32);
+    pub const DIMPLER_R: FacialBlendShapeML = Self(6i32);
+    pub const EYES_CLOSED_L: FacialBlendShapeML = Self(7i32);
+    pub const EYES_CLOSED_R: FacialBlendShapeML = Self(8i32);
+    pub const INNER_BROW_RAISER_L: FacialBlendShapeML = Self(9i32);
+    pub const INNER_BROW_RAISER_R: FacialBlendShapeML = Self(10i32);
+    pub const JAW_DROP: FacialBlendShapeML = Self(11i32);
+    pub const LID_TIGHTENER_L: FacialBlendShapeML = Self(12i32);
+    pub const LID_TIGHTENER_R: FacialBlendShapeML = Self(13i32);
+    pub const LIP_CORNER_DEPRESSOR_L: FacialBlendShapeML = Self(14i32);
+    pub const LIP_CORNER_DEPRESSOR_R: FacialBlendShapeML = Self(15i32);
+    pub const LIP_CORNER_PULLER_L: FacialBlendShapeML = Self(16i32);
+    pub const LIP_CORNER_PULLER_R: FacialBlendShapeML = Self(17i32);
+    pub const LIP_FUNNELER_LB: FacialBlendShapeML = Self(18i32);
+    pub const LIP_FUNNELER_LT: FacialBlendShapeML = Self(19i32);
+    pub const LIP_FUNNELER_RB: FacialBlendShapeML = Self(20i32);
+    pub const LIP_FUNNELER_RT: FacialBlendShapeML = Self(21i32);
+    pub const LIP_PRESSOR_L: FacialBlendShapeML = Self(22i32);
+    pub const LIP_PRESSOR_R: FacialBlendShapeML = Self(23i32);
+    pub const LIP_PUCKER_L: FacialBlendShapeML = Self(24i32);
+    pub const LIP_PUCKER_R: FacialBlendShapeML = Self(25i32);
+    pub const LIP_STRETCHER_L: FacialBlendShapeML = Self(26i32);
+    pub const LIP_STRETCHER_R: FacialBlendShapeML = Self(27i32);
+    pub const LIP_SUCK_LB: FacialBlendShapeML = Self(28i32);
+    pub const LIP_SUCK_LT: FacialBlendShapeML = Self(29i32);
+    pub const LIP_SUCK_RB: FacialBlendShapeML = Self(30i32);
+    pub const LIP_SUCK_RT: FacialBlendShapeML = Self(31i32);
+    pub const LIP_TIGHTENER_L: FacialBlendShapeML = Self(32i32);
+    pub const LIP_TIGHTENER_R: FacialBlendShapeML = Self(33i32);
+    pub const LIPS_TOWARD: FacialBlendShapeML = Self(34i32);
+    pub const LOWER_LIP_DEPRESSOR_L: FacialBlendShapeML = Self(35i32);
+    pub const LOWER_LIP_DEPRESSOR_R: FacialBlendShapeML = Self(36i32);
+    pub const NOSE_WRINKLER_L: FacialBlendShapeML = Self(37i32);
+    pub const NOSE_WRINKLER_R: FacialBlendShapeML = Self(38i32);
+    pub const OUTER_BROW_RAISER_L: FacialBlendShapeML = Self(39i32);
+    pub const OUTER_BROW_RAISER_R: FacialBlendShapeML = Self(40i32);
+    pub const UPPER_LID_RAISER_L: FacialBlendShapeML = Self(41i32);
+    pub const UPPER_LID_RAISER_R: FacialBlendShapeML = Self(42i32);
+    pub const UPPER_LIP_RAISER_L: FacialBlendShapeML = Self(43i32);
+    pub const UPPER_LIP_RAISER_R: FacialBlendShapeML = Self(44i32);
+    pub const TONGUE_OUT: FacialBlendShapeML = Self(45i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FacialBlendShapeML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::BROW_LOWERER_L => Some("BROW_LOWERER_L"),
+            Self::BROW_LOWERER_R => Some("BROW_LOWERER_R"),
+            Self::CHEEK_RAISER_L => Some("CHEEK_RAISER_L"),
+            Self::CHEEK_RAISER_R => Some("CHEEK_RAISER_R"),
+            Self::CHIN_RAISER => Some("CHIN_RAISER"),
+            Self::DIMPLER_L => Some("DIMPLER_L"),
+            Self::DIMPLER_R => Some("DIMPLER_R"),
+            Self::EYES_CLOSED_L => Some("EYES_CLOSED_L"),
+            Self::EYES_CLOSED_R => Some("EYES_CLOSED_R"),
+            Self::INNER_BROW_RAISER_L => Some("INNER_BROW_RAISER_L"),
+            Self::INNER_BROW_RAISER_R => Some("INNER_BROW_RAISER_R"),
+            Self::JAW_DROP => Some("JAW_DROP"),
+            Self::LID_TIGHTENER_L => Some("LID_TIGHTENER_L"),
+            Self::LID_TIGHTENER_R => Some("LID_TIGHTENER_R"),
+            Self::LIP_CORNER_DEPRESSOR_L => Some("LIP_CORNER_DEPRESSOR_L"),
+            Self::LIP_CORNER_DEPRESSOR_R => Some("LIP_CORNER_DEPRESSOR_R"),
+            Self::LIP_CORNER_PULLER_L => Some("LIP_CORNER_PULLER_L"),
+            Self::LIP_CORNER_PULLER_R => Some("LIP_CORNER_PULLER_R"),
+            Self::LIP_FUNNELER_LB => Some("LIP_FUNNELER_LB"),
+            Self::LIP_FUNNELER_LT => Some("LIP_FUNNELER_LT"),
+            Self::LIP_FUNNELER_RB => Some("LIP_FUNNELER_RB"),
+            Self::LIP_FUNNELER_RT => Some("LIP_FUNNELER_RT"),
+            Self::LIP_PRESSOR_L => Some("LIP_PRESSOR_L"),
+            Self::LIP_PRESSOR_R => Some("LIP_PRESSOR_R"),
+            Self::LIP_PUCKER_L => Some("LIP_PUCKER_L"),
+            Self::LIP_PUCKER_R => Some("LIP_PUCKER_R"),
+            Self::LIP_STRETCHER_L => Some("LIP_STRETCHER_L"),
+            Self::LIP_STRETCHER_R => Some("LIP_STRETCHER_R"),
+            Self::LIP_SUCK_LB => Some("LIP_SUCK_LB"),
+            Self::LIP_SUCK_LT => Some("LIP_SUCK_LT"),
+            Self::LIP_SUCK_RB => Some("LIP_SUCK_RB"),
+            Self::LIP_SUCK_RT => Some("LIP_SUCK_RT"),
+            Self::LIP_TIGHTENER_L => Some("LIP_TIGHTENER_L"),
+            Self::LIP_TIGHTENER_R => Some("LIP_TIGHTENER_R"),
+            Self::LIPS_TOWARD => Some("LIPS_TOWARD"),
+            Self::LOWER_LIP_DEPRESSOR_L => Some("LOWER_LIP_DEPRESSOR_L"),
+            Self::LOWER_LIP_DEPRESSOR_R => Some("LOWER_LIP_DEPRESSOR_R"),
+            Self::NOSE_WRINKLER_L => Some("NOSE_WRINKLER_L"),
+            Self::NOSE_WRINKLER_R => Some("NOSE_WRINKLER_R"),
+            Self::OUTER_BROW_RAISER_L => Some("OUTER_BROW_RAISER_L"),
+            Self::OUTER_BROW_RAISER_R => Some("OUTER_BROW_RAISER_R"),
+            Self::UPPER_LID_RAISER_L => Some("UPPER_LID_RAISER_L"),
+            Self::UPPER_LID_RAISER_R => Some("UPPER_LID_RAISER_R"),
+            Self::UPPER_LIP_RAISER_L => Some("UPPER_LIP_RAISER_L"),
+            Self::UPPER_LIP_RAISER_R => Some("UPPER_LIP_RAISER_R"),
+            Self::TONGUE_OUT => Some("TONGUE_OUT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrFutureStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFutureStateEXT)"]
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -4367,6 +6437,1269 @@ impl fmt::Debug for FutureStateEXT {
         let name = match *self {
             Self::PENDING => Some("PENDING"),
             Self::READY => Some("READY"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialCapabilityEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialCapabilityEXT(i32);
+impl SpatialCapabilityEXT {
+    #[doc = "Plane tracking"]
+    pub const PLANE_TRACKING: SpatialCapabilityEXT = Self(1000741000i32);
+    #[doc = "Capability to be able to detect and track QR codes."]
+    pub const MARKER_TRACKING_QR_CODE: SpatialCapabilityEXT = Self(1000743000i32);
+    #[doc = "Capability to be able to detect and track Micro QR codes."]
+    pub const MARKER_TRACKING_MICRO_QR_CODE: SpatialCapabilityEXT = Self(1000743001i32);
+    #[doc = "Capability to be able to detect and track Aruco Markers."]
+    pub const MARKER_TRACKING_ARUCO_MARKER: SpatialCapabilityEXT = Self(1000743002i32);
+    #[doc = "Capability to be able to detect and track AprilTags."]
+    pub const MARKER_TRACKING_APRIL_TAG: SpatialCapabilityEXT = Self(1000743003i32);
+    #[doc = "Capability to be able to create spatial anchors"]
+    pub const ANCHOR: SpatialCapabilityEXT = Self(1000762000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialCapabilityEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PLANE_TRACKING => Some("PLANE_TRACKING"),
+            Self::MARKER_TRACKING_QR_CODE => Some("MARKER_TRACKING_QR_CODE"),
+            Self::MARKER_TRACKING_MICRO_QR_CODE => Some("MARKER_TRACKING_MICRO_QR_CODE"),
+            Self::MARKER_TRACKING_ARUCO_MARKER => Some("MARKER_TRACKING_ARUCO_MARKER"),
+            Self::MARKER_TRACKING_APRIL_TAG => Some("MARKER_TRACKING_APRIL_TAG"),
+            Self::ANCHOR => Some("ANCHOR"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialCapabilityFeatureEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityFeatureEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialCapabilityFeatureEXT(i32);
+impl SpatialCapabilityFeatureEXT {
+    #[doc = "Capability feature to allow applications to specify the size for the markers. Corresponding config structure is XrSpatialMarkerSizeEXT"]
+    pub const MARKER_TRACKING_FIXED_SIZE_MARKERS: SpatialCapabilityFeatureEXT = Self(1000743000i32);
+    #[doc = "Capability feature to allow applications to specify if markers are static. Corresponding config structure is XrSpatialMarkerStaticOptimizationEXT"]
+    pub const MARKER_TRACKING_STATIC_MARKERS: SpatialCapabilityFeatureEXT = Self(1000743001i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialCapabilityFeatureEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::MARKER_TRACKING_FIXED_SIZE_MARKERS => Some("MARKER_TRACKING_FIXED_SIZE_MARKERS"),
+            Self::MARKER_TRACKING_STATIC_MARKERS => Some("MARKER_TRACKING_STATIC_MARKERS"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialComponentTypeEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentTypeEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialComponentTypeEXT(i32);
+impl SpatialComponentTypeEXT {
+    #[doc = "Component that provides the 2D bounds for a spatial entity. Corresponding list structure is XrSpatialComponentBounded2DListEXT; Corresponding data structure is XrSpatialBounded2DDataEXT"]
+    pub const BOUNDED_2D: SpatialComponentTypeEXT = Self(1i32);
+    #[doc = "Component that provides the 3D bounds for a spatial entity. Corresponding list structure is XrSpatialComponentBounded3DListEXT; Corresponding data structure is XrBoxf"]
+    pub const BOUNDED_3D: SpatialComponentTypeEXT = Self(2i32);
+    #[doc = "Component that provides the XrSpatialEntityIdEXT of the parent for a spatial entity. Corresponding list structure is XrSpatialComponentParentListEXT; Corresponding data structure is XrSpatialEntityIdEXT"]
+    pub const PARENT: SpatialComponentTypeEXT = Self(3i32);
+    #[doc = "Component that provides a 3D mesh for a spatial entity. Corresponding list structure is XrSpatialComponentMesh3DListEXT; Corresponding data structure is XrSpatialMeshDataEXT"]
+    pub const MESH_3D: SpatialComponentTypeEXT = Self(4i32);
+    #[doc = "Component that provides the plane alignment enum for a spatial entity. Corresponding list structure is XrSpatialComponentPlaneAlignmentListEXT; Corresponding data structure is XrSpatialPlaneAlignmentEXT"]
+    pub const PLANE_ALIGNMENT: SpatialComponentTypeEXT = Self(1000741000i32);
+    #[doc = "Component that provides a 2D mesh for a spatial entity. Corresponding list structure is XrSpatialComponentMesh2DListEXT; Corresponding data structure is XrSpatialMeshDataEXT"]
+    pub const MESH_2D: SpatialComponentTypeEXT = Self(1000741001i32);
+    #[doc = "Component that provides a 2D boundary polygon for a spatial entity. Corresponding list structure is XrSpatialComponentPolygon2DListEXT; Corresponding data structure is XrSpatialPolygon2DDataEXT"]
+    pub const POLYGON_2D: SpatialComponentTypeEXT = Self(1000741002i32);
+    #[doc = "Component that provides a semantic label for a plane. Corresponding list structure is XrSpatialComponentPlaneSemanticLabelListEXT; Corresponding data structure is XrSpatialPlaneSemanticLabelEXT"]
+    pub const PLANE_SEMANTIC_LABEL: SpatialComponentTypeEXT = Self(1000741003i32);
+    #[doc = "A component describing the marker type, id and location. Corresponding list structure is XrSpatialComponentMarkerListEXT; Corresponding data structure is XrSpatialMarkerDataEXT"]
+    pub const MARKER: SpatialComponentTypeEXT = Self(1000743000i32);
+    #[doc = "Component that provides the location for an anchor. Corresponding list structure is XrSpatialComponentAnchorListEXT; Corresponding data structure is XrPosef"]
+    pub const ANCHOR: SpatialComponentTypeEXT = Self(1000762000i32);
+    #[doc = "Component that provides the persisted UUID for a spatial entity. Corresponding list structure is XrSpatialComponentPersistenceListEXT; Corresponding data structure is XrSpatialPersistenceDataEXT"]
+    pub const PERSISTENCE: SpatialComponentTypeEXT = Self(1000763000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialComponentTypeEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::BOUNDED_2D => Some("BOUNDED_2D"),
+            Self::BOUNDED_3D => Some("BOUNDED_3D"),
+            Self::PARENT => Some("PARENT"),
+            Self::MESH_3D => Some("MESH_3D"),
+            Self::PLANE_ALIGNMENT => Some("PLANE_ALIGNMENT"),
+            Self::MESH_2D => Some("MESH_2D"),
+            Self::POLYGON_2D => Some("POLYGON_2D"),
+            Self::PLANE_SEMANTIC_LABEL => Some("PLANE_SEMANTIC_LABEL"),
+            Self::MARKER => Some("MARKER"),
+            Self::ANCHOR => Some("ANCHOR"),
+            Self::PERSISTENCE => Some("PERSISTENCE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialEntityTrackingStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityTrackingStateEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialEntityTrackingStateEXT(i32);
+impl SpatialEntityTrackingStateEXT {
+    #[doc = "The runtime has stopped tracking this entity and will never resume tracking it."]
+    pub const STOPPED: SpatialEntityTrackingStateEXT = Self(1i32);
+    #[doc = "The runtime has paused tracking this entity but may: resume tracking it in the future."]
+    pub const PAUSED: SpatialEntityTrackingStateEXT = Self(2i32);
+    #[doc = "The runtime is currently tracking this entity and its component data is valid."]
+    pub const TRACKING: SpatialEntityTrackingStateEXT = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialEntityTrackingStateEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::STOPPED => Some("STOPPED"),
+            Self::PAUSED => Some("PAUSED"),
+            Self::TRACKING => Some("TRACKING"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialBufferTypeEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialBufferTypeEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SpatialBufferTypeEXT(i32);
+impl SpatialBufferTypeEXT {
+    pub const UNKNOWN: SpatialBufferTypeEXT = Self(0i32);
+    pub const STRING: SpatialBufferTypeEXT = Self(1i32);
+    pub const UINT8: SpatialBufferTypeEXT = Self(2i32);
+    pub const UINT16: SpatialBufferTypeEXT = Self(3i32);
+    pub const UINT32: SpatialBufferTypeEXT = Self(4i32);
+    pub const FLOAT: SpatialBufferTypeEXT = Self(5i32);
+    pub const VECTOR2F: SpatialBufferTypeEXT = Self(6i32);
+    pub const VECTOR3F: SpatialBufferTypeEXT = Self(7i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialBufferTypeEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNKNOWN => Some("UNKNOWN"),
+            Self::STRING => Some("STRING"),
+            Self::UINT8 => Some("UINT8"),
+            Self::UINT16 => Some("UINT16"),
+            Self::UINT32 => Some("UINT32"),
+            Self::FLOAT => Some("FLOAT"),
+            Self::VECTOR2F => Some("VECTOR2F"),
+            Self::VECTOR3F => Some("VECTOR3F"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialPersistenceScopeEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPersistenceScopeEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialPersistenceScopeEXT(i32);
+impl SpatialPersistenceScopeEXT {
+    #[doc = "Provides the application with read-only access (i.e. application cannot modify the store associated with this scope) to spatial entities persisted and managed by the system. The application can: use the UUID in the persistence component for this scope to correlate entities across spatial contexts and device reboots."]
+    pub const SYSTEM_MANAGED: SpatialPersistenceScopeEXT = Self(1i32);
+    #[doc = "Persistence operations and data access is limited to spatial anchors, on the same device, for the same user and same app"]
+    pub const LOCAL_ANCHORS: SpatialPersistenceScopeEXT = Self(1000781000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialPersistenceScopeEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::SYSTEM_MANAGED => Some("SYSTEM_MANAGED"),
+            Self::LOCAL_ANCHORS => Some("LOCAL_ANCHORS"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialPersistenceContextResultEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPersistenceContextResultEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SpatialPersistenceContextResultEXT(i32);
+impl SpatialPersistenceContextResultEXT {
+    #[doc = "The persistence context operation was a success."]
+    pub const SUCCESS: SpatialPersistenceContextResultEXT = Self(0i32);
+    #[doc = "The persistence operation failed because the entity could not be tracked by the runtime."]
+    pub const ENTITY_NOT_TRACKING: SpatialPersistenceContextResultEXT = Self(-1000781001i32);
+    #[doc = "The provided persist UUID was not found in the storage."]
+    pub const PERSIST_UUID_NOT_FOUND: SpatialPersistenceContextResultEXT = Self(-1000781002i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialPersistenceContextResultEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::SUCCESS => Some("SUCCESS"),
+            Self::ENTITY_NOT_TRACKING => Some("ENTITY_NOT_TRACKING"),
+            Self::PERSIST_UUID_NOT_FOUND => Some("PERSIST_UUID_NOT_FOUND"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialPersistenceStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPersistenceStateEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialPersistenceStateEXT(i32);
+impl SpatialPersistenceStateEXT {
+    #[doc = "The persisted UUID has been successfully loaded from the storage."]
+    pub const LOADED: SpatialPersistenceStateEXT = Self(1i32);
+    #[doc = "The persisted UUID was not found in the storage and was either removed from it or never was in it."]
+    pub const NOT_FOUND: SpatialPersistenceStateEXT = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialPersistenceStateEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOADED => Some("LOADED"),
+            Self::NOT_FOUND => Some("NOT_FOUND"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialPlaneAlignmentEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPlaneAlignmentEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SpatialPlaneAlignmentEXT(i32);
+impl SpatialPlaneAlignmentEXT {
+    #[doc = "The entity is horizontal and faces upward (e.g. floor)."]
+    pub const HORIZONTAL_UPWARD: SpatialPlaneAlignmentEXT = Self(0i32);
+    #[doc = "The entity is horizontal and faces downward (e.g. ceiling)."]
+    pub const HORIZONTAL_DOWNWARD: SpatialPlaneAlignmentEXT = Self(1i32);
+    #[doc = "The entity is vertical (e.g. wall)."]
+    pub const VERTICAL: SpatialPlaneAlignmentEXT = Self(2i32);
+    #[doc = "The entity has an arbitrary, non-vertical and non-horizontal orientation."]
+    pub const ARBITRARY: SpatialPlaneAlignmentEXT = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialPlaneAlignmentEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::HORIZONTAL_UPWARD => Some("HORIZONTAL_UPWARD"),
+            Self::HORIZONTAL_DOWNWARD => Some("HORIZONTAL_DOWNWARD"),
+            Self::VERTICAL => Some("VERTICAL"),
+            Self::ARBITRARY => Some("ARBITRARY"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialPlaneSemanticLabelEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPlaneSemanticLabelEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialPlaneSemanticLabelEXT(i32);
+impl SpatialPlaneSemanticLabelEXT {
+    #[doc = "The runtime was unable to classify this entity."]
+    pub const UNCATEGORIZED: SpatialPlaneSemanticLabelEXT = Self(1i32);
+    #[doc = "The entity is a floor."]
+    pub const FLOOR: SpatialPlaneSemanticLabelEXT = Self(2i32);
+    #[doc = "The entity is a wall."]
+    pub const WALL: SpatialPlaneSemanticLabelEXT = Self(3i32);
+    #[doc = "The entity is a ceiling."]
+    pub const CEILING: SpatialPlaneSemanticLabelEXT = Self(4i32);
+    #[doc = "The entity is a table."]
+    pub const TABLE: SpatialPlaneSemanticLabelEXT = Self(5i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialPlaneSemanticLabelEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNCATEGORIZED => Some("UNCATEGORIZED"),
+            Self::FLOOR => Some("FLOOR"),
+            Self::WALL => Some("WALL"),
+            Self::CEILING => Some("CEILING"),
+            Self::TABLE => Some("TABLE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrBodyJointHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointHTC)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct BodyJointHTC(i32);
+impl BodyJointHTC {
+    pub const PELVIS: BodyJointHTC = Self(0i32);
+    pub const LEFT_HIP: BodyJointHTC = Self(1i32);
+    pub const LEFT_KNEE: BodyJointHTC = Self(2i32);
+    pub const LEFT_ANKLE: BodyJointHTC = Self(3i32);
+    pub const LEFT_FEET: BodyJointHTC = Self(4i32);
+    pub const RIGHT_HIP: BodyJointHTC = Self(5i32);
+    pub const RIGHT_KNEE: BodyJointHTC = Self(6i32);
+    pub const RIGHT_ANKLE: BodyJointHTC = Self(7i32);
+    pub const RIGHT_FEET: BodyJointHTC = Self(8i32);
+    pub const WAIST: BodyJointHTC = Self(9i32);
+    pub const SPINE_LOWER: BodyJointHTC = Self(10i32);
+    pub const SPINE_MIDDLE: BodyJointHTC = Self(11i32);
+    pub const SPINE_HIGH: BodyJointHTC = Self(12i32);
+    pub const CHEST: BodyJointHTC = Self(13i32);
+    pub const NECK: BodyJointHTC = Self(14i32);
+    pub const HEAD: BodyJointHTC = Self(15i32);
+    pub const LEFT_CLAVICLE: BodyJointHTC = Self(16i32);
+    pub const LEFT_SCAPULA: BodyJointHTC = Self(17i32);
+    pub const LEFT_ARM: BodyJointHTC = Self(18i32);
+    pub const LEFT_ELBOW: BodyJointHTC = Self(19i32);
+    pub const LEFT_WRIST: BodyJointHTC = Self(20i32);
+    pub const RIGHT_CLAVICLE: BodyJointHTC = Self(21i32);
+    pub const RIGHT_SCAPULA: BodyJointHTC = Self(22i32);
+    pub const RIGHT_ARM: BodyJointHTC = Self(23i32);
+    pub const RIGHT_ELBOW: BodyJointHTC = Self(24i32);
+    pub const RIGHT_WRIST: BodyJointHTC = Self(25i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for BodyJointHTC {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PELVIS => Some("PELVIS"),
+            Self::LEFT_HIP => Some("LEFT_HIP"),
+            Self::LEFT_KNEE => Some("LEFT_KNEE"),
+            Self::LEFT_ANKLE => Some("LEFT_ANKLE"),
+            Self::LEFT_FEET => Some("LEFT_FEET"),
+            Self::RIGHT_HIP => Some("RIGHT_HIP"),
+            Self::RIGHT_KNEE => Some("RIGHT_KNEE"),
+            Self::RIGHT_ANKLE => Some("RIGHT_ANKLE"),
+            Self::RIGHT_FEET => Some("RIGHT_FEET"),
+            Self::WAIST => Some("WAIST"),
+            Self::SPINE_LOWER => Some("SPINE_LOWER"),
+            Self::SPINE_MIDDLE => Some("SPINE_MIDDLE"),
+            Self::SPINE_HIGH => Some("SPINE_HIGH"),
+            Self::CHEST => Some("CHEST"),
+            Self::NECK => Some("NECK"),
+            Self::HEAD => Some("HEAD"),
+            Self::LEFT_CLAVICLE => Some("LEFT_CLAVICLE"),
+            Self::LEFT_SCAPULA => Some("LEFT_SCAPULA"),
+            Self::LEFT_ARM => Some("LEFT_ARM"),
+            Self::LEFT_ELBOW => Some("LEFT_ELBOW"),
+            Self::LEFT_WRIST => Some("LEFT_WRIST"),
+            Self::RIGHT_CLAVICLE => Some("RIGHT_CLAVICLE"),
+            Self::RIGHT_SCAPULA => Some("RIGHT_SCAPULA"),
+            Self::RIGHT_ARM => Some("RIGHT_ARM"),
+            Self::RIGHT_ELBOW => Some("RIGHT_ELBOW"),
+            Self::RIGHT_WRIST => Some("RIGHT_WRIST"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrBodyJointSetHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointSetHTC)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct BodyJointSetHTC(i32);
+impl BodyJointSetHTC {
+    pub const FULL: BodyJointSetHTC = Self(0i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for BodyJointSetHTC {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::FULL => Some("FULL"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrBodyJointConfidenceHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointConfidenceHTC)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct BodyJointConfidenceHTC(i32);
+impl BodyJointConfidenceHTC {
+    pub const NONE: BodyJointConfidenceHTC = Self(0i32);
+    pub const LOW: BodyJointConfidenceHTC = Self(1i32);
+    pub const HIGH: BodyJointConfidenceHTC = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for BodyJointConfidenceHTC {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NONE => Some("NONE"),
+            Self::LOW => Some("LOW"),
+            Self::HIGH => Some("HIGH"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialAnchorConfidenceML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorConfidenceML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SpatialAnchorConfidenceML(i32);
+impl SpatialAnchorConfidenceML {
+    #[doc = "Low quality, this anchor can be expected to move significantly."]
+    pub const LOW: SpatialAnchorConfidenceML = Self(0i32);
+    #[doc = "Medium quality, this anchor may move slightly."]
+    pub const MEDIUM: SpatialAnchorConfidenceML = Self(1i32);
+    #[doc = "High quality, this anchor is stable and suitable for digital content attachment."]
+    pub const HIGH: SpatialAnchorConfidenceML = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialAnchorConfidenceML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOW => Some("LOW"),
+            Self::MEDIUM => Some("MEDIUM"),
+            Self::HIGH => Some("HIGH"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrWorldMeshBlockStatusML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBlockStatusML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct WorldMeshBlockStatusML(i32);
+impl WorldMeshBlockStatusML {
+    #[doc = "The mesh block has been created."]
+    pub const NEW: WorldMeshBlockStatusML = Self(0i32);
+    #[doc = "The mesh block has been updated."]
+    pub const UPDATED: WorldMeshBlockStatusML = Self(1i32);
+    #[doc = "The mesh block has been deleted."]
+    pub const DELETED: WorldMeshBlockStatusML = Self(2i32);
+    #[doc = "The mesh block is unchanged."]
+    pub const UNCHANGED: WorldMeshBlockStatusML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for WorldMeshBlockStatusML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NEW => Some("NEW"),
+            Self::UPDATED => Some("UPDATED"),
+            Self::DELETED => Some("DELETED"),
+            Self::UNCHANGED => Some("UNCHANGED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrWorldMeshDetectorLodML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshDetectorLodML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct WorldMeshDetectorLodML(i32);
+impl WorldMeshDetectorLodML {
+    #[doc = "Minimum Level of Detail (LOD) for the mesh."]
+    pub const MINIMUM: WorldMeshDetectorLodML = Self(0i32);
+    #[doc = "Medium Level of Detail (LOD) for the mesh."]
+    pub const MEDIUM: WorldMeshDetectorLodML = Self(1i32);
+    #[doc = "Maximum Level of Detail (LOD) for the mesh."]
+    pub const MAXIMUM: WorldMeshDetectorLodML = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for WorldMeshDetectorLodML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::MINIMUM => Some("MINIMUM"),
+            Self::MEDIUM => Some("MEDIUM"),
+            Self::MAXIMUM => Some("MAXIMUM"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrWorldMeshBlockResultML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBlockResultML)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct WorldMeshBlockResultML(i32);
+impl WorldMeshBlockResultML {
+    #[doc = "Mesh request has succeeded."]
+    pub const SUCCESS: WorldMeshBlockResultML = Self(0i32);
+    #[doc = "Mesh request has failed."]
+    pub const FAILED: WorldMeshBlockResultML = Self(1i32);
+    #[doc = "Mesh request is pending."]
+    pub const PENDING: WorldMeshBlockResultML = Self(2i32);
+    #[doc = "There are partial updates on the mesh request."]
+    pub const PARTIAL_UPDATE: WorldMeshBlockResultML = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for WorldMeshBlockResultML {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::SUCCESS => Some("SUCCESS"),
+            Self::FAILED => Some("FAILED"),
+            Self::PENDING => Some("PENDING"),
+            Self::PARTIAL_UPDATE => Some("PARTIAL_UPDATE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrBodyJointBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct BodyJointBD(i32);
+impl BodyJointBD {
+    pub const PELVIS: BodyJointBD = Self(0i32);
+    pub const LEFT_HIP: BodyJointBD = Self(1i32);
+    pub const RIGHT_HIP: BodyJointBD = Self(2i32);
+    pub const SPINE1: BodyJointBD = Self(3i32);
+    pub const LEFT_KNEE: BodyJointBD = Self(4i32);
+    pub const RIGHT_KNEE: BodyJointBD = Self(5i32);
+    pub const SPINE2: BodyJointBD = Self(6i32);
+    pub const LEFT_ANKLE: BodyJointBD = Self(7i32);
+    pub const RIGHT_ANKLE: BodyJointBD = Self(8i32);
+    pub const SPINE3: BodyJointBD = Self(9i32);
+    pub const LEFT_FOOT: BodyJointBD = Self(10i32);
+    pub const RIGHT_FOOT: BodyJointBD = Self(11i32);
+    pub const NECK: BodyJointBD = Self(12i32);
+    pub const LEFT_COLLAR: BodyJointBD = Self(13i32);
+    pub const RIGHT_COLLAR: BodyJointBD = Self(14i32);
+    pub const HEAD: BodyJointBD = Self(15i32);
+    pub const LEFT_SHOULDER: BodyJointBD = Self(16i32);
+    pub const RIGHT_SHOULDER: BodyJointBD = Self(17i32);
+    pub const LEFT_ELBOW: BodyJointBD = Self(18i32);
+    pub const RIGHT_ELBOW: BodyJointBD = Self(19i32);
+    pub const LEFT_WRIST: BodyJointBD = Self(20i32);
+    pub const RIGHT_WRIST: BodyJointBD = Self(21i32);
+    pub const LEFT_HAND: BodyJointBD = Self(22i32);
+    pub const RIGHT_HAND: BodyJointBD = Self(23i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for BodyJointBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PELVIS => Some("PELVIS"),
+            Self::LEFT_HIP => Some("LEFT_HIP"),
+            Self::RIGHT_HIP => Some("RIGHT_HIP"),
+            Self::SPINE1 => Some("SPINE1"),
+            Self::LEFT_KNEE => Some("LEFT_KNEE"),
+            Self::RIGHT_KNEE => Some("RIGHT_KNEE"),
+            Self::SPINE2 => Some("SPINE2"),
+            Self::LEFT_ANKLE => Some("LEFT_ANKLE"),
+            Self::RIGHT_ANKLE => Some("RIGHT_ANKLE"),
+            Self::SPINE3 => Some("SPINE3"),
+            Self::LEFT_FOOT => Some("LEFT_FOOT"),
+            Self::RIGHT_FOOT => Some("RIGHT_FOOT"),
+            Self::NECK => Some("NECK"),
+            Self::LEFT_COLLAR => Some("LEFT_COLLAR"),
+            Self::RIGHT_COLLAR => Some("RIGHT_COLLAR"),
+            Self::HEAD => Some("HEAD"),
+            Self::LEFT_SHOULDER => Some("LEFT_SHOULDER"),
+            Self::RIGHT_SHOULDER => Some("RIGHT_SHOULDER"),
+            Self::LEFT_ELBOW => Some("LEFT_ELBOW"),
+            Self::RIGHT_ELBOW => Some("RIGHT_ELBOW"),
+            Self::LEFT_WRIST => Some("LEFT_WRIST"),
+            Self::RIGHT_WRIST => Some("RIGHT_WRIST"),
+            Self::LEFT_HAND => Some("LEFT_HAND"),
+            Self::RIGHT_HAND => Some("RIGHT_HAND"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "Describes the set of body joints to track when creating an XrBodyTrackerBD. - see [XrBodyJointSetBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointSetBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct BodyJointSetBD(i32);
+impl BodyJointSetBD {
+    #[doc = "Contains joints in XrBodyJointBD in the range XR_BODY_JOINT_PELVIS_BD through XR_BODY_JOINT_HEAD_BD inclusive, a total of XR_BODY_JOINT_WITHOUT_ARM_COUNT_BD joints."]
+    pub const BODY_WITHOUT_ARM: BodyJointSetBD = Self(1i32);
+    #[doc = "Contains joints in XrBodyJointBD in the range XR_BODY_JOINT_PELVIS_BD through XR_BODY_JOINT_RIGHT_HAND_BD inclusive, a total of XR_BODY_JOINT_COUNT_BD joints."]
+    pub const FULL_BODY_JOINTS: BodyJointSetBD = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for BodyJointSetBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::BODY_WITHOUT_ARM => Some("BODY_WITHOUT_ARM"),
+            Self::FULL_BODY_JOINTS => Some("FULL_BODY_JOINTS"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSenseDataProviderTypeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataProviderTypeBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SenseDataProviderTypeBD(i32);
+impl SenseDataProviderTypeBD {
+    #[doc = "Create arbitrary spatial anchors."]
+    pub const ANCHOR: SenseDataProviderTypeBD = Self(1000390000i32);
+    #[doc = "Access spatial scene capture data."]
+    pub const SCENE: SenseDataProviderTypeBD = Self(1000392000i32);
+    #[doc = "Capture spatial mesh data."]
+    pub const MESH: SenseDataProviderTypeBD = Self(1000393000i32);
+    #[doc = "Capture spatial plane data."]
+    pub const PLANE: SenseDataProviderTypeBD = Self(1000396000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SenseDataProviderTypeBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::ANCHOR => Some("ANCHOR"),
+            Self::SCENE => Some("SCENE"),
+            Self::MESH => Some("MESH"),
+            Self::PLANE => Some("PLANE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSemanticLabelBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSemanticLabelBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SemanticLabelBD(i32);
+impl SemanticLabelBD {
+    #[doc = "Semantic label that the runtime does not know."]
+    pub const UNKNOWN: SemanticLabelBD = Self(0i32);
+    #[doc = "Semantic label of floor."]
+    pub const FLOOR: SemanticLabelBD = Self(1i32);
+    #[doc = "Semantic label of ceiling."]
+    pub const CEILING: SemanticLabelBD = Self(2i32);
+    #[doc = "Semantic label of wall."]
+    pub const WALL: SemanticLabelBD = Self(3i32);
+    #[doc = "Semantic label of door."]
+    pub const DOOR: SemanticLabelBD = Self(4i32);
+    #[doc = "Semantic label of window."]
+    pub const WINDOW: SemanticLabelBD = Self(5i32);
+    #[doc = "Semantic label of opening, usually refers to a space that something or someone can pass through."]
+    pub const OPENING: SemanticLabelBD = Self(6i32);
+    #[doc = "Semantic label of table."]
+    pub const TABLE: SemanticLabelBD = Self(7i32);
+    #[doc = "Semantic label of sofa, usually refers to a seat that multiple people can sit on."]
+    pub const SOFA: SemanticLabelBD = Self(8i32);
+    #[doc = "Semantic label of chair, usually refers to a seat that for one person."]
+    pub const CHAIR: SemanticLabelBD = Self(9i32);
+    #[doc = "Semantic label of human."]
+    pub const HUMAN: SemanticLabelBD = Self(10i32);
+    #[doc = "Semantic label of beam, which usually supports weight in a building or other structure."]
+    pub const BEAM: SemanticLabelBD = Self(11i32);
+    #[doc = "Semantic label of column, which is vertical and used as a support for the roof of a building."]
+    pub const COLUMN: SemanticLabelBD = Self(12i32);
+    #[doc = "Semantic label of curtain."]
+    pub const CURTAIN: SemanticLabelBD = Self(13i32);
+    #[doc = "Semantic label of cabinet."]
+    pub const CABINET: SemanticLabelBD = Self(14i32);
+    #[doc = "Semantic label of bed."]
+    pub const BED: SemanticLabelBD = Self(15i32);
+    #[doc = "Semantic label of plant."]
+    pub const PLANT: SemanticLabelBD = Self(16i32);
+    #[doc = "Semantic label of screen."]
+    pub const SCREEN: SemanticLabelBD = Self(17i32);
+    #[doc = "Semantic label of virtual wall, which is generated by the system scene capture app in order to create a closed space for users."]
+    pub const VIRTUAL_WALL: SemanticLabelBD = Self(18i32);
+    #[doc = "Semantic label of refrigerator."]
+    pub const REFRIGERATOR: SemanticLabelBD = Self(19i32);
+    #[doc = "Semantic label of washing machine."]
+    pub const WASHING_MACHINE: SemanticLabelBD = Self(20i32);
+    #[doc = "Semantic label of air conditioner."]
+    pub const AIR_CONDITIONER: SemanticLabelBD = Self(21i32);
+    #[doc = "Semantic label of lamp."]
+    pub const LAMP: SemanticLabelBD = Self(22i32);
+    #[doc = "Semantic label of wall art, like a painting or a photo frame."]
+    pub const WALL_ART: SemanticLabelBD = Self(23i32);
+    #[doc = "Semantic label of stairway."]
+    pub const STAIRWAY: SemanticLabelBD = Self(24i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SemanticLabelBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNKNOWN => Some("UNKNOWN"),
+            Self::FLOOR => Some("FLOOR"),
+            Self::CEILING => Some("CEILING"),
+            Self::WALL => Some("WALL"),
+            Self::DOOR => Some("DOOR"),
+            Self::WINDOW => Some("WINDOW"),
+            Self::OPENING => Some("OPENING"),
+            Self::TABLE => Some("TABLE"),
+            Self::SOFA => Some("SOFA"),
+            Self::CHAIR => Some("CHAIR"),
+            Self::HUMAN => Some("HUMAN"),
+            Self::BEAM => Some("BEAM"),
+            Self::COLUMN => Some("COLUMN"),
+            Self::CURTAIN => Some("CURTAIN"),
+            Self::CABINET => Some("CABINET"),
+            Self::BED => Some("BED"),
+            Self::PLANT => Some("PLANT"),
+            Self::SCREEN => Some("SCREEN"),
+            Self::VIRTUAL_WALL => Some("VIRTUAL_WALL"),
+            Self::REFRIGERATOR => Some("REFRIGERATOR"),
+            Self::WASHING_MACHINE => Some("WASHING_MACHINE"),
+            Self::AIR_CONDITIONER => Some("AIR_CONDITIONER"),
+            Self::LAMP => Some("LAMP"),
+            Self::WALL_ART => Some("WALL_ART"),
+            Self::STAIRWAY => Some("STAIRWAY"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialEntityComponentTypeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentTypeBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SpatialEntityComponentTypeBD(i32);
+impl SpatialEntityComponentTypeBD {
+    #[doc = "The location including position and rotation. Corresponds to component data structure XrSpatialEntityComponentDataLocationBD."]
+    pub const LOCATION: SpatialEntityComponentTypeBD = Self(0i32);
+    #[doc = "The semantic label. Corresponds to component data structure XrSpatialEntityComponentDataSemanticBD."]
+    pub const SEMANTIC: SpatialEntityComponentTypeBD = Self(1i32);
+    #[doc = "The two-dimensional bounding box. Corresponds to component data structure XrSpatialEntityComponentDataBoundingBox2DBD."]
+    pub const BOUNDING_BOX_2D: SpatialEntityComponentTypeBD = Self(2i32);
+    #[doc = "The two-dimensional polygon. Corresponds to component data structure XrSpatialEntityComponentDataPolygonBD."]
+    pub const POLYGON: SpatialEntityComponentTypeBD = Self(3i32);
+    #[doc = "The three-dimensional bounding box. Corresponds to component data structure XrSpatialEntityComponentDataBoundingBox3DBD."]
+    pub const BOUNDING_BOX_3D: SpatialEntityComponentTypeBD = Self(4i32);
+    #[doc = "The triangle mesh. Corresponds to component data structure XrSpatialEntityComponentDataTriangleMeshBD."]
+    pub const TRIANGLE_MESH: SpatialEntityComponentTypeBD = Self(5i32);
+    #[doc = "The plane orientation. Corresponds to component data structure XrSpatialEntityComponentDataPlaneOrientationBD."]
+    pub const PLANE_ORIENTATION: SpatialEntityComponentTypeBD = Self(1000396000i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialEntityComponentTypeBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOCATION => Some("LOCATION"),
+            Self::SEMANTIC => Some("SEMANTIC"),
+            Self::BOUNDING_BOX_2D => Some("BOUNDING_BOX_2D"),
+            Self::POLYGON => Some("POLYGON"),
+            Self::BOUNDING_BOX_3D => Some("BOUNDING_BOX_3D"),
+            Self::TRIANGLE_MESH => Some("TRIANGLE_MESH"),
+            Self::PLANE_ORIENTATION => Some("PLANE_ORIENTATION"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSenseDataProviderStateBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataProviderStateBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SenseDataProviderStateBD(i32);
+impl SenseDataProviderStateBD {
+    #[doc = "The state after the provider is successfully created, which means the provider is ready to start."]
+    pub const INITIALIZED: SenseDataProviderStateBD = Self(0i32);
+    #[doc = "The state when the provider is running normally."]
+    pub const RUNNING: SenseDataProviderStateBD = Self(1i32);
+    #[doc = "The state after the provider is successfully stopped, or when an unexpected error occurs."]
+    pub const STOPPED: SenseDataProviderStateBD = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SenseDataProviderStateBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::INITIALIZED => Some("INITIALIZED"),
+            Self::RUNNING => Some("RUNNING"),
+            Self::STOPPED => Some("STOPPED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrPersistenceLocationBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistenceLocationBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct PersistenceLocationBD(i32);
+impl PersistenceLocationBD {
+    #[doc = "The persistence storage location is local to the device."]
+    pub const LOCAL: PersistenceLocationBD = Self(0i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for PersistenceLocationBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOCAL => Some("LOCAL"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialMeshLodBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMeshLodBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SpatialMeshLodBD(i32);
+impl SpatialMeshLodBD {
+    #[doc = "Coarse level for the mesh with less details."]
+    pub const COARSE: SpatialMeshLodBD = Self(0i32);
+    #[doc = "Medium level for the mesh."]
+    pub const MEDIUM: SpatialMeshLodBD = Self(1i32);
+    #[doc = "Fine level for the mesh with more details."]
+    pub const FINE: SpatialMeshLodBD = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialMeshLodBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::COARSE => Some("COARSE"),
+            Self::MEDIUM => Some("MEDIUM"),
+            Self::FINE => Some("FINE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrPlaneOrientationBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPlaneOrientationBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct PlaneOrientationBD(i32);
+impl PlaneOrientationBD {
+    #[doc = "The detected plane is horizontal and faces upward (e.g. floor)."]
+    pub const HORIZONTAL_UPWARD: PlaneOrientationBD = Self(0i32);
+    #[doc = "The detected plane is horizontal and faces downward (e.g. ceiling)."]
+    pub const HORIZONTAL_DOWNWARD: PlaneOrientationBD = Self(1i32);
+    #[doc = "The detected plane is vertical (e.g. wall)."]
+    pub const VERTICAL: PlaneOrientationBD = Self(2i32);
+    #[doc = "The detected plane has an arbitrary, non-vertical and non-horizontal orientation."]
+    pub const ARBITRARY: PlaneOrientationBD = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for PlaneOrientationBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::HORIZONTAL_UPWARD => Some("HORIZONTAL_UPWARD"),
+            Self::HORIZONTAL_DOWNWARD => Some("HORIZONTAL_DOWNWARD"),
+            Self::VERTICAL => Some("VERTICAL"),
+            Self::ARBITRARY => Some("ARBITRARY"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialMarkerArucoDictEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMarkerArucoDictEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialMarkerArucoDictEXT(i32);
+impl SpatialMarkerArucoDictEXT {
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_4X4_50: SpatialMarkerArucoDictEXT = Self(1i32);
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_4X4_100: SpatialMarkerArucoDictEXT = Self(2i32);
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_4X4_250: SpatialMarkerArucoDictEXT = Self(3i32);
+    #[doc = "4 by 4 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_4X4_1000: SpatialMarkerArucoDictEXT = Self(4i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_5X5_50: SpatialMarkerArucoDictEXT = Self(5i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_5X5_100: SpatialMarkerArucoDictEXT = Self(6i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_5X5_250: SpatialMarkerArucoDictEXT = Self(7i32);
+    #[doc = "5 by 5 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_5X5_1000: SpatialMarkerArucoDictEXT = Self(8i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_6X6_50: SpatialMarkerArucoDictEXT = Self(9i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_6X6_100: SpatialMarkerArucoDictEXT = Self(10i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_6X6_250: SpatialMarkerArucoDictEXT = Self(11i32);
+    #[doc = "6 by 6 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_6X6_1000: SpatialMarkerArucoDictEXT = Self(12i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 50 IDs."]
+    pub const DICT_7X7_50: SpatialMarkerArucoDictEXT = Self(13i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 100 IDs."]
+    pub const DICT_7X7_100: SpatialMarkerArucoDictEXT = Self(14i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 250 IDs."]
+    pub const DICT_7X7_250: SpatialMarkerArucoDictEXT = Self(15i32);
+    #[doc = "7 by 7 pixel Aruco marker dictionary with 1000 IDs."]
+    pub const DICT_7X7_1000: SpatialMarkerArucoDictEXT = Self(16i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialMarkerArucoDictEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DICT_4X4_50 => Some("DICT_4X4_50"),
+            Self::DICT_4X4_100 => Some("DICT_4X4_100"),
+            Self::DICT_4X4_250 => Some("DICT_4X4_250"),
+            Self::DICT_4X4_1000 => Some("DICT_4X4_1000"),
+            Self::DICT_5X5_50 => Some("DICT_5X5_50"),
+            Self::DICT_5X5_100 => Some("DICT_5X5_100"),
+            Self::DICT_5X5_250 => Some("DICT_5X5_250"),
+            Self::DICT_5X5_1000 => Some("DICT_5X5_1000"),
+            Self::DICT_6X6_50 => Some("DICT_6X6_50"),
+            Self::DICT_6X6_100 => Some("DICT_6X6_100"),
+            Self::DICT_6X6_250 => Some("DICT_6X6_250"),
+            Self::DICT_6X6_1000 => Some("DICT_6X6_1000"),
+            Self::DICT_7X7_50 => Some("DICT_7X7_50"),
+            Self::DICT_7X7_100 => Some("DICT_7X7_100"),
+            Self::DICT_7X7_250 => Some("DICT_7X7_250"),
+            Self::DICT_7X7_1000 => Some("DICT_7X7_1000"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialMarkerAprilTagDictEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMarkerAprilTagDictEXT)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SpatialMarkerAprilTagDictEXT(i32);
+impl SpatialMarkerAprilTagDictEXT {
+    #[doc = "4 by 4 bits, minimum Hamming distance between any two codes = 5, 30 codes."]
+    pub const DICT_16H5: SpatialMarkerAprilTagDictEXT = Self(1i32);
+    #[doc = "5 by 5 bits, minimum Hamming distance between any two codes = 9, 35 codes."]
+    pub const DICT_25H9: SpatialMarkerAprilTagDictEXT = Self(2i32);
+    #[doc = "6 by 6 bits, minimum Hamming distance between any two codes = 10, 2320 codes."]
+    pub const DICT_36H10: SpatialMarkerAprilTagDictEXT = Self(3i32);
+    #[doc = "6 by 6 bits, minimum Hamming distance between any two codes = 11, 587 codes."]
+    pub const DICT_36H11: SpatialMarkerAprilTagDictEXT = Self(4i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialMarkerAprilTagDictEXT {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DICT_16H5 => Some("DICT_16H5"),
+            Self::DICT_25H9 => Some("DICT_25H9"),
+            Self::DICT_36H10 => Some("DICT_36H10"),
+            Self::DICT_36H11 => Some("DICT_36H11"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFacialSimulationModeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialSimulationModeBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct FacialSimulationModeBD(i32);
+impl FacialSimulationModeBD {
+    #[doc = "When calling xrGetFacialSimulationDataBD, the output contains the XrFacialSimulationDataBD only."]
+    pub const DEFAULT: FacialSimulationModeBD = Self(0i32);
+    #[doc = "Results in the same output as the `Default` mode, furthermore, runtime can provide a precise result by using the audio input."]
+    pub const COMBINED_AUDIO: FacialSimulationModeBD = Self(1i32);
+    #[doc = "Separates the result into two parts, one is XrFacialSimulationDataBD, the other is XrLipExpressionDataBD."]
+    pub const COMBINED_AUDIO_WITH_LIP: FacialSimulationModeBD = Self(2i32);
+    #[doc = "Uses only audio input to produce the output result as XrLipExpressionDataBD."]
+    pub const ONLY_AUDIO_WITH_LIP: FacialSimulationModeBD = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FacialSimulationModeBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DEFAULT => Some("DEFAULT"),
+            Self::COMBINED_AUDIO => Some("COMBINED_AUDIO"),
+            Self::COMBINED_AUDIO_WITH_LIP => Some("COMBINED_AUDIO_WITH_LIP"),
+            Self::ONLY_AUDIO_WITH_LIP => Some("ONLY_AUDIO_WITH_LIP"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrFaceExpressionBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceExpressionBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct FaceExpressionBD(i32);
+impl FaceExpressionBD {
+    pub const BROW_DROP_L: FaceExpressionBD = Self(0i32);
+    pub const BROW_DROP_R: FaceExpressionBD = Self(1i32);
+    pub const BROW_INNER_UPWARDS: FaceExpressionBD = Self(2i32);
+    pub const BROW_OUTER_UPWARDS_L: FaceExpressionBD = Self(3i32);
+    pub const BROW_OUTER_UPWARDS_R: FaceExpressionBD = Self(4i32);
+    pub const EYE_BLINK_L: FaceExpressionBD = Self(5i32);
+    pub const EYE_LOOK_DROP_L: FaceExpressionBD = Self(6i32);
+    pub const EYE_LOOK_IN_L: FaceExpressionBD = Self(7i32);
+    pub const EYE_LOOK_OUT_L: FaceExpressionBD = Self(8i32);
+    pub const EYE_LOOK_UPWARDS_L: FaceExpressionBD = Self(9i32);
+    pub const EYE_LOOK_SQUINT_L: FaceExpressionBD = Self(10i32);
+    pub const EYE_LOOK_WIDE_L: FaceExpressionBD = Self(11i32);
+    pub const EYE_BLINK_R: FaceExpressionBD = Self(12i32);
+    pub const EYE_LOOK_DROP_R: FaceExpressionBD = Self(13i32);
+    pub const EYE_LOOK_IN_R: FaceExpressionBD = Self(14i32);
+    pub const EYE_LOOK_OUT_R: FaceExpressionBD = Self(15i32);
+    pub const EYE_LOOK_UPWARDS_R: FaceExpressionBD = Self(16i32);
+    pub const EYE_LOOK_SQUINT_R: FaceExpressionBD = Self(17i32);
+    pub const EYE_LOOK_WIDE_R: FaceExpressionBD = Self(18i32);
+    pub const NOSE_SNEER_L: FaceExpressionBD = Self(19i32);
+    pub const NOSE_SNEER_R: FaceExpressionBD = Self(20i32);
+    pub const CHEEK_PUFF: FaceExpressionBD = Self(21i32);
+    pub const CHEEK_SQUINT_L: FaceExpressionBD = Self(22i32);
+    pub const CHEEK_SQUINT_R: FaceExpressionBD = Self(23i32);
+    pub const MOUTH_CLOSE: FaceExpressionBD = Self(24i32);
+    pub const MOUTH_FUNNEL: FaceExpressionBD = Self(25i32);
+    pub const MOUTH_PUCKER: FaceExpressionBD = Self(26i32);
+    pub const MOUTH_L: FaceExpressionBD = Self(27i32);
+    pub const MOUTH_R: FaceExpressionBD = Self(28i32);
+    pub const MOUTH_SMILE_L: FaceExpressionBD = Self(29i32);
+    pub const MOUTH_SMILE_R: FaceExpressionBD = Self(30i32);
+    pub const MOUTH_FROWN_L: FaceExpressionBD = Self(31i32);
+    pub const MOUTH_FROWN_R: FaceExpressionBD = Self(32i32);
+    pub const MOUTH_DIMPLE_L: FaceExpressionBD = Self(33i32);
+    pub const MOUTH_DIMPLE_R: FaceExpressionBD = Self(34i32);
+    pub const MOUTH_STRETCH_L: FaceExpressionBD = Self(35i32);
+    pub const MOUTH_STRETCH_R: FaceExpressionBD = Self(36i32);
+    pub const MOUTH_ROLL_LOWER: FaceExpressionBD = Self(37i32);
+    pub const MOUTH_ROLL_UPPER: FaceExpressionBD = Self(38i32);
+    pub const MOUTH_SHRUG_LOWER: FaceExpressionBD = Self(39i32);
+    pub const MOUTH_SHRUG_UPPER: FaceExpressionBD = Self(40i32);
+    pub const MOUTH_PRESS_L: FaceExpressionBD = Self(41i32);
+    pub const MOUTH_PRESS_R: FaceExpressionBD = Self(42i32);
+    pub const MOUTH_LOWER_DROP_L: FaceExpressionBD = Self(43i32);
+    pub const MOUTH_LOWER_DROP_R: FaceExpressionBD = Self(44i32);
+    pub const MOUTH_UPPER_UPWARDS_L: FaceExpressionBD = Self(45i32);
+    pub const MOUTH_UPPER_UPWARDS_R: FaceExpressionBD = Self(46i32);
+    pub const JAW_FORWARD: FaceExpressionBD = Self(47i32);
+    pub const JAW_L: FaceExpressionBD = Self(48i32);
+    pub const JAW_R: FaceExpressionBD = Self(49i32);
+    pub const JAW_OPEN: FaceExpressionBD = Self(50i32);
+    pub const TONGUE_OUT: FaceExpressionBD = Self(51i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for FaceExpressionBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::BROW_DROP_L => Some("BROW_DROP_L"),
+            Self::BROW_DROP_R => Some("BROW_DROP_R"),
+            Self::BROW_INNER_UPWARDS => Some("BROW_INNER_UPWARDS"),
+            Self::BROW_OUTER_UPWARDS_L => Some("BROW_OUTER_UPWARDS_L"),
+            Self::BROW_OUTER_UPWARDS_R => Some("BROW_OUTER_UPWARDS_R"),
+            Self::EYE_BLINK_L => Some("EYE_BLINK_L"),
+            Self::EYE_LOOK_DROP_L => Some("EYE_LOOK_DROP_L"),
+            Self::EYE_LOOK_IN_L => Some("EYE_LOOK_IN_L"),
+            Self::EYE_LOOK_OUT_L => Some("EYE_LOOK_OUT_L"),
+            Self::EYE_LOOK_UPWARDS_L => Some("EYE_LOOK_UPWARDS_L"),
+            Self::EYE_LOOK_SQUINT_L => Some("EYE_LOOK_SQUINT_L"),
+            Self::EYE_LOOK_WIDE_L => Some("EYE_LOOK_WIDE_L"),
+            Self::EYE_BLINK_R => Some("EYE_BLINK_R"),
+            Self::EYE_LOOK_DROP_R => Some("EYE_LOOK_DROP_R"),
+            Self::EYE_LOOK_IN_R => Some("EYE_LOOK_IN_R"),
+            Self::EYE_LOOK_OUT_R => Some("EYE_LOOK_OUT_R"),
+            Self::EYE_LOOK_UPWARDS_R => Some("EYE_LOOK_UPWARDS_R"),
+            Self::EYE_LOOK_SQUINT_R => Some("EYE_LOOK_SQUINT_R"),
+            Self::EYE_LOOK_WIDE_R => Some("EYE_LOOK_WIDE_R"),
+            Self::NOSE_SNEER_L => Some("NOSE_SNEER_L"),
+            Self::NOSE_SNEER_R => Some("NOSE_SNEER_R"),
+            Self::CHEEK_PUFF => Some("CHEEK_PUFF"),
+            Self::CHEEK_SQUINT_L => Some("CHEEK_SQUINT_L"),
+            Self::CHEEK_SQUINT_R => Some("CHEEK_SQUINT_R"),
+            Self::MOUTH_CLOSE => Some("MOUTH_CLOSE"),
+            Self::MOUTH_FUNNEL => Some("MOUTH_FUNNEL"),
+            Self::MOUTH_PUCKER => Some("MOUTH_PUCKER"),
+            Self::MOUTH_L => Some("MOUTH_L"),
+            Self::MOUTH_R => Some("MOUTH_R"),
+            Self::MOUTH_SMILE_L => Some("MOUTH_SMILE_L"),
+            Self::MOUTH_SMILE_R => Some("MOUTH_SMILE_R"),
+            Self::MOUTH_FROWN_L => Some("MOUTH_FROWN_L"),
+            Self::MOUTH_FROWN_R => Some("MOUTH_FROWN_R"),
+            Self::MOUTH_DIMPLE_L => Some("MOUTH_DIMPLE_L"),
+            Self::MOUTH_DIMPLE_R => Some("MOUTH_DIMPLE_R"),
+            Self::MOUTH_STRETCH_L => Some("MOUTH_STRETCH_L"),
+            Self::MOUTH_STRETCH_R => Some("MOUTH_STRETCH_R"),
+            Self::MOUTH_ROLL_LOWER => Some("MOUTH_ROLL_LOWER"),
+            Self::MOUTH_ROLL_UPPER => Some("MOUTH_ROLL_UPPER"),
+            Self::MOUTH_SHRUG_LOWER => Some("MOUTH_SHRUG_LOWER"),
+            Self::MOUTH_SHRUG_UPPER => Some("MOUTH_SHRUG_UPPER"),
+            Self::MOUTH_PRESS_L => Some("MOUTH_PRESS_L"),
+            Self::MOUTH_PRESS_R => Some("MOUTH_PRESS_R"),
+            Self::MOUTH_LOWER_DROP_L => Some("MOUTH_LOWER_DROP_L"),
+            Self::MOUTH_LOWER_DROP_R => Some("MOUTH_LOWER_DROP_R"),
+            Self::MOUTH_UPPER_UPWARDS_L => Some("MOUTH_UPPER_UPWARDS_L"),
+            Self::MOUTH_UPPER_UPWARDS_R => Some("MOUTH_UPPER_UPWARDS_R"),
+            Self::JAW_FORWARD => Some("JAW_FORWARD"),
+            Self::JAW_L => Some("JAW_L"),
+            Self::JAW_R => Some("JAW_R"),
+            Self::JAW_OPEN => Some("JAW_OPEN"),
+            Self::TONGUE_OUT => Some("TONGUE_OUT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrLipExpressionBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLipExpressionBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct LipExpressionBD(i32);
+impl LipExpressionBD {
+    pub const PP: LipExpressionBD = Self(0i32);
+    pub const CH: LipExpressionBD = Self(1i32);
+    pub const LO: LipExpressionBD = Self(2i32);
+    pub const O: LipExpressionBD = Self(3i32);
+    pub const I: LipExpressionBD = Self(4i32);
+    pub const LU: LipExpressionBD = Self(5i32);
+    pub const RR: LipExpressionBD = Self(6i32);
+    pub const XX: LipExpressionBD = Self(7i32);
+    pub const LAA: LipExpressionBD = Self(8i32);
+    pub const LI: LipExpressionBD = Self(9i32);
+    pub const FF: LipExpressionBD = Self(10i32);
+    pub const U: LipExpressionBD = Self(11i32);
+    pub const TH: LipExpressionBD = Self(12i32);
+    pub const LKK: LipExpressionBD = Self(13i32);
+    pub const SS: LipExpressionBD = Self(14i32);
+    pub const LE: LipExpressionBD = Self(15i32);
+    pub const DD: LipExpressionBD = Self(16i32);
+    pub const E: LipExpressionBD = Self(17i32);
+    pub const LNN: LipExpressionBD = Self(18i32);
+    pub const SIL: LipExpressionBD = Self(19i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for LipExpressionBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::PP => Some("PP"),
+            Self::CH => Some("CH"),
+            Self::LO => Some("LO"),
+            Self::O => Some("O"),
+            Self::I => Some("I"),
+            Self::LU => Some("LU"),
+            Self::RR => Some("RR"),
+            Self::XX => Some("XX"),
+            Self::LAA => Some("LAA"),
+            Self::LI => Some("LI"),
+            Self::FF => Some("FF"),
+            Self::U => Some("U"),
+            Self::TH => Some("TH"),
+            Self::LKK => Some("LKK"),
+            Self::SS => Some("SS"),
+            Self::LE => Some("LE"),
+            Self::DD => Some("DD"),
+            Self::E => Some("E"),
+            Self::LNN => Some("LNN"),
+            Self::SIL => Some("SIL"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -4398,7 +7731,7 @@ impl fmt::Debug for HandEXT {
 }
 #[doc = "See [XrHandJointEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrHandJointEXT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct HandJointEXT(i32);
 impl HandJointEXT {
     pub const PALM: HandJointEXT = Self(0i32);
@@ -4470,7 +7803,7 @@ impl fmt::Debug for HandJointEXT {
 }
 #[doc = "See [XrHandJointSetEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrHandJointSetEXT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct HandJointSetEXT(i32);
 impl HandJointSetEXT {
     pub const DEFAULT: HandJointSetEXT = Self(0i32);
@@ -4544,7 +7877,7 @@ impl fmt::Debug for HandTrackingDataSourceEXT {
 }
 #[doc = "See [XrHandPoseTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrHandPoseTypeMSFT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct HandPoseTypeMSFT(i32);
 impl HandPoseTypeMSFT {
     pub const TRACKED: HandPoseTypeMSFT = Self(0i32);
@@ -4602,7 +7935,7 @@ impl fmt::Debug for SceneObjectTypeMSFT {
 }
 #[doc = "See [XrScenePlaneAlignmentTypeMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrScenePlaneAlignmentTypeMSFT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct ScenePlaneAlignmentTypeMSFT(i32);
 impl ScenePlaneAlignmentTypeMSFT {
     pub const NON_ORTHOGONAL: ScenePlaneAlignmentTypeMSFT = Self(0i32);
@@ -4628,7 +7961,7 @@ impl fmt::Debug for ScenePlaneAlignmentTypeMSFT {
 }
 #[doc = "See [XrSceneComputeStateMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneComputeStateMSFT)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct SceneComputeStateMSFT(i32);
 impl SceneComputeStateMSFT {
     pub const NONE: SceneComputeStateMSFT = Self(0i32);
@@ -4822,7 +8155,7 @@ impl fmt::Debug for SceneMarkerQRCodeSymbolTypeMSFT {
 }
 #[doc = "See [XrColorSpaceFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrColorSpaceFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct ColorSpaceFB(i32);
 impl ColorSpaceFB {
     pub const UNMANAGED: ColorSpaceFB = Self(0i32);
@@ -4858,7 +8191,7 @@ impl fmt::Debug for ColorSpaceFB {
 }
 #[doc = "See [XrFoveationLevelFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFoveationLevelFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FoveationLevelFB(i32);
 impl FoveationLevelFB {
     #[doc = "No foveation"]
@@ -4890,7 +8223,7 @@ impl fmt::Debug for FoveationLevelFB {
 }
 #[doc = "See [XrFoveationDynamicFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFoveationDynamicFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct FoveationDynamicFB(i32);
 impl FoveationDynamicFB {
     #[doc = "Static foveation at the maximum desired level"]
@@ -4944,7 +8277,7 @@ impl fmt::Debug for ReprojectionModeMSFT {
 }
 #[doc = "See [XrHandForearmJointULTRALEAP](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrHandForearmJointULTRALEAP)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct HandForearmJointULTRALEAP(i32);
 impl HandForearmJointULTRALEAP {
     pub const PALM: HandForearmJointULTRALEAP = Self(0i32);
@@ -5018,7 +8351,7 @@ impl fmt::Debug for HandForearmJointULTRALEAP {
 }
 #[doc = "See [XrCompareOpFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCompareOpFB)"]
 #[repr(transparent)]
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct CompareOpFB(i32);
 impl CompareOpFB {
     #[doc = "Comparison is never true."]
@@ -5217,6 +8550,17 @@ impl DebugUtilsMessageTypeFlagsEXT {
     pub const CONFORMANCE: DebugUtilsMessageTypeFlagsEXT = Self(1 << 3u64);
 }
 bitmask!(DebugUtilsMessageTypeFlagsEXT);
+#[doc = "See [XrFrameSynthesisInfoFlagsEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFrameSynthesisInfoFlagsEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct FrameSynthesisInfoFlagsEXT(u64);
+impl FrameSynthesisInfoFlagsEXT {
+    #[doc = "2D motion vector will be used"]
+    pub const USE_2D_MOTION_VECTOR: FrameSynthesisInfoFlagsEXT = Self(1 << 0u64);
+    #[doc = "Request the runtime to relax the application's frame interval to allow additional render time"]
+    pub const REQUEST_RELAXED_FRAME_INTERVAL: FrameSynthesisInfoFlagsEXT = Self(1 << 1u64);
+}
+bitmask!(FrameSynthesisInfoFlagsEXT);
 #[doc = "See [XrOverlayMainSessionFlagsEXTX](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrOverlayMainSessionFlagsEXTX)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -5595,6 +8939,47 @@ bitmask!(EnvironmentDepthProviderCreateFlagsMETA);
 pub struct EnvironmentDepthSwapchainCreateFlagsMETA(u64);
 impl EnvironmentDepthSwapchainCreateFlagsMETA {}
 bitmask!(EnvironmentDepthSwapchainCreateFlagsMETA);
+#[doc = "See [XrWorldMeshDetectorFlagsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshDetectorFlagsML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct WorldMeshDetectorFlagsML(u64);
+impl WorldMeshDetectorFlagsML {
+    #[doc = "If set, will return a point cloud instead of a triangle mesh."]
+    pub const POINT_CLOUD: WorldMeshDetectorFlagsML = Self(1 << 0u64);
+    #[doc = "If set, the system will compute the normals for the triangle vertices."]
+    pub const COMPUTE_NORMALS: WorldMeshDetectorFlagsML = Self(1 << 1u64);
+    #[doc = "If set, the system will compute the confidence values."]
+    pub const COMPUTE_CONFIDENCE: WorldMeshDetectorFlagsML = Self(1 << 2u64);
+    #[doc = "If set, the system will planarize the returned mesh (planar regions will be smoothed out)."]
+    pub const PLANARIZE: WorldMeshDetectorFlagsML = Self(1 << 3u64);
+    #[doc = "If set, the mesh skirt (overlapping area between two mesh blocks) will be removed."]
+    pub const REMOVE_MESH_SKIRT: WorldMeshDetectorFlagsML = Self(1 << 4u64);
+    #[doc = "If set, winding order of indices will be be changed from counter clockwise to clockwise."]
+    pub const INDEX_ORDER_CW: WorldMeshDetectorFlagsML = Self(1 << 5u64);
+}
+bitmask!(WorldMeshDetectorFlagsML);
+#[doc = "See [XrFacialExpressionBlendShapePropertiesFlagsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialExpressionBlendShapePropertiesFlagsML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct FacialExpressionBlendShapePropertiesFlagsML(u64);
+impl FacialExpressionBlendShapePropertiesFlagsML {
+    #[doc = "Indicates whether the blend shape is valid."]
+    pub const VALID: FacialExpressionBlendShapePropertiesFlagsML = Self(1 << 0u64);
+    #[doc = "Indicates whether the blend shape is being tracked by the runtime."]
+    pub const TRACKED: FacialExpressionBlendShapePropertiesFlagsML = Self(1 << 1u64);
+}
+bitmask!(FacialExpressionBlendShapePropertiesFlagsML);
+#[doc = "See [XrSpatialMeshConfigFlagsBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMeshConfigFlagsBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SpatialMeshConfigFlagsBD(u64);
+impl SpatialMeshConfigFlagsBD {
+    #[doc = "Detect and include semantic label component data in the spatial entity."]
+    pub const SEMANTIC: SpatialMeshConfigFlagsBD = Self(1 << 0u64);
+    #[doc = "Semantic labels are associated with each vertex, otherwise, semantic labels are associated with each triangle face by default. It only takes effect if XR_SPATIAL_MESH_CONFIG_SEMANTIC_BIT_BD is set"]
+    pub const ALIGN_SEMANTIC_WITH_VERTEX: SpatialMeshConfigFlagsBD = Self(1 << 1u64);
+}
+bitmask!(SpatialMeshConfigFlagsBD);
 #[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -5675,6 +9060,21 @@ handle!(FacialTrackerHTC);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct PassthroughHTC(u64);
 handle!(PassthroughHTC);
+#[doc = "See [XrFaceTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct FaceTrackerANDROID(u64);
+handle!(FaceTrackerANDROID);
+#[doc = "See [XrTrackableTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableTrackerANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct TrackableTrackerANDROID(u64);
+handle!(TrackableTrackerANDROID);
+#[doc = "See [XrDeviceAnchorPersistenceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrDeviceAnchorPersistenceANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct DeviceAnchorPersistenceANDROID(u64);
+handle!(DeviceAnchorPersistenceANDROID);
 #[doc = "See [XrFaceTrackerFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerFB)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -5715,6 +9115,11 @@ handle!(PlaneDetectorEXT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct VirtualKeyboardMETA(u64);
 handle!(VirtualKeyboardMETA);
+#[doc = "See [XrSpatialAnchorsStorageML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsStorageML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SpatialAnchorsStorageML(u64);
+handle!(SpatialAnchorsStorageML);
 #[doc = "See [XrExportedLocalizationMapML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrExportedLocalizationMapML)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -5725,6 +9130,11 @@ handle!(ExportedLocalizationMapML);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct MarkerDetectorML(u64);
 handle!(MarkerDetectorML);
+#[doc = "See [XrFacialExpressionClientML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialExpressionClientML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct FacialExpressionClientML(u64);
+handle!(FacialExpressionClientML);
 #[doc = "See [XrEnvironmentDepthProviderMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentDepthProviderMETA)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -5735,6 +9145,71 @@ handle!(EnvironmentDepthProviderMETA);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct EnvironmentDepthSwapchainMETA(u64);
 handle!(EnvironmentDepthSwapchainMETA);
+#[doc = "See [XrSpatialContextEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialContextEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SpatialContextEXT(u64);
+handle!(SpatialContextEXT);
+#[doc = "See [XrSpatialEntityEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SpatialEntityEXT(u64);
+handle!(SpatialEntityEXT);
+#[doc = "See [XrSpatialSnapshotEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialSnapshotEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SpatialSnapshotEXT(u64);
+handle!(SpatialSnapshotEXT);
+#[doc = "See [XrSpatialPersistenceContextEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPersistenceContextEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SpatialPersistenceContextEXT(u64);
+handle!(SpatialPersistenceContextEXT);
+#[doc = "See [XrBodyTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackerHTC)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct BodyTrackerHTC(u64);
+handle!(BodyTrackerHTC);
+#[doc = "See [XrWorldMeshDetectorML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshDetectorML)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct WorldMeshDetectorML(u64);
+handle!(WorldMeshDetectorML);
+#[doc = "See [XrBodyTrackerBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackerBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct BodyTrackerBD(u64);
+handle!(BodyTrackerBD);
+#[doc = "See [XrRenderModelEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct RenderModelEXT(u64);
+handle!(RenderModelEXT);
+#[doc = "See [XrRenderModelAssetEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelAssetEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct RenderModelAssetEXT(u64);
+handle!(RenderModelAssetEXT);
+#[doc = "See [XrSenseDataProviderBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataProviderBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SenseDataProviderBD(u64);
+handle!(SenseDataProviderBD);
+#[doc = "See [XrSenseDataSnapshotBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataSnapshotBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SenseDataSnapshotBD(u64);
+handle!(SenseDataSnapshotBD);
+#[doc = "See [XrAnchorBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct AnchorBD(u64);
+handle!(AnchorBD);
+#[doc = "See [XrFaceTrackerBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct FaceTrackerBD(u64);
+handle!(FaceTrackerBD);
 #[doc = "See [XrSpatialGraphNodeBindingMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialGraphNodeBindingMSFT)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -6373,12 +9848,24 @@ impl SwapchainImageD3D12KHR {
 #[cfg(target_vendor = "apple")]
 pub struct SwapchainImageMetalKHR {
     pub ty: StructureType,
-    pub next: *const c_void,
+    pub next: *mut c_void,
     pub texture: *mut c_void,
 }
 #[cfg(target_vendor = "apple")]
 impl SwapchainImageMetalKHR {
     pub const TYPE: StructureType = StructureType::SWAPCHAIN_IMAGE_METAL_KHR;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -7658,6 +11145,50 @@ impl EyeGazeSampleTimeEXT {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFrameSynthesisInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFrameSynthesisInfoEXT) - defined by [XR_EXT_frame_synthesis](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_frame_synthesis)"]
+pub struct FrameSynthesisInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub layer_flags: FrameSynthesisInfoFlagsEXT,
+    pub motion_vector_sub_image: SwapchainSubImage,
+    pub motion_vector_scale: Vector4f,
+    pub motion_vector_offset: Vector4f,
+    pub app_space_delta_pose: Posef,
+    pub depth_sub_image: SwapchainSubImage,
+    pub min_depth: f32,
+    pub max_depth: f32,
+    pub near_z: f32,
+    pub far_z: f32,
+}
+impl FrameSynthesisInfoEXT {
+    pub const TYPE: StructureType = StructureType::FRAME_SYNTHESIS_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFrameSynthesisConfigViewEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFrameSynthesisConfigViewEXT) - defined by [XR_EXT_frame_synthesis](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_frame_synthesis)"]
+pub struct FrameSynthesisConfigViewEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub recommended_motion_vector_image_rect_width: u32,
+    pub recommended_motion_vector_image_rect_height: u32,
+}
+impl FrameSynthesisConfigViewEXT {
+    pub const TYPE: StructureType = StructureType::FRAME_SYNTHESIS_CONFIG_VIEW_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorCreateInfoMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorCreateInfoMSFT)"]
 pub struct SpatialAnchorCreateInfoMSFT {
     pub ty: StructureType,
@@ -8176,6 +11707,86 @@ pub struct BodyJointLocationsFB {
 }
 impl BodyJointLocationsFB {
     pub const TYPE: StructureType = StructureType::BODY_JOINT_LOCATIONS_FB;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemPropertiesBodyTrackingFullBodyMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPropertiesBodyTrackingFullBodyMETA) - defined by [XR_META_body_tracking_full_body](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_full_body)"]
+pub struct SystemPropertiesBodyTrackingFullBodyMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_full_body_tracking: Bool32,
+}
+impl SystemPropertiesBodyTrackingFullBodyMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES_BODY_TRACKING_FULL_BODY_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyTrackingCalibrationInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackingCalibrationInfoMETA) - defined by [XR_META_body_tracking_calibration](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_calibration)"]
+pub struct BodyTrackingCalibrationInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub body_height: f32,
+}
+impl BodyTrackingCalibrationInfoMETA {
+    pub const TYPE: StructureType = StructureType::BODY_TRACKING_CALIBRATION_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyTrackingCalibrationStatusMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackingCalibrationStatusMETA) - defined by [XR_META_body_tracking_calibration](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_calibration)"]
+pub struct BodyTrackingCalibrationStatusMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub status: BodyTrackingCalibrationStateMETA,
+}
+impl BodyTrackingCalibrationStatusMETA {
+    pub const TYPE: StructureType = StructureType::BODY_TRACKING_CALIBRATION_STATUS_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemPropertiesBodyTrackingCalibrationMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPropertiesBodyTrackingCalibrationMETA) - defined by [XR_META_body_tracking_calibration](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_calibration)"]
+pub struct SystemPropertiesBodyTrackingCalibrationMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_height_override: Bool32,
+}
+impl SystemPropertiesBodyTrackingCalibrationMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -9845,6 +13456,265 @@ impl KeyboardTrackingQueryFB {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemColocationDiscoveryPropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemColocationDiscoveryPropertiesMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct SystemColocationDiscoveryPropertiesMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_colocation_discovery: Bool32,
+}
+impl SystemColocationDiscoveryPropertiesMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_COLOCATION_DISCOVERY_PROPERTIES_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrColocationAdvertisementStartInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrColocationAdvertisementStartInfoMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct ColocationAdvertisementStartInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub buffer_size: u32,
+    pub buffer: *mut u8,
+}
+impl ColocationAdvertisementStartInfoMETA {
+    pub const TYPE: StructureType = StructureType::COLOCATION_ADVERTISEMENT_START_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrColocationAdvertisementStopInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrColocationAdvertisementStopInfoMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct ColocationAdvertisementStopInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl ColocationAdvertisementStopInfoMETA {
+    pub const TYPE: StructureType = StructureType::COLOCATION_ADVERTISEMENT_STOP_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrColocationDiscoveryStartInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrColocationDiscoveryStartInfoMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct ColocationDiscoveryStartInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl ColocationDiscoveryStartInfoMETA {
+    pub const TYPE: StructureType = StructureType::COLOCATION_DISCOVERY_START_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrColocationDiscoveryStopInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrColocationDiscoveryStopInfoMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct ColocationDiscoveryStopInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl ColocationDiscoveryStopInfoMETA {
+    pub const TYPE: StructureType = StructureType::COLOCATION_DISCOVERY_STOP_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataStartColocationAdvertisementCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataStartColocationAdvertisementCompleteMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct EventDataStartColocationAdvertisementCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub advertisement_request_id: AsyncRequestIdFB,
+    pub result: Result,
+    pub advertisement_uuid: Uuid,
+}
+impl EventDataStartColocationAdvertisementCompleteMETA {
+    pub const TYPE: StructureType =
+        StructureType::EVENT_DATA_START_COLOCATION_ADVERTISEMENT_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataColocationAdvertisementCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataColocationAdvertisementCompleteMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct EventDataColocationAdvertisementCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub advertisement_request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataColocationAdvertisementCompleteMETA {
+    pub const TYPE: StructureType =
+        StructureType::EVENT_DATA_COLOCATION_ADVERTISEMENT_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataStopColocationAdvertisementCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataStopColocationAdvertisementCompleteMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct EventDataStopColocationAdvertisementCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataStopColocationAdvertisementCompleteMETA {
+    pub const TYPE: StructureType =
+        StructureType::EVENT_DATA_STOP_COLOCATION_ADVERTISEMENT_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataStartColocationDiscoveryCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataStartColocationDiscoveryCompleteMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct EventDataStartColocationDiscoveryCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub discovery_request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataStartColocationDiscoveryCompleteMETA {
+    pub const TYPE: StructureType =
+        StructureType::EVENT_DATA_START_COLOCATION_DISCOVERY_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataColocationDiscoveryResultMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataColocationDiscoveryResultMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct EventDataColocationDiscoveryResultMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub discovery_request_id: AsyncRequestIdFB,
+    pub advertisement_uuid: Uuid,
+    pub buffer_size: u32,
+    pub buffer: [u8; MAX_COLOCATION_DISCOVERY_BUFFER_SIZE_META],
+}
+impl EventDataColocationDiscoveryResultMETA {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_COLOCATION_DISCOVERY_RESULT_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataColocationDiscoveryCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataColocationDiscoveryCompleteMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct EventDataColocationDiscoveryCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub discovery_request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataColocationDiscoveryCompleteMETA {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_COLOCATION_DISCOVERY_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataStopColocationDiscoveryCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataStopColocationDiscoveryCompleteMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+pub struct EventDataStopColocationDiscoveryCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataStopColocationDiscoveryCompleteMETA {
+    pub const TYPE: StructureType =
+        StructureType::EVENT_DATA_STOP_COLOCATION_DISCOVERY_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialEntitySharingPropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialEntitySharingPropertiesMETA) - defined by [XR_META_spatial_entity_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_sharing)"]
+pub struct SystemSpatialEntitySharingPropertiesMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_entity_sharing: Bool32,
+}
+impl SystemSpatialEntitySharingPropertiesMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_ENTITY_SHARING_PROPERTIES_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrShareSpacesRecipientBaseHeaderMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrShareSpacesRecipientBaseHeaderMETA) - defined by [XR_META_spatial_entity_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_sharing)"]
+pub struct ShareSpacesRecipientBaseHeaderMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrShareSpacesInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrShareSpacesInfoMETA) - defined by [XR_META_spatial_entity_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_sharing)"]
+pub struct ShareSpacesInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space_count: u32,
+    pub spaces: *mut Space,
+    pub recipient_info: *const ShareSpacesRecipientBaseHeaderMETA,
+}
+impl ShareSpacesInfoMETA {
+    pub const TYPE: StructureType = StructureType::SHARE_SPACES_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataShareSpacesCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataShareSpacesCompleteMETA) - defined by [XR_META_spatial_entity_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_sharing)"]
+pub struct EventDataShareSpacesCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataShareSpacesCompleteMETA {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_SHARE_SPACES_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrShareSpacesRecipientGroupsMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrShareSpacesRecipientGroupsMETA)"]
+pub struct ShareSpacesRecipientGroupsMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub group_count: u32,
+    pub groups: *mut Uuid,
+}
+impl ShareSpacesRecipientGroupsMETA {
+    pub const TYPE: StructureType = StructureType::SHARE_SPACES_RECIPIENT_GROUPS_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceGroupUuidFilterInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceGroupUuidFilterInfoMETA)"]
+pub struct SpaceGroupUuidFilterInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub group_uuid: Uuid,
+}
+impl SpaceGroupUuidFilterInfoMETA {
+    pub const TYPE: StructureType = StructureType::SPACE_GROUP_UUID_FILTER_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialEntityGroupSharingPropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialEntityGroupSharingPropertiesMETA) - defined by [XR_META_spatial_entity_group_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_group_sharing)"]
+pub struct SystemSpatialEntityGroupSharingPropertiesMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_entity_group_sharing: Bool32,
+}
+impl SystemSpatialEntityGroupSharingPropertiesMETA {
+    pub const TYPE: StructureType =
+        StructureType::SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerDepthTestVARJO](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCompositionLayerDepthTestVARJO) - defined by [XR_VARJO_composition_layer_depth_test](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_VARJO_composition_layer_depth_test)"]
 pub struct CompositionLayerDepthTestVARJO {
     pub ty: StructureType,
@@ -10155,6 +14025,108 @@ impl SpatialAnchorFromPersistedAnchorCreateInfoMSFT {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemBodyTrackingPropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemBodyTrackingPropertiesBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+pub struct SystemBodyTrackingPropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_body_tracking: Bool32,
+}
+impl SystemBodyTrackingPropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_BODY_TRACKING_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyTrackerCreateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackerCreateInfoBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+pub struct BodyTrackerCreateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub joint_set: BodyJointSetBD,
+}
+impl BodyTrackerCreateInfoBD {
+    pub const TYPE: StructureType = StructureType::BODY_TRACKER_CREATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyJointsLocateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointsLocateInfoBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+pub struct BodyJointsLocateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+}
+impl BodyJointsLocateInfoBD {
+    pub const TYPE: StructureType = StructureType::BODY_JOINTS_LOCATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrBodyJointLocationBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointLocationBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+pub struct BodyJointLocationBD {
+    pub location_flags: SpaceLocationFlags,
+    pub pose: Posef,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyJointLocationsBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointLocationsBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+pub struct BodyJointLocationsBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub all_joint_poses_tracked: Bool32,
+    pub joint_location_count: u32,
+    pub joint_locations: *mut BodyJointLocationBD,
+}
+impl BodyJointLocationsBD {
+    pub const TYPE: StructureType = StructureType::BODY_JOINT_LOCATIONS_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFuturePollResultProgressBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFuturePollResultProgressBD) - defined by [XR_BD_future_progress](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_future_progress)"]
+pub struct FuturePollResultProgressBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub is_supported: Bool32,
+    pub progress_percentage: u32,
+}
+impl FuturePollResultProgressBD {
+    pub const TYPE: StructureType = StructureType::FUTURE_POLL_RESULT_PROGRESS_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFacialTrackerCreateInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialTrackerCreateInfoHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_facial_tracking)"]
 pub struct FacialTrackerCreateInfoHTC {
     pub ty: StructureType,
@@ -10332,6 +14304,116 @@ pub struct EventDataViveTrackerConnectedHTCX {
 }
 impl EventDataViveTrackerConnectedHTCX {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemBodyTrackingPropertiesHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemBodyTrackingPropertiesHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+pub struct SystemBodyTrackingPropertiesHTC {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_body_tracking: Bool32,
+}
+impl SystemBodyTrackingPropertiesHTC {
+    pub const TYPE: StructureType = StructureType::SYSTEM_BODY_TRACKING_PROPERTIES_HTC;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyTrackerCreateInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackerCreateInfoHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+pub struct BodyTrackerCreateInfoHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub body_joint_set: BodyJointSetHTC,
+}
+impl BodyTrackerCreateInfoHTC {
+    pub const TYPE: StructureType = StructureType::BODY_TRACKER_CREATE_INFO_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrBodySkeletonJointHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodySkeletonJointHTC)"]
+pub struct BodySkeletonJointHTC {
+    pub pose: Posef,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodySkeletonHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodySkeletonHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+pub struct BodySkeletonHTC {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub joint_count: u32,
+    pub joints: *mut BodySkeletonJointHTC,
+}
+impl BodySkeletonHTC {
+    pub const TYPE: StructureType = StructureType::BODY_SKELETON_HTC;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyJointsLocateInfoHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointsLocateInfoHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+pub struct BodyJointsLocateInfoHTC {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+}
+impl BodyJointsLocateInfoHTC {
+    pub const TYPE: StructureType = StructureType::BODY_JOINTS_LOCATE_INFO_HTC;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrBodyJointLocationHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointLocationHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+pub struct BodyJointLocationHTC {
+    pub location_flags: SpaceLocationFlags,
+    pub pose: Posef,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyJointLocationsHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyJointLocationsHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+pub struct BodyJointLocationsHTC {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub combined_location_flags: SpaceLocationFlags,
+    pub confidence_level: BodyJointConfidenceHTC,
+    pub joint_location_count: u32,
+    pub joint_locations: *mut BodyJointLocationHTC,
+    pub skeleton_generation_id: u32,
+}
+impl BodyJointLocationsHTC {
+    pub const TYPE: StructureType = StructureType::BODY_JOINT_LOCATIONS_HTC;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -10551,6 +14633,164 @@ impl SystemHeadsetIdPropertiesMETA {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpacePersistencePropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpacePersistencePropertiesMETA) - defined by [XR_META_spatial_entity_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_persistence)"]
+pub struct SystemSpacePersistencePropertiesMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub supports_space_persistence: Bool32,
+}
+impl SystemSpacePersistencePropertiesMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPACE_PERSISTENCE_PROPERTIES_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpacesSaveInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpacesSaveInfoMETA) - defined by [XR_META_spatial_entity_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_persistence)"]
+pub struct SpacesSaveInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space_count: u32,
+    pub spaces: *mut Space,
+}
+impl SpacesSaveInfoMETA {
+    pub const TYPE: StructureType = StructureType::SPACES_SAVE_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataSpacesSaveResultMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataSpacesSaveResultMETA) - defined by [XR_META_spatial_entity_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_persistence)"]
+pub struct EventDataSpacesSaveResultMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataSpacesSaveResultMETA {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACES_SAVE_RESULT_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpacesEraseInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpacesEraseInfoMETA) - defined by [XR_META_spatial_entity_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_persistence)"]
+pub struct SpacesEraseInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space_count: u32,
+    pub spaces: *mut Space,
+    pub uuid_count: u32,
+    pub uuids: *mut UuidEXT,
+}
+impl SpacesEraseInfoMETA {
+    pub const TYPE: StructureType = StructureType::SPACES_ERASE_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataSpacesEraseResultMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataSpacesEraseResultMETA) - defined by [XR_META_spatial_entity_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_persistence)"]
+pub struct EventDataSpacesEraseResultMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataSpacesEraseResultMETA {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACES_ERASE_RESULT_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpaceDiscoveryPropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpaceDiscoveryPropertiesMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct SystemSpaceDiscoveryPropertiesMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub supports_space_discovery: Bool32,
+}
+impl SystemSpaceDiscoveryPropertiesMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPACE_DISCOVERY_PROPERTIES_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceFilterBaseHeaderMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceFilterBaseHeaderMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct SpaceFilterBaseHeaderMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceDiscoveryInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceDiscoveryInfoMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct SpaceDiscoveryInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub filter_count: u32,
+    pub filters: *const *const SpaceFilterBaseHeaderMETA,
+}
+impl SpaceDiscoveryInfoMETA {
+    pub const TYPE: StructureType = StructureType::SPACE_DISCOVERY_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceFilterUuidMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceFilterUuidMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct SpaceFilterUuidMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub uuid_count: u32,
+    pub uuids: *const UuidEXT,
+}
+impl SpaceFilterUuidMETA {
+    pub const TYPE: StructureType = StructureType::SPACE_FILTER_UUID_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceFilterComponentMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceFilterComponentMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct SpaceFilterComponentMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub component_type: SpaceComponentTypeFB,
+}
+impl SpaceFilterComponentMETA {
+    pub const TYPE: StructureType = StructureType::SPACE_FILTER_COMPONENT_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceDiscoveryResultMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceDiscoveryResultMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct SpaceDiscoveryResultMETA {
+    pub space: Space,
+    pub uuid: UuidEXT,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpaceDiscoveryResultsMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpaceDiscoveryResultsMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct SpaceDiscoveryResultsMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub result_capacity_input: u32,
+    pub result_count_output: u32,
+    pub results: *mut SpaceDiscoveryResultMETA,
+}
+impl SpaceDiscoveryResultsMETA {
+    pub const TYPE: StructureType = StructureType::SPACE_DISCOVERY_RESULTS_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataSpaceDiscoveryResultsAvailableMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataSpaceDiscoveryResultsAvailableMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct EventDataSpaceDiscoveryResultsAvailableMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub request_id: AsyncRequestIdFB,
+}
+impl EventDataSpaceDiscoveryResultsAvailableMETA {
+    pub const TYPE: StructureType =
+        StructureType::EVENT_DATA_SPACE_DISCOVERY_RESULTS_AVAILABLE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataSpaceDiscoveryCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataSpaceDiscoveryCompleteMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+pub struct EventDataSpaceDiscoveryCompleteMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub request_id: AsyncRequestIdFB,
+    pub result: Result,
+}
+impl EventDataSpaceDiscoveryCompleteMETA {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_SPACE_DISCOVERY_COMPLETE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughColorLutDataMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughColorLutDataMETA) - defined by [XR_META_passthrough_color_lut](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_passthrough_color_lut)"]
 pub struct PassthroughColorLutDataMETA {
     pub buffer_size: u32,
@@ -10630,7 +14870,7 @@ impl FoveationApplyInfoHTC {
     pub const TYPE: StructureType = StructureType::FOVEATION_APPLY_INFO_HTC;
 }
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrFoveationConfigurationHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFoveationConfigurationHTC) - defined by [XR_HTC_foveation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_foveation)"]
 pub struct FoveationConfigurationHTC {
     pub level: FoveationLevelHTC,
@@ -10693,7 +14933,7 @@ impl CompositionLayerDepthTestFB {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
-#[doc = "See [XrCoordinateSpaceCreateInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCoordinateSpaceCreateInfoML)"]
+#[doc = "See [XrCoordinateSpaceCreateInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCoordinateSpaceCreateInfoML) - defined by [XR_ML_compat](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_compat)"]
 pub struct CoordinateSpaceCreateInfoML {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -10814,11 +15054,562 @@ impl ForceFeedbackCurlApplyLocationsMNDX {
     pub const TYPE: StructureType = StructureType::FORCE_FEEDBACK_CURL_APPLY_LOCATIONS_MNDX;
 }
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrForceFeedbackCurlApplyLocationMNDX](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrForceFeedbackCurlApplyLocationMNDX) - defined by [XR_MNDX_force_feedback_curl](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_MNDX_force_feedback_curl)"]
 pub struct ForceFeedbackCurlApplyLocationMNDX {
     pub location: ForceFeedbackCurlLocationMNDX,
     pub value: f32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFaceTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerCreateInfoANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+#[cfg(target_os = "android")]
+pub struct FaceTrackerCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[cfg(target_os = "android")]
+impl FaceTrackerCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::FACE_TRACKER_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFaceStateGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceStateGetInfoANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+#[cfg(target_os = "android")]
+pub struct FaceStateGetInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub time: Time,
+}
+#[cfg(target_os = "android")]
+impl FaceStateGetInfoANDROID {
+    pub const TYPE: StructureType = StructureType::FACE_STATE_GET_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFaceStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+#[cfg(target_os = "android")]
+pub struct FaceStateANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub parameters_capacity_input: u32,
+    pub parameters_count_output: u32,
+    pub parameters: *mut f32,
+    pub face_tracking_state: FaceTrackingStateANDROID,
+    pub sample_time: Time,
+    pub is_valid: Bool32,
+    pub region_confidences_capacity_input: u32,
+    pub region_confidences_count_output: u32,
+    pub region_confidences: *mut f32,
+}
+#[cfg(target_os = "android")]
+impl FaceStateANDROID {
+    pub const TYPE: StructureType = StructureType::FACE_STATE_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemFaceTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemFaceTrackingPropertiesANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+#[cfg(target_os = "android")]
+pub struct SystemFaceTrackingPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_face_tracking: Bool32,
+}
+#[cfg(target_os = "android")]
+impl SystemFaceTrackingPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_FACE_TRACKING_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemPassthroughCameraStatePropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPassthroughCameraStatePropertiesANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
+#[cfg(target_os = "android")]
+pub struct SystemPassthroughCameraStatePropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_passthrough_camera_state: Bool32,
+}
+#[cfg(target_os = "android")]
+impl SystemPassthroughCameraStatePropertiesANDROID {
+    pub const TYPE: StructureType =
+        StructureType::SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPassthroughCameraStateGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughCameraStateGetInfoANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
+#[cfg(target_os = "android")]
+pub struct PassthroughCameraStateGetInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[cfg(target_os = "android")]
+impl PassthroughCameraStateGetInfoANDROID {
+    pub const TYPE: StructureType = StructureType::PASSTHROUGH_CAMERA_STATE_GET_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableTrackerCreateInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+#[cfg(target_os = "android")]
+pub struct TrackableTrackerCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub trackable_type: TrackableTypeANDROID,
+}
+#[cfg(target_os = "android")]
+impl TrackableTrackerCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_TRACKER_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableGetInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+#[cfg(target_os = "android")]
+pub struct TrackableGetInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub trackable: TrackableANDROID,
+    pub base_space: Space,
+    pub time: Time,
+}
+#[cfg(target_os = "android")]
+impl TrackableGetInfoANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_GET_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackablePlaneANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackablePlaneANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+#[cfg(target_os = "android")]
+pub struct TrackablePlaneANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tracking_state: TrackingStateANDROID,
+    pub center_pose: Posef,
+    pub extents: Extent2Df,
+    pub plane_type: PlaneTypeANDROID,
+    pub plane_label: PlaneLabelANDROID,
+    pub subsumed_by_plane: TrackableANDROID,
+    pub last_updated_time: Time,
+    pub vertex_capacity_input: u32,
+    pub vertex_count_output: *mut u32,
+    pub vertices: *mut Vector2f,
+}
+#[cfg(target_os = "android")]
+impl TrackablePlaneANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_PLANE_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrAnchorSpaceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorSpaceCreateInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+#[cfg(target_os = "android")]
+pub struct AnchorSpaceCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space: Space,
+    pub time: Time,
+    pub pose: Posef,
+    pub trackable: TrackableANDROID,
+}
+#[cfg(target_os = "android")]
+impl AnchorSpaceCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::ANCHOR_SPACE_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemTrackablesPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemTrackablesPropertiesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+#[cfg(target_os = "android")]
+pub struct SystemTrackablesPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub supports_anchor: Bool32,
+    pub max_anchors: u32,
+}
+#[cfg(target_os = "android")]
+impl SystemTrackablesPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_TRACKABLES_PROPERTIES_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableObjectANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableObjectANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
+#[cfg(target_os = "android")]
+pub struct TrackableObjectANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tracking_state: TrackingStateANDROID,
+    pub center_pose: Posef,
+    pub extents: Extent3DfEXT,
+    pub object_label: ObjectLabelANDROID,
+    pub last_updated_time: Time,
+}
+#[cfg(target_os = "android")]
+impl TrackableObjectANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_OBJECT_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableObjectConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableObjectConfigurationANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
+#[cfg(target_os = "android")]
+pub struct TrackableObjectConfigurationANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub label_count: u32,
+    pub active_labels: *const ObjectLabelANDROID,
+}
+#[cfg(target_os = "android")]
+impl TrackableObjectConfigurationANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_OBJECT_CONFIGURATION_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRaycastInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastInfoANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
+#[cfg(target_os = "android")]
+pub struct RaycastInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub max_results: u32,
+    pub tracker_count: u32,
+    pub trackers: *const TrackableTrackerANDROID,
+    pub origin: Vector3f,
+    pub trajectory: Vector3f,
+    pub space: Space,
+    pub time: Time,
+}
+#[cfg(target_os = "android")]
+impl RaycastInfoANDROID {
+    pub const TYPE: StructureType = StructureType::RAYCAST_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrRaycastHitResultANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastHitResultANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
+#[cfg(target_os = "android")]
+pub struct RaycastHitResultANDROID {
+    pub ty: TrackableTypeANDROID,
+    pub trackable: TrackableANDROID,
+    pub pose: Posef,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRaycastHitResultsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastHitResultsANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
+#[cfg(target_os = "android")]
+pub struct RaycastHitResultsANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub results_capacity_input: u32,
+    pub results_count_output: u32,
+    pub results: *mut RaycastHitResultANDROID,
+}
+#[cfg(target_os = "android")]
+impl RaycastHitResultsANDROID {
+    pub const TYPE: StructureType = StructureType::RAYCAST_HIT_RESULTS_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemMarkerTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemMarkerTrackingPropertiesANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
+#[cfg(target_os = "android")]
+pub struct SystemMarkerTrackingPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_marker_tracking: Bool32,
+    pub supports_marker_size_estimation: Bool32,
+    pub max_marker_count: u16,
+}
+#[cfg(target_os = "android")]
+impl SystemMarkerTrackingPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_MARKER_TRACKING_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableMarkerConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerConfigurationANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
+#[cfg(target_os = "android")]
+pub struct TrackableMarkerConfigurationANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tracking_mode: TrackableMarkerTrackingModeANDROID,
+    pub database_count: u32,
+    pub databases: *const TrackableMarkerDatabaseANDROID,
+}
+#[cfg(target_os = "android")]
+impl TrackableMarkerConfigurationANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_MARKER_CONFIGURATION_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableMarkerDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerDatabaseANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
+#[cfg(target_os = "android")]
+pub struct TrackableMarkerDatabaseANDROID {
+    pub dictionary: TrackableMarkerDictionaryANDROID,
+    pub entry_count: u32,
+    pub entries: *const TrackableMarkerDatabaseEntryANDROID,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrTrackableMarkerDatabaseEntryANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerDatabaseEntryANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
+#[cfg(target_os = "android")]
+pub struct TrackableMarkerDatabaseEntryANDROID {
+    pub id: i32,
+    pub edge_size: f32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableMarkerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
+#[cfg(target_os = "android")]
+pub struct TrackableMarkerANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tracking_state: TrackingStateANDROID,
+    pub last_updated_time: Time,
+    pub dictionary: TrackableMarkerDictionaryANDROID,
+    pub marker_id: i32,
+    pub center_pose: Posef,
+    pub extents: Extent2Df,
+}
+#[cfg(target_os = "android")]
+impl TrackableMarkerANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_MARKER_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemAnchorSharingExportPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemAnchorSharingExportPropertiesANDROID) - defined by [XR_ANDROID_anchor_sharing_export](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_anchor_sharing_export)"]
+#[cfg(target_os = "android")]
+pub struct SystemAnchorSharingExportPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_anchor_sharing_export: Bool32,
+}
+#[cfg(target_os = "android")]
+impl SystemAnchorSharingExportPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_ANCHOR_SHARING_EXPORT_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrAnchorSharingInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorSharingInfoANDROID) - defined by [XR_ANDROID_anchor_sharing_export](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_anchor_sharing_export)"]
+#[cfg(target_os = "android")]
+pub struct AnchorSharingInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor: Space,
+}
+#[cfg(target_os = "android")]
+impl AnchorSharingInfoANDROID {
+    pub const TYPE: StructureType = StructureType::ANCHOR_SHARING_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrAnchorSharingTokenANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorSharingTokenANDROID) - defined by [XR_ANDROID_anchor_sharing_export](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_anchor_sharing_export)"]
+#[cfg(target_os = "android")]
+pub struct AnchorSharingTokenANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub token: *mut AIBinder,
+}
+#[cfg(target_os = "android")]
+impl AnchorSharingTokenANDROID {
+    pub const TYPE: StructureType = StructureType::ANCHOR_SHARING_TOKEN_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrDeviceAnchorPersistenceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrDeviceAnchorPersistenceCreateInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+#[cfg(target_os = "android")]
+pub struct DeviceAnchorPersistenceCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[cfg(target_os = "android")]
+impl DeviceAnchorPersistenceCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::DEVICE_ANCHOR_PERSISTENCE_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPersistedAnchorSpaceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistedAnchorSpaceCreateInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+#[cfg(target_os = "android")]
+pub struct PersistedAnchorSpaceCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor_id: UuidEXT,
+}
+#[cfg(target_os = "android")]
+impl PersistedAnchorSpaceCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::PERSISTED_ANCHOR_SPACE_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPersistedAnchorSpaceInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistedAnchorSpaceInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+#[cfg(target_os = "android")]
+pub struct PersistedAnchorSpaceInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor: Space,
+}
+#[cfg(target_os = "android")]
+impl PersistedAnchorSpaceInfoANDROID {
+    pub const TYPE: StructureType = StructureType::PERSISTED_ANCHOR_SPACE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemDeviceAnchorPersistencePropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemDeviceAnchorPersistencePropertiesANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+#[cfg(target_os = "android")]
+pub struct SystemDeviceAnchorPersistencePropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_anchor_persistence: Bool32,
+}
+#[cfg(target_os = "android")]
+impl SystemDeviceAnchorPersistencePropertiesANDROID {
+    pub const TYPE: StructureType =
+        StructureType::SYSTEM_DEVICE_ANCHOR_PERSISTENCE_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -11493,6 +16284,77 @@ pub struct Uuid {
 pub type UuidEXT = Uuid;
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemFacialExpressionPropertiesML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemFacialExpressionPropertiesML) - defined by [XR_ML_facial_expression](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_facial_expression)"]
+pub struct SystemFacialExpressionPropertiesML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_facial_expression: Bool32,
+}
+impl SystemFacialExpressionPropertiesML {
+    pub const TYPE: StructureType = StructureType::SYSTEM_FACIAL_EXPRESSION_PROPERTIES_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFacialExpressionClientCreateInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialExpressionClientCreateInfoML) - defined by [XR_ML_facial_expression](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_facial_expression)"]
+pub struct FacialExpressionClientCreateInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub requested_count: u32,
+    pub requested_facial_blend_shapes: *const FacialBlendShapeML,
+}
+impl FacialExpressionClientCreateInfoML {
+    pub const TYPE: StructureType = StructureType::FACIAL_EXPRESSION_CLIENT_CREATE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFacialExpressionBlendShapePropertiesML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialExpressionBlendShapePropertiesML) - defined by [XR_ML_facial_expression](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_facial_expression)"]
+pub struct FacialExpressionBlendShapePropertiesML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub requested_facial_blend_shape: FacialBlendShapeML,
+    pub weight: f32,
+    pub flags: FacialExpressionBlendShapePropertiesFlagsML,
+    pub time: Time,
+}
+impl FacialExpressionBlendShapePropertiesML {
+    pub const TYPE: StructureType = StructureType::FACIAL_EXPRESSION_BLEND_SHAPE_PROPERTIES_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFacialExpressionBlendShapeGetInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialExpressionBlendShapeGetInfoML) - defined by [XR_ML_facial_expression](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_facial_expression)"]
+pub struct FacialExpressionBlendShapeGetInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl FacialExpressionBlendShapeGetInfoML {
+    pub const TYPE: StructureType = StructureType::FACIAL_EXPRESSION_BLEND_SHAPE_GET_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRecommendedLayerResolutionMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRecommendedLayerResolutionMETA) - defined by [XR_META_recommended_layer_resolution](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_recommended_layer_resolution)"]
 pub struct RecommendedLayerResolutionMETA {
     pub ty: StructureType,
@@ -11724,6 +16586,17 @@ impl EnvironmentDepthImageMETA {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEnvironmentDepthImageTimestampMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentDepthImageTimestampMETA) - defined by [XR_META_environment_depth](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_depth)"]
+pub struct EnvironmentDepthImageTimestampMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capture_time: Time,
+}
+impl EnvironmentDepthImageTimestampMETA {
+    pub const TYPE: StructureType = StructureType::ENVIRONMENT_DEPTH_IMAGE_TIMESTAMP_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEnvironmentDepthHandRemovalSetInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentDepthHandRemovalSetInfoMETA) - defined by [XR_META_environment_depth](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_depth)"]
 pub struct EnvironmentDepthHandRemovalSetInfoMETA {
     pub ty: StructureType,
@@ -11839,6 +16712,2416 @@ pub struct SpaceVelocityData {
     pub angular_velocity: Vector3f,
 }
 pub type SpaceVelocityDataKHR = SpaceVelocityData;
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityComponentTypesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityComponentTypesEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialCapabilityComponentTypesEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub component_type_capacity_input: u32,
+    pub component_type_count_output: u32,
+    pub component_types: *mut SpatialComponentTypeEXT,
+}
+impl SpatialCapabilityComponentTypesEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationBaseHeaderEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationBaseHeaderEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialCapabilityConfigurationBaseHeaderEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialContextCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialContextCreateInfoEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialContextCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability_config_count: u32,
+    pub capability_configs: *const *const SpatialCapabilityConfigurationBaseHeaderEXT,
+}
+impl SpatialContextCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_CONTEXT_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCreateSpatialContextCompletionEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCreateSpatialContextCompletionEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct CreateSpatialContextCompletionEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub spatial_context: SpatialContextEXT,
+}
+impl CreateSpatialContextCompletionEXT {
+    pub const TYPE: StructureType = StructureType::CREATE_SPATIAL_CONTEXT_COMPLETION_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialDiscoverySnapshotCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialDiscoverySnapshotCreateInfoEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialDiscoverySnapshotCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub component_type_count: u32,
+    pub component_types: *const SpatialComponentTypeEXT,
+}
+impl SpatialDiscoverySnapshotCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_DISCOVERY_SNAPSHOT_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCreateSpatialDiscoverySnapshotCompletionInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCreateSpatialDiscoverySnapshotCompletionInfoEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct CreateSpatialDiscoverySnapshotCompletionInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+    pub future: FutureEXT,
+}
+impl CreateSpatialDiscoverySnapshotCompletionInfoEXT {
+    pub const TYPE: StructureType =
+        StructureType::CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCreateSpatialDiscoverySnapshotCompletionEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCreateSpatialDiscoverySnapshotCompletionEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct CreateSpatialDiscoverySnapshotCompletionEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub snapshot: SpatialSnapshotEXT,
+}
+impl CreateSpatialDiscoverySnapshotCompletionEXT {
+    pub const TYPE: StructureType = StructureType::CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentDataQueryConditionEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentDataQueryConditionEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialComponentDataQueryConditionEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub component_type_count: u32,
+    pub component_types: *const SpatialComponentTypeEXT,
+}
+impl SpatialComponentDataQueryConditionEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_DATA_QUERY_CONDITION_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentDataQueryResultEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentDataQueryResultEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialComponentDataQueryResultEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub entity_id_capacity_input: u32,
+    pub entity_id_count_output: u32,
+    pub entity_ids: *mut SpatialEntityIdEXT,
+    pub entity_state_capacity_input: u32,
+    pub entity_state_count_output: u32,
+    pub entity_states: *mut SpatialEntityTrackingStateEXT,
+}
+impl SpatialComponentDataQueryResultEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_DATA_QUERY_RESULT_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrSpatialBufferEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialBufferEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialBufferEXT {
+    pub buffer_id: SpatialBufferIdEXT,
+    pub buffer_type: SpatialBufferTypeEXT,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialBufferGetInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialBufferGetInfoEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialBufferGetInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub buffer_id: SpatialBufferIdEXT,
+}
+impl SpatialBufferGetInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_BUFFER_GET_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrSpatialBounded2DDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialBounded2DDataEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialBounded2DDataEXT {
+    pub center: Posef,
+    pub extents: Extent2Df,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentBounded2DListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentBounded2DListEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialComponentBounded2DListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub bound_count: u32,
+    pub bounds: *mut SpatialBounded2DDataEXT,
+}
+impl SpatialComponentBounded2DListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_BOUNDED_2D_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentBounded3DListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentBounded3DListEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+#[cfg(windows)]
+pub struct SpatialComponentBounded3DListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub bound_count: u32,
+    pub bounds: *mut Boxf,
+}
+#[cfg(windows)]
+impl SpatialComponentBounded3DListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_BOUNDED_3D_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentParentListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentParentListEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialComponentParentListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub parent_count: u32,
+    pub parents: *mut SpatialEntityIdEXT,
+}
+impl SpatialComponentParentListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_PARENT_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrSpatialMeshDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMeshDataEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialMeshDataEXT {
+    pub origin: Posef,
+    pub vertex_buffer: SpatialBufferEXT,
+    pub index_buffer: SpatialBufferEXT,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentMesh3DListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentMesh3DListEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialComponentMesh3DListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub mesh_count: u32,
+    pub meshes: *mut SpatialMeshDataEXT,
+}
+impl SpatialComponentMesh3DListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_MESH_3D_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityFromIdCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityFromIdCreateInfoEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialEntityFromIdCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub entity_id: SpatialEntityIdEXT,
+}
+impl SpatialEntityFromIdCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_FROM_ID_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialUpdateSnapshotCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialUpdateSnapshotCreateInfoEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialUpdateSnapshotCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub entity_count: u32,
+    pub entities: *const SpatialEntityEXT,
+    pub component_type_count: u32,
+    pub component_types: *const SpatialComponentTypeEXT,
+    pub base_space: Space,
+    pub time: Time,
+}
+impl SpatialUpdateSnapshotCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_UPDATE_SNAPSHOT_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataSpatialDiscoveryRecommendedEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataSpatialDiscoveryRecommendedEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct EventDataSpatialDiscoveryRecommendedEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub spatial_context: SpatialContextEXT,
+}
+impl EventDataSpatialDiscoveryRecommendedEXT {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_SPATIAL_DISCOVERY_RECOMMENDED_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialFilterTrackingStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialFilterTrackingStateEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+pub struct SpatialFilterTrackingStateEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub tracking_state: SpatialEntityTrackingStateEXT,
+}
+impl SpatialFilterTrackingStateEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_FILTER_TRACKING_STATE_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationAnchorEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationAnchorEXT) - defined by [XR_EXT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_anchor)"]
+pub struct SpatialCapabilityConfigurationAnchorEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+}
+impl SpatialCapabilityConfigurationAnchorEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_CAPABILITY_CONFIGURATION_ANCHOR_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentAnchorListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentAnchorListEXT) - defined by [XR_EXT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_anchor)"]
+pub struct SpatialComponentAnchorListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub location_count: u32,
+    pub locations: *mut Posef,
+}
+impl SpatialComponentAnchorListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_ANCHOR_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorCreateInfoEXT) - defined by [XR_EXT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_anchor)"]
+pub struct SpatialAnchorCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+    pub pose: Posef,
+}
+impl SpatialAnchorCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialPersistenceContextCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPersistenceContextCreateInfoEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+pub struct SpatialPersistenceContextCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub scope: SpatialPersistenceScopeEXT,
+}
+impl SpatialPersistenceContextCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_PERSISTENCE_CONTEXT_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCreateSpatialPersistenceContextCompletionEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCreateSpatialPersistenceContextCompletionEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+pub struct CreateSpatialPersistenceContextCompletionEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub create_result: SpatialPersistenceContextResultEXT,
+    pub persistence_context: SpatialPersistenceContextEXT,
+}
+impl CreateSpatialPersistenceContextCompletionEXT {
+    pub const TYPE: StructureType =
+        StructureType::CREATE_SPATIAL_PERSISTENCE_CONTEXT_COMPLETION_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialContextPersistenceConfigEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialContextPersistenceConfigEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+pub struct SpatialContextPersistenceConfigEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub persistence_context_count: u32,
+    pub persistence_contexts: *const SpatialPersistenceContextEXT,
+}
+impl SpatialContextPersistenceConfigEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_CONTEXT_PERSISTENCE_CONFIG_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialDiscoveryPersistenceUuidFilterEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialDiscoveryPersistenceUuidFilterEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+pub struct SpatialDiscoveryPersistenceUuidFilterEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub persisted_uuid_count: u32,
+    pub persisted_uuids: *const Uuid,
+}
+impl SpatialDiscoveryPersistenceUuidFilterEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_DISCOVERY_PERSISTENCE_UUID_FILTER_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialPersistenceDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPersistenceDataEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+pub struct SpatialPersistenceDataEXT {
+    pub persist_uuid: Uuid,
+    pub persist_state: SpatialPersistenceStateEXT,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentPersistenceListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentPersistenceListEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+pub struct SpatialComponentPersistenceListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub persist_data_count: u32,
+    pub persist_data: *mut SpatialPersistenceDataEXT,
+}
+impl SpatialComponentPersistenceListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_PERSISTENCE_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityPersistInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityPersistInfoEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+pub struct SpatialEntityPersistInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub spatial_context: SpatialContextEXT,
+    pub spatial_entity_id: SpatialEntityIdEXT,
+}
+impl SpatialEntityPersistInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_PERSIST_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPersistSpatialEntityCompletionEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistSpatialEntityCompletionEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+pub struct PersistSpatialEntityCompletionEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub persist_result: SpatialPersistenceContextResultEXT,
+    pub persist_uuid: Uuid,
+}
+impl PersistSpatialEntityCompletionEXT {
+    pub const TYPE: StructureType = StructureType::PERSIST_SPATIAL_ENTITY_COMPLETION_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityUnpersistInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityUnpersistInfoEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+pub struct SpatialEntityUnpersistInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub persist_uuid: Uuid,
+}
+impl SpatialEntityUnpersistInfoEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_UNPERSIST_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrUnpersistSpatialEntityCompletionEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrUnpersistSpatialEntityCompletionEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+pub struct UnpersistSpatialEntityCompletionEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub unpersist_result: SpatialPersistenceContextResultEXT,
+}
+impl UnpersistSpatialEntityCompletionEXT {
+    pub const TYPE: StructureType = StructureType::UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationPlaneTrackingEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationPlaneTrackingEXT) - defined by [XR_EXT_spatial_plane_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_plane_tracking)"]
+pub struct SpatialCapabilityConfigurationPlaneTrackingEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+}
+impl SpatialCapabilityConfigurationPlaneTrackingEXT {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_CAPABILITY_CONFIGURATION_PLANE_TRACKING_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentPlaneAlignmentListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentPlaneAlignmentListEXT) - defined by [XR_EXT_spatial_plane_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_plane_tracking)"]
+pub struct SpatialComponentPlaneAlignmentListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub plane_alignment_count: u32,
+    pub plane_alignments: *mut SpatialPlaneAlignmentEXT,
+}
+impl SpatialComponentPlaneAlignmentListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_PLANE_ALIGNMENT_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentMesh2DListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentMesh2DListEXT) - defined by [XR_EXT_spatial_plane_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_plane_tracking)"]
+pub struct SpatialComponentMesh2DListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub mesh_count: u32,
+    pub meshes: *mut SpatialMeshDataEXT,
+}
+impl SpatialComponentMesh2DListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_MESH_2D_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrSpatialPolygon2DDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialPolygon2DDataEXT) - defined by [XR_EXT_spatial_plane_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_plane_tracking)"]
+pub struct SpatialPolygon2DDataEXT {
+    pub origin: Posef,
+    pub vertex_buffer: SpatialBufferEXT,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentPolygon2DListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentPolygon2DListEXT) - defined by [XR_EXT_spatial_plane_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_plane_tracking)"]
+pub struct SpatialComponentPolygon2DListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub polygon_count: u32,
+    pub polygons: *mut SpatialPolygon2DDataEXT,
+}
+impl SpatialComponentPolygon2DListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_POLYGON_2D_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentPlaneSemanticLabelListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentPlaneSemanticLabelListEXT) - defined by [XR_EXT_spatial_plane_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_plane_tracking)"]
+pub struct SpatialComponentPlaneSemanticLabelListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub semantic_label_count: u32,
+    pub semantic_labels: *mut SpatialPlaneSemanticLabelEXT,
+}
+impl SpatialComponentPlaneSemanticLabelListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_PLANE_SEMANTIC_LABEL_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemNotificationsSetInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemNotificationsSetInfoML) - defined by [XR_ML_system_notifications](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_system_notifications)"]
+pub struct SystemNotificationsSetInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub suppress_notifications: Bool32,
+}
+impl SystemNotificationsSetInfoML {
+    pub const TYPE: StructureType = StructureType::SYSTEM_NOTIFICATIONS_SET_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsCreateInfoBaseHeaderML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsCreateInfoBaseHeaderML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
+pub struct SpatialAnchorsCreateInfoBaseHeaderML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsCreateInfoFromPoseML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsCreateInfoFromPoseML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
+pub struct SpatialAnchorsCreateInfoFromPoseML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub pose_in_base_space: Posef,
+    pub time: Time,
+}
+impl SpatialAnchorsCreateInfoFromPoseML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_CREATE_INFO_FROM_POSE_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCreateSpatialAnchorsCompletionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCreateSpatialAnchorsCompletionML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
+pub struct CreateSpatialAnchorsCompletionML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub space_count: u32,
+    pub spaces: *mut Space,
+}
+impl CreateSpatialAnchorsCompletionML {
+    pub const TYPE: StructureType = StructureType::CREATE_SPATIAL_ANCHORS_COMPLETION_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorStateML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorStateML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
+pub struct SpatialAnchorStateML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub confidence: SpatialAnchorConfidenceML,
+}
+impl SpatialAnchorStateML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_STATE_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsCreateStorageInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsCreateStorageInfoML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsCreateStorageInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl SpatialAnchorsCreateStorageInfoML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_CREATE_STORAGE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsQueryInfoBaseHeaderML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsQueryInfoBaseHeaderML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsQueryInfoBaseHeaderML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsQueryInfoRadiusML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsQueryInfoRadiusML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsQueryInfoRadiusML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub center: Vector3f,
+    pub time: Time,
+    pub radius: f32,
+}
+impl SpatialAnchorsQueryInfoRadiusML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_QUERY_INFO_RADIUS_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsQueryCompletionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsQueryCompletionML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsQueryCompletionML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub uuid_capacity_input: u32,
+    pub uuid_count_output: u32,
+    pub uuids: *mut UuidEXT,
+}
+impl SpatialAnchorsQueryCompletionML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_QUERY_COMPLETION_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsCreateInfoFromUuidsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsCreateInfoFromUuidsML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsCreateInfoFromUuidsML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub storage: SpatialAnchorsStorageML,
+    pub uuid_count: u32,
+    pub uuids: *const UuidEXT,
+}
+impl SpatialAnchorsCreateInfoFromUuidsML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_CREATE_INFO_FROM_UUIDS_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsPublishInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsPublishInfoML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsPublishInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor_count: u32,
+    pub anchors: *const Space,
+    pub expiration: u64,
+}
+impl SpatialAnchorsPublishInfoML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_PUBLISH_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsPublishCompletionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsPublishCompletionML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsPublishCompletionML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub uuid_count: u32,
+    pub uuids: *mut UuidEXT,
+}
+impl SpatialAnchorsPublishCompletionML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_PUBLISH_COMPLETION_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsDeleteInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsDeleteInfoML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsDeleteInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub uuid_count: u32,
+    pub uuids: *const UuidEXT,
+}
+impl SpatialAnchorsDeleteInfoML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_DELETE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsDeleteCompletionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsDeleteCompletionML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsDeleteCompletionML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+}
+impl SpatialAnchorsDeleteCompletionML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_DELETE_COMPLETION_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsUpdateExpirationInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsUpdateExpirationInfoML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsUpdateExpirationInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub uuid_count: u32,
+    pub uuids: *const UuidEXT,
+    pub expiration: u64,
+}
+impl SpatialAnchorsUpdateExpirationInfoML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_UPDATE_EXPIRATION_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsUpdateExpirationCompletionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsUpdateExpirationCompletionML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsUpdateExpirationCompletionML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+}
+impl SpatialAnchorsUpdateExpirationCompletionML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrSpatialAnchorCompletionResultML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorCompletionResultML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorCompletionResultML {
+    pub uuid: UuidEXT,
+    pub result: Result,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsPublishCompletionDetailsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsPublishCompletionDetailsML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsPublishCompletionDetailsML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub result_count: u32,
+    pub results: *mut SpatialAnchorCompletionResultML,
+}
+impl SpatialAnchorsPublishCompletionDetailsML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_PUBLISH_COMPLETION_DETAILS_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsDeleteCompletionDetailsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsDeleteCompletionDetailsML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsDeleteCompletionDetailsML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub result_count: u32,
+    pub results: *mut SpatialAnchorCompletionResultML,
+}
+impl SpatialAnchorsDeleteCompletionDetailsML {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHORS_DELETE_COMPLETION_DETAILS_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorsUpdateExpirationCompletionDetailsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsUpdateExpirationCompletionDetailsML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+pub struct SpatialAnchorsUpdateExpirationCompletionDetailsML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub result_count: u32,
+    pub results: *mut SpatialAnchorCompletionResultML,
+}
+impl SpatialAnchorsUpdateExpirationCompletionDetailsML {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_ANCHORS_UPDATE_EXPIRATION_COMPLETION_DETAILS_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshDetectorCreateInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshDetectorCreateInfoML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshDetectorCreateInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl WorldMeshDetectorCreateInfoML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_DETECTOR_CREATE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshStateRequestInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshStateRequestInfoML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshStateRequestInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+    pub bounding_box_center: Posef,
+    pub bounding_box_extents: Extent3DfEXT,
+}
+impl WorldMeshStateRequestInfoML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_STATE_REQUEST_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshBlockStateML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBlockStateML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshBlockStateML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub uuid: UuidEXT,
+    pub mesh_bounding_box_center: Posef,
+    pub mesh_bounding_box_extents: Extent3DfEXT,
+    pub last_update_time: Time,
+    pub status: WorldMeshBlockStatusML,
+}
+impl WorldMeshBlockStateML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_BLOCK_STATE_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshStateRequestCompletionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshStateRequestCompletionML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshStateRequestCompletionML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub timestamp: Time,
+    pub mesh_block_state_capacity_input: u32,
+    pub mesh_block_state_count_output: u32,
+    pub mesh_block_states: *mut WorldMeshBlockStateML,
+}
+impl WorldMeshStateRequestCompletionML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_STATE_REQUEST_COMPLETION_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshBufferRecommendedSizeInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBufferRecommendedSizeInfoML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshBufferRecommendedSizeInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub max_block_count: u32,
+}
+impl WorldMeshBufferRecommendedSizeInfoML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_BUFFER_RECOMMENDED_SIZE_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshBufferSizeML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBufferSizeML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshBufferSizeML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub size: u32,
+}
+impl WorldMeshBufferSizeML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_BUFFER_SIZE_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshBufferML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBufferML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshBufferML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub buffer_size: u32,
+    pub buffer: *mut c_void,
+}
+impl WorldMeshBufferML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_BUFFER_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshBlockRequestML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBlockRequestML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshBlockRequestML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub uuid: UuidEXT,
+    pub lod: WorldMeshDetectorLodML,
+}
+impl WorldMeshBlockRequestML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_BLOCK_REQUEST_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshGetInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshGetInfoML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshGetInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub flags: WorldMeshDetectorFlagsML,
+    pub fill_hole_length: f32,
+    pub disconnected_component_area: f32,
+    pub block_count: u32,
+    pub blocks: *mut WorldMeshBlockRequestML,
+}
+impl WorldMeshGetInfoML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_GET_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshBlockML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshBlockML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshBlockML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub uuid: UuidEXT,
+    pub block_result: WorldMeshBlockResultML,
+    pub lod: WorldMeshDetectorLodML,
+    pub flags: WorldMeshDetectorFlagsML,
+    pub index_count: u32,
+    pub index_buffer: *mut u16,
+    pub vertex_count: u32,
+    pub vertex_buffer: *mut Vector3f,
+    pub normal_count: u32,
+    pub normal_buffer: *mut Vector3f,
+    pub confidence_count: u32,
+    pub confidence_buffer: *mut f32,
+}
+impl WorldMeshBlockML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_BLOCK_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshRequestCompletionInfoML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshRequestCompletionInfoML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshRequestCompletionInfoML {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub mesh_space: Space,
+    pub mesh_space_locate_time: Time,
+}
+impl WorldMeshRequestCompletionInfoML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_REQUEST_COMPLETION_INFO_ML;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrWorldMeshRequestCompletionML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWorldMeshRequestCompletionML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+pub struct WorldMeshRequestCompletionML {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub block_count: u32,
+    pub blocks: *mut WorldMeshBlockML,
+}
+impl WorldMeshRequestCompletionML {
+    pub const TYPE: StructureType = StructureType::WORLD_MESH_REQUEST_COMPLETION_ML;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataPassthroughLayerResumedMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataPassthroughLayerResumedMETA) - defined by [XR_META_passthrough_layer_resumed_event](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_passthrough_layer_resumed_event)"]
+pub struct EventDataPassthroughLayerResumedMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub layer: PassthroughLayerFB,
+}
+impl EventDataPassthroughLayerResumedMETA {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_PASSTHROUGH_LAYER_RESUMED_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelCreateInfoEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub render_model_id: RenderModelIdEXT,
+    pub gltf_extension_count: u32,
+    pub gltf_extensions: *const *const c_char,
+}
+impl RenderModelCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelPropertiesGetInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelPropertiesGetInfoEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelPropertiesGetInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl RenderModelPropertiesGetInfoEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_PROPERTIES_GET_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelPropertiesEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelPropertiesEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub cache_id: UuidEXT,
+    pub animatable_node_count: u32,
+}
+impl RenderModelPropertiesEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_PROPERTIES_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelSpaceCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelSpaceCreateInfoEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelSpaceCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub render_model: RenderModelEXT,
+}
+impl RenderModelSpaceCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_SPACE_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelAssetCreateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelAssetCreateInfoEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelAssetCreateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub cache_id: UuidEXT,
+}
+impl RenderModelAssetCreateInfoEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_ASSET_CREATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelAssetDataGetInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelAssetDataGetInfoEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelAssetDataGetInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl RenderModelAssetDataGetInfoEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_ASSET_DATA_GET_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelAssetDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelAssetDataEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelAssetDataEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub buffer_capacity_input: u32,
+    pub buffer_count_output: u32,
+    pub buffer: *mut u8,
+}
+impl RenderModelAssetDataEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_ASSET_DATA_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelAssetPropertiesGetInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelAssetPropertiesGetInfoEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelAssetPropertiesGetInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl RenderModelAssetPropertiesGetInfoEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_ASSET_PROPERTIES_GET_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelAssetNodePropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelAssetNodePropertiesEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelAssetNodePropertiesEXT {
+    pub unique_name: [c_char; MAX_RENDER_MODEL_ASSET_NODE_NAME_SIZE_EXT],
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelAssetPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelAssetPropertiesEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelAssetPropertiesEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub node_property_count: u32,
+    pub node_properties: *mut RenderModelAssetNodePropertiesEXT,
+}
+impl RenderModelAssetPropertiesEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_ASSET_PROPERTIES_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelStateGetInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelStateGetInfoEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelStateGetInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub display_time: Time,
+}
+impl RenderModelStateGetInfoEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_STATE_GET_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrRenderModelNodeStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelNodeStateEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelNodeStateEXT {
+    pub node_pose: Posef,
+    pub is_visible: Bool32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrRenderModelStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRenderModelStateEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+pub struct RenderModelStateEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub node_state_count: u32,
+    pub node_states: *mut RenderModelNodeStateEXT,
+}
+impl RenderModelStateEXT {
+    pub const TYPE: StructureType = StructureType::RENDER_MODEL_STATE_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrInteractionRenderModelIdsEnumerateInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrInteractionRenderModelIdsEnumerateInfoEXT) - defined by [XR_EXT_interaction_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_render_model)"]
+pub struct InteractionRenderModelIdsEnumerateInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl InteractionRenderModelIdsEnumerateInfoEXT {
+    pub const TYPE: StructureType = StructureType::INTERACTION_RENDER_MODEL_IDS_ENUMERATE_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrInteractionRenderModelSubactionPathInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrInteractionRenderModelSubactionPathInfoEXT) - defined by [XR_EXT_interaction_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_render_model)"]
+pub struct InteractionRenderModelSubactionPathInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl InteractionRenderModelSubactionPathInfoEXT {
+    pub const TYPE: StructureType = StructureType::INTERACTION_RENDER_MODEL_SUBACTION_PATH_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrInteractionRenderModelTopLevelUserPathGetInfoEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrInteractionRenderModelTopLevelUserPathGetInfoEXT) - defined by [XR_EXT_interaction_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_render_model)"]
+pub struct InteractionRenderModelTopLevelUserPathGetInfoEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub top_level_user_path_count: u32,
+    pub top_level_user_paths: *const Path,
+}
+impl InteractionRenderModelTopLevelUserPathGetInfoEXT {
+    pub const TYPE: StructureType =
+        StructureType::INTERACTION_RENDER_MODEL_TOP_LEVEL_USER_PATH_GET_INFO_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataInteractionRenderModelsChangedEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataInteractionRenderModelsChangedEXT) - defined by [XR_EXT_interaction_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_render_model)"]
+pub struct EventDataInteractionRenderModelsChangedEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl EventDataInteractionRenderModelsChangedEXT {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_INTERACTION_RENDER_MODELS_CHANGED_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialSensingPropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialSensingPropertiesBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SystemSpatialSensingPropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_sensing: Bool32,
+}
+impl SystemSpatialSensingPropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_SENSING_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentGetInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentGetInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentGetInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub entity_id: SpatialEntityIdBD,
+    pub component_type: SpatialEntityComponentTypeBD,
+}
+impl SpatialEntityComponentGetInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_COMPONENT_GET_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataBaseHeaderBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataBaseHeaderBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentDataBaseHeaderBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityLocationGetInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityLocationGetInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityLocationGetInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+}
+impl SpatialEntityLocationGetInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_LOCATION_GET_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataLocationBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataLocationBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentDataLocationBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub location: SpaceLocation,
+}
+impl SpatialEntityComponentDataLocationBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_COMPONENT_DATA_LOCATION_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataSemanticBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataSemanticBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentDataSemanticBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub label_capacity_input: u32,
+    pub label_count_output: u32,
+    pub labels: *mut SemanticLabelBD,
+}
+impl SpatialEntityComponentDataSemanticBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_COMPONENT_DATA_SEMANTIC_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataBoundingBox2DBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataBoundingBox2DBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentDataBoundingBox2DBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub bounding_box2_d: Rect2Df,
+}
+impl SpatialEntityComponentDataBoundingBox2DBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_2D_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataPolygonBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataPolygonBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentDataPolygonBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub vertex_capacity_input: u32,
+    pub vertex_count_output: u32,
+    pub vertices: *mut Vector2f,
+}
+impl SpatialEntityComponentDataPolygonBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_COMPONENT_DATA_POLYGON_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataBoundingBox3DBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataBoundingBox3DBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentDataBoundingBox3DBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub bounding_box3_d: Boxf,
+}
+impl SpatialEntityComponentDataBoundingBox3DBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_COMPONENT_DATA_BOUNDING_BOX_3D_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataTriangleMeshBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataTriangleMeshBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityComponentDataTriangleMeshBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub vertex_capacity_input: u32,
+    pub vertex_count_output: u32,
+    pub vertices: *mut Vector3f,
+    pub index_capacity_input: u32,
+    pub index_count_output: u32,
+    pub indices: *mut u16,
+}
+impl SpatialEntityComponentDataTriangleMeshBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_COMPONENT_DATA_TRIANGLE_MESH_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataProviderCreateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataProviderCreateInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SenseDataProviderCreateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub provider_type: SenseDataProviderTypeBD,
+}
+impl SenseDataProviderCreateInfoBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_PROVIDER_CREATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataProviderStartInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataProviderStartInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SenseDataProviderStartInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl SenseDataProviderStartInfoBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_PROVIDER_START_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataSenseDataProviderStateChangedBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataSenseDataProviderStateChangedBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct EventDataSenseDataProviderStateChangedBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub provider: SenseDataProviderBD,
+    pub new_state: SenseDataProviderStateBD,
+}
+impl EventDataSenseDataProviderStateChangedBD {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_SENSE_DATA_PROVIDER_STATE_CHANGED_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataSenseDataUpdatedBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataSenseDataUpdatedBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct EventDataSenseDataUpdatedBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub provider: SenseDataProviderBD,
+}
+impl EventDataSenseDataUpdatedBD {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_SENSE_DATA_UPDATED_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataQueryInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataQueryInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SenseDataQueryInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl SenseDataQueryInfoBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_QUERY_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataFilterUuidBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataFilterUuidBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SenseDataFilterUuidBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub uuid_count: u32,
+    pub uuids: *const UuidEXT,
+}
+impl SenseDataFilterUuidBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_FILTER_UUID_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataFilterSemanticBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataFilterSemanticBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SenseDataFilterSemanticBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub label_count: u32,
+    pub labels: *const SemanticLabelBD,
+}
+impl SenseDataFilterSemanticBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_FILTER_SEMANTIC_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataQueryCompletionBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataQueryCompletionBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SenseDataQueryCompletionBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub snapshot: SenseDataSnapshotBD,
+}
+impl SenseDataQueryCompletionBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_QUERY_COMPLETION_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrQueriedSenseDataGetInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrQueriedSenseDataGetInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct QueriedSenseDataGetInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl QueriedSenseDataGetInfoBD {
+    pub const TYPE: StructureType = StructureType::QUERIED_SENSE_DATA_GET_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrQueriedSenseDataBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrQueriedSenseDataBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct QueriedSenseDataBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub state_capacity_input: u32,
+    pub state_count_output: u32,
+    pub states: *mut SpatialEntityStateBD,
+}
+impl QueriedSenseDataBD {
+    pub const TYPE: StructureType = StructureType::QUERIED_SENSE_DATA_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityStateBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityStateBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityStateBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub entity_id: SpatialEntityIdBD,
+    pub last_update_time: Time,
+    pub uuid: UuidEXT,
+}
+impl SpatialEntityStateBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_STATE_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityAnchorCreateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityAnchorCreateInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct SpatialEntityAnchorCreateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub snapshot: SenseDataSnapshotBD,
+    pub entity_id: SpatialEntityIdBD,
+}
+impl SpatialEntityAnchorCreateInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ENTITY_ANCHOR_CREATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrAnchorSpaceCreateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorSpaceCreateInfoBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+pub struct AnchorSpaceCreateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor: AnchorBD,
+    pub pose_in_anchor_space: Posef,
+}
+impl AnchorSpaceCreateInfoBD {
+    pub const TYPE: StructureType = StructureType::ANCHOR_SPACE_CREATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialAnchorPropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialAnchorPropertiesBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+pub struct SystemSpatialAnchorPropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_anchor: Bool32,
+}
+impl SystemSpatialAnchorPropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_ANCHOR_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorCreateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorCreateInfoBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+pub struct SpatialAnchorCreateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space: Space,
+    pub pose: Posef,
+    pub time: Time,
+}
+impl SpatialAnchorCreateInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorCreateCompletionBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorCreateCompletionBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+pub struct SpatialAnchorCreateCompletionBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub uuid: UuidEXT,
+    pub anchor: AnchorBD,
+}
+impl SpatialAnchorCreateCompletionBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_CREATE_COMPLETION_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorPersistInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorPersistInfoBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+pub struct SpatialAnchorPersistInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub location: PersistenceLocationBD,
+    pub anchor: AnchorBD,
+}
+impl SpatialAnchorPersistInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_PERSIST_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorUnpersistInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorUnpersistInfoBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+pub struct SpatialAnchorUnpersistInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub location: PersistenceLocationBD,
+    pub anchor: AnchorBD,
+}
+impl SpatialAnchorUnpersistInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_UNPERSIST_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialAnchorSharingPropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialAnchorSharingPropertiesBD) - defined by [XR_BD_spatial_anchor_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor_sharing)"]
+pub struct SystemSpatialAnchorSharingPropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_anchor_sharing: Bool32,
+}
+impl SystemSpatialAnchorSharingPropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_ANCHOR_SHARING_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorShareInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorShareInfoBD) - defined by [XR_BD_spatial_anchor_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor_sharing)"]
+pub struct SpatialAnchorShareInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor: AnchorBD,
+}
+impl SpatialAnchorShareInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SHARE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSharedSpatialAnchorDownloadInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSharedSpatialAnchorDownloadInfoBD) - defined by [XR_BD_spatial_anchor_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor_sharing)"]
+pub struct SharedSpatialAnchorDownloadInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub uuid: UuidEXT,
+}
+impl SharedSpatialAnchorDownloadInfoBD {
+    pub const TYPE: StructureType = StructureType::SHARED_SPATIAL_ANCHOR_DOWNLOAD_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialMeshPropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialMeshPropertiesBD) - defined by [XR_BD_spatial_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_mesh)"]
+pub struct SystemSpatialMeshPropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_mesh: Bool32,
+}
+impl SystemSpatialMeshPropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_MESH_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataProviderCreateInfoSpatialMeshBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataProviderCreateInfoSpatialMeshBD) - defined by [XR_BD_spatial_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_mesh)"]
+pub struct SenseDataProviderCreateInfoSpatialMeshBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub config_flags: SpatialMeshConfigFlagsBD,
+    pub lod: SpatialMeshLodBD,
+}
+impl SenseDataProviderCreateInfoSpatialMeshBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_PROVIDER_CREATE_INFO_SPATIAL_MESH_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialScenePropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialScenePropertiesBD) - defined by [XR_BD_spatial_scene](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_scene)"]
+pub struct SystemSpatialScenePropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_scene: Bool32,
+}
+impl SystemSpatialScenePropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_SCENE_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSceneCaptureInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneCaptureInfoBD) - defined by [XR_BD_spatial_scene](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_scene)"]
+pub struct SceneCaptureInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl SceneCaptureInfoBD {
+    pub const TYPE: StructureType = StructureType::SCENE_CAPTURE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSpatialPlanePropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSpatialPlanePropertiesBD) - defined by [XR_BD_spatial_plane](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_plane)"]
+pub struct SystemSpatialPlanePropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_spatial_plane: Bool32,
+}
+impl SystemSpatialPlanePropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SPATIAL_PLANE_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialEntityComponentDataPlaneOrientationBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialEntityComponentDataPlaneOrientationBD) - defined by [XR_BD_spatial_plane](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_plane)"]
+pub struct SpatialEntityComponentDataPlaneOrientationBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub orientation: PlaneOrientationBD,
+}
+impl SpatialEntityComponentDataPlaneOrientationBD {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_ENTITY_COMPONENT_DATA_PLANE_ORIENTATION_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSenseDataFilterPlaneOrientationBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSenseDataFilterPlaneOrientationBD) - defined by [XR_BD_spatial_plane](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_plane)"]
+pub struct SenseDataFilterPlaneOrientationBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub orientation_count: u32,
+    pub orientations: *mut PlaneOrientationBD,
+}
+impl SenseDataFilterPlaneOrientationBD {
+    pub const TYPE: StructureType = StructureType::SENSE_DATA_FILTER_PLANE_ORIENTATION_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSimultaneousHandsAndControllersPropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSimultaneousHandsAndControllersPropertiesMETA) - defined by [XR_META_simultaneous_hands_and_controllers](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_simultaneous_hands_and_controllers)"]
+pub struct SystemSimultaneousHandsAndControllersPropertiesMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_simultaneous_hands_and_controllers: Bool32,
+}
+impl SystemSimultaneousHandsAndControllersPropertiesMETA {
+    pub const TYPE: StructureType =
+        StructureType::SYSTEM_SIMULTANEOUS_HANDS_AND_CONTROLLERS_PROPERTIES_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSimultaneousHandsAndControllersTrackingResumeInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSimultaneousHandsAndControllersTrackingResumeInfoMETA) - defined by [XR_META_simultaneous_hands_and_controllers](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_simultaneous_hands_and_controllers)"]
+pub struct SimultaneousHandsAndControllersTrackingResumeInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl SimultaneousHandsAndControllersTrackingResumeInfoMETA {
+    pub const TYPE: StructureType =
+        StructureType::SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_RESUME_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSimultaneousHandsAndControllersTrackingPauseInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSimultaneousHandsAndControllersTrackingPauseInfoMETA) - defined by [XR_META_simultaneous_hands_and_controllers](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_simultaneous_hands_and_controllers)"]
+pub struct SimultaneousHandsAndControllersTrackingPauseInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl SimultaneousHandsAndControllersTrackingPauseInfoMETA {
+    pub const TYPE: StructureType =
+        StructureType::SIMULTANEOUS_HANDS_AND_CONTROLLERS_TRACKING_PAUSE_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrLoaderInitInfoPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLoaderInitInfoPropertiesEXT) - defined by [XR_EXT_loader_init_properties](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_loader_init_properties)"]
+pub struct LoaderInitInfoPropertiesEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub property_value_count: u32,
+    pub property_values: *const LoaderInitPropertyValueEXT,
+}
+impl LoaderInitInfoPropertiesEXT {
+    pub const TYPE: StructureType = StructureType::LOADER_INIT_INFO_PROPERTIES_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrLoaderInitPropertyValueEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLoaderInitPropertyValueEXT)"]
+pub struct LoaderInitPropertyValueEXT {
+    pub name: *const c_char,
+    pub value: *const c_char,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationArucoMarkerEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationArucoMarkerEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialCapabilityConfigurationArucoMarkerEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+    pub ar_uco_dict: SpatialMarkerArucoDictEXT,
+}
+impl SpatialCapabilityConfigurationArucoMarkerEXT {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_CAPABILITY_CONFIGURATION_ARUCO_MARKER_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationAprilTagEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationAprilTagEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialCapabilityConfigurationAprilTagEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+    pub april_dict: SpatialMarkerAprilTagDictEXT,
+}
+impl SpatialCapabilityConfigurationAprilTagEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_CAPABILITY_CONFIGURATION_APRIL_TAG_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationQrCodeEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationQrCodeEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialCapabilityConfigurationQrCodeEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+}
+impl SpatialCapabilityConfigurationQrCodeEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_CAPABILITY_CONFIGURATION_QR_CODE_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationMicroQrCodeEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationMicroQrCodeEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialCapabilityConfigurationMicroQrCodeEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+}
+impl SpatialCapabilityConfigurationMicroQrCodeEXT {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_CAPABILITY_CONFIGURATION_MICRO_QR_CODE_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialMarkerSizeEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMarkerSizeEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialMarkerSizeEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub marker_side_length: f32,
+}
+impl SpatialMarkerSizeEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_MARKER_SIZE_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialMarkerStaticOptimizationEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMarkerStaticOptimizationEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialMarkerStaticOptimizationEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub optimize_for_static_marker: Bool32,
+}
+impl SpatialMarkerStaticOptimizationEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_MARKER_STATIC_OPTIMIZATION_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[doc = "See [XrSpatialMarkerDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialMarkerDataEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialMarkerDataEXT {
+    pub capability: SpatialCapabilityEXT,
+    pub marker_id: u32,
+    pub data: SpatialBufferEXT,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentMarkerListEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentMarkerListEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
+pub struct SpatialComponentMarkerListEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub marker_count: u32,
+    pub markers: *mut SpatialMarkerDataEXT,
+}
+impl SpatialComponentMarkerListEXT {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_MARKER_LIST_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemFacialSimulationPropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemFacialSimulationPropertiesBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+pub struct SystemFacialSimulationPropertiesBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_face_tracking: Bool32,
+}
+impl SystemFacialSimulationPropertiesBD {
+    pub const TYPE: StructureType = StructureType::SYSTEM_FACIAL_SIMULATION_PROPERTIES_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFaceTrackerCreateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerCreateInfoBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+pub struct FaceTrackerCreateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub mode: FacialSimulationModeBD,
+}
+impl FaceTrackerCreateInfoBD {
+    pub const TYPE: StructureType = StructureType::FACE_TRACKER_CREATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFacialSimulationDataGetInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialSimulationDataGetInfoBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+pub struct FacialSimulationDataGetInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub time: Time,
+}
+impl FacialSimulationDataGetInfoBD {
+    pub const TYPE: StructureType = StructureType::FACIAL_SIMULATION_DATA_GET_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrFacialSimulationDataBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialSimulationDataBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+pub struct FacialSimulationDataBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub face_expression_weight_count: u32,
+    pub face_expression_weights: *mut f32,
+    pub is_upper_face_data_valid: Bool32,
+    pub is_lower_face_data_valid: Bool32,
+    pub time: Time,
+}
+impl FacialSimulationDataBD {
+    pub const TYPE: StructureType = StructureType::FACIAL_SIMULATION_DATA_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrLipExpressionDataBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrLipExpressionDataBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+pub struct LipExpressionDataBD {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub lipsync_expression_weight_count: u32,
+    pub lipsync_expression_weights: *mut f32,
+}
+impl LipExpressionDataBD {
+    pub const TYPE: StructureType = StructureType::LIP_EXPRESSION_DATA_BD;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
     use super::*;
@@ -11898,6 +19181,12 @@ pub mod pfn {
         unsafe extern "system" fn(instance: Instance, value: Result, buffer: *mut c_char) -> Result;
     #[doc = "See [xrStructureTypeToString](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStructureTypeToString)"]
     pub type StructureTypeToString = unsafe extern "system" fn(
+        instance: Instance,
+        value: StructureType,
+        buffer: *mut c_char,
+    ) -> Result;
+    #[doc = "See [xrStructureTypeToString2KHR](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStructureTypeToString2KHR) - defined by [XR_KHR_extended_struct_name_lengths](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_extended_struct_name_lengths)"]
+    pub type StructureTypeToString2KHR = unsafe extern "system" fn(
         instance: Instance,
         value: StructureType,
         buffer: *mut c_char,
@@ -12484,6 +19773,14 @@ pub mod pfn {
         body_tracker: BodyTrackerFB,
         skeleton: *mut BodySkeletonFB,
     ) -> Result;
+    #[doc = "See [xrSuggestBodyTrackingCalibrationOverrideMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSuggestBodyTrackingCalibrationOverrideMETA) - defined by [XR_META_body_tracking_calibration](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_calibration)"]
+    pub type SuggestBodyTrackingCalibrationOverrideMETA = unsafe extern "system" fn(
+        body_tracker: BodyTrackerFB,
+        calibration_info: *const BodyTrackingCalibrationInfoMETA,
+    ) -> Result;
+    #[doc = "See [xrResetBodyTrackingCalibrationMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrResetBodyTrackingCalibrationMETA) - defined by [XR_META_body_tracking_calibration](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_calibration)"]
+    pub type ResetBodyTrackingCalibrationMETA =
+        unsafe extern "system" fn(body_tracker: BodyTrackerFB) -> Result;
     #[doc = "See [xrCreateEyeTrackerFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateEyeTrackerFB) - defined by [XR_FB_eye_tracking_social](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_eye_tracking_social)"]
     pub type CreateEyeTrackerFB = unsafe extern "system" fn(
         session: Session,
@@ -12843,6 +20140,36 @@ pub mod pfn {
         layer: PassthroughLayerFB,
         intensity: *const PassthroughKeyboardHandsIntensityFB,
     ) -> Result;
+    #[doc = "See [xrStartColocationDiscoveryMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStartColocationDiscoveryMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+    pub type StartColocationDiscoveryMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const ColocationDiscoveryStartInfoMETA,
+        discovery_request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
+    #[doc = "See [xrStopColocationDiscoveryMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStopColocationDiscoveryMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+    pub type StopColocationDiscoveryMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const ColocationDiscoveryStopInfoMETA,
+        request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
+    #[doc = "See [xrStartColocationAdvertisementMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStartColocationAdvertisementMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+    pub type StartColocationAdvertisementMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const ColocationAdvertisementStartInfoMETA,
+        advertisement_request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
+    #[doc = "See [xrStopColocationAdvertisementMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStopColocationAdvertisementMETA) - defined by [XR_META_colocation_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_colocation_discovery)"]
+    pub type StopColocationAdvertisementMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const ColocationAdvertisementStopInfoMETA,
+        request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
+    #[doc = "See [xrShareSpacesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrShareSpacesMETA) - defined by [XR_META_spatial_entity_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_sharing)"]
+    pub type ShareSpacesMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const ShareSpacesInfoMETA,
+        request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
     #[doc = "See [xrCreateSpatialAnchorStoreConnectionMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorStoreConnectionMSFT) - defined by [XR_MSFT_spatial_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_MSFT_spatial_anchor_persistence)"]
     pub type CreateSpatialAnchorStoreConnectionMSFT = unsafe extern "system" fn(
         session: Session,
@@ -12877,6 +20204,21 @@ pub mod pfn {
     #[doc = "See [xrClearSpatialAnchorStoreMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrClearSpatialAnchorStoreMSFT) - defined by [XR_MSFT_spatial_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_MSFT_spatial_anchor_persistence)"]
     pub type ClearSpatialAnchorStoreMSFT =
         unsafe extern "system" fn(spatial_anchor_store: SpatialAnchorStoreConnectionMSFT) -> Result;
+    #[doc = "See [xrCreateBodyTrackerBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateBodyTrackerBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+    pub type CreateBodyTrackerBD = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const BodyTrackerCreateInfoBD,
+        body_tracker: *mut BodyTrackerBD,
+    ) -> Result;
+    #[doc = "See [xrDestroyBodyTrackerBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyBodyTrackerBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+    pub type DestroyBodyTrackerBD =
+        unsafe extern "system" fn(body_tracker: BodyTrackerBD) -> Result;
+    #[doc = "See [xrLocateBodyJointsBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrLocateBodyJointsBD) - defined by [XR_BD_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_body_tracking)"]
+    pub type LocateBodyJointsBD = unsafe extern "system" fn(
+        body_tracker: BodyTrackerBD,
+        locate_info: *const BodyJointsLocateInfoBD,
+        locations: *mut BodyJointLocationsBD,
+    ) -> Result;
     #[doc = "See [xrCreateFacialTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateFacialTrackerHTC) - defined by [XR_HTC_facial_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_facial_tracking)"]
     pub type CreateFacialTrackerHTC = unsafe extern "system" fn(
         session: Session,
@@ -12915,6 +20257,28 @@ pub mod pfn {
         path_capacity_input: u32,
         path_count_output: *mut u32,
         paths: *mut ViveTrackerPathsHTCX,
+    ) -> Result;
+    #[doc = "See [xrCreateBodyTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateBodyTrackerHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+    pub type CreateBodyTrackerHTC = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const BodyTrackerCreateInfoHTC,
+        body_tracker: *mut BodyTrackerHTC,
+    ) -> Result;
+    #[doc = "See [xrDestroyBodyTrackerHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyBodyTrackerHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+    pub type DestroyBodyTrackerHTC =
+        unsafe extern "system" fn(body_tracker: BodyTrackerHTC) -> Result;
+    #[doc = "See [xrLocateBodyJointsHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrLocateBodyJointsHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+    pub type LocateBodyJointsHTC = unsafe extern "system" fn(
+        body_tracker: BodyTrackerHTC,
+        locate_info: *const BodyJointsLocateInfoHTC,
+        locations: *mut BodyJointLocationsHTC,
+    ) -> Result;
+    #[doc = "See [xrGetBodySkeletonHTC](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetBodySkeletonHTC) - defined by [XR_HTC_body_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_HTC_body_tracking)"]
+    pub type GetBodySkeletonHTC = unsafe extern "system" fn(
+        body_tracker: BodyTrackerHTC,
+        base_space: Space,
+        skeleton_generation_id: u32,
+        skeleton: *mut BodySkeletonHTC,
     ) -> Result;
     #[doc = "See [xrSetMarkerTrackingVARJO](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetMarkerTrackingVARJO) - defined by [XR_VARJO_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_VARJO_marker_tracking)"]
     pub type SetMarkerTrackingVARJO =
@@ -13031,10 +20395,215 @@ pub mod pfn {
         info: *const RecommendedLayerResolutionGetInfoMETA,
         resolution: *mut RecommendedLayerResolutionMETA,
     ) -> Result;
+    #[doc = "See [xrSaveSpacesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSaveSpacesMETA) - defined by [XR_META_spatial_entity_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_persistence)"]
+    pub type SaveSpacesMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const SpacesSaveInfoMETA,
+        request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
+    #[doc = "See [xrEraseSpacesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEraseSpacesMETA) - defined by [XR_META_spatial_entity_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_persistence)"]
+    pub type EraseSpacesMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const SpacesEraseInfoMETA,
+        request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
+    #[doc = "See [xrDiscoverSpacesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDiscoverSpacesMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+    pub type DiscoverSpacesMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const SpaceDiscoveryInfoMETA,
+        request_id: *mut AsyncRequestIdFB,
+    ) -> Result;
+    #[doc = "See [xrRetrieveSpaceDiscoveryResultsMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRetrieveSpaceDiscoveryResultsMETA) - defined by [XR_META_spatial_entity_discovery](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_spatial_entity_discovery)"]
+    pub type RetrieveSpaceDiscoveryResultsMETA = unsafe extern "system" fn(
+        session: Session,
+        request_id: AsyncRequestIdFB,
+        results: *mut SpaceDiscoveryResultsMETA,
+    ) -> Result;
     #[doc = "See [xrApplyForceFeedbackCurlMNDX](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrApplyForceFeedbackCurlMNDX) - defined by [XR_MNDX_force_feedback_curl](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_MNDX_force_feedback_curl)"]
     pub type ApplyForceFeedbackCurlMNDX = unsafe extern "system" fn(
         hand_tracker: HandTrackerEXT,
         locations: *const ForceFeedbackCurlApplyLocationsMNDX,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateFaceTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateFaceTrackerANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+    pub type CreateFaceTrackerANDROID = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const FaceTrackerCreateInfoANDROID,
+        face_tracker: *mut FaceTrackerANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrDestroyFaceTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyFaceTrackerANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+    pub type DestroyFaceTrackerANDROID =
+        unsafe extern "system" fn(face_tracker: FaceTrackerANDROID) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetFaceStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFaceStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+    pub type GetFaceStateANDROID = unsafe extern "system" fn(
+        face_tracker: FaceTrackerANDROID,
+        get_info: *const FaceStateGetInfoANDROID,
+        face_state_output: *mut FaceStateANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetFaceCalibrationStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFaceCalibrationStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
+    pub type GetFaceCalibrationStateANDROID = unsafe extern "system" fn(
+        face_tracker: FaceTrackerANDROID,
+        face_is_calibrated_output: *mut Bool32,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetPassthroughCameraStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetPassthroughCameraStateANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
+    pub type GetPassthroughCameraStateANDROID = unsafe extern "system" fn(
+        session: Session,
+        get_info: *const PassthroughCameraStateGetInfoANDROID,
+        camera_state_output: *mut PassthroughCameraStateANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumerateSupportedTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedTrackableTypesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+    pub type EnumerateSupportedTrackableTypesANDROID = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        trackable_type_capacity_input: u32,
+        trackable_type_count_output: *mut u32,
+        trackable_types: *mut TrackableTypeANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumerateSupportedAnchorTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedAnchorTrackableTypesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+    pub type EnumerateSupportedAnchorTrackableTypesANDROID = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        trackable_type_capacity_input: u32,
+        trackable_type_count_output: *mut u32,
+        trackable_types: *mut TrackableTypeANDROID,
+    )
+        -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateTrackableTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateTrackableTrackerANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+    pub type CreateTrackableTrackerANDROID = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const TrackableTrackerCreateInfoANDROID,
+        trackable_tracker: *mut TrackableTrackerANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrDestroyTrackableTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyTrackableTrackerANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+    pub type DestroyTrackableTrackerANDROID =
+        unsafe extern "system" fn(trackable_tracker: TrackableTrackerANDROID) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetAllTrackablesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAllTrackablesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+    pub type GetAllTrackablesANDROID = unsafe extern "system" fn(
+        trackable_tracker: TrackableTrackerANDROID,
+        trackable_capacity_input: u32,
+        trackable_count_output: *mut u32,
+        trackables: *mut TrackableANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetTrackablePlaneANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackablePlaneANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+    pub type GetTrackablePlaneANDROID = unsafe extern "system" fn(
+        trackable_tracker: TrackableTrackerANDROID,
+        get_info: *const TrackableGetInfoANDROID,
+        plane_output: *mut TrackablePlaneANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateAnchorSpaceANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
+    pub type CreateAnchorSpaceANDROID = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const AnchorSpaceCreateInfoANDROID,
+        anchor_output: *mut Space,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrShareAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrShareAnchorANDROID) - defined by [XR_ANDROID_anchor_sharing_export](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_anchor_sharing_export)"]
+    pub type ShareAnchorANDROID = unsafe extern "system" fn(
+        session: Session,
+        sharing_info: *const AnchorSharingInfoANDROID,
+        anchor_token: *mut AnchorSharingTokenANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrUnshareAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnshareAnchorANDROID) - defined by [XR_ANDROID_anchor_sharing_export](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_anchor_sharing_export)"]
+    pub type UnshareAnchorANDROID =
+        unsafe extern "system" fn(session: Session, anchor: Space) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetTrackableObjectANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableObjectANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
+    pub type GetTrackableObjectANDROID = unsafe extern "system" fn(
+        tracker: TrackableTrackerANDROID,
+        get_info: *const TrackableGetInfoANDROID,
+        object_output: *mut TrackableObjectANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumerateRaycastSupportedTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateRaycastSupportedTrackableTypesANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
+    pub type EnumerateRaycastSupportedTrackableTypesANDROID = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        trackable_type_capacity_input: u32,
+        trackable_type_count_output: *mut u32,
+        trackable_types: *mut TrackableTypeANDROID,
+    )
+        -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrRaycastANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRaycastANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
+    pub type RaycastANDROID = unsafe extern "system" fn(
+        session: Session,
+        ray_info: *const RaycastInfoANDROID,
+        results: *mut RaycastHitResultsANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetTrackableMarkerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableMarkerANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
+    pub type GetTrackableMarkerANDROID = unsafe extern "system" fn(
+        tracker: TrackableTrackerANDROID,
+        get_info: *const TrackableGetInfoANDROID,
+        marker_output: *mut TrackableMarkerANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumerateSupportedPersistenceAnchorTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedPersistenceAnchorTypesANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type EnumerateSupportedPersistenceAnchorTypesANDROID = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        trackable_type_capacity_input: u32,
+        trackable_type_count_output: *mut u32,
+        trackable_types: *mut TrackableTypeANDROID,
+    )
+        -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateDeviceAnchorPersistenceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateDeviceAnchorPersistenceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type CreateDeviceAnchorPersistenceANDROID = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const DeviceAnchorPersistenceCreateInfoANDROID,
+        out_handle: *mut DeviceAnchorPersistenceANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrDestroyDeviceAnchorPersistenceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyDeviceAnchorPersistenceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type DestroyDeviceAnchorPersistenceANDROID =
+        unsafe extern "system" fn(handle: DeviceAnchorPersistenceANDROID) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrPersistAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPersistAnchorANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type PersistAnchorANDROID = unsafe extern "system" fn(
+        handle: DeviceAnchorPersistenceANDROID,
+        persisted_info: *const PersistedAnchorSpaceInfoANDROID,
+        anchor_id_output: *mut UuidEXT,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetAnchorPersistStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAnchorPersistStateANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type GetAnchorPersistStateANDROID = unsafe extern "system" fn(
+        handle: DeviceAnchorPersistenceANDROID,
+        anchor_id: *const UuidEXT,
+        persist_state: *mut AnchorPersistStateANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreatePersistedAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreatePersistedAnchorSpaceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type CreatePersistedAnchorSpaceANDROID = unsafe extern "system" fn(
+        handle: DeviceAnchorPersistenceANDROID,
+        create_info: *const PersistedAnchorSpaceCreateInfoANDROID,
+        anchor_output: *mut Space,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumeratePersistedAnchorsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumeratePersistedAnchorsANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type EnumeratePersistedAnchorsANDROID = unsafe extern "system" fn(
+        handle: DeviceAnchorPersistenceANDROID,
+        anchor_id_capacity_input: u32,
+        anchor_id_count_output: *mut u32,
+        anchor_ids: *mut UuidEXT,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrUnpersistAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnpersistAnchorANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
+    pub type UnpersistAnchorANDROID = unsafe extern "system" fn(
+        handle: DeviceAnchorPersistenceANDROID,
+        anchor_id: *const UuidEXT,
     ) -> Result;
     #[doc = "See [xrCreatePlaneDetectorEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreatePlaneDetectorEXT) - defined by [XR_EXT_plane_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_plane_detection)"]
     pub type CreatePlaneDetectorEXT = unsafe extern "system" fn(
@@ -13291,11 +20860,611 @@ pub mod pfn {
         environment_depth_provider: EnvironmentDepthProviderMETA,
         set_info: *const EnvironmentDepthHandRemovalSetInfoMETA,
     ) -> Result;
+    #[doc = "See [xrCreateFacialExpressionClientML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateFacialExpressionClientML) - defined by [XR_ML_facial_expression](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_facial_expression)"]
+    pub type CreateFacialExpressionClientML = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const FacialExpressionClientCreateInfoML,
+        facial_expression_client: *mut FacialExpressionClientML,
+    ) -> Result;
+    #[doc = "See [xrDestroyFacialExpressionClientML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyFacialExpressionClientML) - defined by [XR_ML_facial_expression](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_facial_expression)"]
+    pub type DestroyFacialExpressionClientML =
+        unsafe extern "system" fn(facial_expression_client: FacialExpressionClientML) -> Result;
+    #[doc = "See [xrGetFacialExpressionBlendShapePropertiesML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFacialExpressionBlendShapePropertiesML) - defined by [XR_ML_facial_expression](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_facial_expression)"]
+    pub type GetFacialExpressionBlendShapePropertiesML = unsafe extern "system" fn(
+        facial_expression_client: FacialExpressionClientML,
+        blend_shape_get_info: *const FacialExpressionBlendShapeGetInfoML,
+        blend_shape_count: u32,
+        blend_shapes: *mut FacialExpressionBlendShapePropertiesML,
+    ) -> Result;
     #[doc = "See [xrLocateSpaces](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrLocateSpaces)"]
     pub type LocateSpaces = unsafe extern "system" fn(
         session: Session,
         locate_info: *const SpacesLocateInfo,
         space_locations: *mut SpaceLocations,
+    ) -> Result;
+    #[doc = "See [xrEnumerateSpatialCapabilitiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSpatialCapabilitiesEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type EnumerateSpatialCapabilitiesEXT = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        capability_capacity_input: u32,
+        capability_count_output: *mut u32,
+        capabilities: *mut SpatialCapabilityEXT,
+    ) -> Result;
+    #[doc = "See [xrEnumerateSpatialCapabilityComponentTypesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSpatialCapabilityComponentTypesEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type EnumerateSpatialCapabilityComponentTypesEXT = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        capability: SpatialCapabilityEXT,
+        capability_components: *mut SpatialCapabilityComponentTypesEXT,
+    ) -> Result;
+    #[doc = "See [xrEnumerateSpatialCapabilityFeaturesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSpatialCapabilityFeaturesEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type EnumerateSpatialCapabilityFeaturesEXT = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        capability: SpatialCapabilityEXT,
+        capability_feature_capacity_input: u32,
+        capability_feature_count_output: *mut u32,
+        capability_features: *mut SpatialCapabilityFeatureEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialContextAsyncEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialContextAsyncEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type CreateSpatialContextAsyncEXT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialContextCreateInfoEXT,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialContextCompleteEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialContextCompleteEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type CreateSpatialContextCompleteEXT = unsafe extern "system" fn(
+        session: Session,
+        future: FutureEXT,
+        completion: *mut CreateSpatialContextCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrDestroySpatialContextEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySpatialContextEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type DestroySpatialContextEXT =
+        unsafe extern "system" fn(spatial_context: SpatialContextEXT) -> Result;
+    #[doc = "See [xrCreateSpatialDiscoverySnapshotAsyncEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialDiscoverySnapshotAsyncEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type CreateSpatialDiscoverySnapshotAsyncEXT = unsafe extern "system" fn(
+        spatial_context: SpatialContextEXT,
+        create_info: *const SpatialDiscoverySnapshotCreateInfoEXT,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialDiscoverySnapshotCompleteEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialDiscoverySnapshotCompleteEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type CreateSpatialDiscoverySnapshotCompleteEXT = unsafe extern "system" fn(
+        spatial_context: SpatialContextEXT,
+        create_snapshot_completion_info: *const CreateSpatialDiscoverySnapshotCompletionInfoEXT,
+        completion: *mut CreateSpatialDiscoverySnapshotCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrQuerySpatialComponentDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQuerySpatialComponentDataEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type QuerySpatialComponentDataEXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        query_condition: *const SpatialComponentDataQueryConditionEXT,
+        query_result: *mut SpatialComponentDataQueryResultEXT,
+    ) -> Result;
+    #[doc = "See [xrDestroySpatialSnapshotEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySpatialSnapshotEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type DestroySpatialSnapshotEXT =
+        unsafe extern "system" fn(snapshot: SpatialSnapshotEXT) -> Result;
+    #[doc = "See [xrCreateSpatialEntityFromIdEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialEntityFromIdEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type CreateSpatialEntityFromIdEXT = unsafe extern "system" fn(
+        spatial_context: SpatialContextEXT,
+        create_info: *const SpatialEntityFromIdCreateInfoEXT,
+        spatial_entity: *mut SpatialEntityEXT,
+    ) -> Result;
+    #[doc = "See [xrDestroySpatialEntityEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySpatialEntityEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type DestroySpatialEntityEXT =
+        unsafe extern "system" fn(spatial_entity: SpatialEntityEXT) -> Result;
+    #[doc = "See [xrCreateSpatialUpdateSnapshotEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialUpdateSnapshotEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type CreateSpatialUpdateSnapshotEXT = unsafe extern "system" fn(
+        spatial_context: SpatialContextEXT,
+        create_info: *const SpatialUpdateSnapshotCreateInfoEXT,
+        snapshot: *mut SpatialSnapshotEXT,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialBufferStringEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialBufferStringEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type GetSpatialBufferStringEXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        info: *const SpatialBufferGetInfoEXT,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut c_char,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialBufferUint8EXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialBufferUint8EXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type GetSpatialBufferUint8EXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        info: *const SpatialBufferGetInfoEXT,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut u8,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialBufferUint16EXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialBufferUint16EXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type GetSpatialBufferUint16EXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        info: *const SpatialBufferGetInfoEXT,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut u16,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialBufferUint32EXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialBufferUint32EXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type GetSpatialBufferUint32EXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        info: *const SpatialBufferGetInfoEXT,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut u32,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialBufferFloatEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialBufferFloatEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type GetSpatialBufferFloatEXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        info: *const SpatialBufferGetInfoEXT,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut f32,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialBufferVector2fEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialBufferVector2fEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type GetSpatialBufferVector2fEXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        info: *const SpatialBufferGetInfoEXT,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut Vector2f,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialBufferVector3fEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialBufferVector3fEXT) - defined by [XR_EXT_spatial_entity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_entity)"]
+    pub type GetSpatialBufferVector3fEXT = unsafe extern "system" fn(
+        snapshot: SpatialSnapshotEXT,
+        info: *const SpatialBufferGetInfoEXT,
+        buffer_capacity_input: u32,
+        buffer_count_output: *mut u32,
+        buffer: *mut Vector3f,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorEXT) - defined by [XR_EXT_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_anchor)"]
+    pub type CreateSpatialAnchorEXT = unsafe extern "system" fn(
+        spatial_context: SpatialContextEXT,
+        create_info: *const SpatialAnchorCreateInfoEXT,
+        anchor_entity_id: *mut SpatialEntityIdEXT,
+        anchor_entity: *mut SpatialEntityEXT,
+    ) -> Result;
+    #[doc = "See [xrEnumerateSpatialPersistenceScopesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSpatialPersistenceScopesEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+    pub type EnumerateSpatialPersistenceScopesEXT = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        persistence_scope_capacity_input: u32,
+        persistence_scope_count_output: *mut u32,
+        persistence_scopes: *mut SpatialPersistenceScopeEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialPersistenceContextAsyncEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialPersistenceContextAsyncEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+    pub type CreateSpatialPersistenceContextAsyncEXT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialPersistenceContextCreateInfoEXT,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialPersistenceContextCompleteEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialPersistenceContextCompleteEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+    pub type CreateSpatialPersistenceContextCompleteEXT = unsafe extern "system" fn(
+        session: Session,
+        future: FutureEXT,
+        completion: *mut CreateSpatialPersistenceContextCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrDestroySpatialPersistenceContextEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySpatialPersistenceContextEXT) - defined by [XR_EXT_spatial_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence)"]
+    pub type DestroySpatialPersistenceContextEXT =
+        unsafe extern "system" fn(persistence_context: SpatialPersistenceContextEXT) -> Result;
+    #[doc = "See [xrPersistSpatialEntityAsyncEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPersistSpatialEntityAsyncEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+    pub type PersistSpatialEntityAsyncEXT = unsafe extern "system" fn(
+        persistence_context: SpatialPersistenceContextEXT,
+        persist_info: *const SpatialEntityPersistInfoEXT,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrPersistSpatialEntityCompleteEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPersistSpatialEntityCompleteEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+    pub type PersistSpatialEntityCompleteEXT = unsafe extern "system" fn(
+        persistence_context: SpatialPersistenceContextEXT,
+        future: FutureEXT,
+        completion: *mut PersistSpatialEntityCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrUnpersistSpatialEntityAsyncEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnpersistSpatialEntityAsyncEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+    pub type UnpersistSpatialEntityAsyncEXT = unsafe extern "system" fn(
+        persistence_context: SpatialPersistenceContextEXT,
+        unpersist_info: *const SpatialEntityUnpersistInfoEXT,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrUnpersistSpatialEntityCompleteEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnpersistSpatialEntityCompleteEXT) - defined by [XR_EXT_spatial_persistence_operations](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_persistence_operations)"]
+    pub type UnpersistSpatialEntityCompleteEXT = unsafe extern "system" fn(
+        persistence_context: SpatialPersistenceContextEXT,
+        future: FutureEXT,
+        completion: *mut UnpersistSpatialEntityCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrSetSystemNotificationsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetSystemNotificationsML) - defined by [XR_ML_system_notifications](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_system_notifications)"]
+    pub type SetSystemNotificationsML = unsafe extern "system" fn(
+        instance: Instance,
+        info: *const SystemNotificationsSetInfoML,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorsAsyncML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorsAsyncML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
+    pub type CreateSpatialAnchorsAsyncML = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialAnchorsCreateInfoBaseHeaderML,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorsCompleteML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorsCompleteML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
+    pub type CreateSpatialAnchorsCompleteML = unsafe extern "system" fn(
+        session: Session,
+        future: FutureEXT,
+        completion: *mut CreateSpatialAnchorsCompletionML,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialAnchorStateML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialAnchorStateML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
+    pub type GetSpatialAnchorStateML =
+        unsafe extern "system" fn(anchor: Space, state: *mut SpatialAnchorStateML) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorsStorageML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorsStorageML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type CreateSpatialAnchorsStorageML = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialAnchorsCreateStorageInfoML,
+        storage: *mut SpatialAnchorsStorageML,
+    ) -> Result;
+    #[doc = "See [xrDestroySpatialAnchorsStorageML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySpatialAnchorsStorageML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type DestroySpatialAnchorsStorageML =
+        unsafe extern "system" fn(storage: SpatialAnchorsStorageML) -> Result;
+    #[doc = "See [xrQuerySpatialAnchorsAsyncML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQuerySpatialAnchorsAsyncML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type QuerySpatialAnchorsAsyncML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        query_info: *const SpatialAnchorsQueryInfoBaseHeaderML,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrQuerySpatialAnchorsCompleteML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQuerySpatialAnchorsCompleteML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type QuerySpatialAnchorsCompleteML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        future: FutureEXT,
+        completion: *mut SpatialAnchorsQueryCompletionML,
+    ) -> Result;
+    #[doc = "See [xrPublishSpatialAnchorsAsyncML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPublishSpatialAnchorsAsyncML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type PublishSpatialAnchorsAsyncML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        publish_info: *const SpatialAnchorsPublishInfoML,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrPublishSpatialAnchorsCompleteML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPublishSpatialAnchorsCompleteML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type PublishSpatialAnchorsCompleteML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        future: FutureEXT,
+        completion: *mut SpatialAnchorsPublishCompletionML,
+    ) -> Result;
+    #[doc = "See [xrDeleteSpatialAnchorsAsyncML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDeleteSpatialAnchorsAsyncML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type DeleteSpatialAnchorsAsyncML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        delete_info: *const SpatialAnchorsDeleteInfoML,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrDeleteSpatialAnchorsCompleteML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDeleteSpatialAnchorsCompleteML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type DeleteSpatialAnchorsCompleteML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        future: FutureEXT,
+        completion: *mut SpatialAnchorsDeleteCompletionML,
+    ) -> Result;
+    #[doc = "See [xrUpdateSpatialAnchorsExpirationAsyncML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUpdateSpatialAnchorsExpirationAsyncML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type UpdateSpatialAnchorsExpirationAsyncML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        update_info: *const SpatialAnchorsUpdateExpirationInfoML,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrUpdateSpatialAnchorsExpirationCompleteML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUpdateSpatialAnchorsExpirationCompleteML) - defined by [XR_ML_spatial_anchors_storage](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors_storage)"]
+    pub type UpdateSpatialAnchorsExpirationCompleteML = unsafe extern "system" fn(
+        storage: SpatialAnchorsStorageML,
+        future: FutureEXT,
+        completion: *mut SpatialAnchorsUpdateExpirationCompletionML,
+    ) -> Result;
+    #[doc = "See [xrCreateWorldMeshDetectorML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateWorldMeshDetectorML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type CreateWorldMeshDetectorML = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const WorldMeshDetectorCreateInfoML,
+        detector: *mut WorldMeshDetectorML,
+    ) -> Result;
+    #[doc = "See [xrDestroyWorldMeshDetectorML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyWorldMeshDetectorML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type DestroyWorldMeshDetectorML =
+        unsafe extern "system" fn(detector: WorldMeshDetectorML) -> Result;
+    #[doc = "See [xrRequestWorldMeshStateAsyncML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRequestWorldMeshStateAsyncML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type RequestWorldMeshStateAsyncML = unsafe extern "system" fn(
+        detector: WorldMeshDetectorML,
+        state_request: *const WorldMeshStateRequestInfoML,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrRequestWorldMeshStateCompleteML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRequestWorldMeshStateCompleteML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type RequestWorldMeshStateCompleteML = unsafe extern "system" fn(
+        detector: WorldMeshDetectorML,
+        future: FutureEXT,
+        completion: *mut WorldMeshStateRequestCompletionML,
+    ) -> Result;
+    #[doc = "See [xrGetWorldMeshBufferRecommendSizeML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetWorldMeshBufferRecommendSizeML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type GetWorldMeshBufferRecommendSizeML = unsafe extern "system" fn(
+        detector: WorldMeshDetectorML,
+        size_info: *const WorldMeshBufferRecommendedSizeInfoML,
+        size: *mut WorldMeshBufferSizeML,
+    ) -> Result;
+    #[doc = "See [xrAllocateWorldMeshBufferML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrAllocateWorldMeshBufferML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type AllocateWorldMeshBufferML = unsafe extern "system" fn(
+        detector: WorldMeshDetectorML,
+        size: *const WorldMeshBufferSizeML,
+        buffer: *mut WorldMeshBufferML,
+    ) -> Result;
+    #[doc = "See [xrFreeWorldMeshBufferML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrFreeWorldMeshBufferML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type FreeWorldMeshBufferML = unsafe extern "system" fn(
+        detector: WorldMeshDetectorML,
+        buffer: *const WorldMeshBufferML,
+    ) -> Result;
+    #[doc = "See [xrRequestWorldMeshAsyncML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRequestWorldMeshAsyncML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type RequestWorldMeshAsyncML = unsafe extern "system" fn(
+        detector: WorldMeshDetectorML,
+        get_info: *const WorldMeshGetInfoML,
+        buffer: *mut WorldMeshBufferML,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrRequestWorldMeshCompleteML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRequestWorldMeshCompleteML) - defined by [XR_ML_world_mesh_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_world_mesh_detection)"]
+    pub type RequestWorldMeshCompleteML = unsafe extern "system" fn(
+        detector: WorldMeshDetectorML,
+        completion_info: *const WorldMeshRequestCompletionInfoML,
+        future: FutureEXT,
+        completion: *mut WorldMeshRequestCompletionML,
+    ) -> Result;
+    #[doc = "See [xrCreateRenderModelEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateRenderModelEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type CreateRenderModelEXT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const RenderModelCreateInfoEXT,
+        render_model: *mut RenderModelEXT,
+    ) -> Result;
+    #[doc = "See [xrDestroyRenderModelEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyRenderModelEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type DestroyRenderModelEXT =
+        unsafe extern "system" fn(render_model: RenderModelEXT) -> Result;
+    #[doc = "See [xrGetRenderModelPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetRenderModelPropertiesEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type GetRenderModelPropertiesEXT = unsafe extern "system" fn(
+        render_model: RenderModelEXT,
+        get_info: *const RenderModelPropertiesGetInfoEXT,
+        properties: *mut RenderModelPropertiesEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateRenderModelSpaceEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateRenderModelSpaceEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type CreateRenderModelSpaceEXT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const RenderModelSpaceCreateInfoEXT,
+        space: *mut Space,
+    ) -> Result;
+    #[doc = "See [xrCreateRenderModelAssetEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateRenderModelAssetEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type CreateRenderModelAssetEXT = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const RenderModelAssetCreateInfoEXT,
+        asset: *mut RenderModelAssetEXT,
+    ) -> Result;
+    #[doc = "See [xrDestroyRenderModelAssetEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyRenderModelAssetEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type DestroyRenderModelAssetEXT =
+        unsafe extern "system" fn(asset: RenderModelAssetEXT) -> Result;
+    #[doc = "See [xrGetRenderModelAssetDataEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetRenderModelAssetDataEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type GetRenderModelAssetDataEXT = unsafe extern "system" fn(
+        asset: RenderModelAssetEXT,
+        get_info: *const RenderModelAssetDataGetInfoEXT,
+        buffer: *mut RenderModelAssetDataEXT,
+    ) -> Result;
+    #[doc = "See [xrGetRenderModelAssetPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetRenderModelAssetPropertiesEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type GetRenderModelAssetPropertiesEXT = unsafe extern "system" fn(
+        asset: RenderModelAssetEXT,
+        get_info: *const RenderModelAssetPropertiesGetInfoEXT,
+        properties: *mut RenderModelAssetPropertiesEXT,
+    ) -> Result;
+    #[doc = "See [xrGetRenderModelStateEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetRenderModelStateEXT) - defined by [XR_EXT_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_render_model)"]
+    pub type GetRenderModelStateEXT = unsafe extern "system" fn(
+        render_model: RenderModelEXT,
+        get_info: *const RenderModelStateGetInfoEXT,
+        state: *mut RenderModelStateEXT,
+    ) -> Result;
+    #[doc = "See [xrEnumerateInteractionRenderModelIdsEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateInteractionRenderModelIdsEXT) - defined by [XR_EXT_interaction_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_render_model)"]
+    pub type EnumerateInteractionRenderModelIdsEXT = unsafe extern "system" fn(
+        session: Session,
+        get_info: *const InteractionRenderModelIdsEnumerateInfoEXT,
+        render_model_id_capacity_input: u32,
+        render_model_id_count_output: *mut u32,
+        render_model_ids: *mut RenderModelIdEXT,
+    ) -> Result;
+    #[doc = "See [xrEnumerateRenderModelSubactionPathsEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateRenderModelSubactionPathsEXT) - defined by [XR_EXT_interaction_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_render_model)"]
+    pub type EnumerateRenderModelSubactionPathsEXT = unsafe extern "system" fn(
+        render_model: RenderModelEXT,
+        info: *const InteractionRenderModelSubactionPathInfoEXT,
+        path_capacity_input: u32,
+        path_count_output: *mut u32,
+        paths: *mut Path,
+    ) -> Result;
+    #[doc = "See [xrGetRenderModelPoseTopLevelUserPathEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetRenderModelPoseTopLevelUserPathEXT) - defined by [XR_EXT_interaction_render_model](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_render_model)"]
+    pub type GetRenderModelPoseTopLevelUserPathEXT = unsafe extern "system" fn(
+        render_model: RenderModelEXT,
+        info: *const InteractionRenderModelTopLevelUserPathGetInfoEXT,
+        top_level_user_path: *mut Path,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialEntityUuidBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialEntityUuidBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type GetSpatialEntityUuidBD = unsafe extern "system" fn(
+        snapshot: SenseDataSnapshotBD,
+        entity_id: SpatialEntityIdBD,
+        uuid: *mut UuidEXT,
+    ) -> Result;
+    #[doc = "See [xrEnumerateSpatialEntityComponentTypesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSpatialEntityComponentTypesBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type EnumerateSpatialEntityComponentTypesBD = unsafe extern "system" fn(
+        snapshot: SenseDataSnapshotBD,
+        entity_id: SpatialEntityIdBD,
+        component_type_capacity_input: u32,
+        component_type_count_output: *mut u32,
+        component_types: *mut SpatialEntityComponentTypeBD,
+    ) -> Result;
+    #[doc = "See [xrGetSpatialEntityComponentDataBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialEntityComponentDataBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type GetSpatialEntityComponentDataBD = unsafe extern "system" fn(
+        snapshot: SenseDataSnapshotBD,
+        get_info: *const SpatialEntityComponentGetInfoBD,
+        component_data: *mut SpatialEntityComponentDataBaseHeaderBD,
+    ) -> Result;
+    #[doc = "See [xrCreateSenseDataProviderBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSenseDataProviderBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type CreateSenseDataProviderBD = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SenseDataProviderCreateInfoBD,
+        provider: *mut SenseDataProviderBD,
+    ) -> Result;
+    #[doc = "See [xrStartSenseDataProviderAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStartSenseDataProviderAsyncBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type StartSenseDataProviderAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        start_info: *const SenseDataProviderStartInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrStartSenseDataProviderCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStartSenseDataProviderCompleteBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type StartSenseDataProviderCompleteBD = unsafe extern "system" fn(
+        session: Session,
+        future: FutureEXT,
+        completion: *mut FutureCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrGetSenseDataProviderStateBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSenseDataProviderStateBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type GetSenseDataProviderStateBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        state: *mut SenseDataProviderStateBD,
+    ) -> Result;
+    #[doc = "See [xrQuerySenseDataAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQuerySenseDataAsyncBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type QuerySenseDataAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        query_info: *const SenseDataQueryInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrQuerySenseDataCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQuerySenseDataCompleteBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type QuerySenseDataCompleteBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        future: FutureEXT,
+        completion: *mut SenseDataQueryCompletionBD,
+    ) -> Result;
+    #[doc = "See [xrDestroySenseDataSnapshotBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySenseDataSnapshotBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type DestroySenseDataSnapshotBD =
+        unsafe extern "system" fn(snapshot: SenseDataSnapshotBD) -> Result;
+    #[doc = "See [xrGetQueriedSenseDataBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetQueriedSenseDataBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type GetQueriedSenseDataBD = unsafe extern "system" fn(
+        snapshot: SenseDataSnapshotBD,
+        get_info: *mut QueriedSenseDataGetInfoBD,
+        queried_sense_data: *mut QueriedSenseDataBD,
+    ) -> Result;
+    #[doc = "See [xrStopSenseDataProviderBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrStopSenseDataProviderBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type StopSenseDataProviderBD =
+        unsafe extern "system" fn(provider: SenseDataProviderBD) -> Result;
+    #[doc = "See [xrDestroySenseDataProviderBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySenseDataProviderBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type DestroySenseDataProviderBD =
+        unsafe extern "system" fn(provider: SenseDataProviderBD) -> Result;
+    #[doc = "See [xrCreateSpatialEntityAnchorBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialEntityAnchorBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type CreateSpatialEntityAnchorBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        create_info: *const SpatialEntityAnchorCreateInfoBD,
+        anchor: *mut AnchorBD,
+    ) -> Result;
+    #[doc = "See [xrDestroyAnchorBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyAnchorBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type DestroyAnchorBD = unsafe extern "system" fn(anchor: AnchorBD) -> Result;
+    #[doc = "See [xrGetAnchorUuidBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAnchorUuidBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type GetAnchorUuidBD =
+        unsafe extern "system" fn(anchor: AnchorBD, uuid: *mut UuidEXT) -> Result;
+    #[doc = "See [xrCreateAnchorSpaceBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateAnchorSpaceBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
+    pub type CreateAnchorSpaceBD = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const AnchorSpaceCreateInfoBD,
+        space: *mut Space,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorAsyncBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+    pub type CreateSpatialAnchorAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        info: *const SpatialAnchorCreateInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialAnchorCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorCompleteBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+    pub type CreateSpatialAnchorCompleteBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        future: FutureEXT,
+        completion: *mut SpatialAnchorCreateCompletionBD,
+    ) -> Result;
+    #[doc = "See [xrPersistSpatialAnchorAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPersistSpatialAnchorAsyncBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+    pub type PersistSpatialAnchorAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        info: *const SpatialAnchorPersistInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrPersistSpatialAnchorCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPersistSpatialAnchorCompleteBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+    pub type PersistSpatialAnchorCompleteBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        future: FutureEXT,
+        completion: *mut FutureCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrUnpersistSpatialAnchorAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnpersistSpatialAnchorAsyncBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+    pub type UnpersistSpatialAnchorAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        info: *const SpatialAnchorUnpersistInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrUnpersistSpatialAnchorCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnpersistSpatialAnchorCompleteBD) - defined by [XR_BD_spatial_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor)"]
+    pub type UnpersistSpatialAnchorCompleteBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        future: FutureEXT,
+        completion: *mut FutureCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrShareSpatialAnchorAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrShareSpatialAnchorAsyncBD) - defined by [XR_BD_spatial_anchor_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor_sharing)"]
+    pub type ShareSpatialAnchorAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        info: *const SpatialAnchorShareInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrShareSpatialAnchorCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrShareSpatialAnchorCompleteBD) - defined by [XR_BD_spatial_anchor_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor_sharing)"]
+    pub type ShareSpatialAnchorCompleteBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        future: FutureEXT,
+        completion: *mut FutureCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrDownloadSharedSpatialAnchorAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDownloadSharedSpatialAnchorAsyncBD) - defined by [XR_BD_spatial_anchor_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor_sharing)"]
+    pub type DownloadSharedSpatialAnchorAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        info: *const SharedSpatialAnchorDownloadInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrDownloadSharedSpatialAnchorCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDownloadSharedSpatialAnchorCompleteBD) - defined by [XR_BD_spatial_anchor_sharing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_anchor_sharing)"]
+    pub type DownloadSharedSpatialAnchorCompleteBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        future: FutureEXT,
+        completion: *mut FutureCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrCaptureSceneAsyncBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCaptureSceneAsyncBD) - defined by [XR_BD_spatial_scene](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_scene)"]
+    pub type CaptureSceneAsyncBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        info: *const SceneCaptureInfoBD,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrCaptureSceneCompleteBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCaptureSceneCompleteBD) - defined by [XR_BD_spatial_scene](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_scene)"]
+    pub type CaptureSceneCompleteBD = unsafe extern "system" fn(
+        provider: SenseDataProviderBD,
+        future: FutureEXT,
+        completion: *mut FutureCompletionEXT,
+    ) -> Result;
+    #[doc = "See [xrResumeSimultaneousHandsAndControllersTrackingMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrResumeSimultaneousHandsAndControllersTrackingMETA) - defined by [XR_META_simultaneous_hands_and_controllers](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_simultaneous_hands_and_controllers)"]
+    pub type ResumeSimultaneousHandsAndControllersTrackingMETA =
+        unsafe extern "system" fn(
+            session: Session,
+            resume_info: *const SimultaneousHandsAndControllersTrackingResumeInfoMETA,
+        ) -> Result;
+    #[doc = "See [xrPauseSimultaneousHandsAndControllersTrackingMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPauseSimultaneousHandsAndControllersTrackingMETA) - defined by [XR_META_simultaneous_hands_and_controllers](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_simultaneous_hands_and_controllers)"]
+    pub type PauseSimultaneousHandsAndControllersTrackingMETA = unsafe extern "system" fn(
+        session: Session,
+        pause_info: *const SimultaneousHandsAndControllersTrackingPauseInfoMETA,
+    )
+        -> Result;
+    #[doc = "See [xrEnumerateFacialSimulationModesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateFacialSimulationModesBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+    pub type EnumerateFacialSimulationModesBD = unsafe extern "system" fn(
+        session: Session,
+        mode_capacity_input: u32,
+        mode_count_output: *mut u32,
+        modes: *mut FacialSimulationModeBD,
+    ) -> Result;
+    #[doc = "See [xrCreateFaceTrackerBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateFaceTrackerBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+    pub type CreateFaceTrackerBD = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const FaceTrackerCreateInfoBD,
+        tracker: *mut FaceTrackerBD,
+    ) -> Result;
+    #[doc = "See [xrDestroyFaceTrackerBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyFaceTrackerBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+    pub type DestroyFaceTrackerBD = unsafe extern "system" fn(tracker: FaceTrackerBD) -> Result;
+    #[doc = "See [xrGetFacialSimulationDataBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFacialSimulationDataBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+    pub type GetFacialSimulationDataBD = unsafe extern "system" fn(
+        tracker: FaceTrackerBD,
+        info: *const FacialSimulationDataGetInfoBD,
+        facial_data: *mut FacialSimulationDataBD,
+    ) -> Result;
+    #[doc = "See [xrSetFacialSimulationModeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetFacialSimulationModeBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+    pub type SetFacialSimulationModeBD =
+        unsafe extern "system" fn(tracker: FaceTrackerBD, mode: FacialSimulationModeBD) -> Result;
+    #[doc = "See [xrGetFacialSimulationModeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFacialSimulationModeBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
+    pub type GetFacialSimulationModeBD = unsafe extern "system" fn(
+        tracker: FaceTrackerBD,
+        mode: *mut FacialSimulationModeBD,
     ) -> Result;
     #[doc = "See [xrGetVulkanGraphicsRequirements2KHR](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetVulkanGraphicsRequirements2KHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanGraphicsRequirements2KHR = unsafe extern "system" fn(
@@ -13313,8 +21482,64 @@ pub mod pfn {
 pub const ALMALENCE_digital_lens_control_SPEC_VERSION: u32 = 1u32;
 pub const ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME: &[u8] =
     b"XR_ALMALENCE_digital_lens_control\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_trackables_SPEC_VERSION: u32 = 2u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_TRACKABLES_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_device_anchor_persistence_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_DEVICE_ANCHOR_PERSISTENCE_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_device_anchor_persistence\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_face_tracking_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_FACE_TRACKING_EXTENSION_NAME: &[u8] = b"XR_ANDROID_face_tracking\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_passthrough_camera_state_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_PASSTHROUGH_CAMERA_STATE_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_passthrough_camera_state\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_raycast_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_RAYCAST_EXTENSION_NAME: &[u8] = b"XR_ANDROID_raycast\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_trackables_object_SPEC_VERSION: u32 = 2u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_TRACKABLES_OBJECT_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_object\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_anchor_sharing_export_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_ANCHOR_SHARING_EXPORT_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_anchor_sharing_export\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_trackables_marker_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_TRACKABLES_MARKER_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_marker\0";
 pub const BD_controller_interaction_SPEC_VERSION: u32 = 2u32;
 pub const BD_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_BD_controller_interaction\0";
+pub const BD_body_tracking_SPEC_VERSION: u32 = 1u32;
+pub const BD_BODY_TRACKING_EXTENSION_NAME: &[u8] = b"XR_BD_body_tracking\0";
+pub const BD_facial_simulation_SPEC_VERSION: u32 = 1u32;
+pub const BD_FACIAL_SIMULATION_EXTENSION_NAME: &[u8] = b"XR_BD_facial_simulation\0";
+pub const BD_spatial_sensing_SPEC_VERSION: u32 = 1u32;
+pub const BD_SPATIAL_SENSING_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_sensing\0";
+pub const BD_spatial_anchor_SPEC_VERSION: u32 = 2u32;
+pub const BD_SPATIAL_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_anchor\0";
+pub const BD_spatial_anchor_sharing_SPEC_VERSION: u32 = 2u32;
+pub const BD_SPATIAL_ANCHOR_SHARING_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_anchor_sharing\0";
+pub const BD_spatial_scene_SPEC_VERSION: u32 = 1u32;
+pub const BD_SPATIAL_SCENE_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_scene\0";
+pub const BD_spatial_mesh_SPEC_VERSION: u32 = 1u32;
+pub const BD_SPATIAL_MESH_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_mesh\0";
+pub const BD_future_progress_SPEC_VERSION: u32 = 1u32;
+pub const BD_FUTURE_PROGRESS_EXTENSION_NAME: &[u8] = b"XR_BD_future_progress\0";
+pub const BD_spatial_plane_SPEC_VERSION: u32 = 1u32;
+pub const BD_SPATIAL_PLANE_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_plane\0";
+pub const BD_ultra_controller_interaction_SPEC_VERSION: u32 = 1u32;
+pub const BD_ULTRA_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
+    b"XR_BD_ultra_controller_interaction\0";
 pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 2u32;
 pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 4u32;
@@ -13349,9 +21574,15 @@ pub const EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME: &[u8] =
     b"XR_EXT_hp_mixed_reality_controller\0";
 pub const EXT_palm_pose_SPEC_VERSION: u32 = 3u32;
 pub const EXT_PALM_POSE_EXTENSION_NAME: &[u8] = b"XR_EXT_palm_pose\0";
+pub const EXT_frame_synthesis_SPEC_VERSION: u32 = 1u32;
+pub const EXT_FRAME_SYNTHESIS_EXTENSION_NAME: &[u8] = b"XR_EXT_frame_synthesis\0";
 pub const EXT_uuid_SPEC_VERSION: u32 = 1u32;
 pub const EXT_UUID_EXTENSION_NAME: &[u8] = b"XR_EXT_uuid\0";
-pub const EXT_hand_interaction_SPEC_VERSION: u32 = 1u32;
+pub const EXT_render_model_SPEC_VERSION: u32 = 1u32;
+pub const EXT_RENDER_MODEL_EXTENSION_NAME: &[u8] = b"XR_EXT_render_model\0";
+pub const EXT_interaction_render_model_SPEC_VERSION: u32 = 1u32;
+pub const EXT_INTERACTION_RENDER_MODEL_EXTENSION_NAME: &[u8] = b"XR_EXT_interaction_render_model\0";
+pub const EXT_hand_interaction_SPEC_VERSION: u32 = 2u32;
 pub const EXT_HAND_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_EXT_hand_interaction\0";
 pub const EXT_active_action_set_priority_SPEC_VERSION: u32 = 1u32;
 pub const EXT_ACTIVE_ACTION_SET_PRIORITY_EXTENSION_NAME: &[u8] =
@@ -13363,13 +21594,28 @@ pub const EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME: &[u8] =
     b"XR_EXT_hand_tracking_data_source\0";
 pub const EXT_plane_detection_SPEC_VERSION: u32 = 2u32;
 pub const EXT_PLANE_DETECTION_EXTENSION_NAME: &[u8] = b"XR_EXT_plane_detection\0";
-pub const EXT_future_SPEC_VERSION: u32 = 1u32;
+pub const EXT_future_SPEC_VERSION: u32 = 2u32;
 pub const EXT_FUTURE_EXTENSION_NAME: &[u8] = b"XR_EXT_future\0";
 pub const EXT_user_presence_SPEC_VERSION: u32 = 1u32;
 pub const EXT_USER_PRESENCE_EXTENSION_NAME: &[u8] = b"XR_EXT_user_presence\0";
 pub const EXT_composition_layer_inverted_alpha_SPEC_VERSION: u32 = 1u32;
 pub const EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME: &[u8] =
     b"XR_EXT_composition_layer_inverted_alpha\0";
+pub const EXT_spatial_entity_SPEC_VERSION: u32 = 1u32;
+pub const EXT_SPATIAL_ENTITY_EXTENSION_NAME: &[u8] = b"XR_EXT_spatial_entity\0";
+pub const EXT_spatial_plane_tracking_SPEC_VERSION: u32 = 1u32;
+pub const EXT_SPATIAL_PLANE_TRACKING_EXTENSION_NAME: &[u8] = b"XR_EXT_spatial_plane_tracking\0";
+pub const EXT_spatial_marker_tracking_SPEC_VERSION: u32 = 1u32;
+pub const EXT_SPATIAL_MARKER_TRACKING_EXTENSION_NAME: &[u8] = b"XR_EXT_spatial_marker_tracking\0";
+pub const EXT_spatial_anchor_SPEC_VERSION: u32 = 1u32;
+pub const EXT_SPATIAL_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_EXT_spatial_anchor\0";
+pub const EXT_spatial_persistence_SPEC_VERSION: u32 = 1u32;
+pub const EXT_SPATIAL_PERSISTENCE_EXTENSION_NAME: &[u8] = b"XR_EXT_spatial_persistence\0";
+pub const EXT_spatial_persistence_operations_SPEC_VERSION: u32 = 1u32;
+pub const EXT_SPATIAL_PERSISTENCE_OPERATIONS_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_spatial_persistence_operations\0";
+pub const EXT_loader_init_properties_SPEC_VERSION: u32 = 1u32;
+pub const EXT_LOADER_INIT_PROPERTIES_EXTENSION_NAME: &[u8] = b"XR_EXT_loader_init_properties\0";
 pub const FB_composition_layer_image_layout_SPEC_VERSION: u32 = 1u32;
 pub const FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME: &[u8] =
     b"XR_FB_composition_layer_image_layout\0";
@@ -13471,7 +21717,7 @@ pub const FB_FACE_TRACKING2_EXTENSION_NAME: &[u8] = b"XR_FB_face_tracking2\0";
 pub const HTC_vive_cosmos_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HTC_vive_cosmos_controller_interaction\0";
-pub const HTC_facial_tracking_SPEC_VERSION: u32 = 2u32;
+pub const HTC_facial_tracking_SPEC_VERSION: u32 = 3u32;
 pub const HTC_FACIAL_TRACKING_EXTENSION_NAME: &[u8] = b"XR_HTC_facial_tracking\0";
 pub const HTC_vive_focus3_controller_interaction_SPEC_VERSION: u32 = 2u32;
 pub const HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
@@ -13487,6 +21733,8 @@ pub const HTC_foveation_SPEC_VERSION: u32 = 1u32;
 pub const HTC_FOVEATION_EXTENSION_NAME: &[u8] = b"XR_HTC_foveation\0";
 pub const HTC_anchor_SPEC_VERSION: u32 = 1u32;
 pub const HTC_ANCHOR_EXTENSION_NAME: &[u8] = b"XR_HTC_anchor\0";
+pub const HTC_body_tracking_SPEC_VERSION: u32 = 1u32;
+pub const HTC_BODY_TRACKING_EXTENSION_NAME: &[u8] = b"XR_HTC_body_tracking\0";
 pub const HUAWEI_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_HUAWEI_controller_interaction\0";
@@ -13507,7 +21755,7 @@ pub const KHR_android_create_instance_SPEC_VERSION: u32 = 3u32;
 pub const KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME: &[u8] = b"XR_KHR_android_create_instance\0";
 pub const KHR_composition_layer_depth_SPEC_VERSION: u32 = 6u32;
 pub const KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME: &[u8] = b"XR_KHR_composition_layer_depth\0";
-pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 4u32;
+pub const KHR_vulkan_swapchain_format_list_SPEC_VERSION: u32 = 5u32;
 pub const KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME: &[u8] =
     b"XR_KHR_vulkan_swapchain_format_list\0";
 pub const KHR_composition_layer_cylinder_SPEC_VERSION: u32 = 4u32;
@@ -13516,22 +21764,22 @@ pub const KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME: &[u8] =
 pub const KHR_composition_layer_equirect_SPEC_VERSION: u32 = 3u32;
 pub const KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME: &[u8] =
     b"XR_KHR_composition_layer_equirect\0";
-pub const KHR_opengl_enable_SPEC_VERSION: u32 = 10u32;
+pub const KHR_opengl_enable_SPEC_VERSION: u32 = 12u32;
 pub const KHR_OPENGL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_enable\0";
-pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 8u32;
+pub const KHR_opengl_es_enable_SPEC_VERSION: u32 = 10u32;
 pub const KHR_OPENGL_ES_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_opengl_es_enable\0";
-pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 8u32;
+pub const KHR_vulkan_enable_SPEC_VERSION: u32 = 10u32;
 pub const KHR_VULKAN_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_vulkan_enable\0";
 #[cfg(windows)]
-pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 9u32;
+pub const KHR_D3D11_enable_SPEC_VERSION: u32 = 11u32;
 #[cfg(windows)]
 pub const KHR_D3D11_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D11_enable\0";
 #[cfg(windows)]
-pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 9u32;
+pub const KHR_D3D12_enable_SPEC_VERSION: u32 = 11u32;
 #[cfg(windows)]
 pub const KHR_D3D12_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_D3D12_enable\0";
 #[cfg(target_vendor = "apple")]
-pub const KHR_metal_enable_SPEC_VERSION: u32 = 1u32;
+pub const KHR_metal_enable_SPEC_VERSION: u32 = 3u32;
 #[cfg(target_vendor = "apple")]
 pub const KHR_METAL_ENABLE_EXTENSION_NAME: &[u8] = b"XR_KHR_metal_enable\0";
 pub const KHR_visibility_mask_SPEC_VERSION: u32 = 2u32;
@@ -13552,13 +21800,16 @@ pub const KHR_LOADER_INIT_EXTENSION_NAME: &[u8] = b"XR_KHR_loader_init\0";
 pub const KHR_loader_init_android_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const KHR_LOADER_INIT_ANDROID_EXTENSION_NAME: &[u8] = b"XR_KHR_loader_init_android\0";
-pub const KHR_vulkan_enable2_SPEC_VERSION: u32 = 2u32;
+pub const KHR_vulkan_enable2_SPEC_VERSION: u32 = 4u32;
 pub const KHR_VULKAN_ENABLE2_EXTENSION_NAME: &[u8] = b"XR_KHR_vulkan_enable2\0";
 pub const KHR_composition_layer_equirect2_SPEC_VERSION: u32 = 1u32;
 pub const KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME: &[u8] =
     b"XR_KHR_composition_layer_equirect2\0";
 pub const KHR_binding_modification_SPEC_VERSION: u32 = 1u32;
 pub const KHR_BINDING_MODIFICATION_EXTENSION_NAME: &[u8] = b"XR_KHR_binding_modification\0";
+pub const KHR_extended_struct_name_lengths_SPEC_VERSION: u32 = 1u32;
+pub const KHR_EXTENDED_STRUCT_NAME_LENGTHS_EXTENSION_NAME: &[u8] =
+    b"XR_KHR_extended_struct_name_lengths\0";
 pub const KHR_swapchain_usage_input_attachment_bit_SPEC_VERSION: u32 = 3u32;
 pub const KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME: &[u8] =
     b"XR_KHR_swapchain_usage_input_attachment_bit\0";
@@ -13566,6 +21817,11 @@ pub const KHR_locate_spaces_SPEC_VERSION: u32 = 1u32;
 pub const KHR_LOCATE_SPACES_EXTENSION_NAME: &[u8] = b"XR_KHR_locate_spaces\0";
 pub const KHR_maintenance1_SPEC_VERSION: u32 = 1u32;
 pub const KHR_MAINTENANCE1_EXTENSION_NAME: &[u8] = b"XR_KHR_maintenance1\0";
+pub const KHR_generic_controller_SPEC_VERSION: u32 = 1u32;
+pub const KHR_GENERIC_CONTROLLER_EXTENSION_NAME: &[u8] = b"XR_KHR_generic_controller\0";
+pub const LOGITECH_mx_ink_stylus_interaction_SPEC_VERSION: u32 = 1u32;
+pub const LOGITECH_MX_INK_STYLUS_INTERACTION_EXTENSION_NAME: &[u8] =
+    b"XR_LOGITECH_mx_ink_stylus_interaction\0";
 pub const META_foveation_eye_tracked_SPEC_VERSION: u32 = 1u32;
 pub const META_FOVEATION_EYE_TRACKED_EXTENSION_NAME: &[u8] = b"XR_META_foveation_eye_tracked\0";
 pub const META_local_dimming_SPEC_VERSION: u32 = 1u32;
@@ -13579,21 +21835,50 @@ pub const META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME: &[u8] =
     b"XR_META_vulkan_swapchain_create_info\0";
 pub const META_performance_metrics_SPEC_VERSION: u32 = 2u32;
 pub const META_PERFORMANCE_METRICS_EXTENSION_NAME: &[u8] = b"XR_META_performance_metrics\0";
+pub const META_detached_controllers_SPEC_VERSION: u32 = 1u32;
+pub const META_DETACHED_CONTROLLERS_EXTENSION_NAME: &[u8] = b"XR_META_detached_controllers\0";
 pub const META_headset_id_SPEC_VERSION: u32 = 2u32;
 pub const META_HEADSET_ID_EXTENSION_NAME: &[u8] = b"XR_META_headset_id\0";
+pub const META_spatial_entity_discovery_SPEC_VERSION: u32 = 1u32;
+pub const META_SPATIAL_ENTITY_DISCOVERY_EXTENSION_NAME: &[u8] =
+    b"XR_META_spatial_entity_discovery\0";
+pub const META_hand_tracking_microgestures_SPEC_VERSION: u32 = 1u32;
+pub const META_HAND_TRACKING_MICROGESTURES_EXTENSION_NAME: &[u8] =
+    b"XR_META_hand_tracking_microgestures\0";
 pub const META_recommended_layer_resolution_SPEC_VERSION: u32 = 1u32;
 pub const META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME: &[u8] =
     b"XR_META_recommended_layer_resolution\0";
+pub const META_spatial_entity_persistence_SPEC_VERSION: u32 = 1u32;
+pub const META_SPATIAL_ENTITY_PERSISTENCE_EXTENSION_NAME: &[u8] =
+    b"XR_META_spatial_entity_persistence\0";
 pub const META_passthrough_color_lut_SPEC_VERSION: u32 = 1u32;
 pub const META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME: &[u8] = b"XR_META_passthrough_color_lut\0";
 pub const META_spatial_entity_mesh_SPEC_VERSION: u32 = 1u32;
 pub const META_SPATIAL_ENTITY_MESH_EXTENSION_NAME: &[u8] = b"XR_META_spatial_entity_mesh\0";
 pub const META_automatic_layer_filter_SPEC_VERSION: u32 = 1u32;
 pub const META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME: &[u8] = b"XR_META_automatic_layer_filter\0";
+pub const META_body_tracking_full_body_SPEC_VERSION: u32 = 1u32;
+pub const META_BODY_TRACKING_FULL_BODY_EXTENSION_NAME: &[u8] = b"XR_META_body_tracking_full_body\0";
 pub const META_touch_controller_plus_SPEC_VERSION: u32 = 1u32;
 pub const META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME: &[u8] = b"XR_META_touch_controller_plus\0";
-pub const META_environment_depth_SPEC_VERSION: u32 = 1u32;
+pub const META_passthrough_layer_resumed_event_SPEC_VERSION: u32 = 1u32;
+pub const META_PASSTHROUGH_LAYER_RESUMED_EVENT_EXTENSION_NAME: &[u8] =
+    b"XR_META_passthrough_layer_resumed_event\0";
+pub const META_body_tracking_calibration_SPEC_VERSION: u32 = 1u32;
+pub const META_BODY_TRACKING_CALIBRATION_EXTENSION_NAME: &[u8] =
+    b"XR_META_body_tracking_calibration\0";
+pub const META_spatial_entity_sharing_SPEC_VERSION: u32 = 1u32;
+pub const META_SPATIAL_ENTITY_SHARING_EXTENSION_NAME: &[u8] = b"XR_META_spatial_entity_sharing\0";
+pub const META_environment_depth_SPEC_VERSION: u32 = 2u32;
 pub const META_ENVIRONMENT_DEPTH_EXTENSION_NAME: &[u8] = b"XR_META_environment_depth\0";
+pub const META_simultaneous_hands_and_controllers_SPEC_VERSION: u32 = 1u32;
+pub const META_SIMULTANEOUS_HANDS_AND_CONTROLLERS_EXTENSION_NAME: &[u8] =
+    b"XR_META_simultaneous_hands_and_controllers\0";
+pub const META_colocation_discovery_SPEC_VERSION: u32 = 1u32;
+pub const META_COLOCATION_DISCOVERY_EXTENSION_NAME: &[u8] = b"XR_META_colocation_discovery\0";
+pub const META_spatial_entity_group_sharing_SPEC_VERSION: u32 = 1u32;
+pub const META_SPATIAL_ENTITY_GROUP_SHARING_EXTENSION_NAME: &[u8] =
+    b"XR_META_spatial_entity_group_sharing\0";
 pub const ML_ml2_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_ML_ml2_controller_interaction\0";
@@ -13607,9 +21892,22 @@ pub const ML_marker_understanding_SPEC_VERSION: u32 = 1u32;
 pub const ML_MARKER_UNDERSTANDING_EXTENSION_NAME: &[u8] = b"XR_ML_marker_understanding\0";
 pub const ML_localization_map_SPEC_VERSION: u32 = 1u32;
 pub const ML_LOCALIZATION_MAP_EXTENSION_NAME: &[u8] = b"XR_ML_localization_map\0";
+pub const ML_spatial_anchors_SPEC_VERSION: u32 = 1u32;
+pub const ML_SPATIAL_ANCHORS_EXTENSION_NAME: &[u8] = b"XR_ML_spatial_anchors\0";
+pub const ML_spatial_anchors_storage_SPEC_VERSION: u32 = 1u32;
+pub const ML_SPATIAL_ANCHORS_STORAGE_EXTENSION_NAME: &[u8] = b"XR_ML_spatial_anchors_storage\0";
 pub const ML_user_calibration_SPEC_VERSION: u32 = 1u32;
 pub const ML_USER_CALIBRATION_EXTENSION_NAME: &[u8] = b"XR_ML_user_calibration\0";
-pub const MND_headless_SPEC_VERSION: u32 = 2u32;
+pub const ML_system_notifications_SPEC_VERSION: u32 = 1u32;
+pub const ML_SYSTEM_NOTIFICATIONS_EXTENSION_NAME: &[u8] = b"XR_ML_system_notifications\0";
+pub const ML_world_mesh_detection_SPEC_VERSION: u32 = 1u32;
+pub const ML_WORLD_MESH_DETECTION_EXTENSION_NAME: &[u8] = b"XR_ML_world_mesh_detection\0";
+pub const ML_facial_expression_SPEC_VERSION: u32 = 1u32;
+pub const ML_FACIAL_EXPRESSION_EXTENSION_NAME: &[u8] = b"XR_ML_facial_expression\0";
+pub const ML_view_configuration_depth_range_change_SPEC_VERSION: u32 = 1u32;
+pub const ML_VIEW_CONFIGURATION_DEPTH_RANGE_CHANGE_EXTENSION_NAME: &[u8] =
+    b"XR_ML_view_configuration_depth_range_change\0";
+pub const MND_headless_SPEC_VERSION: u32 = 3u32;
 pub const MND_HEADLESS_EXTENSION_NAME: &[u8] = b"XR_MND_headless\0";
 pub const MND_swapchain_usage_input_attachment_bit_SPEC_VERSION: u32 = 2u32;
 pub const MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME: &[u8] =
@@ -13688,7 +21986,7 @@ pub const VARJO_marker_tracking_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_MARKER_TRACKING_EXTENSION_NAME: &[u8] = b"XR_VARJO_marker_tracking\0";
 pub const VARJO_view_offset_SPEC_VERSION: u32 = 1u32;
 pub const VARJO_VIEW_OFFSET_EXTENSION_NAME: &[u8] = b"XR_VARJO_view_offset\0";
-pub const VARJO_xr4_controller_interaction_SPEC_VERSION: u32 = 1u32;
+pub const VARJO_xr4_controller_interaction_SPEC_VERSION: u32 = 2u32;
 pub const VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_VARJO_xr4_controller_interaction\0";
 pub const YVR_controller_interaction_SPEC_VERSION: u32 = 1u32;
