@@ -15,7 +15,7 @@ use indexmap::{IndexMap, IndexSet};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use regex::Regex;
-use syn::{Ident, LitByteStr, LitCStr};
+use syn::{Ident, LitCStr};
 use xml::{
     attribute::OwnedAttribute,
     reader::{EventReader, ParserConfig, XmlEvent},
@@ -1252,7 +1252,7 @@ impl Parser {
                     &format!("{}_EXTENSION_NAME", trimmed.to_uppercase()),
                     Span::call_site(),
                 );
-                let name_lit = byte_name(&ext.name);
+                let name_lit = c_name(&ext.name);
                 let version_ident =
                     Ident::new(&format!("{}_SPEC_VERSION", trimmed), Span::call_site());
                 let version_lit = ext.version;
@@ -1262,7 +1262,7 @@ impl Parser {
                     #conds
                     pub const #version_ident: u32 = #version_lit;
                     #conds
-                    pub const #name_ident: &[u8] = #name_lit;
+                    pub const #name_ident: &CStr = #name_lit;
                 }
             })
         });
@@ -1276,6 +1276,7 @@ impl Parser {
             use std::fmt;
             use std::mem::MaybeUninit;
             use std::os::raw::{c_void, c_char};
+            use std::ffi::CStr;
             use libc::{timespec, wchar_t};
 
             use crate::support::*;
@@ -1418,7 +1419,7 @@ impl Parser {
                     #conds
                     impl #ty_ident {
                         pub const #version_ident: u32 = sys::#version_const;
-                        pub const #name_ident: &'static [u8] = sys::#name_const;
+                        pub const #name_ident: &'static CStr = sys::#name_const;
                         #load
                     }
                 });
@@ -1443,8 +1444,11 @@ impl Parser {
                     { if self.#field_ident { out.push(raw::#ty_ident::NAME); } }
                 });
                 ext_set_inits.push(quote! {
-                    #conds
-                    raw::#ty_ident::NAME => { out.#field_ident = true; }
+                    if name == raw::#ty_ident::NAME {
+                        #conds {
+                            out.#field_ident = true;
+                        }
+                    }
                 });
                 ext_set_fields.push(quote! {
                     #conds
@@ -1567,6 +1571,7 @@ impl Parser {
             #![allow(clippy::wrong_self_convention, clippy::transmute_ptr_to_ptr, clippy::missing_transmute_annotations)]
             use std::mem::MaybeUninit;
             use std::iter::FromIterator;
+            use std::ffi::{CStr, CString};
             pub use sys::{#(#reexports),*};
             pub use sys::platform::{EGLenum, VkFilter, VkSamplerMipmapMode, VkSamplerAddressMode, VkComponentSwizzle};
 
@@ -1578,20 +1583,20 @@ impl Parser {
             pub struct ExtensionSet {
                 #(#ext_set_fields)*
                 /// Extensions unknown to the high-level bindings
-                pub other: Vec<Vec<u8>>,
+                pub other: Vec<CString>,
             }
 
             /// Create a ExtensionSet from a list of nul-terminated extension names
-            impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
+            impl<'a> FromIterator<&'a CStr> for ExtensionSet {
                 fn from_iter<I>(iter: I) -> Self
                 where
-                    I: IntoIterator<Item = &'a [u8]>,
+                    I: IntoIterator<Item = &'a CStr>,
                 {
                     let mut out = Self::default();
                     for name in iter {
-                        match name {
-                            #(#ext_set_inits)*
-                            bytes => out.other.push(bytes.to_vec()),
+                        #(#ext_set_inits else )*
+                        {
+                            out.other.push(name.into())
                         }
                     }
                     out
@@ -1608,7 +1613,7 @@ impl Parser {
                             .iter()
                             .collect::<std::collections::HashSet<_>>()
                             .difference(&other.other.iter().collect())
-                            .map(|x| x.to_vec())
+                            .map(|x| CString::clone(x))
                             .collect(),
                     }
                 }
@@ -1622,16 +1627,16 @@ impl Parser {
                             .iter()
                             .collect::<std::collections::HashSet<_>>()
                             .intersection(&other.other.iter().collect())
-                            .map(|x| x.to_vec())
+                            .map(|x| CString::clone(x))
                             .collect(),
                     }
                 }
 
                 /// Return names of supported extensions, as a `Vec` of nul terminated byte slices.
-                pub fn names(&self) -> Vec<&[u8]> {
+                pub fn names(&self) -> Vec<&CStr> {
                     let mut out = Vec::new();
                     #(#ext_set_names)*
-                    out.extend(self.other.iter().map(|x| x.as_slice()));
+                    out.extend(self.other.iter().map(|x| &**x));
                     out
                 }
             }
@@ -1687,6 +1692,7 @@ impl Parser {
 
             pub mod raw {
                 use std::mem;
+                use std::ffi::CStr;
                 use sys::pfn;
                 use crate::{Entry, Result};
 
@@ -2426,12 +2432,6 @@ fn split_ext_tag(name: &str) -> (&str, &str) {
     let tag_end = name.find('_').unwrap();
     let (tag, tail) = name.split_at(tag_end);
     (tag, &tail[1..])
-}
-
-fn byte_name(name: &str) -> LitByteStr {
-    let mut name = name.as_bytes().to_vec();
-    name.push(0);
-    LitByteStr::new(&name, Span::call_site())
 }
 
 fn c_name(name: &str) -> LitCStr {
