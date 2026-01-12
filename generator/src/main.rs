@@ -1761,10 +1761,10 @@ impl Parser {
                 if let Some(x) = self.structs.get(&member.ty) {
                     out |= self.compute_meta(&member.ty, x);
                 }
-                if let Some(e) = self.enums.get(&member.ty) {
-                    if !e.has_zero {
-                        out.has_non_default = true;
-                    }
+                if let Some(e) = self.enums.get(&member.ty)
+                    && !e.has_zero
+                {
+                    out.has_non_default = true;
                 }
             }
         }
