@@ -194,7 +194,7 @@ wrapper! {
 }
 
 wrapper! {
-    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
     Version(u64)
 }
 

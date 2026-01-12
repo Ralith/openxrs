@@ -9322,7 +9322,7 @@ pub struct Rect2Di {
     pub extent: Extent2Di,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrNegotiateLoaderInfo](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrNegotiateLoaderInfo)"]
 pub struct NegotiateLoaderInfo {
     pub struct_type: LoaderInterfaceStructs,

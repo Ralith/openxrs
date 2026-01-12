@@ -7,10 +7,8 @@ use std::os::raw::c_char;
 pub use sys::{
     self, AsyncRequestIdFB, CURRENT_API_VERSION, Duration, FREQUENCY_UNSPECIFIED,
     MAX_COLOCATION_DISCOVERY_BUFFER_SIZE_META, MAX_VIRTUAL_KEYBOARD_COMMIT_TEXT_SIZE_META, Path,
-    SystemId, Time, Uuid, Version,
+    SystemId, Time, Uuid, UuidEXT, Version,
 };
-// #[deprecated(note = "Use `Uuid` instead")]
-pub type UuidEXT = Uuid;
 
 mod generated;
 pub use generated::*;

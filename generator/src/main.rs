@@ -809,9 +809,13 @@ impl Parser {
                             let name = attr(&attributes, "name").unwrap();
                             let value = attr(&attributes, "value").unwrap();
                             let comment = attr(&attributes, "comment");
+                            let parsed_value = value.parse().unwrap();
+                            if parsed_value == 0 {
+                                item.has_zero = true;
+                            }
                             item.values.push(Constant {
                                 name: name.into(),
-                                value: ConstantValue::Literal(value.parse().unwrap()),
+                                value: ConstantValue::Literal(parsed_value),
                                 comment: comment.and_then(tidy_comment),
                             });
                         }
@@ -955,10 +959,7 @@ impl Parser {
 
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
-            let has_zero = e
-                .values
-                .iter()
-                .any(|v| matches!(v.value, ConstantValue::Literal(0)));
+            let has_zero = e.has_zero;
             let values = e.values.iter().map(|v| {
                 let value_name = xr_enum_value_name(name, &v.name);
                 let value = match v.value {
@@ -1176,7 +1177,7 @@ impl Parser {
                 quote! { #[derive(Copy, Clone)] }
             } else if meta.has_pointer || meta.has_array && name != "XrUuid" {
                 quote! { #[derive(Copy, Clone, Debug)] }
-            } else if meta.has_non_default || name == "XrNegotiateLoaderInfo" {
+            } else if meta.has_non_default {
                 quote! { #[derive(Copy, Clone, Debug, PartialEq)] }
             } else {
                 quote! { #[derive(Copy, Clone, Debug, Default, PartialEq)] }
@@ -1491,6 +1492,12 @@ impl Parser {
         let reexports = simple_structs
             .iter()
             .cloned()
+            // FIXME: Temporarily exclude Android-specific types.
+            // The current generator and sys crate do not distinguish between "Android OS" dependencies
+            // (e.g., JNI) and "Android XR" vendor extensions.
+            // Since `sys` currently gates all `ANDROID` suffixed types behind `#[cfg(target_os = "android")]`,
+            // generating them unconditionally causes resolution errors on non-Android platforms.
+            // Future logic should distinguish between actual OS dependencies and vendor-specific logical types.
             .filter(|&x| {
                 x != "XrRaycastHitResultANDROID" && x != "XrTrackableMarkerDatabaseEntryANDROID"
             })
@@ -1755,11 +1762,7 @@ impl Parser {
                     out |= self.compute_meta(&member.ty, x);
                 }
                 if let Some(e) = self.enums.get(&member.ty) {
-                    let has_zero = e
-                        .values
-                        .iter()
-                        .any(|v| matches!(v.value, ConstantValue::Literal(0)));
-                    if !has_zero {
+                    if !e.has_zero {
                         out.has_non_default = true;
                     }
                 }
@@ -2129,6 +2132,10 @@ impl Parser {
             })
         });
 
+        // If the struct has no payload fields (only `type` and `next`), the generator
+        // produces no accessor methods (readers). We suppress `dead_code` warnings
+        // because while the fields exist in the C layout, they are not explicitly
+        // read by the generated Rust interface.
         let field_attr = if readers.clone().next().is_none() {
             quote! { #[allow(dead_code)] }
         } else {
@@ -2237,6 +2244,7 @@ struct Command {
 struct Enum<T> {
     comment: Option<String>,
     values: Vec<Constant<T>>,
+    has_zero: bool,
 }
 
 impl<T> Enum<T> {
@@ -2244,6 +2252,7 @@ impl<T> Enum<T> {
         Self {
             comment: None,
             values: Vec::new(),
+            has_zero: false,
         }
     }
 }
