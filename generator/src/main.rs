@@ -959,7 +959,6 @@ impl Parser {
 
         let enums = self.enums.iter().map(|(name, e)| {
             let ident = xr_ty_name(name);
-            let has_zero = e.has_zero;
             let values = e.values.iter().map(|v| {
                 let value_name = xr_enum_value_name(name, &v.name);
                 let value = match v.value {
@@ -1030,7 +1029,7 @@ impl Parser {
             } else {
                 quote! {}
             };
-            let derive_traits = if has_zero {
+            let derive_traits = if e.has_zero {
                 quote! { Copy, Clone, Eq, PartialEq, Default }
             } else {
                 quote! { Copy, Clone, Eq, PartialEq }
