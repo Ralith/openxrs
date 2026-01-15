@@ -159,7 +159,42 @@ wrapper! {
 }
 
 wrapper! {
-    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    SpaceUserIdFB(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    FutureEXT(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    TrackableANDROID(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    RenderModelIdEXT(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    SpatialEntityIdEXT(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    SpatialBufferIdEXT(u64)
+}
+
+wrapper! {
+    #[derive(Debug, Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+    SpatialEntityIdBD(u64)
+}
+
+wrapper! {
+    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
     Version(u64)
 }
 
@@ -249,6 +284,3 @@ pub struct MLCoordinateFrameUID {
 
 // Hacky constants originating from enums
 pub const EYE_POSITION_COUNT_FB: usize = 2;
-
-pub type SpaceUserIdFB = u64;
-pub type FutureEXT = u64;

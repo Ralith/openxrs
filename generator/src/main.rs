@@ -809,9 +809,13 @@ impl Parser {
                             let name = attr(&attributes, "name").unwrap();
                             let value = attr(&attributes, "value").unwrap();
                             let comment = attr(&attributes, "comment");
+                            let parsed_value = value.parse().unwrap();
+                            if parsed_value == 0 {
+                                item.has_zero = true;
+                            }
                             item.values.push(Constant {
                                 name: name.into(),
-                                value: ConstantValue::Literal(value.parse().unwrap()),
+                                value: ConstantValue::Literal(parsed_value),
                                 comment: comment.and_then(tidy_comment),
                             });
                         }
@@ -1025,10 +1029,15 @@ impl Parser {
             } else {
                 quote! {}
             };
+            let derive_traits = if e.has_zero {
+                quote! { Copy, Clone, Eq, PartialEq, Default }
+            } else {
+                quote! { Copy, Clone, Eq, PartialEq }
+            };
             quote! {
                 #[doc = #doc]
                 #[repr(transparent)]
-                #[derive(Copy, Clone, Eq, PartialEq)]
+                #[derive(#derive_traits)]
                 pub struct #ident(i32);
                 impl #ident {
                     #(#values)*
@@ -1482,6 +1491,15 @@ impl Parser {
         let reexports = simple_structs
             .iter()
             .cloned()
+            // FIXME: Temporarily exclude Android-specific types.
+            // The current generator and sys crate do not distinguish between "Android OS" dependencies
+            // (e.g., JNI) and "Android XR" vendor extensions.
+            // Since `sys` currently gates all `ANDROID` suffixed types behind `#[cfg(target_os = "android")]`,
+            // generating them unconditionally causes resolution errors on non-Android platforms.
+            // Future logic should distinguish between actual OS dependencies and vendor-specific logical types.
+            .filter(|&x| {
+                x != "XrRaycastHitResultANDROID" && x != "XrTrackableMarkerDatabaseEntryANDROID"
+            })
             .chain(
                 self.enums
                     .keys()
@@ -1538,6 +1556,9 @@ impl Parser {
             if name == "XrSwapchainImageBaseHeader"
                 || name == "XrEventDataBaseHeader"
                 || name == "XrLoaderInitInfoBaseHeaderKHR"
+                // TODO: Not yet manually implemented
+                || name == "XrSpatialAnchorsCreateInfoBaseHeaderML"
+                || name == "XrFutureCompletionBaseHeaderEXT"
             {
                 return None;
             }
@@ -1739,7 +1760,9 @@ impl Parser {
                 if let Some(x) = self.structs.get(&member.ty) {
                     out |= self.compute_meta(&member.ty, x);
                 }
-                if self.enums.contains_key(&member.ty) {
+                if let Some(e) = self.enums.get(&member.ty)
+                    && !e.has_zero
+                {
                     out.has_non_default = true;
                 }
             }
@@ -2108,10 +2131,20 @@ impl Parser {
             })
         });
 
+        // If the struct has no payload fields (only `type` and `next`), the generator
+        // produces no accessor methods (readers). We suppress `dead_code` warnings
+        // because while the fields exist in the C layout, they are not explicitly
+        // read by the generated Rust interface.
+        let field_attr = if readers.clone().next().is_none() {
+            quote! { #[allow(dead_code)] }
+        } else {
+            quote! {}
+        };
+
         let sys_raw_ident_str = format!("[sys::{}]", raw_ident);
         quote! {
             #[derive(Copy, Clone)]
-            pub struct #ident<'a>(&'a sys::#raw_ident);
+            pub struct #ident<'a>(#field_attr &'a sys::#raw_ident);
 
             impl<'a> #ident<'a> {
                 #[inline]
@@ -2210,6 +2243,7 @@ struct Command {
 struct Enum<T> {
     comment: Option<String>,
     values: Vec<Constant<T>>,
+    has_zero: bool,
 }
 
 impl<T> Enum<T> {
@@ -2217,6 +2251,7 @@ impl<T> Enum<T> {
         Self {
             comment: None,
             values: Vec::new(),
+            has_zero: false,
         }
     }
 }
@@ -2285,6 +2320,8 @@ fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
         "XrMarkerArucoDict" => "XR_MARKER_ARUCO_".len(),
         "XrMarkerAprilTagDict" => "XR_MARKER_APRIL_TAG_".len(),
         "XrLoaderInterfaceStructs" => "XR_LOADER_INTERFACE_STRUCT_".len(),
+        "XrSpatialMarkerArucoDict" => "XR_SPATIAL_MARKER_ARUCO_".len(),
+        "XrSpatialMarkerAprilTagDict" => "XR_SPATIAL_MARKER_APRIL_TAG_".len(),
         _ => ty.to_shouty_snake_case().len() + 1,
     };
     let end = if !ext.is_empty() {
