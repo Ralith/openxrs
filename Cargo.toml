@@ -1,3 +1,4 @@
 [workspace]
 resolver = "3"
 members = ["generator", "sys", "openxr"]
+resolver = "2"
