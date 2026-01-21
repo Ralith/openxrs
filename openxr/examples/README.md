@@ -12,16 +12,17 @@ Display a head-locked gradient spanning both eyes. Controllers position is repor
 
 Same as `vulkan` but it can run on Android, specifically on the Oculus Quest and Quest 2. It shares the same source file.
 
-* Install [cargo-apk](https://crates.io/crates/cargo-apk)
-* Download Android SDK version 30, set `$ANDROID_HOME` to its path
-* Download Android NDK version 23, set `$ANDROID_NDK_ROOT` to its path
+* Install [cargo-apk](https://crates.io/crates/cargo-apk): `cargo install cargo-apk`
+* Download Android SDK version 30, set `$ANDROID_HOME` to its path. You can do this using Android Studio.
+* Download Android NDK version 23, set `$ANDROID_NDK_ROOT` to its path. You can do this using Android Studio.
 * Copy `arm64-v8a` folder from "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/libs/" into "openxr/examples/libs/"
-* Get `libopenxr_loader.so` from the Oculus OpenXR Mobile SDK and add it to "openxr/examples/libs/arm64-v8a"
+* Get `libopenxr_loader.so` from the OpenXR SDK and add it to "openxr/examples/libs/arm64-v8a". You can download the `openxr_loader_for_android.aar` from [here](https://github.com/KhronosGroup/OpenXR-SDK-Source/releases). You need to unzip the file and find the file in: `prefab\modules\openxr_loader\libs\android.arm64-v8a`
 * Run:
 
     ```sh
     cd openxr
     cargo apk run --example vulkan-android
     ```
+    with a connected headset. This will compile, upload and automaticly launch the application on an connected headset.
 
 [Cargo.toml](../Cargo.toml) contains some metadata used by cargo-apk to generate the `AndroidManifest.xml`. In this example it is configured for the Oculus Quest and Quest 2, but changes are necessary to enable features like hand tracking or adding support for more headsets like the Oculus Go. You can read more details in the developer portal of your headset.
