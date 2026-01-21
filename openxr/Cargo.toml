@@ -28,6 +28,8 @@ libloading = { version = "0.9", optional = true }
 [dev-dependencies]
 ash = { version = "0.38", default-features = false, features = ["loaded"] }
 ctrlc = "3.1.5"
+wgpu = { version = "0.14.0", features = ["spirv"] }
+wgpu-hal = "0.14.0"
 
 [target.'cfg(target_os = "android")'.dev-dependencies]
 ndk-glue = "0.7"
@@ -45,6 +47,9 @@ name = "vulkan"
 name = "vulkan-android"
 path = "examples/vulkan.rs"
 crate-type = ["cdylib"]
+
+[[example]]
+name = "wgpu"
 
 # The following manifest metadata is used by cargo-apk to configure the example Android app for the Oculus Quest 1 and Quest 2.
 # It does not affect the openxr crate.
