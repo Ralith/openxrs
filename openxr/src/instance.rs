@@ -189,6 +189,32 @@ impl Instance {
         }
     }
 
+    #[inline]
+    pub fn supports_face_tracking_fb(
+        &self,
+        system: SystemId,
+    ) -> Result<SystemFaceTrackingProperties2FB> {
+        if self.exts().fb_face_tracking2.is_none() {
+            return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
+        }
+        unsafe {
+            let face = {
+                let mut face = sys::SystemFaceTrackingProperties2FB::out(ptr::null_mut());
+                let mut p = sys::SystemProperties::out(&mut face as *mut _ as _);
+                cvt((self.fp().get_system_properties)(
+                    self.as_raw(),
+                    system,
+                    p.as_mut_ptr(),
+                ))?;
+                face.assume_init()
+            };
+            Ok(SystemFaceTrackingProperties2FB {
+                supports_visual_face_tracking: face.supports_visual_face_tracking.into(),
+                supports_audio_face_tracking: face.supports_audio_face_tracking.into(),
+            })
+        }
+    }
+
     /// Construct a `Path` from a string
     ///
     /// A `Path` should only be used with the instance that produced it.
@@ -791,6 +817,12 @@ pub struct ViewConfigurationView {
     pub max_image_rect_height: u32,
     pub recommended_swapchain_sample_count: u32,
     pub max_swapchain_sample_count: u32,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct SystemFaceTrackingProperties2FB {
+    pub supports_visual_face_tracking: bool,
+    pub supports_audio_face_tracking: bool,
 }
 
 pub struct EventDataBuffer {
