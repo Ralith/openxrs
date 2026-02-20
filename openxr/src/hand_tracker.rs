@@ -35,14 +35,11 @@ impl HandTracker {
     }
 
     pub(crate) fn create<G>(session: &Session<G>, hand: Hand) -> Result<Self> {
-        let fp = session.inner.instance.exts().ext_hand_tracking.as_ref();
-        let fp = if let Some(fp) = fp {
-            fp
-        } else {
+        let Some(fp) = session.inner.instance.exts().ext_hand_tracking.as_ref() else {
             return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
         };
 
-        let mut out = sys::HandTrackerEXT::NULL;
+        let mut handle = sys::HandTrackerEXT::NULL;
         let info = sys::HandTrackerCreateInfoEXT {
             ty: sys::HandTrackerCreateInfoEXT::TYPE,
             next: ptr::null(),
@@ -50,10 +47,13 @@ impl HandTracker {
             // If this ever changes, update the joint_counts set in `Space::locate_hand_joints`
             hand_joint_set: sys::HandJointSetEXT::DEFAULT,
         };
-        let handle = unsafe {
-            cvt((fp.create_hand_tracker)(session.as_raw(), &info, &mut out))?;
-            out
-        };
+        unsafe {
+            cvt((fp.create_hand_tracker)(
+                session.as_raw(),
+                &info,
+                &mut handle,
+            ))?;
+        }
         Ok(HandTracker {
             session: session.inner.clone(),
             handle,
