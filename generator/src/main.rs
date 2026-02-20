@@ -1042,8 +1042,8 @@ impl Parser {
                 impl #ident {
                     #(#values)*
 
-                    pub fn from_raw(x: i32) -> Self { Self(x) }
-                    pub fn into_raw(self) -> i32 { self.0 }
+                    pub const fn from_raw(x: i32) -> Self { Self(x) }
+                    pub const fn into_raw(self) -> i32 { self.0 }
                 }
                 impl fmt::Debug for #ident {
                     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
