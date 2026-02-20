@@ -16332,32 +16332,27 @@ pub struct ForceFeedbackCurlApplyLocationMNDX {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFaceTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerCreateInfoANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct FaceTrackerCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-#[cfg(target_os = "android")]
 impl FaceTrackerCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::FACE_TRACKER_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFaceStateGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceStateGetInfoANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct FaceStateGetInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub time: Time,
 }
-#[cfg(target_os = "android")]
 impl FaceStateGetInfoANDROID {
     pub const TYPE: StructureType = StructureType::FACE_STATE_GET_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFaceStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct FaceStateANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16371,7 +16366,6 @@ pub struct FaceStateANDROID {
     pub region_confidences_count_output: u32,
     pub region_confidences: *mut f32,
 }
-#[cfg(target_os = "android")]
 impl FaceStateANDROID {
     pub const TYPE: StructureType = StructureType::FACE_STATE_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16390,13 +16384,11 @@ impl FaceStateANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemFaceTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemFaceTrackingPropertiesANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct SystemFaceTrackingPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub supports_face_tracking: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SystemFaceTrackingPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_FACE_TRACKING_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16415,13 +16407,11 @@ impl SystemFaceTrackingPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemPassthroughCameraStatePropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPassthroughCameraStatePropertiesANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
-#[cfg(target_os = "android")]
 pub struct SystemPassthroughCameraStatePropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub supports_passthrough_camera_state: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SystemPassthroughCameraStatePropertiesANDROID {
     pub const TYPE: StructureType =
         StructureType::SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID;
@@ -16441,32 +16431,27 @@ impl SystemPassthroughCameraStatePropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughCameraStateGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughCameraStateGetInfoANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
-#[cfg(target_os = "android")]
 pub struct PassthroughCameraStateGetInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-#[cfg(target_os = "android")]
 impl PassthroughCameraStateGetInfoANDROID {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_CAMERA_STATE_GET_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableTrackerCreateInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct TrackableTrackerCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub trackable_type: TrackableTypeANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableTrackerCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_TRACKER_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableGetInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct TrackableGetInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -16474,14 +16459,12 @@ pub struct TrackableGetInfoANDROID {
     pub base_space: Space,
     pub time: Time,
 }
-#[cfg(target_os = "android")]
 impl TrackableGetInfoANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_GET_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackablePlaneANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackablePlaneANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct TrackablePlaneANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16496,7 +16479,6 @@ pub struct TrackablePlaneANDROID {
     pub vertex_count_output: *mut u32,
     pub vertices: *mut Vector2f,
 }
-#[cfg(target_os = "android")]
 impl TrackablePlaneANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_PLANE_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16515,7 +16497,6 @@ impl TrackablePlaneANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrAnchorSpaceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorSpaceCreateInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct AnchorSpaceCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -16524,28 +16505,24 @@ pub struct AnchorSpaceCreateInfoANDROID {
     pub pose: Posef,
     pub trackable: TrackableANDROID,
 }
-#[cfg(target_os = "android")]
 impl AnchorSpaceCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::ANCHOR_SPACE_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemTrackablesPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemTrackablesPropertiesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct SystemTrackablesPropertiesANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub supports_anchor: Bool32,
     pub max_anchors: u32,
 }
-#[cfg(target_os = "android")]
 impl SystemTrackablesPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_TRACKABLES_PROPERTIES_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableObjectANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableObjectANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
-#[cfg(target_os = "android")]
 pub struct TrackableObjectANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16555,7 +16532,6 @@ pub struct TrackableObjectANDROID {
     pub object_label: ObjectLabelANDROID,
     pub last_updated_time: Time,
 }
-#[cfg(target_os = "android")]
 impl TrackableObjectANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_OBJECT_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16574,14 +16550,12 @@ impl TrackableObjectANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableObjectConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableObjectConfigurationANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
-#[cfg(target_os = "android")]
 pub struct TrackableObjectConfigurationANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub label_count: u32,
     pub active_labels: *const ObjectLabelANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableObjectConfigurationANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_OBJECT_CONFIGURATION_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16600,7 +16574,6 @@ impl TrackableObjectConfigurationANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRaycastInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastInfoANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
-#[cfg(target_os = "android")]
 pub struct RaycastInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -16612,14 +16585,12 @@ pub struct RaycastInfoANDROID {
     pub space: Space,
     pub time: Time,
 }
-#[cfg(target_os = "android")]
 impl RaycastInfoANDROID {
     pub const TYPE: StructureType = StructureType::RAYCAST_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrRaycastHitResultANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastHitResultANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
-#[cfg(target_os = "android")]
 pub struct RaycastHitResultANDROID {
     pub ty: TrackableTypeANDROID,
     pub trackable: TrackableANDROID,
@@ -16628,7 +16599,6 @@ pub struct RaycastHitResultANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRaycastHitResultsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastHitResultsANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
-#[cfg(target_os = "android")]
 pub struct RaycastHitResultsANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16636,7 +16606,6 @@ pub struct RaycastHitResultsANDROID {
     pub results_count_output: u32,
     pub results: *mut RaycastHitResultANDROID,
 }
-#[cfg(target_os = "android")]
 impl RaycastHitResultsANDROID {
     pub const TYPE: StructureType = StructureType::RAYCAST_HIT_RESULTS_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16655,7 +16624,6 @@ impl RaycastHitResultsANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemMarkerTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemMarkerTrackingPropertiesANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct SystemMarkerTrackingPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16663,7 +16631,6 @@ pub struct SystemMarkerTrackingPropertiesANDROID {
     pub supports_marker_size_estimation: Bool32,
     pub max_marker_count: u16,
 }
-#[cfg(target_os = "android")]
 impl SystemMarkerTrackingPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_MARKER_TRACKING_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16682,7 +16649,6 @@ impl SystemMarkerTrackingPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableMarkerConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerConfigurationANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerConfigurationANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16690,7 +16656,6 @@ pub struct TrackableMarkerConfigurationANDROID {
     pub database_count: u32,
     pub databases: *const TrackableMarkerDatabaseANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableMarkerConfigurationANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_MARKER_CONFIGURATION_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16709,7 +16674,6 @@ impl TrackableMarkerConfigurationANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableMarkerDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerDatabaseANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerDatabaseANDROID {
     pub dictionary: TrackableMarkerDictionaryANDROID,
     pub entry_count: u32,
@@ -16718,7 +16682,6 @@ pub struct TrackableMarkerDatabaseANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrTrackableMarkerDatabaseEntryANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerDatabaseEntryANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerDatabaseEntryANDROID {
     pub id: i32,
     pub edge_size: f32,
@@ -16726,7 +16689,6 @@ pub struct TrackableMarkerDatabaseEntryANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableMarkerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16737,7 +16699,6 @@ pub struct TrackableMarkerANDROID {
     pub center_pose: Posef,
     pub extents: Extent2Df,
 }
-#[cfg(target_os = "android")]
 impl TrackableMarkerANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_MARKER_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16819,51 +16780,43 @@ impl AnchorSharingTokenANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrDeviceAnchorPersistenceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrDeviceAnchorPersistenceCreateInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct DeviceAnchorPersistenceCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-#[cfg(target_os = "android")]
 impl DeviceAnchorPersistenceCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::DEVICE_ANCHOR_PERSISTENCE_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPersistedAnchorSpaceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistedAnchorSpaceCreateInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct PersistedAnchorSpaceCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub anchor_id: UuidEXT,
 }
-#[cfg(target_os = "android")]
 impl PersistedAnchorSpaceCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::PERSISTED_ANCHOR_SPACE_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPersistedAnchorSpaceInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistedAnchorSpaceInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct PersistedAnchorSpaceInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub anchor: Space,
 }
-#[cfg(target_os = "android")]
 impl PersistedAnchorSpaceInfoANDROID {
     pub const TYPE: StructureType = StructureType::PERSISTED_ANCHOR_SPACE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemDeviceAnchorPersistencePropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemDeviceAnchorPersistencePropertiesANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct SystemDeviceAnchorPersistencePropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub supports_anchor_persistence: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SystemDeviceAnchorPersistencePropertiesANDROID {
     pub const TYPE: StructureType =
         StructureType::SYSTEM_DEVICE_ANCHOR_PERSISTENCE_PROPERTIES_ANDROID;
@@ -16883,13 +16836,11 @@ impl SystemDeviceAnchorPersistencePropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPerformanceMetricsStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerformanceMetricsStateANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
-#[cfg(target_os = "android")]
 pub struct PerformanceMetricsStateANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub enabled: Bool32,
 }
-#[cfg(target_os = "android")]
 impl PerformanceMetricsStateANDROID {
     pub const TYPE: StructureType = StructureType::PERFORMANCE_METRICS_STATE_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16908,7 +16859,6 @@ impl PerformanceMetricsStateANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPerformanceMetricsCounterANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerformanceMetricsCounterANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
-#[cfg(target_os = "android")]
 pub struct PerformanceMetricsCounterANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16917,7 +16867,6 @@ pub struct PerformanceMetricsCounterANDROID {
     pub uint_value: u32,
     pub float_value: f32,
 }
-#[cfg(target_os = "android")]
 impl PerformanceMetricsCounterANDROID {
     pub const TYPE: StructureType = StructureType::PERFORMANCE_METRICS_COUNTER_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16936,7 +16885,6 @@ impl PerformanceMetricsCounterANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemQrCodeTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemQrCodeTrackingPropertiesANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
-#[cfg(target_os = "android")]
 pub struct SystemQrCodeTrackingPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -16944,7 +16892,6 @@ pub struct SystemQrCodeTrackingPropertiesANDROID {
     pub supports_qr_code_size_estimation: Bool32,
     pub max_qr_code_count: u16,
 }
-#[cfg(target_os = "android")]
 impl SystemQrCodeTrackingPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_QR_CODE_TRACKING_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16963,14 +16910,12 @@ impl SystemQrCodeTrackingPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableQrCodeConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableQrCodeConfigurationANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
-#[cfg(target_os = "android")]
 pub struct TrackableQrCodeConfigurationANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub tracking_mode: QrCodeTrackingModeANDROID,
     pub qr_code_edge_size: f32,
 }
-#[cfg(target_os = "android")]
 impl TrackableQrCodeConfigurationANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_QR_CODE_CONFIGURATION_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -16989,7 +16934,6 @@ impl TrackableQrCodeConfigurationANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableQrCodeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableQrCodeANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
-#[cfg(target_os = "android")]
 pub struct TrackableQrCodeANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -17001,7 +16945,6 @@ pub struct TrackableQrCodeANDROID {
     pub buffer_count_output: u32,
     pub buffer: *mut c_char,
 }
-#[cfg(target_os = "android")]
 impl TrackableQrCodeANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_QR_CODE_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -17020,7 +16963,6 @@ impl TrackableQrCodeANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemPassthroughLayerPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPassthroughLayerPropertiesANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
-#[cfg(target_os = "android")]
 pub struct SystemPassthroughLayerPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -17028,7 +16970,6 @@ pub struct SystemPassthroughLayerPropertiesANDROID {
     pub max_mesh_index_count: u32,
     pub max_mesh_vertex_count: u32,
 }
-#[cfg(target_os = "android")]
 impl SystemPassthroughLayerPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_PASSTHROUGH_LAYER_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -17047,21 +16988,18 @@ impl SystemPassthroughLayerPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughLayerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughLayerCreateInfoANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
-#[cfg(target_os = "android")]
 pub struct PassthroughLayerCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub vertex_capacity: u32,
     pub index_capacity: u32,
 }
-#[cfg(target_os = "android")]
 impl PassthroughLayerCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_LAYER_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughLayerMeshANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughLayerMeshANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
-#[cfg(target_os = "android")]
 pub struct PassthroughLayerMeshANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -17071,14 +17009,12 @@ pub struct PassthroughLayerMeshANDROID {
     pub index_count: u32,
     pub indices: *const u16,
 }
-#[cfg(target_os = "android")]
 impl PassthroughLayerMeshANDROID {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_LAYER_MESH_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCompositionLayerPassthroughANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCompositionLayerPassthroughANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
-#[cfg(target_os = "android")]
 pub struct CompositionLayerPassthroughANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -17089,20 +17025,17 @@ pub struct CompositionLayerPassthroughANDROID {
     pub opacity: f32,
     pub layer: PassthroughLayerANDROID,
 }
-#[cfg(target_os = "android")]
 impl CompositionLayerPassthroughANDROID {
     pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PASSTHROUGH_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemSceneMeshingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSceneMeshingPropertiesANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
-#[cfg(target_os = "android")]
 pub struct SystemSceneMeshingPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub supports_scene_meshing: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SystemSceneMeshingPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_SCENE_MESHING_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -17121,21 +17054,18 @@ impl SystemSceneMeshingPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSceneMeshingTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshingTrackerCreateInfoANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
-#[cfg(target_os = "android")]
 pub struct SceneMeshingTrackerCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub semantic_label_set: SceneMeshSemanticLabelSetANDROID,
     pub enable_normals: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SceneMeshingTrackerCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::SCENE_MESHING_TRACKER_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSceneMeshSnapshotCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshSnapshotCreateInfoANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
-#[cfg(target_os = "android")]
 pub struct SceneMeshSnapshotCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -17143,28 +17073,24 @@ pub struct SceneMeshSnapshotCreateInfoANDROID {
     pub time: Time,
     pub bounding_box: Boxf,
 }
-#[cfg(target_os = "android")]
 impl SceneMeshSnapshotCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::SCENE_MESH_SNAPSHOT_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSceneMeshSnapshotCreationResultANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshSnapshotCreationResultANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
-#[cfg(target_os = "android")]
 pub struct SceneMeshSnapshotCreationResultANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub snapshot: SceneMeshSnapshotANDROID,
     pub tracking_state: SceneMeshTrackingStateANDROID,
 }
-#[cfg(target_os = "android")]
 impl SceneMeshSnapshotCreationResultANDROID {
     pub const TYPE: StructureType = StructureType::SCENE_MESH_SNAPSHOT_CREATION_RESULT_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSceneSubmeshStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneSubmeshStateANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
-#[cfg(target_os = "android")]
 pub struct SceneSubmeshStateANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -17173,7 +17099,6 @@ pub struct SceneSubmeshStateANDROID {
     pub submesh_pose_in_base_space: Posef,
     pub bounds: Extent3Df,
 }
-#[cfg(target_os = "android")]
 impl SceneSubmeshStateANDROID {
     pub const TYPE: StructureType = StructureType::SCENE_SUBMESH_STATE_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -17192,7 +17117,6 @@ impl SceneSubmeshStateANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSceneSubmeshDataANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneSubmeshDataANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
-#[cfg(target_os = "android")]
 pub struct SceneSubmeshDataANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -17206,7 +17130,6 @@ pub struct SceneSubmeshDataANDROID {
     pub index_count_output: u32,
     pub indices: *mut u32,
 }
-#[cfg(target_os = "android")]
 impl SceneSubmeshDataANDROID {
     pub const TYPE: StructureType = StructureType::SCENE_SUBMESH_DATA_ANDROID;
 }
@@ -20713,7 +20636,6 @@ pub struct LoaderInitPropertyValueEXT {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialCapabilityConfigurationDepthRaycastANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationDepthRaycastANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
-#[cfg(target_os = "android")]
 pub struct SpatialCapabilityConfigurationDepthRaycastANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -20721,7 +20643,6 @@ pub struct SpatialCapabilityConfigurationDepthRaycastANDROID {
     pub enabled_component_count: u32,
     pub enabled_components: *const SpatialComponentTypeEXT,
 }
-#[cfg(target_os = "android")]
 impl SpatialCapabilityConfigurationDepthRaycastANDROID {
     pub const TYPE: StructureType =
         StructureType::SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID;
@@ -20729,7 +20650,6 @@ impl SpatialCapabilityConfigurationDepthRaycastANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialRaycastInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialRaycastInfoANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
-#[cfg(target_os = "android")]
 pub struct SpatialRaycastInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -20739,14 +20659,12 @@ pub struct SpatialRaycastInfoANDROID {
     pub direction: Vector3f,
     pub max_distance: f32,
 }
-#[cfg(target_os = "android")]
 impl SpatialRaycastInfoANDROID {
     pub const TYPE: StructureType = StructureType::SPATIAL_RAYCAST_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrSpatialRaycastResultDataANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialRaycastResultDataANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
-#[cfg(target_os = "android")]
 pub struct SpatialRaycastResultDataANDROID {
     pub hit_pose: Posef,
     pub distance_squared: f32,
@@ -20754,14 +20672,12 @@ pub struct SpatialRaycastResultDataANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialComponentRaycastResultListANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentRaycastResultListANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
-#[cfg(target_os = "android")]
 pub struct SpatialComponentRaycastResultListANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub raycast_result_count: u32,
     pub raycast_results: *mut SpatialRaycastResultDataANDROID,
 }
-#[cfg(target_os = "android")]
 impl SpatialComponentRaycastResultListANDROID {
     pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -20780,7 +20696,6 @@ impl SpatialComponentRaycastResultListANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialRaycastSnapshotCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialRaycastSnapshotCreateInfoANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
-#[cfg(target_os = "android")]
 pub struct SpatialRaycastSnapshotCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -20788,7 +20703,6 @@ pub struct SpatialRaycastSnapshotCreateInfoANDROID {
     pub component_types: *const SpatialComponentTypeEXT,
     pub raycast_info: *const SpatialRaycastInfoANDROID,
 }
-#[cfg(target_os = "android")]
 impl SpatialRaycastSnapshotCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::SPATIAL_RAYCAST_SNAPSHOT_CREATE_INFO_ANDROID;
 }
@@ -21058,7 +20972,6 @@ impl LipExpressionDataBD {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemImageTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemImageTrackingPropertiesANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
-#[cfg(target_os = "android")]
 pub struct SystemImageTrackingPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -21067,7 +20980,6 @@ pub struct SystemImageTrackingPropertiesANDROID {
     pub max_tracked_image_count: u32,
     pub max_loaded_image_count: u32,
 }
-#[cfg(target_os = "android")]
 impl SystemImageTrackingPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_IMAGE_TRACKING_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -21086,7 +20998,6 @@ impl SystemImageTrackingPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableImageDatabaseEntryANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageDatabaseEntryANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
-#[cfg(target_os = "android")]
 pub struct TrackableImageDatabaseEntryANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -21098,35 +21009,30 @@ pub struct TrackableImageDatabaseEntryANDROID {
     pub buffer_size: u32,
     pub buffer: *const u8,
 }
-#[cfg(target_os = "android")]
 impl TrackableImageDatabaseEntryANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_DATABASE_ENTRY_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableImageDatabaseCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageDatabaseCreateInfoANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
-#[cfg(target_os = "android")]
 pub struct TrackableImageDatabaseCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub entry_count: u32,
     pub entries: *const TrackableImageDatabaseEntryANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableImageDatabaseCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_DATABASE_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrCreateTrackableImageDatabaseCompletionANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCreateTrackableImageDatabaseCompletionANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
-#[cfg(target_os = "android")]
 pub struct CreateTrackableImageDatabaseCompletionANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub future_result: Result,
     pub database: TrackableImageDatabaseANDROID,
 }
-#[cfg(target_os = "android")]
 impl CreateTrackableImageDatabaseCompletionANDROID {
     pub const TYPE: StructureType =
         StructureType::CREATE_TRACKABLE_IMAGE_DATABASE_COMPLETION_ANDROID;
@@ -21146,21 +21052,18 @@ impl CreateTrackableImageDatabaseCompletionANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableImageConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageConfigurationANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
-#[cfg(target_os = "android")]
 pub struct TrackableImageConfigurationANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub database_count: u32,
     pub databases: *const TrackableImageDatabaseANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableImageConfigurationANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_CONFIGURATION_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableImageANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
-#[cfg(target_os = "android")]
 pub struct TrackableImageANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -21171,27 +21074,23 @@ pub struct TrackableImageANDROID {
     pub center_pose: Posef,
     pub extents: Extent2Df,
 }
-#[cfg(target_os = "android")]
 impl TrackableImageANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrEventDataImageTrackingLostANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataImageTrackingLostANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
-#[cfg(target_os = "android")]
 pub struct EventDataImageTrackingLostANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub time: Time,
 }
-#[cfg(target_os = "android")]
 impl EventDataImageTrackingLostANDROID {
     pub const TYPE: StructureType = StructureType::EVENT_DATA_IMAGE_TRACKING_LOST_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialCapabilityConfigurationObjectTrackingANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationObjectTrackingANDROID) - defined by [XR_ANDROID_spatial_object_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_object_tracking)"]
-#[cfg(target_os = "android")]
 pub struct SpatialCapabilityConfigurationObjectTrackingANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -21201,7 +21100,6 @@ pub struct SpatialCapabilityConfigurationObjectTrackingANDROID {
     pub active_semantic_label_count: u32,
     pub active_semantic_labels: *const SpatialObjectSemanticLabelANDROID,
 }
-#[cfg(target_os = "android")]
 impl SpatialCapabilityConfigurationObjectTrackingANDROID {
     pub const TYPE: StructureType =
         StructureType::SPATIAL_CAPABILITY_CONFIGURATION_OBJECT_TRACKING_ANDROID;
@@ -21209,14 +21107,12 @@ impl SpatialCapabilityConfigurationObjectTrackingANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialComponentObjectSemanticLabelListANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentObjectSemanticLabelListANDROID) - defined by [XR_ANDROID_spatial_object_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_object_tracking)"]
-#[cfg(target_os = "android")]
 pub struct SpatialComponentObjectSemanticLabelListANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub semantic_label_count: u32,
     pub semantic_labels: *mut SpatialObjectSemanticLabelANDROID,
 }
-#[cfg(target_os = "android")]
 impl SpatialComponentObjectSemanticLabelListANDROID {
     pub const TYPE: StructureType =
         StructureType::SPATIAL_COMPONENT_OBJECT_SEMANTIC_LABEL_LIST_ANDROID;
@@ -21236,52 +21132,44 @@ impl SpatialComponentObjectSemanticLabelListANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorParentANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorParentANDROID) - defined by [XR_ANDROID_spatial_entity_bound_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_entity_bound_anchor)"]
-#[cfg(target_os = "android")]
 pub struct SpatialAnchorParentANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub parent_id: SpatialEntityIdEXT,
 }
-#[cfg(target_os = "android")]
 impl SpatialAnchorParentANDROID {
     pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_PARENT_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorSpaceFromIdCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorSpaceFromIdCreateInfoANDROID) - defined by [XR_ANDROID_spatial_anchor_space](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_anchor_space)"]
-#[cfg(target_os = "android")]
 pub struct SpatialAnchorSpaceFromIdCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub anchor_entity_id: SpatialEntityIdEXT,
 }
-#[cfg(target_os = "android")]
 impl SpatialAnchorSpaceFromIdCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SPACE_FROM_ID_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialDiscoveryUniqueEntitiesFilterANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialDiscoveryUniqueEntitiesFilterANDROID) - defined by [XR_ANDROID_spatial_component_subsumed_by](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_component_subsumed_by)"]
-#[cfg(target_os = "android")]
 pub struct SpatialDiscoveryUniqueEntitiesFilterANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-#[cfg(target_os = "android")]
 impl SpatialDiscoveryUniqueEntitiesFilterANDROID {
     pub const TYPE: StructureType = StructureType::SPATIAL_DISCOVERY_UNIQUE_ENTITIES_FILTER_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialComponentSubsumedByListANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentSubsumedByListANDROID) - defined by [XR_ANDROID_spatial_component_subsumed_by](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_component_subsumed_by)"]
-#[cfg(target_os = "android")]
 pub struct SpatialComponentSubsumedByListANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub subsumed_unique_id_count: u32,
     pub subsumed_unique_ids: *mut SpatialEntityIdEXT,
 }
-#[cfg(target_os = "android")]
 impl SpatialComponentSubsumedByListANDROID {
     pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_SUBSUMED_BY_LIST_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -22751,38 +22639,32 @@ pub mod pfn {
         hand_tracker: HandTrackerEXT,
         locations: *const ForceFeedbackCurlApplyLocationsMNDX,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateFaceTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateFaceTrackerANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type CreateFaceTrackerANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const FaceTrackerCreateInfoANDROID,
         face_tracker: *mut FaceTrackerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyFaceTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyFaceTrackerANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type DestroyFaceTrackerANDROID =
         unsafe extern "system" fn(face_tracker: FaceTrackerANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetFaceStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFaceStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type GetFaceStateANDROID = unsafe extern "system" fn(
         face_tracker: FaceTrackerANDROID,
         get_info: *const FaceStateGetInfoANDROID,
         face_state_output: *mut FaceStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetFaceCalibrationStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFaceCalibrationStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type GetFaceCalibrationStateANDROID = unsafe extern "system" fn(
         face_tracker: FaceTrackerANDROID,
         face_is_calibrated_output: *mut Bool32,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetPassthroughCameraStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetPassthroughCameraStateANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
     pub type GetPassthroughCameraStateANDROID = unsafe extern "system" fn(
         session: Session,
         get_info: *const PassthroughCameraStateGetInfoANDROID,
         camera_state_output: *mut PassthroughCameraStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSupportedTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedTrackableTypesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type EnumerateSupportedTrackableTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -22791,7 +22673,6 @@ pub mod pfn {
         trackable_type_count_output: *mut u32,
         trackable_types: *mut TrackableTypeANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSupportedAnchorTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedAnchorTrackableTypesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type EnumerateSupportedAnchorTrackableTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -22801,18 +22682,15 @@ pub mod pfn {
         trackable_types: *mut TrackableTypeANDROID,
     )
         -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateTrackableTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateTrackableTrackerANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type CreateTrackableTrackerANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const TrackableTrackerCreateInfoANDROID,
         trackable_tracker: *mut TrackableTrackerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyTrackableTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyTrackableTrackerANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type DestroyTrackableTrackerANDROID =
         unsafe extern "system" fn(trackable_tracker: TrackableTrackerANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetAllTrackablesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAllTrackablesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type GetAllTrackablesANDROID = unsafe extern "system" fn(
         trackable_tracker: TrackableTrackerANDROID,
@@ -22820,14 +22698,12 @@ pub mod pfn {
         trackable_count_output: *mut u32,
         trackables: *mut TrackableANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackablePlaneANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackablePlaneANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type GetTrackablePlaneANDROID = unsafe extern "system" fn(
         trackable_tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         plane_output: *mut TrackablePlaneANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateAnchorSpaceANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type CreateAnchorSpaceANDROID = unsafe extern "system" fn(
         session: Session,
@@ -22845,14 +22721,12 @@ pub mod pfn {
     #[doc = "See [xrUnshareAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnshareAnchorANDROID) - defined by [XR_ANDROID_anchor_sharing_export](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_anchor_sharing_export)"]
     pub type UnshareAnchorANDROID =
         unsafe extern "system" fn(session: Session, anchor: Space) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackableObjectANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableObjectANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
     pub type GetTrackableObjectANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         object_output: *mut TrackableObjectANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateRaycastSupportedTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateRaycastSupportedTrackableTypesANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
     pub type EnumerateRaycastSupportedTrackableTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -22862,21 +22736,18 @@ pub mod pfn {
         trackable_types: *mut TrackableTypeANDROID,
     )
         -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrRaycastANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRaycastANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
     pub type RaycastANDROID = unsafe extern "system" fn(
         session: Session,
         ray_info: *const RaycastInfoANDROID,
         results: *mut RaycastHitResultsANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackableMarkerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableMarkerANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
     pub type GetTrackableMarkerANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         marker_output: *mut TrackableMarkerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSupportedPersistenceAnchorTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedPersistenceAnchorTypesANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type EnumerateSupportedPersistenceAnchorTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -22886,39 +22757,33 @@ pub mod pfn {
         trackable_types: *mut TrackableTypeANDROID,
     )
         -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateDeviceAnchorPersistenceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateDeviceAnchorPersistenceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type CreateDeviceAnchorPersistenceANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const DeviceAnchorPersistenceCreateInfoANDROID,
         out_handle: *mut DeviceAnchorPersistenceANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyDeviceAnchorPersistenceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyDeviceAnchorPersistenceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type DestroyDeviceAnchorPersistenceANDROID =
         unsafe extern "system" fn(handle: DeviceAnchorPersistenceANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrPersistAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPersistAnchorANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type PersistAnchorANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         persisted_info: *const PersistedAnchorSpaceInfoANDROID,
         anchor_id_output: *mut UuidEXT,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetAnchorPersistStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAnchorPersistStateANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type GetAnchorPersistStateANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         anchor_id: *const UuidEXT,
         persist_state: *mut AnchorPersistStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreatePersistedAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreatePersistedAnchorSpaceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type CreatePersistedAnchorSpaceANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         create_info: *const PersistedAnchorSpaceCreateInfoANDROID,
         anchor_output: *mut Space,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumeratePersistedAnchorsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumeratePersistedAnchorsANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type EnumeratePersistedAnchorsANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
@@ -22926,13 +22791,11 @@ pub mod pfn {
         anchor_id_count_output: *mut u32,
         anchor_ids: *mut UuidEXT,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrUnpersistAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnpersistAnchorANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type UnpersistAnchorANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         anchor_id: *const UuidEXT,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumeratePerformanceMetricsCounterPathsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumeratePerformanceMetricsCounterPathsANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
     pub type EnumeratePerformanceMetricsCounterPathsANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -22941,50 +22804,42 @@ pub mod pfn {
         counter_paths: *mut Path,
     )
         -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrSetPerformanceMetricsStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetPerformanceMetricsStateANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
     pub type SetPerformanceMetricsStateANDROID = unsafe extern "system" fn(
         session: Session,
         state: *const PerformanceMetricsStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetPerformanceMetricsStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetPerformanceMetricsStateANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
     pub type GetPerformanceMetricsStateANDROID = unsafe extern "system" fn(
         session: Session,
         state: *mut PerformanceMetricsStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrQueryPerformanceMetricsCounterANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQueryPerformanceMetricsCounterANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
     pub type QueryPerformanceMetricsCounterANDROID = unsafe extern "system" fn(
         session: Session,
         counter_path: Path,
         counter: *mut PerformanceMetricsCounterANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackableQrCodeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableQrCodeANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
     pub type GetTrackableQrCodeANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         qr_code_output: *mut TrackableQrCodeANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreatePassthroughLayerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreatePassthroughLayerANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
     pub type CreatePassthroughLayerANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const PassthroughLayerCreateInfoANDROID,
         layer: *mut PassthroughLayerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyPassthroughLayerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyPassthroughLayerANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
     pub type DestroyPassthroughLayerANDROID =
         unsafe extern "system" fn(layer: PassthroughLayerANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrSetPassthroughLayerMeshANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetPassthroughLayerMeshANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
     pub type SetPassthroughLayerMeshANDROID = unsafe extern "system" fn(
         layer: PassthroughLayerANDROID,
         mesh: *const PassthroughLayerMeshANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSupportedSemanticLabelSetsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedSemanticLabelSetsANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
     pub type EnumerateSupportedSemanticLabelSetsANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -22993,29 +22848,24 @@ pub mod pfn {
         supported_semantic_label_sets_output_count: *mut u32,
         supported_semantic_label_sets: *mut SceneMeshSemanticLabelSetANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateSceneMeshingTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSceneMeshingTrackerANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
     pub type CreateSceneMeshingTrackerANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const SceneMeshingTrackerCreateInfoANDROID,
         tracker: *mut SceneMeshingTrackerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroySceneMeshingTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySceneMeshingTrackerANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
     pub type DestroySceneMeshingTrackerANDROID =
         unsafe extern "system" fn(tracker: SceneMeshingTrackerANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateSceneMeshSnapshotANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSceneMeshSnapshotANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
     pub type CreateSceneMeshSnapshotANDROID = unsafe extern "system" fn(
         tracker: SceneMeshingTrackerANDROID,
         create_info: *const SceneMeshSnapshotCreateInfoANDROID,
         out_snapshot_creation_result: *mut SceneMeshSnapshotCreationResultANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroySceneMeshSnapshotANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySceneMeshSnapshotANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
     pub type DestroySceneMeshSnapshotANDROID =
         unsafe extern "system" fn(snapshot: SceneMeshSnapshotANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetAllSubmeshStatesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAllSubmeshStatesANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
     pub type GetAllSubmeshStatesANDROID = unsafe extern "system" fn(
         snapshot: SceneMeshSnapshotANDROID,
@@ -23023,7 +22873,6 @@ pub mod pfn {
         submesh_state_count_output: *mut u32,
         submesh_states: *mut SceneSubmeshStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetSubmeshDataANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSubmeshDataANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
     pub type GetSubmeshDataANDROID = unsafe extern "system" fn(
         snapshot: SceneMeshSnapshotANDROID,
@@ -23990,44 +23839,37 @@ pub mod pfn {
         tracker: FaceTrackerBD,
         mode: *mut FacialSimulationModeBD,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateTrackableImageDatabaseAsyncANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateTrackableImageDatabaseAsyncANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
     pub type CreateTrackableImageDatabaseAsyncANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const TrackableImageDatabaseCreateInfoANDROID,
         future: *mut FutureEXT,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateTrackableImageDatabaseCompleteANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateTrackableImageDatabaseCompleteANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
     pub type CreateTrackableImageDatabaseCompleteANDROID = unsafe extern "system" fn(
         session: Session,
         future: FutureEXT,
         completion: *mut CreateTrackableImageDatabaseCompletionANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyTrackableImageDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyTrackableImageDatabaseANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
     pub type DestroyTrackableImageDatabaseANDROID =
         unsafe extern "system" fn(database: TrackableImageDatabaseANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrAddTrackableImageDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrAddTrackableImageDatabaseANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
     pub type AddTrackableImageDatabaseANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         database: TrackableImageDatabaseANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrRemoveTrackableImageDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRemoveTrackableImageDatabaseANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
     pub type RemoveTrackableImageDatabaseANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         database: TrackableImageDatabaseANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackableImageANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableImageANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
     pub type GetTrackableImageANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         trackable: *mut TrackableImageANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSpatialAnchorAttachableComponentsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSpatialAnchorAttachableComponentsANDROID) - defined by [XR_ANDROID_spatial_entity_bound_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_entity_bound_anchor)"]
     pub type EnumerateSpatialAnchorAttachableComponentsANDROID =
         unsafe extern "system" fn(
@@ -24037,7 +23879,6 @@ pub mod pfn {
             attachable_component_count_output: *mut u32,
             attachable_components: *mut SpatialComponentTypeEXT,
         ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateSpatialAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorSpaceANDROID) - defined by [XR_ANDROID_spatial_anchor_space](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_anchor_space)"]
     pub type CreateSpatialAnchorSpaceANDROID = unsafe extern "system" fn(
         session: Session,
@@ -24046,7 +23887,6 @@ pub mod pfn {
         anchor_entity_id: *mut SpatialEntityIdEXT,
         anchor_space: *mut Space,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateSpatialAnchorSpaceFromIdANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorSpaceFromIdANDROID) - defined by [XR_ANDROID_spatial_anchor_space](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_anchor_space)"]
     pub type CreateSpatialAnchorSpaceFromIdANDROID = unsafe extern "system" fn(
         session: Session,
@@ -24080,7 +23920,6 @@ pub mod pfn {
         info: *const EnvironmentRaycastHitGetInfoMETA,
         hit_point: *mut EnvironmentRaycastHitMETA,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateSpatialRaycastSnapshotANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialRaycastSnapshotANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
     pub type CreateSpatialRaycastSnapshotANDROID = unsafe extern "system" fn(
         spatial_context: SpatialContextEXT,
@@ -24109,44 +23948,26 @@ pub mod pfn {
 pub const ALMALENCE_digital_lens_control_SPEC_VERSION: u32 = 1u32;
 pub const ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME: &[u8] =
     b"XR_ALMALENCE_digital_lens_control\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_SPEC_VERSION: u32 = 2u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_device_anchor_persistence_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_DEVICE_ANCHOR_PERSISTENCE_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_device_anchor_persistence\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_face_tracking_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_FACE_TRACKING_EXTENSION_NAME: &[u8] = b"XR_ANDROID_face_tracking\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_passthrough_camera_state_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_PASSTHROUGH_CAMERA_STATE_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_passthrough_camera_state\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_composition_layer_passthrough_mesh_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_COMPOSITION_LAYER_PASSTHROUGH_MESH_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_composition_layer_passthrough_mesh\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_raycast_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_RAYCAST_EXTENSION_NAME: &[u8] = b"XR_ANDROID_raycast\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_performance_metrics_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_PERFORMANCE_METRICS_EXTENSION_NAME: &[u8] = b"XR_ANDROID_performance_metrics\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_object_SPEC_VERSION: u32 = 2u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_OBJECT_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_object\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_unbounded_reference_space\0";
 #[cfg(target_os = "android")]
@@ -24154,49 +23975,29 @@ pub const ANDROID_anchor_sharing_export_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const ANDROID_ANCHOR_SHARING_EXPORT_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_anchor_sharing_export\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_mouse_interaction_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_MOUSE_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_ANDROID_mouse_interaction\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_marker_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_MARKER_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_marker\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_qr_code_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_QR_CODE_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_qr_code\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_image_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_IMAGE_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_image\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_scene_meshing_SPEC_VERSION: u32 = 3u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_SCENE_MESHING_EXTENSION_NAME: &[u8] = b"XR_ANDROID_scene_meshing\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_spatial_object_tracking_SPEC_VERSION: u32 = 2u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_SPATIAL_OBJECT_TRACKING_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_spatial_object_tracking\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_spatial_discovery_raycast_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_SPATIAL_DISCOVERY_RAYCAST_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_spatial_discovery_raycast\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_spatial_entity_bound_anchor_SPEC_VERSION: u32 = 2u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_SPATIAL_ENTITY_BOUND_ANCHOR_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_spatial_entity_bound_anchor\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_spatial_component_subsumed_by_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_SPATIAL_COMPONENT_SUBSUMED_BY_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_spatial_component_subsumed_by\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_spatial_anchor_space_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_SPATIAL_ANCHOR_SPACE_EXTENSION_NAME: &[u8] = b"XR_ANDROID_spatial_anchor_space\0";
 pub const BD_controller_interaction_SPEC_VERSION: u32 = 2u32;
 pub const BD_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_BD_controller_interaction\0";

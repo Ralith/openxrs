@@ -92,45 +92,26 @@ pub use sys::{
 #[non_exhaustive]
 pub struct ExtensionSet {
     pub almalence_digital_lens_control: bool,
-    #[cfg(target_os = "android")]
     pub android_trackables: bool,
-    #[cfg(target_os = "android")]
     pub android_device_anchor_persistence: bool,
-    #[cfg(target_os = "android")]
     pub android_face_tracking: bool,
-    #[cfg(target_os = "android")]
     pub android_passthrough_camera_state: bool,
-    #[cfg(target_os = "android")]
     pub android_composition_layer_passthrough_mesh: bool,
-    #[cfg(target_os = "android")]
     pub android_raycast: bool,
-    #[cfg(target_os = "android")]
     pub android_performance_metrics: bool,
-    #[cfg(target_os = "android")]
     pub android_trackables_object: bool,
-    #[cfg(target_os = "android")]
     pub android_unbounded_reference_space: bool,
     #[cfg(target_os = "android")]
     pub android_anchor_sharing_export: bool,
-    #[cfg(target_os = "android")]
     pub android_mouse_interaction: bool,
-    #[cfg(target_os = "android")]
     pub android_trackables_marker: bool,
-    #[cfg(target_os = "android")]
     pub android_trackables_qr_code: bool,
-    #[cfg(target_os = "android")]
     pub android_trackables_image: bool,
-    #[cfg(target_os = "android")]
     pub android_scene_meshing: bool,
-    #[cfg(target_os = "android")]
     pub android_spatial_object_tracking: bool,
-    #[cfg(target_os = "android")]
     pub android_spatial_discovery_raycast: bool,
-    #[cfg(target_os = "android")]
     pub android_spatial_entity_bound_anchor: bool,
-    #[cfg(target_os = "android")]
     pub android_spatial_component_subsumed_by: bool,
-    #[cfg(target_os = "android")]
     pub android_spatial_anchor_space: bool,
     pub bd_controller_interaction: bool,
     pub bd_body_tracking: bool,
@@ -363,39 +344,30 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                 raw::DigitalLensControlALMALENCE::NAME => {
                     out.almalence_digital_lens_control = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::TrackablesANDROID::NAME => {
                     out.android_trackables = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::DeviceAnchorPersistenceANDROID::NAME => {
                     out.android_device_anchor_persistence = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::FaceTrackingANDROID::NAME => {
                     out.android_face_tracking = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::PassthroughCameraStateANDROID::NAME => {
                     out.android_passthrough_camera_state = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::CompositionLayerPassthroughMeshANDROID::NAME => {
                     out.android_composition_layer_passthrough_mesh = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::RaycastANDROID::NAME => {
                     out.android_raycast = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::PerformanceMetricsANDROID::NAME => {
                     out.android_performance_metrics = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::TrackablesObjectANDROID::NAME => {
                     out.android_trackables_object = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::UnboundedReferenceSpaceANDROID::NAME => {
                     out.android_unbounded_reference_space = true;
                 }
@@ -403,43 +375,33 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                 raw::AnchorSharingExportANDROID::NAME => {
                     out.android_anchor_sharing_export = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::MouseInteractionANDROID::NAME => {
                     out.android_mouse_interaction = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::TrackablesMarkerANDROID::NAME => {
                     out.android_trackables_marker = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::TrackablesQrCodeANDROID::NAME => {
                     out.android_trackables_qr_code = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::TrackablesImageANDROID::NAME => {
                     out.android_trackables_image = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::SceneMeshingANDROID::NAME => {
                     out.android_scene_meshing = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::SpatialObjectTrackingANDROID::NAME => {
                     out.android_spatial_object_tracking = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::SpatialDiscoveryRaycastANDROID::NAME => {
                     out.android_spatial_discovery_raycast = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::SpatialEntityBoundAnchorANDROID::NAME => {
                     out.android_spatial_entity_bound_anchor = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::SpatialComponentSubsumedByANDROID::NAME => {
                     out.android_spatial_component_subsumed_by = true;
                 }
-                #[cfg(target_os = "android")]
                 raw::SpatialAnchorSpaceANDROID::NAME => {
                     out.android_spatial_anchor_space = true;
                 }
@@ -1076,61 +1038,42 @@ impl ExtensionSet {
         Self {
             almalence_digital_lens_control: self.almalence_digital_lens_control
                 && !other.almalence_digital_lens_control,
-            #[cfg(target_os = "android")]
             android_trackables: self.android_trackables && !other.android_trackables,
-            #[cfg(target_os = "android")]
             android_device_anchor_persistence: self.android_device_anchor_persistence
                 && !other.android_device_anchor_persistence,
-            #[cfg(target_os = "android")]
             android_face_tracking: self.android_face_tracking && !other.android_face_tracking,
-            #[cfg(target_os = "android")]
             android_passthrough_camera_state: self.android_passthrough_camera_state
                 && !other.android_passthrough_camera_state,
-            #[cfg(target_os = "android")]
             android_composition_layer_passthrough_mesh: self
                 .android_composition_layer_passthrough_mesh
                 && !other.android_composition_layer_passthrough_mesh,
-            #[cfg(target_os = "android")]
             android_raycast: self.android_raycast && !other.android_raycast,
-            #[cfg(target_os = "android")]
             android_performance_metrics: self.android_performance_metrics
                 && !other.android_performance_metrics,
-            #[cfg(target_os = "android")]
             android_trackables_object: self.android_trackables_object
                 && !other.android_trackables_object,
-            #[cfg(target_os = "android")]
             android_unbounded_reference_space: self.android_unbounded_reference_space
                 && !other.android_unbounded_reference_space,
             #[cfg(target_os = "android")]
             android_anchor_sharing_export: self.android_anchor_sharing_export
                 && !other.android_anchor_sharing_export,
-            #[cfg(target_os = "android")]
             android_mouse_interaction: self.android_mouse_interaction
                 && !other.android_mouse_interaction,
-            #[cfg(target_os = "android")]
             android_trackables_marker: self.android_trackables_marker
                 && !other.android_trackables_marker,
-            #[cfg(target_os = "android")]
             android_trackables_qr_code: self.android_trackables_qr_code
                 && !other.android_trackables_qr_code,
-            #[cfg(target_os = "android")]
             android_trackables_image: self.android_trackables_image
                 && !other.android_trackables_image,
-            #[cfg(target_os = "android")]
             android_scene_meshing: self.android_scene_meshing && !other.android_scene_meshing,
-            #[cfg(target_os = "android")]
             android_spatial_object_tracking: self.android_spatial_object_tracking
                 && !other.android_spatial_object_tracking,
-            #[cfg(target_os = "android")]
             android_spatial_discovery_raycast: self.android_spatial_discovery_raycast
                 && !other.android_spatial_discovery_raycast,
-            #[cfg(target_os = "android")]
             android_spatial_entity_bound_anchor: self.android_spatial_entity_bound_anchor
                 && !other.android_spatial_entity_bound_anchor,
-            #[cfg(target_os = "android")]
             android_spatial_component_subsumed_by: self.android_spatial_component_subsumed_by
                 && !other.android_spatial_component_subsumed_by,
-            #[cfg(target_os = "android")]
             android_spatial_anchor_space: self.android_spatial_anchor_space
                 && !other.android_spatial_anchor_space,
             bd_controller_interaction: self.bd_controller_interaction
@@ -1478,61 +1421,42 @@ impl ExtensionSet {
         Self {
             almalence_digital_lens_control: self.almalence_digital_lens_control
                 && other.almalence_digital_lens_control,
-            #[cfg(target_os = "android")]
             android_trackables: self.android_trackables && other.android_trackables,
-            #[cfg(target_os = "android")]
             android_device_anchor_persistence: self.android_device_anchor_persistence
                 && other.android_device_anchor_persistence,
-            #[cfg(target_os = "android")]
             android_face_tracking: self.android_face_tracking && other.android_face_tracking,
-            #[cfg(target_os = "android")]
             android_passthrough_camera_state: self.android_passthrough_camera_state
                 && other.android_passthrough_camera_state,
-            #[cfg(target_os = "android")]
             android_composition_layer_passthrough_mesh: self
                 .android_composition_layer_passthrough_mesh
                 && other.android_composition_layer_passthrough_mesh,
-            #[cfg(target_os = "android")]
             android_raycast: self.android_raycast && other.android_raycast,
-            #[cfg(target_os = "android")]
             android_performance_metrics: self.android_performance_metrics
                 && other.android_performance_metrics,
-            #[cfg(target_os = "android")]
             android_trackables_object: self.android_trackables_object
                 && other.android_trackables_object,
-            #[cfg(target_os = "android")]
             android_unbounded_reference_space: self.android_unbounded_reference_space
                 && other.android_unbounded_reference_space,
             #[cfg(target_os = "android")]
             android_anchor_sharing_export: self.android_anchor_sharing_export
                 && other.android_anchor_sharing_export,
-            #[cfg(target_os = "android")]
             android_mouse_interaction: self.android_mouse_interaction
                 && other.android_mouse_interaction,
-            #[cfg(target_os = "android")]
             android_trackables_marker: self.android_trackables_marker
                 && other.android_trackables_marker,
-            #[cfg(target_os = "android")]
             android_trackables_qr_code: self.android_trackables_qr_code
                 && other.android_trackables_qr_code,
-            #[cfg(target_os = "android")]
             android_trackables_image: self.android_trackables_image
                 && other.android_trackables_image,
-            #[cfg(target_os = "android")]
             android_scene_meshing: self.android_scene_meshing && other.android_scene_meshing,
-            #[cfg(target_os = "android")]
             android_spatial_object_tracking: self.android_spatial_object_tracking
                 && other.android_spatial_object_tracking,
-            #[cfg(target_os = "android")]
             android_spatial_discovery_raycast: self.android_spatial_discovery_raycast
                 && other.android_spatial_discovery_raycast,
-            #[cfg(target_os = "android")]
             android_spatial_entity_bound_anchor: self.android_spatial_entity_bound_anchor
                 && other.android_spatial_entity_bound_anchor,
-            #[cfg(target_os = "android")]
             android_spatial_component_subsumed_by: self.android_spatial_component_subsumed_by
                 && other.android_spatial_component_subsumed_by,
-            #[cfg(target_os = "android")]
             android_spatial_anchor_space: self.android_spatial_anchor_space
                 && other.android_spatial_anchor_space,
             bd_controller_interaction: self.bd_controller_interaction
@@ -1882,55 +1806,46 @@ impl ExtensionSet {
                 out.push(raw::DigitalLensControlALMALENCE::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_trackables {
                 out.push(raw::TrackablesANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_device_anchor_persistence {
                 out.push(raw::DeviceAnchorPersistenceANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_face_tracking {
                 out.push(raw::FaceTrackingANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_passthrough_camera_state {
                 out.push(raw::PassthroughCameraStateANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_composition_layer_passthrough_mesh {
                 out.push(raw::CompositionLayerPassthroughMeshANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_raycast {
                 out.push(raw::RaycastANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_performance_metrics {
                 out.push(raw::PerformanceMetricsANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_trackables_object {
                 out.push(raw::TrackablesObjectANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_unbounded_reference_space {
                 out.push(raw::UnboundedReferenceSpaceANDROID::NAME);
@@ -1942,61 +1857,51 @@ impl ExtensionSet {
                 out.push(raw::AnchorSharingExportANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_mouse_interaction {
                 out.push(raw::MouseInteractionANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_trackables_marker {
                 out.push(raw::TrackablesMarkerANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_trackables_qr_code {
                 out.push(raw::TrackablesQrCodeANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_trackables_image {
                 out.push(raw::TrackablesImageANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_scene_meshing {
                 out.push(raw::SceneMeshingANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_spatial_object_tracking {
                 out.push(raw::SpatialObjectTrackingANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_spatial_discovery_raycast {
                 out.push(raw::SpatialDiscoveryRaycastANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_spatial_entity_bound_anchor {
                 out.push(raw::SpatialEntityBoundAnchorANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_spatial_component_subsumed_by {
                 out.push(raw::SpatialComponentSubsumedByANDROID::NAME);
             }
         }
-        #[cfg(target_os = "android")]
         {
             if self.android_spatial_anchor_space {
                 out.push(raw::SpatialAnchorSpaceANDROID::NAME);
@@ -3034,46 +2939,27 @@ impl ExtensionSet {
 #[derive(Default, Copy, Clone)]
 pub struct InstanceExtensions {
     pub almalence_digital_lens_control: Option<raw::DigitalLensControlALMALENCE>,
-    #[cfg(target_os = "android")]
     pub android_trackables: Option<raw::TrackablesANDROID>,
-    #[cfg(target_os = "android")]
     pub android_device_anchor_persistence: Option<raw::DeviceAnchorPersistenceANDROID>,
-    #[cfg(target_os = "android")]
     pub android_face_tracking: Option<raw::FaceTrackingANDROID>,
-    #[cfg(target_os = "android")]
     pub android_passthrough_camera_state: Option<raw::PassthroughCameraStateANDROID>,
-    #[cfg(target_os = "android")]
     pub android_composition_layer_passthrough_mesh:
         Option<raw::CompositionLayerPassthroughMeshANDROID>,
-    #[cfg(target_os = "android")]
     pub android_raycast: Option<raw::RaycastANDROID>,
-    #[cfg(target_os = "android")]
     pub android_performance_metrics: Option<raw::PerformanceMetricsANDROID>,
-    #[cfg(target_os = "android")]
     pub android_trackables_object: Option<raw::TrackablesObjectANDROID>,
-    #[cfg(target_os = "android")]
     pub android_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceANDROID>,
     #[cfg(target_os = "android")]
     pub android_anchor_sharing_export: Option<raw::AnchorSharingExportANDROID>,
-    #[cfg(target_os = "android")]
     pub android_mouse_interaction: Option<raw::MouseInteractionANDROID>,
-    #[cfg(target_os = "android")]
     pub android_trackables_marker: Option<raw::TrackablesMarkerANDROID>,
-    #[cfg(target_os = "android")]
     pub android_trackables_qr_code: Option<raw::TrackablesQrCodeANDROID>,
-    #[cfg(target_os = "android")]
     pub android_trackables_image: Option<raw::TrackablesImageANDROID>,
-    #[cfg(target_os = "android")]
     pub android_scene_meshing: Option<raw::SceneMeshingANDROID>,
-    #[cfg(target_os = "android")]
     pub android_spatial_object_tracking: Option<raw::SpatialObjectTrackingANDROID>,
-    #[cfg(target_os = "android")]
     pub android_spatial_discovery_raycast: Option<raw::SpatialDiscoveryRaycastANDROID>,
-    #[cfg(target_os = "android")]
     pub android_spatial_entity_bound_anchor: Option<raw::SpatialEntityBoundAnchorANDROID>,
-    #[cfg(target_os = "android")]
     pub android_spatial_component_subsumed_by: Option<raw::SpatialComponentSubsumedByANDROID>,
-    #[cfg(target_os = "android")]
     pub android_spatial_anchor_space: Option<raw::SpatialAnchorSpaceANDROID>,
     pub bd_controller_interaction: Option<raw::ControllerInteractionBD>,
     pub bd_body_tracking: Option<raw::BodyTrackingBD>,
@@ -3313,31 +3199,26 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_trackables: if required.android_trackables {
                     Some(raw::TrackablesANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_device_anchor_persistence: if required.android_device_anchor_persistence {
                     Some(raw::DeviceAnchorPersistenceANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_face_tracking: if required.android_face_tracking {
                     Some(raw::FaceTrackingANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_passthrough_camera_state: if required.android_passthrough_camera_state {
                     Some(raw::PassthroughCameraStateANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_composition_layer_passthrough_mesh: if required
                     .android_composition_layer_passthrough_mesh
                 {
@@ -3347,25 +3228,21 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_raycast: if required.android_raycast {
                     Some(raw::RaycastANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_performance_metrics: if required.android_performance_metrics {
                     Some(raw::PerformanceMetricsANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_trackables_object: if required.android_trackables_object {
                     Some(raw::TrackablesObjectANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_unbounded_reference_space: if required.android_unbounded_reference_space {
                     Some(raw::UnboundedReferenceSpaceANDROID {})
                 } else {
@@ -3377,56 +3254,47 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_mouse_interaction: if required.android_mouse_interaction {
                     Some(raw::MouseInteractionANDROID {})
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_trackables_marker: if required.android_trackables_marker {
                     Some(raw::TrackablesMarkerANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_trackables_qr_code: if required.android_trackables_qr_code {
                     Some(raw::TrackablesQrCodeANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_trackables_image: if required.android_trackables_image {
                     Some(raw::TrackablesImageANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_scene_meshing: if required.android_scene_meshing {
                     Some(raw::SceneMeshingANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_spatial_object_tracking: if required.android_spatial_object_tracking {
                     Some(raw::SpatialObjectTrackingANDROID {})
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_spatial_discovery_raycast: if required.android_spatial_discovery_raycast {
                     Some(raw::SpatialDiscoveryRaycastANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_spatial_entity_bound_anchor: if required.android_spatial_entity_bound_anchor
                 {
                     Some(raw::SpatialEntityBoundAnchorANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_spatial_component_subsumed_by: if required
                     .android_spatial_component_subsumed_by
                 {
@@ -3434,7 +3302,6 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
-                #[cfg(target_os = "android")]
                 android_spatial_anchor_space: if required.android_spatial_anchor_space {
                     Some(raw::SpatialAnchorSpaceANDROID::load(entry, instance)?)
                 } else {
@@ -6090,7 +5957,6 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct TrackablesANDROID {
         pub enumerate_supported_trackable_types: pfn::EnumerateSupportedTrackableTypesANDROID,
@@ -6102,7 +5968,6 @@ pub mod raw {
         pub get_trackable_plane: pfn::GetTrackablePlaneANDROID,
         pub create_anchor_space: pfn::CreateAnchorSpaceANDROID,
     }
-    #[cfg(target_os = "android")]
     impl TrackablesANDROID {
         pub const VERSION: u32 = sys::ANDROID_trackables_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_TRACKABLES_EXTENSION_NAME;
@@ -6149,7 +6014,6 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct DeviceAnchorPersistenceANDROID {
         pub enumerate_supported_persistence_anchor_types:
@@ -6162,7 +6026,6 @@ pub mod raw {
         pub enumerate_persisted_anchors: pfn::EnumeratePersistedAnchorsANDROID,
         pub unpersist_anchor: pfn::UnpersistAnchorANDROID,
     }
-    #[cfg(target_os = "android")]
     impl DeviceAnchorPersistenceANDROID {
         pub const VERSION: u32 = sys::ANDROID_device_anchor_persistence_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_DEVICE_ANCHOR_PERSISTENCE_EXTENSION_NAME;
@@ -6216,7 +6079,6 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct FaceTrackingANDROID {
         pub create_face_tracker: pfn::CreateFaceTrackerANDROID,
@@ -6224,7 +6086,6 @@ pub mod raw {
         pub get_face_state: pfn::GetFaceStateANDROID,
         pub get_face_calibration_state: pfn::GetFaceCalibrationStateANDROID,
     }
-    #[cfg(target_os = "android")]
     impl FaceTrackingANDROID {
         pub const VERSION: u32 = sys::ANDROID_face_tracking_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_FACE_TRACKING_EXTENSION_NAME;
@@ -6255,12 +6116,10 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct PassthroughCameraStateANDROID {
         pub get_passthrough_camera_state: pfn::GetPassthroughCameraStateANDROID,
     }
-    #[cfg(target_os = "android")]
     impl PassthroughCameraStateANDROID {
         pub const VERSION: u32 = sys::ANDROID_passthrough_camera_state_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_PASSTHROUGH_CAMERA_STATE_EXTENSION_NAME;
@@ -6282,14 +6141,12 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct CompositionLayerPassthroughMeshANDROID {
         pub create_passthrough_layer: pfn::CreatePassthroughLayerANDROID,
         pub destroy_passthrough_layer: pfn::DestroyPassthroughLayerANDROID,
         pub set_passthrough_layer_mesh: pfn::SetPassthroughLayerMeshANDROID,
     }
-    #[cfg(target_os = "android")]
     impl CompositionLayerPassthroughMeshANDROID {
         pub const VERSION: u32 = sys::ANDROID_composition_layer_passthrough_mesh_SPEC_VERSION;
         pub const NAME: &'static [u8] =
@@ -6322,14 +6179,12 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct RaycastANDROID {
         pub enumerate_raycast_supported_trackable_types:
             pfn::EnumerateRaycastSupportedTrackableTypesANDROID,
         pub raycast: pfn::RaycastANDROID,
     }
-    #[cfg(target_os = "android")]
     impl RaycastANDROID {
         pub const VERSION: u32 = sys::ANDROID_raycast_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_RAYCAST_EXTENSION_NAME;
@@ -6354,7 +6209,6 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct PerformanceMetricsANDROID {
         pub enumerate_performance_metrics_counter_paths:
@@ -6363,7 +6217,6 @@ pub mod raw {
         pub get_performance_metrics_state: pfn::GetPerformanceMetricsStateANDROID,
         pub query_performance_metrics_counter: pfn::QueryPerformanceMetricsCounterANDROID,
     }
-    #[cfg(target_os = "android")]
     impl PerformanceMetricsANDROID {
         pub const VERSION: u32 = sys::ANDROID_performance_metrics_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_PERFORMANCE_METRICS_EXTENSION_NAME;
@@ -6399,12 +6252,10 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct TrackablesObjectANDROID {
         pub get_trackable_object: pfn::GetTrackableObjectANDROID,
     }
-    #[cfg(target_os = "android")]
     impl TrackablesObjectANDROID {
         pub const VERSION: u32 = sys::ANDROID_trackables_object_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_TRACKABLES_OBJECT_EXTENSION_NAME;
@@ -6423,10 +6274,8 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct UnboundedReferenceSpaceANDROID {}
-    #[cfg(target_os = "android")]
     impl UnboundedReferenceSpaceANDROID {
         pub const VERSION: u32 = sys::ANDROID_unbounded_reference_space_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME;
@@ -6459,20 +6308,16 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct MouseInteractionANDROID {}
-    #[cfg(target_os = "android")]
     impl MouseInteractionANDROID {
         pub const VERSION: u32 = sys::ANDROID_mouse_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_MOUSE_INTERACTION_EXTENSION_NAME;
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct TrackablesMarkerANDROID {
         pub get_trackable_marker: pfn::GetTrackableMarkerANDROID,
     }
-    #[cfg(target_os = "android")]
     impl TrackablesMarkerANDROID {
         pub const VERSION: u32 = sys::ANDROID_trackables_marker_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_TRACKABLES_MARKER_EXTENSION_NAME;
@@ -6491,12 +6336,10 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct TrackablesQrCodeANDROID {
         pub get_trackable_qr_code: pfn::GetTrackableQrCodeANDROID,
     }
-    #[cfg(target_os = "android")]
     impl TrackablesQrCodeANDROID {
         pub const VERSION: u32 = sys::ANDROID_trackables_qr_code_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_TRACKABLES_QR_CODE_EXTENSION_NAME;
@@ -6515,7 +6358,6 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct TrackablesImageANDROID {
         pub create_trackable_image_database_async: pfn::CreateTrackableImageDatabaseAsyncANDROID,
@@ -6526,7 +6368,6 @@ pub mod raw {
         pub remove_trackable_image_database: pfn::RemoveTrackableImageDatabaseANDROID,
         pub get_trackable_image: pfn::GetTrackableImageANDROID,
     }
-    #[cfg(target_os = "android")]
     impl TrackablesImageANDROID {
         pub const VERSION: u32 = sys::ANDROID_trackables_image_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_TRACKABLES_IMAGE_EXTENSION_NAME;
@@ -6573,7 +6414,6 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct SceneMeshingANDROID {
         pub enumerate_supported_semantic_label_sets:
@@ -6585,7 +6425,6 @@ pub mod raw {
         pub get_all_submesh_states: pfn::GetAllSubmeshStatesANDROID,
         pub get_submesh_data: pfn::GetSubmeshDataANDROID,
     }
-    #[cfg(target_os = "android")]
     impl SceneMeshingANDROID {
         pub const VERSION: u32 = sys::ANDROID_scene_meshing_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_SCENE_MESHING_EXTENSION_NAME;
@@ -6635,20 +6474,16 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct SpatialObjectTrackingANDROID {}
-    #[cfg(target_os = "android")]
     impl SpatialObjectTrackingANDROID {
         pub const VERSION: u32 = sys::ANDROID_spatial_object_tracking_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_OBJECT_TRACKING_EXTENSION_NAME;
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct SpatialDiscoveryRaycastANDROID {
         pub create_spatial_raycast_snapshot: pfn::CreateSpatialRaycastSnapshotANDROID,
     }
-    #[cfg(target_os = "android")]
     impl SpatialDiscoveryRaycastANDROID {
         pub const VERSION: u32 = sys::ANDROID_spatial_discovery_raycast_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_DISCOVERY_RAYCAST_EXTENSION_NAME;
@@ -6668,13 +6503,11 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct SpatialEntityBoundAnchorANDROID {
         pub enumerate_spatial_anchor_attachable_components:
             pfn::EnumerateSpatialAnchorAttachableComponentsANDROID,
     }
-    #[cfg(target_os = "android")]
     impl SpatialEntityBoundAnchorANDROID {
         pub const VERSION: u32 = sys::ANDROID_spatial_entity_bound_anchor_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_ENTITY_BOUND_ANCHOR_EXTENSION_NAME;
@@ -6696,21 +6529,17 @@ pub mod raw {
             }
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct SpatialComponentSubsumedByANDROID {}
-    #[cfg(target_os = "android")]
     impl SpatialComponentSubsumedByANDROID {
         pub const VERSION: u32 = sys::ANDROID_spatial_component_subsumed_by_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_COMPONENT_SUBSUMED_BY_EXTENSION_NAME;
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     pub struct SpatialAnchorSpaceANDROID {
         pub create_spatial_anchor_space: pfn::CreateSpatialAnchorSpaceANDROID,
         pub create_spatial_anchor_space_from_id: pfn::CreateSpatialAnchorSpaceFromIdANDROID,
     }
-    #[cfg(target_os = "android")]
     impl SpatialAnchorSpaceANDROID {
         pub const VERSION: u32 = sys::ANDROID_spatial_anchor_space_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_ANCHOR_SPACE_EXTENSION_NAME;
@@ -13255,14 +13084,12 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
         inner: sys::SpatialCapabilityConfigurationDepthRaycastANDROID,
         _marker: PhantomData<&'a ()>,
     }
-    #[cfg(target_os = "android")]
     #[allow(clippy::needless_lifetimes)]
     impl<'a> SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
         #[inline]
@@ -13310,7 +13137,6 @@ pub(crate) mod builder {
             self
         }
     }
-    #[cfg(target_os = "android")]
     #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
         type Target = SpatialCapabilityConfigurationBase<'a>;
@@ -13319,7 +13145,6 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
-    #[cfg(target_os = "android")]
     #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
         fn default() -> Self {
@@ -13596,14 +13421,12 @@ pub(crate) mod builder {
             Self::new()
         }
     }
-    #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
         inner: sys::SpatialCapabilityConfigurationObjectTrackingANDROID,
         _marker: PhantomData<&'a ()>,
     }
-    #[cfg(target_os = "android")]
     #[allow(clippy::needless_lifetimes)]
     impl<'a> SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
         #[inline]
@@ -13661,7 +13484,6 @@ pub(crate) mod builder {
             self
         }
     }
-    #[cfg(target_os = "android")]
     #[allow(clippy::needless_lifetimes)]
     impl<'a> Deref for SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
         type Target = SpatialCapabilityConfigurationBase<'a>;
@@ -13670,7 +13492,6 @@ pub(crate) mod builder {
             unsafe { mem::transmute(&self.inner) }
         }
     }
-    #[cfg(target_os = "android")]
     #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
         fn default() -> Self {
