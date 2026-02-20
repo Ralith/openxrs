@@ -428,6 +428,18 @@ impl<G> Session<G> {
         Ok(())
     }
 
+    #[inline]
+    /// Create a face tracker
+    ///
+    /// Requires [`XR_FB_face_tracking2`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_face_tracking2)
+    pub fn create_face_tracker_fb(
+        &self,
+        expression_set: FaceExpressionSet2FB,
+        data_sources: &[FaceTrackingDataSource2FB],
+    ) -> Result<FaceTrackerFB> {
+        FaceTrackerFB::create(self, expression_set, data_sources)
+    }
+
     // Private helper
     #[inline]
     fn fp(&self) -> &raw::Instance {
