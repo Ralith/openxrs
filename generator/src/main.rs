@@ -2444,7 +2444,10 @@ fn conditions(name: &str, ext: Option<&str>) -> TokenStream {
     {
         conditions.push(quote! { windows });
     }
-    if name.contains("android") {
+    if (name.contains("graphicsbinding") && name.contains("android"))
+        || ext == Some("XR_ANDROID_anchor_sharing_export")
+        || ext.is_some_and(|s| s.contains("android"))
+    {
         conditions.push(quote! { target_os = "android" });
     }
     if name.contains("metal") {
