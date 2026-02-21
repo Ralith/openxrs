@@ -96,10 +96,10 @@ impl PassthroughCameraStateANDROID {
     pub const READY: PassthroughCameraStateANDROID = Self(2i32);
     #[doc = "The camera is in an unrecoverable error state."]
     pub const ERROR: PassthroughCameraStateANDROID = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -124,10 +124,10 @@ impl TrackableMarkerTrackingModeANDROID {
     pub const DYNAMIC: TrackableMarkerTrackingModeANDROID = Self(0i32);
     #[doc = "Tracking static markers. This mode is primarily useful for markers that are known to be static, which leads to less power consumption in comparison to the dynamic mode."]
     pub const STATIC: TrackableMarkerTrackingModeANDROID = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -166,10 +166,10 @@ impl TrackableMarkerDictionaryANDROID {
     pub const APRILTAG_25H9: TrackableMarkerDictionaryANDROID = Self(17i32);
     pub const APRILTAG_36H10: TrackableMarkerDictionaryANDROID = Self(18i32);
     pub const APRILTAG_36H11: TrackableMarkerDictionaryANDROID = Self(19i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -212,10 +212,10 @@ impl LoaderInterfaceStructs {
     pub const RUNTIME_REQUEST: LoaderInterfaceStructs = Self(3i32);
     pub const API_LAYER_CREATE_INFO: LoaderInterfaceStructs = Self(4i32);
     pub const API_LAYER_NEXT_INFO: LoaderInterfaceStructs = Self(5i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -841,10 +841,10 @@ impl StructureType {
     pub const SPATIAL_ENTITY_UNPERSIST_INFO_EXT: StructureType = Self(1000781002i32);
     pub const UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT: StructureType = Self(1000781003i32);
     pub const LOADER_INIT_INFO_PROPERTIES_EXT: StructureType = Self(1000838000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -2211,10 +2211,10 @@ impl Result {
     pub const ERROR_SPATIAL_PERSISTENCE_SCOPE_UNSUPPORTED_EXT: Result = Self(-1000763001i32);
     #[doc = "The scope configured for the persistence context is incompatible for the current spatial entity."]
     pub const ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT: Result = Self(-1000781001i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3105,10 +3105,10 @@ impl ObjectType {
     pub const SPATIAL_SNAPSHOT_EXT: ObjectType = Self(1000740002i32);
     #[doc = "XrSpatialPersistenceContextEXT"]
     pub const SPATIAL_PERSISTENCE_CONTEXT_EXT: ObjectType = Self(1000763000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3182,10 +3182,10 @@ impl AndroidThreadTypeKHR {
     pub const APPLICATION_WORKER: AndroidThreadTypeKHR = Self(2i32);
     pub const RENDERER_MAIN: AndroidThreadTypeKHR = Self(3i32);
     pub const RENDERER_WORKER: AndroidThreadTypeKHR = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3212,10 +3212,10 @@ impl EyeVisibility {
     pub const LEFT: EyeVisibility = Self(1i32);
     #[doc = "Display in the right eye only."]
     pub const RIGHT: EyeVisibility = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3240,10 +3240,10 @@ impl ActionType {
     pub const VECTOR2F_INPUT: ActionType = Self(3i32);
     pub const POSE_INPUT: ActionType = Self(4i32);
     pub const VIBRATION_OUTPUT: ActionType = Self(100i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3273,10 +3273,10 @@ impl ReferenceSpaceType {
     pub const COMBINED_EYE_VARJO: ReferenceSpaceType = Self(1000121000i32);
     pub const LOCALIZATION_MAP_ML: ReferenceSpaceType = Self(1000139000i32);
     pub const LOCAL_FLOOR_EXT: ReferenceSpaceType = Self::LOCAL_FLOOR;
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3302,10 +3302,10 @@ pub struct FormFactor(i32);
 impl FormFactor {
     pub const HEAD_MOUNTED_DISPLAY: FormFactor = Self(1i32);
     pub const HANDHELD_DISPLAY: FormFactor = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3330,10 +3330,10 @@ impl ViewConfigurationType {
     pub const PRIMARY_QUAD_VARJO: ViewConfigurationType = Self::PRIMARY_STEREO_WITH_FOVEATED_INSET;
     pub const SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT: ViewConfigurationType =
         Self(1000054000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3359,10 +3359,10 @@ impl EnvironmentBlendMode {
     pub const OPAQUE: EnvironmentBlendMode = Self(1i32);
     pub const ADDITIVE: EnvironmentBlendMode = Self(2i32);
     pub const ALPHA_BLEND: EnvironmentBlendMode = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3391,10 +3391,10 @@ impl SessionState {
     pub const STOPPING: SessionState = Self(6i32);
     pub const LOSS_PENDING: SessionState = Self(7i32);
     pub const EXITING: SessionState = Self(8i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3424,10 +3424,10 @@ impl PerfSettingsDomainEXT {
     pub const CPU: PerfSettingsDomainEXT = Self(1i32);
     #[doc = "Indicates that the performance settings or notification applies to GPU domain"]
     pub const GPU: PerfSettingsDomainEXT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3452,10 +3452,10 @@ impl PerfSettingsSubDomainEXT {
     pub const RENDERING: PerfSettingsSubDomainEXT = Self(2i32);
     #[doc = "Indicates that the performance notification originates from the THERMAL sub-domain"]
     pub const THERMAL: PerfSettingsSubDomainEXT = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3483,10 +3483,10 @@ impl PerfSettingsLevelEXT {
     pub const SUSTAINED_HIGH: PerfSettingsLevelEXT = Self(50i32);
     #[doc = "Performance settings hint used by the application to indicate that the application enters a section with very high complexity, during which the XR Runtime is allowed to step up beyond the thermally sustainable range"]
     pub const BOOST: PerfSettingsLevelEXT = Self(75i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3513,10 +3513,10 @@ impl PerfSettingsNotificationLevelEXT {
     pub const WARNING: PerfSettingsNotificationLevelEXT = Self(25i32);
     #[doc = "Notifies that the sub-domain has reached a critical level with significant performance degradation. The application should take drastic mitigation action"]
     pub const IMPAIRED: PerfSettingsNotificationLevelEXT = Self(75i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3542,10 +3542,10 @@ impl VisibilityMaskTypeKHR {
     pub const VISIBLE_TRIANGLE_MESH: VisibilityMaskTypeKHR = Self(2i32);
     #[doc = "line loop; traces the outline of the area the viewer can see."]
     pub const LINE_LOOP: VisibilityMaskTypeKHR = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3567,10 +3567,10 @@ pub struct SpatialGraphNodeTypeMSFT(i32);
 impl SpatialGraphNodeTypeMSFT {
     pub const STATIC: SpatialGraphNodeTypeMSFT = Self(1i32);
     pub const DYNAMIC: SpatialGraphNodeTypeMSFT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3595,10 +3595,10 @@ impl BlendFactorFB {
     pub const ONE_MINUS_SRC_ALPHA: BlendFactorFB = Self(3i32);
     pub const DST_ALPHA: BlendFactorFB = Self(4i32);
     pub const ONE_MINUS_DST_ALPHA: BlendFactorFB = Self(5i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3639,10 +3639,10 @@ impl SpaceComponentTypeFB {
     pub const SPACE_CONTAINER: SpaceComponentTypeFB = Self(7i32);
     #[doc = "Triangle mesh component."]
     pub const TRIANGLE_MESH_M: SpaceComponentTypeFB = Self(1000269000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3674,10 +3674,10 @@ impl WindingOrderFB {
     pub const CW: WindingOrderFB = Self(1i32);
     #[doc = "Counter-clockwise winding order"]
     pub const CCW: WindingOrderFB = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3705,10 +3705,10 @@ impl PassthroughLayerPurposeFB {
     pub const TRACKED_KEYBOARD_HANDS: PassthroughLayerPurposeFB = Self(1000203001i32);
     #[doc = "Passthrough layer purpose for keyboard hands presence with keyboard masked hand transitions (i.e passthrough hands rendered only when they are over the keyboard)."]
     pub const TRACKED_KEYBOARD_MASKED_HANDS: PassthroughLayerPurposeFB = Self(1000203002i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3731,10 +3731,10 @@ pub struct SpaceQueryActionFB(i32);
 impl SpaceQueryActionFB {
     #[doc = "Tells the query to perform a load operation on any XrSpace returned by the query."]
     pub const LOAD: SpaceQueryActionFB = Self(0i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3758,10 +3758,10 @@ impl SpaceStorageLocationFB {
     pub const LOCAL: SpaceStorageLocationFB = Self(1i32);
     #[doc = "Cloud storage"]
     pub const CLOUD: SpaceStorageLocationFB = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3785,10 +3785,10 @@ impl SpacePersistenceModeFB {
     pub const INVALID: SpacePersistenceModeFB = Self(0i32);
     #[doc = "Store XrSpace indefinitely, or until erased"]
     pub const INDEFINITE: SpacePersistenceModeFB = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3815,10 +3815,10 @@ impl ExternalCameraAttachedToDeviceOCULUS {
     pub const LTOUCH: ExternalCameraAttachedToDeviceOCULUS = Self(2i32);
     #[doc = "External camera is attached to a right Touch controller"]
     pub const RTOUCH: ExternalCameraAttachedToDeviceOCULUS = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3841,10 +3841,10 @@ pub struct PassthroughColorLutChannelsMETA(i32);
 impl PassthroughColorLutChannelsMETA {
     pub const RGB: PassthroughColorLutChannelsMETA = Self(1i32);
     pub const RGBA: PassthroughColorLutChannelsMETA = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3873,10 +3873,10 @@ impl PerformanceMetricsCounterUnitMETA {
     pub const BYTES: PerformanceMetricsCounterUnitMETA = Self(3i32);
     #[doc = "the performance counter unit is hertz (Hz)."]
     pub const HERTZ: PerformanceMetricsCounterUnitMETA = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3902,10 +3902,10 @@ impl FacialTrackingTypeHTC {
     pub const EYE_DEFAULT: FacialTrackingTypeHTC = Self(1i32);
     #[doc = "Specifies this handle will observe lip expressions, with values indexed by XrLipExpressionHTC whose count is XR_FACIAL_EXPRESSION_LIP_COUNT_HTC."]
     pub const LIP_DEFAULT: FacialTrackingTypeHTC = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -3938,10 +3938,10 @@ impl EyeExpressionHTC {
     pub const RIGHT_OUT: EyeExpressionHTC = Self(11i32);
     pub const LEFT_UP: EyeExpressionHTC = Self(12i32);
     pub const RIGHT_UP: EyeExpressionHTC = Self(13i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4017,10 +4017,10 @@ impl LipExpressionHTC {
     pub const MOUTH_SAD_RIGHT: LipExpressionHTC = Self::MOUTH_STRETCHER_RIGHT;
     #[doc = "Backward-compatibility alias for deprecated name."]
     pub const MOUTH_SAD_LEFT: LipExpressionHTC = Self::MOUTH_STRETCHER_LEFT;
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4078,10 +4078,10 @@ impl PassthroughFormHTC {
     pub const PLANAR: PassthroughFormHTC = Self(0i32);
     #[doc = "Presents the passthrough projecting onto a custom mesh."]
     pub const PROJECTED: PassthroughFormHTC = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4108,10 +4108,10 @@ impl FoveationModeHTC {
     pub const DYNAMIC: FoveationModeHTC = Self(2i32);
     #[doc = "Allow application to set foveation with desired clear FOV, periphery quality, and focal center offset."]
     pub const CUSTOM: FoveationModeHTC = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4140,10 +4140,10 @@ impl FoveationLevelHTC {
     pub const MEDIUM: FoveationLevelHTC = Self(2i32);
     #[doc = "Heavy periphery pixel density drop and higher performance gain"]
     pub const HIGH: FoveationLevelHTC = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4300,10 +4300,10 @@ impl FaceParameterIndicesANDROID {
     pub const TONGUE_UP: FaceParameterIndicesANDROID = Self(66i32);
     #[doc = "The right down puller blendshape parameter."]
     pub const TONGUE_DOWN: FaceParameterIndicesANDROID = Self(67i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4394,10 +4394,10 @@ impl FaceTrackingStateANDROID {
     pub const STOPPED: FaceTrackingStateANDROID = Self(1i32);
     #[doc = "The face is currently tracked and its pose is current."]
     pub const TRACKING: FaceTrackingStateANDROID = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4423,10 +4423,10 @@ impl FaceConfidenceRegionsANDROID {
     pub const LEFT_UPPER: FaceConfidenceRegionsANDROID = Self(1i32);
     #[doc = "Confidence corresponding to the right upper region."]
     pub const RIGHT_UPPER: FaceConfidenceRegionsANDROID = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4452,10 +4452,10 @@ impl TrackingStateANDROID {
     pub const STOPPED: TrackingStateANDROID = Self(1i32);
     #[doc = "The object is currently tracked and its pose is current."]
     pub const TRACKING: TrackingStateANDROID = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4485,10 +4485,10 @@ impl TrackableTypeANDROID {
     pub const OBJECT: TrackableTypeANDROID = Self(1000466000i32);
     #[doc = "Indicates that the trackable is a marker."]
     pub const MARKER: TrackableTypeANDROID = Self(1000707000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4518,10 +4518,10 @@ impl PlaneTypeANDROID {
     pub const VERTICAL: PlaneTypeANDROID = Self(2i32);
     #[doc = "A plane with an arbitrary orientation."]
     pub const ARBITRARY: PlaneTypeANDROID = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4552,10 +4552,10 @@ impl PlaneLabelANDROID {
     pub const CEILING: PlaneLabelANDROID = Self(3i32);
     #[doc = "The plane is a table."]
     pub const TABLE: PlaneLabelANDROID = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4585,10 +4585,10 @@ impl ObjectLabelANDROID {
     pub const MOUSE: ObjectLabelANDROID = Self(2i32);
     #[doc = "The object is a laptop."]
     pub const LAPTOP: ObjectLabelANDROID = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4615,10 +4615,10 @@ impl AnchorPersistStateANDROID {
     pub const PERSIST_PENDING: AnchorPersistStateANDROID = Self(1i32);
     #[doc = "Anchor has been successfully persisted by the runtime."]
     pub const PERSISTED: AnchorPersistStateANDROID = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4642,10 +4642,10 @@ impl LocalDimmingModeMETA {
     pub const OFF: LocalDimmingModeMETA = Self(0i32);
     #[doc = "Local dimming is turned on for the current submitted frame."]
     pub const ON: LocalDimmingModeMETA = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4728,10 +4728,10 @@ impl FaceExpressionFB {
     pub const UPPER_LIP_RAISER_L: FaceExpressionFB = Self(61i32);
     pub const UPPER_LIP_RAISER_R: FaceExpressionFB = Self(62i32);
     pub const COUNT: FaceExpressionFB = Self(63i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4814,10 +4814,10 @@ pub struct FaceExpressionSetFB(i32);
 impl FaceExpressionSetFB {
     #[doc = "indicates that the created XrFaceTrackerFB tracks the set of blend shapes described by XrFaceExpressionFB enum, i.e. the xrGetFaceExpressionWeightsFB function returns an array of blend shapes with the count of XR_FACE_EXPRESSION_COUNT_FB and can: be indexed using XrFaceExpressionFB."]
     pub const DEFAULT: FaceExpressionSetFB = Self(0i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4838,10 +4838,10 @@ impl FaceConfidenceFB {
     pub const LOWER_FACE: FaceConfidenceFB = Self(0i32);
     pub const UPPER_FACE: FaceConfidenceFB = Self(1i32);
     pub const COUNT: FaceConfidenceFB = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -4932,10 +4932,10 @@ impl FaceExpression2FB {
     pub const TONGUE_OUT: FaceExpression2FB = Self(68i32);
     pub const TONGUE_RETREAT: FaceExpression2FB = Self(69i32);
     pub const COUNT: FaceExpression2FB = Self(70i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5025,10 +5025,10 @@ pub struct FaceExpressionSet2FB(i32);
 impl FaceExpressionSet2FB {
     #[doc = "indicates that the created XrFaceTracker2FB tracks the set of blend shapes described by XrFaceExpression2FB enum, i.e. the xrGetFaceExpressionWeights2FB function returns an array of blend shapes with the count of XR_FACE_EXPRESSION2_COUNT_FB and can: be indexed using XrFaceExpression2FB."]
     pub const DEFAULT: FaceExpressionSet2FB = Self(0i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5050,10 +5050,10 @@ impl FaceTrackingDataSource2FB {
     pub const VISUAL: FaceTrackingDataSource2FB = Self(0i32);
     #[doc = "face tracking uses audio data to estimate expressions."]
     pub const AUDIO: FaceTrackingDataSource2FB = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5075,10 +5075,10 @@ impl FaceConfidence2FB {
     pub const LOWER_FACE: FaceConfidence2FB = Self(0i32);
     pub const UPPER_FACE: FaceConfidence2FB = Self(1i32);
     pub const COUNT: FaceConfidence2FB = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5170,10 +5170,10 @@ impl BodyJointFB {
     pub const RIGHT_HAND_LITTLE_TIP: BodyJointFB = Self(69i32);
     pub const COUNT: BodyJointFB = Self(70i32);
     pub const NONE: BodyJointFB = Self(-1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5266,10 +5266,10 @@ impl BodyJointSetFB {
     pub const DEFAULT: BodyJointSetFB = Self(0i32);
     #[doc = "Indicates that the created XrBodyTrackerFB tracks the set of body joints described by XrFullBodyJointMETA enum, i.e. the xrLocateBodyJointsFB function returns an array of joint locations with the count of XR_FULL_BODY_JOINT_COUNT_META and can be indexed using XrFullBodyJointMETA. This extends the joints of XR_BODY_JOINT_SET_DEFAULT_FB by also including the lower body."]
     pub const FULL_BODY_M: BodyJointSetFB = Self(1000274000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5374,10 +5374,10 @@ impl FullBodyJointMETA {
     pub const RIGHT_FOOT_BALL: FullBodyJointMETA = Self(83i32);
     pub const COUNT: FullBodyJointMETA = Self(84i32);
     pub const NONE: FullBodyJointMETA = Self(85i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5486,10 +5486,10 @@ impl BodyTrackingCalibrationStateMETA {
     pub const CALIBRATING: BodyTrackingCalibrationStateMETA = Self(2i32);
     #[doc = "Calibration is invalid, accessing the body joint poses from XR_FB_body_tracking is defined behavior but their contents are unspecified. Tracking data may: be read but must: not be interpreted as body tracking poses."]
     pub const INVALID: BodyTrackingCalibrationStateMETA = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5515,10 +5515,10 @@ impl EyePositionFB {
     pub const RIGHT: EyePositionFB = Self(1i32);
     #[doc = "Specifies the number of eyes tracked."]
     pub const COUNT: EyePositionFB = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5540,10 +5540,10 @@ pub struct TrackingOptimizationSettingsDomainQCOM(i32);
 impl TrackingOptimizationSettingsDomainQCOM {
     #[doc = "Setting applies to all QCOM tracking extensions."]
     pub const ALL: TrackingOptimizationSettingsDomainQCOM = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5571,10 +5571,10 @@ impl TrackingOptimizationSettingsHintQCOM {
     pub const LOW_POWER_PRIORIZATION: TrackingOptimizationSettingsHintQCOM = Self(3i32);
     #[doc = "Used by the application to indicate that it prefers tracking to be optimized for increased tracking performance, possibly at the cost of increased power consumption."]
     pub const HIGH_POWER_PRIORIZATION: TrackingOptimizationSettingsHintQCOM = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5606,10 +5606,10 @@ impl ForceFeedbackCurlLocationMNDX {
     pub const RING_CURL: ForceFeedbackCurlLocationMNDX = Self(3i32);
     #[doc = "force feedback for little finger curl"]
     pub const LITTLE_CURL: ForceFeedbackCurlLocationMNDX = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5636,10 +5636,10 @@ impl PlaneDetectionStateEXT {
     pub const DONE: PlaneDetectionStateEXT = Self(2i32);
     pub const ERROR: PlaneDetectionStateEXT = Self(3i32);
     pub const FATAL: PlaneDetectionStateEXT = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5669,10 +5669,10 @@ impl PlaneDetectorOrientationEXT {
     pub const VERTICAL: PlaneDetectorOrientationEXT = Self(2i32);
     #[doc = "The detected plane has an arbitrary, non-vertical and non-horizontal orientation."]
     pub const ARBITRARY: PlaneDetectorOrientationEXT = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5703,10 +5703,10 @@ impl PlaneDetectorSemanticTypeEXT {
     pub const WALL: PlaneDetectorSemanticTypeEXT = Self(3i32);
     #[doc = "The detected plane is a platform, like a table."]
     pub const PLATFORM: PlaneDetectorSemanticTypeEXT = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5734,10 +5734,10 @@ impl VirtualKeyboardLocationTypeMETA {
     pub const FAR: VirtualKeyboardLocationTypeMETA = Self(1i32);
     #[doc = "Indicates that the runtime will set the position and scale for direct interaction keyboard."]
     pub const DIRECT: VirtualKeyboardLocationTypeMETA = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5773,10 +5773,10 @@ impl VirtualKeyboardInputSourceMETA {
     pub const HAND_DIRECT_INDEX_TIP_LEFT: VirtualKeyboardInputSourceMETA = Self(7i32);
     #[doc = "Right hand direct touch."]
     pub const HAND_DIRECT_INDEX_TIP_RIGHT: VirtualKeyboardInputSourceMETA = Self(8i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5809,10 +5809,10 @@ impl HeadsetFitStatusML {
     pub const GOOD_FIT: HeadsetFitStatusML = Self(2i32);
     #[doc = "Bad fit."]
     pub const BAD_FIT: HeadsetFitStatusML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5841,10 +5841,10 @@ impl EyeCalibrationStatusML {
     pub const COARSE: EyeCalibrationStatusML = Self(2i32);
     #[doc = "Eye calibration is of higher accuracy."]
     pub const FINE: EyeCalibrationStatusML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5873,10 +5873,10 @@ impl LocalizationMapStateML {
     pub const LOCALIZATION_PENDING: LocalizationMapStateML = Self(2i32);
     #[doc = "Initial localization failed, the system will retry localization."]
     pub const LOCALIZATION_SLEEPING_BEFORE_RETRY: LocalizationMapStateML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5901,10 +5901,10 @@ impl LocalizationMapTypeML {
     pub const ON_DEVICE: LocalizationMapTypeML = Self(0i32);
     #[doc = "The system is localized into a Cloud Map, anchors are shared per cloud account settings."]
     pub const CLOUD: LocalizationMapTypeML = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5931,10 +5931,10 @@ impl LocalizationMapConfidenceML {
     pub const GOOD: LocalizationMapConfidenceML = Self(2i32);
     #[doc = "This is a very high-confidence localization, persistent content will be very stable."]
     pub const EXCELLENT: LocalizationMapConfidenceML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -5967,10 +5967,10 @@ impl MarkerDetectorProfileML {
     pub const LARGE_FOV: MarkerDetectorProfileML = Self(4i32);
     #[doc = "Custom Tracker Profile. The application can define a custom tracker profile. See XrMarkerDetectorCustomProfileInfoML for more details."]
     pub const CUSTOM: MarkerDetectorProfileML = Self(5i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6005,10 +6005,10 @@ impl MarkerTypeML {
     pub const UPC_A: MarkerTypeML = Self(4i32);
     #[doc = "Code 128, detection only, not locatable. The contents of the barcode is available via xrGetMarkerStringML."]
     pub const CODE_128: MarkerTypeML = Self(5i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6063,10 +6063,10 @@ impl MarkerArucoDictML {
     pub const DICT_7X7_250: MarkerArucoDictML = Self(14i32);
     #[doc = "7 by 7 pixel Aruco marker dictionary with 1000 IDs."]
     pub const DICT_7X7_1000: MarkerArucoDictML = Self(15i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6107,10 +6107,10 @@ impl MarkerAprilTagDictML {
     pub const DICT_36H10: MarkerAprilTagDictML = Self(2i32);
     #[doc = "6 by 6 bits, minimum Hamming distance between any two codes = 11, 587 codes."]
     pub const DICT_36H11: MarkerAprilTagDictML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6139,10 +6139,10 @@ impl MarkerDetectorFpsML {
     pub const HIGH: MarkerDetectorFpsML = Self(2i32);
     #[doc = "Max possible FPS."]
     pub const MAX: MarkerDetectorFpsML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6169,10 +6169,10 @@ impl MarkerDetectorResolutionML {
     pub const MEDIUM: MarkerDetectorResolutionML = Self(1i32);
     #[doc = "High Resolution."]
     pub const HIGH: MarkerDetectorResolutionML = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6196,10 +6196,10 @@ impl MarkerDetectorCameraML {
     pub const RGB_CAMERA: MarkerDetectorCameraML = Self(0i32);
     #[doc = "One or more world cameras."]
     pub const WORLD_CAMERAS: MarkerDetectorCameraML = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6226,10 +6226,10 @@ impl MarkerDetectorCornerRefineMethodML {
     pub const CONTOUR: MarkerDetectorCornerRefineMethodML = Self(2i32);
     #[doc = "AprilTag refinement. Reasonable detection rate, slowest, but very accurate. Only valid with AprilTags."]
     pub const APRIL_TAG: MarkerDetectorCornerRefineMethodML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6258,10 +6258,10 @@ impl MarkerDetectorFullAnalysisIntervalML {
     pub const MEDIUM: MarkerDetectorFullAnalysisIntervalML = Self(2i32);
     #[doc = "Detector analyzes frame fully about every second."]
     pub const SLOW: MarkerDetectorFullAnalysisIntervalML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6288,10 +6288,10 @@ impl MarkerDetectorStatusML {
     pub const READY: MarkerDetectorStatusML = Self(1i32);
     #[doc = "The marker detector has encountered a fatal error."]
     pub const ERROR: MarkerDetectorStatusML = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6357,10 +6357,10 @@ impl FacialBlendShapeML {
     pub const UPPER_LIP_RAISER_L: FacialBlendShapeML = Self(43i32);
     pub const UPPER_LIP_RAISER_R: FacialBlendShapeML = Self(44i32);
     pub const TONGUE_OUT: FacialBlendShapeML = Self(45i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6425,10 +6425,10 @@ pub struct FutureStateEXT(i32);
 impl FutureStateEXT {
     pub const PENDING: FutureStateEXT = Self(1i32);
     pub const READY: FutureStateEXT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6459,10 +6459,10 @@ impl SpatialCapabilityEXT {
     pub const MARKER_TRACKING_APRIL_TAG: SpatialCapabilityEXT = Self(1000743003i32);
     #[doc = "Capability to be able to create spatial anchors"]
     pub const ANCHOR: SpatialCapabilityEXT = Self(1000762000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6489,10 +6489,10 @@ impl SpatialCapabilityFeatureEXT {
     pub const MARKER_TRACKING_FIXED_SIZE_MARKERS: SpatialCapabilityFeatureEXT = Self(1000743000i32);
     #[doc = "Capability feature to allow applications to specify if markers are static. Corresponding config structure is XrSpatialMarkerStaticOptimizationEXT"]
     pub const MARKER_TRACKING_STATIC_MARKERS: SpatialCapabilityFeatureEXT = Self(1000743001i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6533,10 +6533,10 @@ impl SpatialComponentTypeEXT {
     pub const ANCHOR: SpatialComponentTypeEXT = Self(1000762000i32);
     #[doc = "Component that provides the persisted UUID for a spatial entity. Corresponding list structure is XrSpatialComponentPersistenceListEXT; Corresponding data structure is XrSpatialPersistenceDataEXT"]
     pub const PERSISTENCE: SpatialComponentTypeEXT = Self(1000763000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6570,10 +6570,10 @@ impl SpatialEntityTrackingStateEXT {
     pub const PAUSED: SpatialEntityTrackingStateEXT = Self(2i32);
     #[doc = "The runtime is currently tracking this entity and its component data is valid."]
     pub const TRACKING: SpatialEntityTrackingStateEXT = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6601,10 +6601,10 @@ impl SpatialBufferTypeEXT {
     pub const FLOAT: SpatialBufferTypeEXT = Self(5i32);
     pub const VECTOR2F: SpatialBufferTypeEXT = Self(6i32);
     pub const VECTOR3F: SpatialBufferTypeEXT = Self(7i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6633,10 +6633,10 @@ impl SpatialPersistenceScopeEXT {
     pub const SYSTEM_MANAGED: SpatialPersistenceScopeEXT = Self(1i32);
     #[doc = "Persistence operations and data access is limited to spatial anchors, on the same device, for the same user and same app"]
     pub const LOCAL_ANCHORS: SpatialPersistenceScopeEXT = Self(1000781000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6661,10 +6661,10 @@ impl SpatialPersistenceContextResultEXT {
     pub const ENTITY_NOT_TRACKING: SpatialPersistenceContextResultEXT = Self(-1000781001i32);
     #[doc = "The provided persist UUID was not found in the storage."]
     pub const PERSIST_UUID_NOT_FOUND: SpatialPersistenceContextResultEXT = Self(-1000781002i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6688,10 +6688,10 @@ impl SpatialPersistenceStateEXT {
     pub const LOADED: SpatialPersistenceStateEXT = Self(1i32);
     #[doc = "The persisted UUID was not found in the storage and was either removed from it or never was in it."]
     pub const NOT_FOUND: SpatialPersistenceStateEXT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6718,10 +6718,10 @@ impl SpatialPlaneAlignmentEXT {
     pub const VERTICAL: SpatialPlaneAlignmentEXT = Self(2i32);
     #[doc = "The entity has an arbitrary, non-vertical and non-horizontal orientation."]
     pub const ARBITRARY: SpatialPlaneAlignmentEXT = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6752,10 +6752,10 @@ impl SpatialPlaneSemanticLabelEXT {
     pub const CEILING: SpatialPlaneSemanticLabelEXT = Self(4i32);
     #[doc = "The entity is a table."]
     pub const TABLE: SpatialPlaneSemanticLabelEXT = Self(5i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6803,10 +6803,10 @@ impl BodyJointHTC {
     pub const RIGHT_ARM: BodyJointHTC = Self(23i32);
     pub const RIGHT_ELBOW: BodyJointHTC = Self(24i32);
     pub const RIGHT_WRIST: BodyJointHTC = Self(25i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6850,10 +6850,10 @@ impl fmt::Debug for BodyJointHTC {
 pub struct BodyJointSetHTC(i32);
 impl BodyJointSetHTC {
     pub const FULL: BodyJointSetHTC = Self(0i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6874,10 +6874,10 @@ impl BodyJointConfidenceHTC {
     pub const NONE: BodyJointConfidenceHTC = Self(0i32);
     pub const LOW: BodyJointConfidenceHTC = Self(1i32);
     pub const HIGH: BodyJointConfidenceHTC = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6903,10 +6903,10 @@ impl SpatialAnchorConfidenceML {
     pub const MEDIUM: SpatialAnchorConfidenceML = Self(1i32);
     #[doc = "High quality, this anchor is stable and suitable for digital content attachment."]
     pub const HIGH: SpatialAnchorConfidenceML = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6934,10 +6934,10 @@ impl WorldMeshBlockStatusML {
     pub const DELETED: WorldMeshBlockStatusML = Self(2i32);
     #[doc = "The mesh block is unchanged."]
     pub const UNCHANGED: WorldMeshBlockStatusML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6964,10 +6964,10 @@ impl WorldMeshDetectorLodML {
     pub const MEDIUM: WorldMeshDetectorLodML = Self(1i32);
     #[doc = "Maximum Level of Detail (LOD) for the mesh."]
     pub const MAXIMUM: WorldMeshDetectorLodML = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -6995,10 +6995,10 @@ impl WorldMeshBlockResultML {
     pub const PENDING: WorldMeshBlockResultML = Self(2i32);
     #[doc = "There are partial updates on the mesh request."]
     pub const PARTIAL_UPDATE: WorldMeshBlockResultML = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7043,10 +7043,10 @@ impl BodyJointBD {
     pub const RIGHT_WRIST: BodyJointBD = Self(21i32);
     pub const LEFT_HAND: BodyJointBD = Self(22i32);
     pub const RIGHT_HAND: BodyJointBD = Self(23i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7091,10 +7091,10 @@ impl BodyJointSetBD {
     pub const BODY_WITHOUT_ARM: BodyJointSetBD = Self(1i32);
     #[doc = "Contains joints in XrBodyJointBD in the range XR_BODY_JOINT_PELVIS_BD through XR_BODY_JOINT_RIGHT_HAND_BD inclusive, a total of XR_BODY_JOINT_COUNT_BD joints."]
     pub const FULL_BODY_JOINTS: BodyJointSetBD = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7121,10 +7121,10 @@ impl SenseDataProviderTypeBD {
     pub const MESH: SenseDataProviderTypeBD = Self(1000393000i32);
     #[doc = "Capture spatial plane data."]
     pub const PLANE: SenseDataProviderTypeBD = Self(1000396000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7195,10 +7195,10 @@ impl SemanticLabelBD {
     pub const WALL_ART: SemanticLabelBD = Self(23i32);
     #[doc = "Semantic label of stairway."]
     pub const STAIRWAY: SemanticLabelBD = Self(24i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7254,10 +7254,10 @@ impl SpatialEntityComponentTypeBD {
     pub const TRIANGLE_MESH: SpatialEntityComponentTypeBD = Self(5i32);
     #[doc = "The plane orientation. Corresponds to component data structure XrSpatialEntityComponentDataPlaneOrientationBD."]
     pub const PLANE_ORIENTATION: SpatialEntityComponentTypeBD = Self(1000396000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7287,10 +7287,10 @@ impl SenseDataProviderStateBD {
     pub const RUNNING: SenseDataProviderStateBD = Self(1i32);
     #[doc = "The state after the provider is successfully stopped, or when an unexpected error occurs."]
     pub const STOPPED: SenseDataProviderStateBD = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7312,10 +7312,10 @@ pub struct PersistenceLocationBD(i32);
 impl PersistenceLocationBD {
     #[doc = "The persistence storage location is local to the device."]
     pub const LOCAL: PersistenceLocationBD = Self(0i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7339,10 +7339,10 @@ impl SpatialMeshLodBD {
     pub const MEDIUM: SpatialMeshLodBD = Self(1i32);
     #[doc = "Fine level for the mesh with more details."]
     pub const FINE: SpatialMeshLodBD = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7370,10 +7370,10 @@ impl PlaneOrientationBD {
     pub const VERTICAL: PlaneOrientationBD = Self(2i32);
     #[doc = "The detected plane has an arbitrary, non-vertical and non-horizontal orientation."]
     pub const ARBITRARY: PlaneOrientationBD = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7426,10 +7426,10 @@ impl SpatialMarkerArucoDictEXT {
     pub const DICT_7X7_250: SpatialMarkerArucoDictEXT = Self(15i32);
     #[doc = "7 by 7 pixel Aruco marker dictionary with 1000 IDs."]
     pub const DICT_7X7_1000: SpatialMarkerArucoDictEXT = Self(16i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7470,10 +7470,10 @@ impl SpatialMarkerAprilTagDictEXT {
     pub const DICT_36H10: SpatialMarkerAprilTagDictEXT = Self(3i32);
     #[doc = "6 by 6 bits, minimum Hamming distance between any two codes = 11, 587 codes."]
     pub const DICT_36H11: SpatialMarkerAprilTagDictEXT = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7502,10 +7502,10 @@ impl FacialSimulationModeBD {
     pub const COMBINED_AUDIO_WITH_LIP: FacialSimulationModeBD = Self(2i32);
     #[doc = "Uses only audio input to produce the output result as XrLipExpressionDataBD."]
     pub const ONLY_AUDIO_WITH_LIP: FacialSimulationModeBD = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7578,10 +7578,10 @@ impl FaceExpressionBD {
     pub const JAW_R: FaceExpressionBD = Self(49i32);
     pub const JAW_OPEN: FaceExpressionBD = Self(50i32);
     pub const TONGUE_OUT: FaceExpressionBD = Self(51i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7670,10 +7670,10 @@ impl LipExpressionBD {
     pub const E: LipExpressionBD = Self(17i32);
     pub const LNN: LipExpressionBD = Self(18i32);
     pub const SIL: LipExpressionBD = Self(19i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7712,10 +7712,10 @@ pub struct HandEXT(i32);
 impl HandEXT {
     pub const LEFT: HandEXT = Self(1i32);
     pub const RIGHT: HandEXT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7760,10 +7760,10 @@ impl HandJointEXT {
     pub const LITTLE_INTERMEDIATE: HandJointEXT = Self(23i32);
     pub const LITTLE_DISTAL: HandJointEXT = Self(24i32);
     pub const LITTLE_TIP: HandJointEXT = Self(25i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7808,10 +7808,10 @@ pub struct HandJointSetEXT(i32);
 impl HandJointSetEXT {
     pub const DEFAULT: HandJointSetEXT = Self(0i32);
     pub const HAND_WITH_FOREARM_ULTRA: HandJointSetEXT = Self(1000149000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7832,10 +7832,10 @@ pub struct HandJointsMotionRangeEXT(i32);
 impl HandJointsMotionRangeEXT {
     pub const UNOBSTRUCTED: HandJointsMotionRangeEXT = Self(1i32);
     pub const CONFORMING_TO_CONTROLLER: HandJointsMotionRangeEXT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7858,10 +7858,10 @@ impl HandTrackingDataSourceEXT {
     pub const UNOBSTRUCTED: HandTrackingDataSourceEXT = Self(1i32);
     #[doc = "This data source value indicates hand joints are inferred based on motion controller state."]
     pub const CONTROLLER: HandTrackingDataSourceEXT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7882,10 +7882,10 @@ pub struct HandPoseTypeMSFT(i32);
 impl HandPoseTypeMSFT {
     pub const TRACKED: HandPoseTypeMSFT = Self(0i32);
     pub const REFERENCE_OPEN_PALM: HandPoseTypeMSFT = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7911,10 +7911,10 @@ impl SceneObjectTypeMSFT {
     pub const CEILING: SceneObjectTypeMSFT = Self(4i32);
     pub const PLATFORM: SceneObjectTypeMSFT = Self(5i32);
     pub const INFERRED: SceneObjectTypeMSFT = Self(6i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7941,10 +7941,10 @@ impl ScenePlaneAlignmentTypeMSFT {
     pub const NON_ORTHOGONAL: ScenePlaneAlignmentTypeMSFT = Self(0i32);
     pub const HORIZONTAL: ScenePlaneAlignmentTypeMSFT = Self(1i32);
     pub const VERTICAL: ScenePlaneAlignmentTypeMSFT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7968,10 +7968,10 @@ impl SceneComputeStateMSFT {
     pub const UPDATING: SceneComputeStateMSFT = Self(1i32);
     pub const COMPLETED: SceneComputeStateMSFT = Self(2i32);
     pub const COMPLETED_WITH_ERROR: SceneComputeStateMSFT = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -7998,10 +7998,10 @@ impl SceneComputeFeatureMSFT {
     pub const COLLIDER_MESH: SceneComputeFeatureMSFT = Self(4i32);
     pub const SERIALIZE_SCENE: SceneComputeFeatureMSFT = Self(1000098000i32);
     pub const MARKER: SceneComputeFeatureMSFT = Self(1000147000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8027,10 +8027,10 @@ impl SceneComputeConsistencyMSFT {
     pub const SNAPSHOT_COMPLETE: SceneComputeConsistencyMSFT = Self(1i32);
     pub const SNAPSHOT_INCOMPLETE_FAST: SceneComputeConsistencyMSFT = Self(2i32);
     pub const OCCLUSION_OPTIMIZED: SceneComputeConsistencyMSFT = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8057,10 +8057,10 @@ impl SceneComponentTypeMSFT {
     pub const COLLIDER_MESH: SceneComponentTypeMSFT = Self(4i32);
     pub const SERIALIZED_SCENE_FRAGMENT: SceneComponentTypeMSFT = Self(1000098000i32);
     pub const MARKER: SceneComponentTypeMSFT = Self(1000147000i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8088,10 +8088,10 @@ impl MeshComputeLodMSFT {
     pub const MEDIUM: MeshComputeLodMSFT = Self(2i32);
     pub const FINE: MeshComputeLodMSFT = Self(3i32);
     pub const UNLIMITED: MeshComputeLodMSFT = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8113,10 +8113,10 @@ impl fmt::Debug for MeshComputeLodMSFT {
 pub struct SceneMarkerTypeMSFT(i32);
 impl SceneMarkerTypeMSFT {
     pub const QR_CODE: SceneMarkerTypeMSFT = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8136,10 +8136,10 @@ pub struct SceneMarkerQRCodeSymbolTypeMSFT(i32);
 impl SceneMarkerQRCodeSymbolTypeMSFT {
     pub const QR_CODE: SceneMarkerQRCodeSymbolTypeMSFT = Self(1i32);
     pub const MICRO_QR_CODE: SceneMarkerQRCodeSymbolTypeMSFT = Self(2i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8166,10 +8166,10 @@ impl ColorSpaceFB {
     pub const QUEST: ColorSpaceFB = Self(5i32);
     pub const P3: ColorSpaceFB = Self(6i32);
     pub const ADOBE_RGB: ColorSpaceFB = Self(7i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8202,10 +8202,10 @@ impl FoveationLevelFB {
     pub const MEDIUM: FoveationLevelFB = Self(2i32);
     #[doc = "High foveation (lower periphery visual fidelity, higher performance)"]
     pub const HIGH: FoveationLevelFB = Self(3i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8230,10 +8230,10 @@ impl FoveationDynamicFB {
     pub const DISABLED: FoveationDynamicFB = Self(0i32);
     #[doc = "Dynamic changing foveation based on performance headroom available up to the maximum desired level"]
     pub const LEVEL_ENABLED: FoveationDynamicFB = Self(1i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8256,10 +8256,10 @@ impl ReprojectionModeMSFT {
     pub const PLANAR_FROM_DEPTH: ReprojectionModeMSFT = Self(2i32);
     pub const PLANAR_MANUAL: ReprojectionModeMSFT = Self(3i32);
     pub const ORIENTATION_ONLY: ReprojectionModeMSFT = Self(4i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8307,10 +8307,10 @@ impl HandForearmJointULTRALEAP {
     pub const LITTLE_DISTAL: HandForearmJointULTRALEAP = Self(24i32);
     pub const LITTLE_TIP: HandForearmJointULTRALEAP = Self(25i32);
     pub const ELBOW: HandForearmJointULTRALEAP = Self(26i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -8370,10 +8370,10 @@ impl CompareOpFB {
     pub const GREATER_OR_EQUAL: CompareOpFB = Self(6i32);
     #[doc = "Comparison is always true."]
     pub const ALWAYS: CompareOpFB = Self(7i32);
-    pub fn from_raw(x: i32) -> Self {
+    pub const fn from_raw(x: i32) -> Self {
         Self(x)
     }
-    pub fn into_raw(self) -> i32 {
+    pub const fn into_raw(self) -> i32 {
         self.0
     }
 }
@@ -15063,32 +15063,27 @@ pub struct ForceFeedbackCurlApplyLocationMNDX {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFaceTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerCreateInfoANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct FaceTrackerCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-#[cfg(target_os = "android")]
 impl FaceTrackerCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::FACE_TRACKER_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFaceStateGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceStateGetInfoANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct FaceStateGetInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub time: Time,
 }
-#[cfg(target_os = "android")]
 impl FaceStateGetInfoANDROID {
     pub const TYPE: StructureType = StructureType::FACE_STATE_GET_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrFaceStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct FaceStateANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -15102,7 +15097,6 @@ pub struct FaceStateANDROID {
     pub region_confidences_count_output: u32,
     pub region_confidences: *mut f32,
 }
-#[cfg(target_os = "android")]
 impl FaceStateANDROID {
     pub const TYPE: StructureType = StructureType::FACE_STATE_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15121,13 +15115,11 @@ impl FaceStateANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemFaceTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemFaceTrackingPropertiesANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
-#[cfg(target_os = "android")]
 pub struct SystemFaceTrackingPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub supports_face_tracking: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SystemFaceTrackingPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_FACE_TRACKING_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15146,13 +15138,11 @@ impl SystemFaceTrackingPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemPassthroughCameraStatePropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPassthroughCameraStatePropertiesANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
-#[cfg(target_os = "android")]
 pub struct SystemPassthroughCameraStatePropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub supports_passthrough_camera_state: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SystemPassthroughCameraStatePropertiesANDROID {
     pub const TYPE: StructureType =
         StructureType::SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID;
@@ -15172,32 +15162,27 @@ impl SystemPassthroughCameraStatePropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPassthroughCameraStateGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughCameraStateGetInfoANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
-#[cfg(target_os = "android")]
 pub struct PassthroughCameraStateGetInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-#[cfg(target_os = "android")]
 impl PassthroughCameraStateGetInfoANDROID {
     pub const TYPE: StructureType = StructureType::PASSTHROUGH_CAMERA_STATE_GET_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableTrackerCreateInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct TrackableTrackerCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub trackable_type: TrackableTypeANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableTrackerCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_TRACKER_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableGetInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableGetInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct TrackableGetInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -15205,14 +15190,12 @@ pub struct TrackableGetInfoANDROID {
     pub base_space: Space,
     pub time: Time,
 }
-#[cfg(target_os = "android")]
 impl TrackableGetInfoANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_GET_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackablePlaneANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackablePlaneANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct TrackablePlaneANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -15227,7 +15210,6 @@ pub struct TrackablePlaneANDROID {
     pub vertex_count_output: *mut u32,
     pub vertices: *mut Vector2f,
 }
-#[cfg(target_os = "android")]
 impl TrackablePlaneANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_PLANE_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15246,7 +15228,6 @@ impl TrackablePlaneANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrAnchorSpaceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAnchorSpaceCreateInfoANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct AnchorSpaceCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -15255,28 +15236,24 @@ pub struct AnchorSpaceCreateInfoANDROID {
     pub pose: Posef,
     pub trackable: TrackableANDROID,
 }
-#[cfg(target_os = "android")]
 impl AnchorSpaceCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::ANCHOR_SPACE_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemTrackablesPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemTrackablesPropertiesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
-#[cfg(target_os = "android")]
 pub struct SystemTrackablesPropertiesANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub supports_anchor: Bool32,
     pub max_anchors: u32,
 }
-#[cfg(target_os = "android")]
 impl SystemTrackablesPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_TRACKABLES_PROPERTIES_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableObjectANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableObjectANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
-#[cfg(target_os = "android")]
 pub struct TrackableObjectANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -15286,7 +15263,6 @@ pub struct TrackableObjectANDROID {
     pub object_label: ObjectLabelANDROID,
     pub last_updated_time: Time,
 }
-#[cfg(target_os = "android")]
 impl TrackableObjectANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_OBJECT_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15305,14 +15281,12 @@ impl TrackableObjectANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableObjectConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableObjectConfigurationANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
-#[cfg(target_os = "android")]
 pub struct TrackableObjectConfigurationANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub label_count: u32,
     pub active_labels: *const ObjectLabelANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableObjectConfigurationANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_OBJECT_CONFIGURATION_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15331,7 +15305,6 @@ impl TrackableObjectConfigurationANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRaycastInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastInfoANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
-#[cfg(target_os = "android")]
 pub struct RaycastInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
@@ -15343,14 +15316,12 @@ pub struct RaycastInfoANDROID {
     pub space: Space,
     pub time: Time,
 }
-#[cfg(target_os = "android")]
 impl RaycastInfoANDROID {
     pub const TYPE: StructureType = StructureType::RAYCAST_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrRaycastHitResultANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastHitResultANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
-#[cfg(target_os = "android")]
 pub struct RaycastHitResultANDROID {
     pub ty: TrackableTypeANDROID,
     pub trackable: TrackableANDROID,
@@ -15359,7 +15330,6 @@ pub struct RaycastHitResultANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrRaycastHitResultsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrRaycastHitResultsANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
-#[cfg(target_os = "android")]
 pub struct RaycastHitResultsANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -15367,7 +15337,6 @@ pub struct RaycastHitResultsANDROID {
     pub results_count_output: u32,
     pub results: *mut RaycastHitResultANDROID,
 }
-#[cfg(target_os = "android")]
 impl RaycastHitResultsANDROID {
     pub const TYPE: StructureType = StructureType::RAYCAST_HIT_RESULTS_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15386,7 +15355,6 @@ impl RaycastHitResultsANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemMarkerTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemMarkerTrackingPropertiesANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct SystemMarkerTrackingPropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -15394,7 +15362,6 @@ pub struct SystemMarkerTrackingPropertiesANDROID {
     pub supports_marker_size_estimation: Bool32,
     pub max_marker_count: u16,
 }
-#[cfg(target_os = "android")]
 impl SystemMarkerTrackingPropertiesANDROID {
     pub const TYPE: StructureType = StructureType::SYSTEM_MARKER_TRACKING_PROPERTIES_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15413,7 +15380,6 @@ impl SystemMarkerTrackingPropertiesANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableMarkerConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerConfigurationANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerConfigurationANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -15421,7 +15387,6 @@ pub struct TrackableMarkerConfigurationANDROID {
     pub database_count: u32,
     pub databases: *const TrackableMarkerDatabaseANDROID,
 }
-#[cfg(target_os = "android")]
 impl TrackableMarkerConfigurationANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_MARKER_CONFIGURATION_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15440,7 +15405,6 @@ impl TrackableMarkerConfigurationANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableMarkerDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerDatabaseANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerDatabaseANDROID {
     pub dictionary: TrackableMarkerDictionaryANDROID,
     pub entry_count: u32,
@@ -15449,7 +15413,6 @@ pub struct TrackableMarkerDatabaseANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrTrackableMarkerDatabaseEntryANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerDatabaseEntryANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerDatabaseEntryANDROID {
     pub id: i32,
     pub edge_size: f32,
@@ -15457,7 +15420,6 @@ pub struct TrackableMarkerDatabaseEntryANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrTrackableMarkerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableMarkerANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
-#[cfg(target_os = "android")]
 pub struct TrackableMarkerANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
@@ -15468,7 +15430,6 @@ pub struct TrackableMarkerANDROID {
     pub center_pose: Posef,
     pub extents: Extent2Df,
 }
-#[cfg(target_os = "android")]
 impl TrackableMarkerANDROID {
     pub const TYPE: StructureType = StructureType::TRACKABLE_MARKER_ANDROID;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
@@ -15550,51 +15511,43 @@ impl AnchorSharingTokenANDROID {
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrDeviceAnchorPersistenceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrDeviceAnchorPersistenceCreateInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct DeviceAnchorPersistenceCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
 }
-#[cfg(target_os = "android")]
 impl DeviceAnchorPersistenceCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::DEVICE_ANCHOR_PERSISTENCE_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPersistedAnchorSpaceCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistedAnchorSpaceCreateInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct PersistedAnchorSpaceCreateInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub anchor_id: UuidEXT,
 }
-#[cfg(target_os = "android")]
 impl PersistedAnchorSpaceCreateInfoANDROID {
     pub const TYPE: StructureType = StructureType::PERSISTED_ANCHOR_SPACE_CREATE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrPersistedAnchorSpaceInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPersistedAnchorSpaceInfoANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct PersistedAnchorSpaceInfoANDROID {
     pub ty: StructureType,
     pub next: *const c_void,
     pub anchor: Space,
 }
-#[cfg(target_os = "android")]
 impl PersistedAnchorSpaceInfoANDROID {
     pub const TYPE: StructureType = StructureType::PERSISTED_ANCHOR_SPACE_INFO_ANDROID;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemDeviceAnchorPersistencePropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemDeviceAnchorPersistencePropertiesANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
-#[cfg(target_os = "android")]
 pub struct SystemDeviceAnchorPersistencePropertiesANDROID {
     pub ty: StructureType,
     pub next: *mut c_void,
     pub supports_anchor_persistence: Bool32,
 }
-#[cfg(target_os = "android")]
 impl SystemDeviceAnchorPersistencePropertiesANDROID {
     pub const TYPE: StructureType =
         StructureType::SYSTEM_DEVICE_ANCHOR_PERSISTENCE_PROPERTIES_ANDROID;
@@ -20424,38 +20377,32 @@ pub mod pfn {
         hand_tracker: HandTrackerEXT,
         locations: *const ForceFeedbackCurlApplyLocationsMNDX,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateFaceTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateFaceTrackerANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type CreateFaceTrackerANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const FaceTrackerCreateInfoANDROID,
         face_tracker: *mut FaceTrackerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyFaceTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyFaceTrackerANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type DestroyFaceTrackerANDROID =
         unsafe extern "system" fn(face_tracker: FaceTrackerANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetFaceStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFaceStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type GetFaceStateANDROID = unsafe extern "system" fn(
         face_tracker: FaceTrackerANDROID,
         get_info: *const FaceStateGetInfoANDROID,
         face_state_output: *mut FaceStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetFaceCalibrationStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetFaceCalibrationStateANDROID) - defined by [XR_ANDROID_face_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)"]
     pub type GetFaceCalibrationStateANDROID = unsafe extern "system" fn(
         face_tracker: FaceTrackerANDROID,
         face_is_calibrated_output: *mut Bool32,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetPassthroughCameraStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetPassthroughCameraStateANDROID) - defined by [XR_ANDROID_passthrough_camera_state](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_passthrough_camera_state)"]
     pub type GetPassthroughCameraStateANDROID = unsafe extern "system" fn(
         session: Session,
         get_info: *const PassthroughCameraStateGetInfoANDROID,
         camera_state_output: *mut PassthroughCameraStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSupportedTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedTrackableTypesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type EnumerateSupportedTrackableTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -20464,7 +20411,6 @@ pub mod pfn {
         trackable_type_count_output: *mut u32,
         trackable_types: *mut TrackableTypeANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSupportedAnchorTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedAnchorTrackableTypesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type EnumerateSupportedAnchorTrackableTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -20474,18 +20420,15 @@ pub mod pfn {
         trackable_types: *mut TrackableTypeANDROID,
     )
         -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateTrackableTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateTrackableTrackerANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type CreateTrackableTrackerANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const TrackableTrackerCreateInfoANDROID,
         trackable_tracker: *mut TrackableTrackerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyTrackableTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyTrackableTrackerANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type DestroyTrackableTrackerANDROID =
         unsafe extern "system" fn(trackable_tracker: TrackableTrackerANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetAllTrackablesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAllTrackablesANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type GetAllTrackablesANDROID = unsafe extern "system" fn(
         trackable_tracker: TrackableTrackerANDROID,
@@ -20493,14 +20436,12 @@ pub mod pfn {
         trackable_count_output: *mut u32,
         trackables: *mut TrackableANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackablePlaneANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackablePlaneANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type GetTrackablePlaneANDROID = unsafe extern "system" fn(
         trackable_tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         plane_output: *mut TrackablePlaneANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateAnchorSpaceANDROID) - defined by [XR_ANDROID_trackables](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables)"]
     pub type CreateAnchorSpaceANDROID = unsafe extern "system" fn(
         session: Session,
@@ -20518,14 +20459,12 @@ pub mod pfn {
     #[doc = "See [xrUnshareAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnshareAnchorANDROID) - defined by [XR_ANDROID_anchor_sharing_export](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_anchor_sharing_export)"]
     pub type UnshareAnchorANDROID =
         unsafe extern "system" fn(session: Session, anchor: Space) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackableObjectANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableObjectANDROID) - defined by [XR_ANDROID_trackables_object](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_object)"]
     pub type GetTrackableObjectANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         object_output: *mut TrackableObjectANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateRaycastSupportedTrackableTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateRaycastSupportedTrackableTypesANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
     pub type EnumerateRaycastSupportedTrackableTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -20535,21 +20474,18 @@ pub mod pfn {
         trackable_types: *mut TrackableTypeANDROID,
     )
         -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrRaycastANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRaycastANDROID) - defined by [XR_ANDROID_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_raycast)"]
     pub type RaycastANDROID = unsafe extern "system" fn(
         session: Session,
         ray_info: *const RaycastInfoANDROID,
         results: *mut RaycastHitResultsANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetTrackableMarkerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableMarkerANDROID) - defined by [XR_ANDROID_trackables_marker](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_marker)"]
     pub type GetTrackableMarkerANDROID = unsafe extern "system" fn(
         tracker: TrackableTrackerANDROID,
         get_info: *const TrackableGetInfoANDROID,
         marker_output: *mut TrackableMarkerANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumerateSupportedPersistenceAnchorTypesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedPersistenceAnchorTypesANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type EnumerateSupportedPersistenceAnchorTypesANDROID = unsafe extern "system" fn(
         instance: Instance,
@@ -20559,39 +20495,33 @@ pub mod pfn {
         trackable_types: *mut TrackableTypeANDROID,
     )
         -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreateDeviceAnchorPersistenceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateDeviceAnchorPersistenceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type CreateDeviceAnchorPersistenceANDROID = unsafe extern "system" fn(
         session: Session,
         create_info: *const DeviceAnchorPersistenceCreateInfoANDROID,
         out_handle: *mut DeviceAnchorPersistenceANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrDestroyDeviceAnchorPersistenceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyDeviceAnchorPersistenceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type DestroyDeviceAnchorPersistenceANDROID =
         unsafe extern "system" fn(handle: DeviceAnchorPersistenceANDROID) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrPersistAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPersistAnchorANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type PersistAnchorANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         persisted_info: *const PersistedAnchorSpaceInfoANDROID,
         anchor_id_output: *mut UuidEXT,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrGetAnchorPersistStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAnchorPersistStateANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type GetAnchorPersistStateANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         anchor_id: *const UuidEXT,
         persist_state: *mut AnchorPersistStateANDROID,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrCreatePersistedAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreatePersistedAnchorSpaceANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type CreatePersistedAnchorSpaceANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         create_info: *const PersistedAnchorSpaceCreateInfoANDROID,
         anchor_output: *mut Space,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrEnumeratePersistedAnchorsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumeratePersistedAnchorsANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type EnumeratePersistedAnchorsANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
@@ -20599,7 +20529,6 @@ pub mod pfn {
         anchor_id_count_output: *mut u32,
         anchor_ids: *mut UuidEXT,
     ) -> Result;
-    #[cfg(target_os = "android")]
     #[doc = "See [xrUnpersistAnchorANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUnpersistAnchorANDROID) - defined by [XR_ANDROID_device_anchor_persistence](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_device_anchor_persistence)"]
     pub type UnpersistAnchorANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
@@ -21482,40 +21411,26 @@ pub mod pfn {
 pub const ALMALENCE_digital_lens_control_SPEC_VERSION: u32 = 1u32;
 pub const ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME: &[u8] =
     b"XR_ALMALENCE_digital_lens_control\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_SPEC_VERSION: u32 = 2u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_device_anchor_persistence_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_DEVICE_ANCHOR_PERSISTENCE_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_device_anchor_persistence\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_face_tracking_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_FACE_TRACKING_EXTENSION_NAME: &[u8] = b"XR_ANDROID_face_tracking\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_passthrough_camera_state_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_PASSTHROUGH_CAMERA_STATE_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_passthrough_camera_state\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_raycast_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_RAYCAST_EXTENSION_NAME: &[u8] = b"XR_ANDROID_raycast\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_object_SPEC_VERSION: u32 = 2u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_OBJECT_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_object\0";
 #[cfg(target_os = "android")]
 pub const ANDROID_anchor_sharing_export_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const ANDROID_ANCHOR_SHARING_EXPORT_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_anchor_sharing_export\0";
-#[cfg(target_os = "android")]
 pub const ANDROID_trackables_marker_SPEC_VERSION: u32 = 1u32;
-#[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_MARKER_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_marker\0";
 pub const BD_controller_interaction_SPEC_VERSION: u32 = 2u32;
 pub const BD_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_BD_controller_interaction\0";

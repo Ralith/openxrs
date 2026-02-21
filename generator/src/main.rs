@@ -1042,8 +1042,8 @@ impl Parser {
                 impl #ident {
                     #(#values)*
 
-                    pub fn from_raw(x: i32) -> Self { Self(x) }
-                    pub fn into_raw(self) -> i32 { self.0 }
+                    pub const fn from_raw(x: i32) -> Self { Self(x) }
+                    pub const fn into_raw(self) -> i32 { self.0 }
                 }
                 impl fmt::Debug for #ident {
                     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
@@ -2444,7 +2444,10 @@ fn conditions(name: &str, ext: Option<&str>) -> TokenStream {
     {
         conditions.push(quote! { windows });
     }
-    if name.contains("android") {
+    if (name.contains("graphicsbinding") && name.contains("android"))
+        || ext == Some("XR_ANDROID_anchor_sharing_export")
+        || ext.is_some_and(|s| s.contains("android"))
+    {
         conditions.push(quote! { target_os = "android" });
     }
     if name.contains("metal") {
