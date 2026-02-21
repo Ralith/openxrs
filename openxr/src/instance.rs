@@ -212,6 +212,29 @@ impl Instance {
         }
     }
 
+    #[inline]
+    pub fn supports_facial_tracking_htc(&self, system: SystemId) -> Result<(bool, bool)> {
+        if self.exts().htc_facial_tracking.is_none() {
+            return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
+        }
+        unsafe {
+            let face = {
+                let mut face = sys::SystemFacialTrackingPropertiesHTC::out(ptr::null_mut());
+                let mut p = sys::SystemProperties::out(&mut face as *mut _ as _);
+                cvt((self.fp().get_system_properties)(
+                    self.as_raw(),
+                    system,
+                    p.as_mut_ptr(),
+                ))?;
+                face.assume_init()
+            };
+            Ok((
+                face.support_eye_facial_tracking.into(),
+                face.support_lip_facial_tracking.into(),
+            ))
+        }
+    }
+
     /// Construct a `Path` from a string
     ///
     /// A `Path` should only be used with the instance that produced it.

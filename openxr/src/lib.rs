@@ -34,6 +34,8 @@ mod hand_tracker;
 pub use hand_tracker::*;
 mod face_tracker_fb;
 pub use face_tracker_fb::*;
+mod face_tracker_htc;
+pub use face_tracker_htc::*;
 mod secondary_view;
 pub use secondary_view::*;
 mod foveation_profile_fb;
