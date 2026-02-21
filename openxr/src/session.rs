@@ -431,6 +431,14 @@ impl<G> Session<G> {
     #[inline]
     /// Create a face tracker
     ///
+    /// Requires [`XR_ANDROID_face_tracking`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_face_tracking)
+    pub fn create_face_tracker_android(&self) -> Result<FaceTrackerANDROID> {
+        FaceTrackerANDROID::create(self)
+    }
+
+    #[inline]
+    /// Create a face tracker
+    ///
     /// Requires [`XR_FB_face_tracking2`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_face_tracking2)
     pub fn create_face_tracker_fb(
         &self,

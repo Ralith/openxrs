@@ -190,6 +190,26 @@ impl Instance {
     }
 
     #[inline]
+    pub fn supports_face_tracking_android(&self, system: SystemId) -> Result<bool> {
+        if self.exts().android_face_tracking.is_none() {
+            return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
+        }
+        unsafe {
+            let face = {
+                let mut face = sys::SystemFaceTrackingPropertiesANDROID::out(ptr::null_mut());
+                let mut p = sys::SystemProperties::out(&mut face as *mut _ as _);
+                cvt((self.fp().get_system_properties)(
+                    self.as_raw(),
+                    system,
+                    p.as_mut_ptr(),
+                ))?;
+                face.assume_init()
+            };
+            Ok(face.supports_face_tracking.into())
+        }
+    }
+
+    #[inline]
     pub fn supports_face_tracking_fb(&self, system: SystemId) -> Result<(bool, bool)> {
         if self.exts().fb_face_tracking2.is_none() {
             return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
