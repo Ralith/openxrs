@@ -215,6 +215,32 @@ impl Instance {
         }
     }
 
+    #[inline]
+    pub fn supports_facial_tracking_htc(
+        &self,
+        system: SystemId,
+    ) -> Result<SystemFacialTrackingPropertiesHTC> {
+        if self.exts().htc_facial_tracking.is_none() {
+            return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
+        }
+        unsafe {
+            let face = {
+                let mut face = sys::SystemFacialTrackingPropertiesHTC::out(ptr::null_mut());
+                let mut p = sys::SystemProperties::out(&mut face as *mut _ as _);
+                cvt((self.fp().get_system_properties)(
+                    self.as_raw(),
+                    system,
+                    p.as_mut_ptr(),
+                ))?;
+                face.assume_init()
+            };
+            Ok(SystemFacialTrackingPropertiesHTC {
+                support_eye_facial_tracking: face.support_eye_facial_tracking.into(),
+                support_lip_facial_tracking: face.support_lip_facial_tracking.into(),
+            })
+        }
+    }
+
     /// Construct a `Path` from a string
     ///
     /// A `Path` should only be used with the instance that produced it.
@@ -823,6 +849,12 @@ pub struct ViewConfigurationView {
 pub struct SystemFaceTrackingProperties2FB {
     pub supports_visual_face_tracking: bool,
     pub supports_audio_face_tracking: bool,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct SystemFacialTrackingPropertiesHTC {
+    pub support_eye_facial_tracking: bool,
+    pub support_lip_facial_tracking: bool,
 }
 
 pub struct EventDataBuffer {
