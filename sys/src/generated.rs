@@ -13,7 +13,7 @@ use libc::{timespec, wchar_t};
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_char, c_void};
-pub const CURRENT_API_VERSION: Version = Version::new(1u16, 1u16, 54u32);
+pub const CURRENT_API_VERSION: Version = Version::new(1u16, 1u16, 58u32);
 pub const EXTENSION_ENUM_BASE: usize = 1000000000usize;
 pub const EXTENSION_ENUM_STRIDE: usize = 1000usize;
 pub const NULL_PATH: usize = 0usize;
@@ -605,6 +605,8 @@ impl StructureType {
     pub const BODY_TRACKING_CALIBRATION_INFO_META: StructureType = Self(1000283002i32);
     pub const BODY_TRACKING_CALIBRATION_STATUS_META: StructureType = Self(1000283003i32);
     pub const SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META: StructureType = Self(1000283004i32);
+    pub const BODY_TRACKING_FIDELITY_STATUS_META: StructureType = Self(1000284000i32);
+    pub const SYSTEM_PROPERTIES_BODY_TRACKING_FIDELITY_META: StructureType = Self(1000284001i32);
     pub const SYSTEM_FACE_TRACKING_PROPERTIES2_FB: StructureType = Self(1000287013i32);
     pub const FACE_TRACKER_CREATE_INFO2_FB: StructureType = Self(1000287014i32);
     pub const FACE_EXPRESSION_INFO2_FB: StructureType = Self(1000287015i32);
@@ -705,6 +707,20 @@ impl StructureType {
         Self(1000396001i32);
     #[doc = "XrSenseDataFilterPlaneOrientationBD"]
     pub const SENSE_DATA_FILTER_PLANE_ORIENTATION_BD: StructureType = Self(1000396002i32);
+    pub const SPATIAL_AUDIO_RENDERER_CREATE_INFO_BD: StructureType = Self(1000409000i32);
+    pub const AUDIO_BUFFER_BD: StructureType = Self(1000409001i32);
+    pub const SOUND_OBJECT_DIRECTIVITY_CARDIOID_BD: StructureType = Self(1000409003i32);
+    pub const SOUND_OBJECT_SHAPE_SPHERE_BD: StructureType = Self(1000409004i32);
+    pub const SOUND_OBJECT_DISTANCE_ATTENUATION_BD: StructureType = Self(1000409005i32);
+    pub const SOUND_OBJECT_DISTANCE_ATTENUATION_CURVE_BD: StructureType = Self(1000409006i32);
+    pub const SOUND_OBJECT_CONFIG_BD: StructureType = Self(1000409007i32);
+    pub const SOUND_FIELD_CONFIG_BD: StructureType = Self(1000409008i32);
+    pub const SOUND_FIELD_CHANNEL_DEFINITION_SURROUND_BD: StructureType = Self(1000409009i32);
+    pub const SOUND_FIELD_CHANNEL_DEFINITION_AMBIX_BD: StructureType = Self(1000409010i32);
+    pub const SOUND_FIELD_CHANNEL_DEFINITION_FUMA_BD: StructureType = Self(1000409011i32);
+    pub const SOUND_TRIANGLE_MESH_BD: StructureType = Self(1000409012i32);
+    pub const SOUND_OBSTACLE_CONFIG_BD: StructureType = Self(1000409013i32);
+    pub const SOUND_OBSTACLE_MATERIAL_CONFIG_BD: StructureType = Self(1000409014i32);
     pub const HAND_TRACKING_DATA_SOURCE_INFO_EXT: StructureType = Self(1000428000i32);
     pub const HAND_TRACKING_DATA_SOURCE_STATE_EXT: StructureType = Self(1000428001i32);
     pub const PLANE_DETECTOR_CREATE_INFO_EXT: StructureType = Self(1000429001i32);
@@ -731,8 +747,14 @@ impl StructureType {
     pub const PASSTHROUGH_CAMERA_STATE_GET_INFO_ANDROID: StructureType = Self(1000460000i32);
     pub const SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID: StructureType =
         Self(1000460001i32);
+    pub const PASSTHROUGH_LAYER_CREATE_INFO_ANDROID: StructureType = Self(1000462000i32);
+    pub const PASSTHROUGH_LAYER_MESH_ANDROID: StructureType = Self(1000462001i32);
+    pub const COMPOSITION_LAYER_PASSTHROUGH_ANDROID: StructureType = Self(1000462002i32);
+    pub const SYSTEM_PASSTHROUGH_LAYER_PROPERTIES_ANDROID: StructureType = Self(1000462003i32);
     pub const RAYCAST_INFO_ANDROID: StructureType = Self(1000463000i32);
     pub const RAYCAST_HIT_RESULTS_ANDROID: StructureType = Self(1000463001i32);
+    pub const PERFORMANCE_METRICS_STATE_ANDROID: StructureType = Self(1000465000i32);
+    pub const PERFORMANCE_METRICS_COUNTER_ANDROID: StructureType = Self(1000465001i32);
     pub const TRACKABLE_OBJECT_ANDROID: StructureType = Self(1000466000i32);
     pub const TRACKABLE_OBJECT_CONFIGURATION_ANDROID: StructureType = Self(1000466001i32);
     pub const FUTURE_CANCEL_INFO_EXT: StructureType = Self(1000469000i32);
@@ -788,12 +810,37 @@ impl StructureType {
     pub const SPACE_GROUP_UUID_FILTER_INFO_META: StructureType = Self(1000572001i32);
     pub const SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META: StructureType =
         Self(1000572100i32);
+    pub const SYSTEM_ENVIRONMENT_RAYCAST_PROPERTIES_META: StructureType = Self(1000592000i32);
+    pub const ENVIRONMENT_RAYCASTER_CREATE_INFO_META: StructureType = Self(1000592001i32);
+    pub const ENVIRONMENT_RAYCASTER_CREATE_COMPLETION_META: StructureType = Self(1000592002i32);
+    pub const ENVIRONMENT_RAYCAST_HIT_GET_INFO_META: StructureType = Self(1000592003i32);
+    pub const ENVIRONMENT_RAYCAST_HIT_META: StructureType = Self(1000592004i32);
+    pub const ENVIRONMENT_RAYCAST_FILTER_DISTANCE_META: StructureType = Self(1000592005i32);
+    pub const TILE_PROPERTIES_META: StructureType = Self(1000609000i32);
+    pub const TILE_PROPERTIES_HINT_META: StructureType = Self(1000609001i32);
     pub const ANCHOR_SHARING_INFO_ANDROID: StructureType = Self(1000701000i32);
     pub const ANCHOR_SHARING_TOKEN_ANDROID: StructureType = Self(1000701001i32);
     pub const SYSTEM_ANCHOR_SHARING_EXPORT_PROPERTIES_ANDROID: StructureType = Self(1000701002i32);
     pub const SYSTEM_MARKER_TRACKING_PROPERTIES_ANDROID: StructureType = Self(1000707000i32);
     pub const TRACKABLE_MARKER_CONFIGURATION_ANDROID: StructureType = Self(1000707001i32);
     pub const TRACKABLE_MARKER_ANDROID: StructureType = Self(1000707002i32);
+    pub const SYSTEM_QR_CODE_TRACKING_PROPERTIES_ANDROID: StructureType = Self(1000708000i32);
+    pub const TRACKABLE_QR_CODE_CONFIGURATION_ANDROID: StructureType = Self(1000708001i32);
+    pub const TRACKABLE_QR_CODE_ANDROID: StructureType = Self(1000708002i32);
+    pub const SYSTEM_IMAGE_TRACKING_PROPERTIES_ANDROID: StructureType = Self(1000709000i32);
+    pub const TRACKABLE_IMAGE_DATABASE_ENTRY_ANDROID: StructureType = Self(1000709001i32);
+    pub const TRACKABLE_IMAGE_DATABASE_CREATE_INFO_ANDROID: StructureType = Self(1000709002i32);
+    pub const CREATE_TRACKABLE_IMAGE_DATABASE_COMPLETION_ANDROID: StructureType =
+        Self(1000709003i32);
+    pub const TRACKABLE_IMAGE_CONFIGURATION_ANDROID: StructureType = Self(1000709004i32);
+    pub const TRACKABLE_IMAGE_ANDROID: StructureType = Self(1000709005i32);
+    pub const EVENT_DATA_IMAGE_TRACKING_LOST_ANDROID: StructureType = Self(1000709006i32);
+    pub const SYSTEM_SCENE_MESHING_PROPERTIES_ANDROID: StructureType = Self(1000718000i32);
+    pub const SCENE_MESHING_TRACKER_CREATE_INFO_ANDROID: StructureType = Self(1000718001i32);
+    pub const SCENE_MESH_SNAPSHOT_CREATE_INFO_ANDROID: StructureType = Self(1000718002i32);
+    pub const SCENE_MESH_SNAPSHOT_CREATION_RESULT_ANDROID: StructureType = Self(1000718003i32);
+    pub const SCENE_SUBMESH_STATE_ANDROID: StructureType = Self(1000718004i32);
+    pub const SCENE_SUBMESH_DATA_ANDROID: StructureType = Self(1000718005i32);
     pub const SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT: StructureType = Self(1000740000i32);
     pub const SPATIAL_CONTEXT_CREATE_INFO_EXT: StructureType = Self(1000740001i32);
     pub const CREATE_SPATIAL_CONTEXT_COMPLETION_EXT: StructureType = Self(1000740002i32);
@@ -840,7 +887,22 @@ impl StructureType {
     pub const PERSIST_SPATIAL_ENTITY_COMPLETION_EXT: StructureType = Self(1000781001i32);
     pub const SPATIAL_ENTITY_UNPERSIST_INFO_EXT: StructureType = Self(1000781002i32);
     pub const UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT: StructureType = Self(1000781003i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_OBJECT_TRACKING_ANDROID: StructureType =
+        Self(1000785000i32);
+    pub const SPATIAL_COMPONENT_OBJECT_SEMANTIC_LABEL_LIST_ANDROID: StructureType =
+        Self(1000785001i32);
+    pub const SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID: StructureType =
+        Self(1000786000i32);
+    pub const SPATIAL_RAYCAST_INFO_ANDROID: StructureType = Self(1000786001i32);
+    pub const SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID: StructureType = Self(1000786002i32);
+    pub const SPATIAL_RAYCAST_SNAPSHOT_CREATE_INFO_ANDROID: StructureType = Self(1000786003i32);
+    pub const SPATIAL_ANCHOR_PARENT_ANDROID: StructureType = Self(1000790000i32);
+    pub const SPATIAL_DISCOVERY_UNIQUE_ENTITIES_FILTER_ANDROID: StructureType = Self(1000791001i32);
+    pub const SPATIAL_COMPONENT_SUBSUMED_BY_LIST_ANDROID: StructureType = Self(1000791002i32);
+    pub const SPATIAL_ANCHOR_SPACE_FROM_ID_CREATE_INFO_ANDROID: StructureType = Self(1000795000i32);
+    pub const BATTERY_STATE_DISPLAY_EXT: StructureType = Self(1000836000i32);
     pub const LOADER_INIT_INFO_PROPERTIES_EXT: StructureType = Self(1000838000i32);
+    pub const EVENT_DATA_VIEW_CONFIGURATION_VIEWS_CHANGED_EXT: StructureType = Self(1000839000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -1436,6 +1498,10 @@ impl fmt::Debug for StructureType {
             Self::SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META => {
                 Some("SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META")
             }
+            Self::BODY_TRACKING_FIDELITY_STATUS_META => Some("BODY_TRACKING_FIDELITY_STATUS_META"),
+            Self::SYSTEM_PROPERTIES_BODY_TRACKING_FIDELITY_META => {
+                Some("SYSTEM_PROPERTIES_BODY_TRACKING_FIDELITY_META")
+            }
             Self::SYSTEM_FACE_TRACKING_PROPERTIES2_FB => {
                 Some("SYSTEM_FACE_TRACKING_PROPERTIES2_FB")
             }
@@ -1611,6 +1677,34 @@ impl fmt::Debug for StructureType {
             Self::SENSE_DATA_FILTER_PLANE_ORIENTATION_BD => {
                 Some("SENSE_DATA_FILTER_PLANE_ORIENTATION_BD")
             }
+            Self::SPATIAL_AUDIO_RENDERER_CREATE_INFO_BD => {
+                Some("SPATIAL_AUDIO_RENDERER_CREATE_INFO_BD")
+            }
+            Self::AUDIO_BUFFER_BD => Some("AUDIO_BUFFER_BD"),
+            Self::SOUND_OBJECT_DIRECTIVITY_CARDIOID_BD => {
+                Some("SOUND_OBJECT_DIRECTIVITY_CARDIOID_BD")
+            }
+            Self::SOUND_OBJECT_SHAPE_SPHERE_BD => Some("SOUND_OBJECT_SHAPE_SPHERE_BD"),
+            Self::SOUND_OBJECT_DISTANCE_ATTENUATION_BD => {
+                Some("SOUND_OBJECT_DISTANCE_ATTENUATION_BD")
+            }
+            Self::SOUND_OBJECT_DISTANCE_ATTENUATION_CURVE_BD => {
+                Some("SOUND_OBJECT_DISTANCE_ATTENUATION_CURVE_BD")
+            }
+            Self::SOUND_OBJECT_CONFIG_BD => Some("SOUND_OBJECT_CONFIG_BD"),
+            Self::SOUND_FIELD_CONFIG_BD => Some("SOUND_FIELD_CONFIG_BD"),
+            Self::SOUND_FIELD_CHANNEL_DEFINITION_SURROUND_BD => {
+                Some("SOUND_FIELD_CHANNEL_DEFINITION_SURROUND_BD")
+            }
+            Self::SOUND_FIELD_CHANNEL_DEFINITION_AMBIX_BD => {
+                Some("SOUND_FIELD_CHANNEL_DEFINITION_AMBIX_BD")
+            }
+            Self::SOUND_FIELD_CHANNEL_DEFINITION_FUMA_BD => {
+                Some("SOUND_FIELD_CHANNEL_DEFINITION_FUMA_BD")
+            }
+            Self::SOUND_TRIANGLE_MESH_BD => Some("SOUND_TRIANGLE_MESH_BD"),
+            Self::SOUND_OBSTACLE_CONFIG_BD => Some("SOUND_OBSTACLE_CONFIG_BD"),
+            Self::SOUND_OBSTACLE_MATERIAL_CONFIG_BD => Some("SOUND_OBSTACLE_MATERIAL_CONFIG_BD"),
             Self::HAND_TRACKING_DATA_SOURCE_INFO_EXT => Some("HAND_TRACKING_DATA_SOURCE_INFO_EXT"),
             Self::HAND_TRACKING_DATA_SOURCE_STATE_EXT => {
                 Some("HAND_TRACKING_DATA_SOURCE_STATE_EXT")
@@ -1657,8 +1751,22 @@ impl fmt::Debug for StructureType {
             Self::SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID => {
                 Some("SYSTEM_PASSTHROUGH_CAMERA_STATE_PROPERTIES_ANDROID")
             }
+            Self::PASSTHROUGH_LAYER_CREATE_INFO_ANDROID => {
+                Some("PASSTHROUGH_LAYER_CREATE_INFO_ANDROID")
+            }
+            Self::PASSTHROUGH_LAYER_MESH_ANDROID => Some("PASSTHROUGH_LAYER_MESH_ANDROID"),
+            Self::COMPOSITION_LAYER_PASSTHROUGH_ANDROID => {
+                Some("COMPOSITION_LAYER_PASSTHROUGH_ANDROID")
+            }
+            Self::SYSTEM_PASSTHROUGH_LAYER_PROPERTIES_ANDROID => {
+                Some("SYSTEM_PASSTHROUGH_LAYER_PROPERTIES_ANDROID")
+            }
             Self::RAYCAST_INFO_ANDROID => Some("RAYCAST_INFO_ANDROID"),
             Self::RAYCAST_HIT_RESULTS_ANDROID => Some("RAYCAST_HIT_RESULTS_ANDROID"),
+            Self::PERFORMANCE_METRICS_STATE_ANDROID => Some("PERFORMANCE_METRICS_STATE_ANDROID"),
+            Self::PERFORMANCE_METRICS_COUNTER_ANDROID => {
+                Some("PERFORMANCE_METRICS_COUNTER_ANDROID")
+            }
             Self::TRACKABLE_OBJECT_ANDROID => Some("TRACKABLE_OBJECT_ANDROID"),
             Self::TRACKABLE_OBJECT_CONFIGURATION_ANDROID => {
                 Some("TRACKABLE_OBJECT_CONFIGURATION_ANDROID")
@@ -1754,6 +1862,24 @@ impl fmt::Debug for StructureType {
             Self::SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META => {
                 Some("SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META")
             }
+            Self::SYSTEM_ENVIRONMENT_RAYCAST_PROPERTIES_META => {
+                Some("SYSTEM_ENVIRONMENT_RAYCAST_PROPERTIES_META")
+            }
+            Self::ENVIRONMENT_RAYCASTER_CREATE_INFO_META => {
+                Some("ENVIRONMENT_RAYCASTER_CREATE_INFO_META")
+            }
+            Self::ENVIRONMENT_RAYCASTER_CREATE_COMPLETION_META => {
+                Some("ENVIRONMENT_RAYCASTER_CREATE_COMPLETION_META")
+            }
+            Self::ENVIRONMENT_RAYCAST_HIT_GET_INFO_META => {
+                Some("ENVIRONMENT_RAYCAST_HIT_GET_INFO_META")
+            }
+            Self::ENVIRONMENT_RAYCAST_HIT_META => Some("ENVIRONMENT_RAYCAST_HIT_META"),
+            Self::ENVIRONMENT_RAYCAST_FILTER_DISTANCE_META => {
+                Some("ENVIRONMENT_RAYCAST_FILTER_DISTANCE_META")
+            }
+            Self::TILE_PROPERTIES_META => Some("TILE_PROPERTIES_META"),
+            Self::TILE_PROPERTIES_HINT_META => Some("TILE_PROPERTIES_HINT_META"),
             Self::ANCHOR_SHARING_INFO_ANDROID => Some("ANCHOR_SHARING_INFO_ANDROID"),
             Self::ANCHOR_SHARING_TOKEN_ANDROID => Some("ANCHOR_SHARING_TOKEN_ANDROID"),
             Self::SYSTEM_ANCHOR_SHARING_EXPORT_PROPERTIES_ANDROID => {
@@ -1766,6 +1892,46 @@ impl fmt::Debug for StructureType {
                 Some("TRACKABLE_MARKER_CONFIGURATION_ANDROID")
             }
             Self::TRACKABLE_MARKER_ANDROID => Some("TRACKABLE_MARKER_ANDROID"),
+            Self::SYSTEM_QR_CODE_TRACKING_PROPERTIES_ANDROID => {
+                Some("SYSTEM_QR_CODE_TRACKING_PROPERTIES_ANDROID")
+            }
+            Self::TRACKABLE_QR_CODE_CONFIGURATION_ANDROID => {
+                Some("TRACKABLE_QR_CODE_CONFIGURATION_ANDROID")
+            }
+            Self::TRACKABLE_QR_CODE_ANDROID => Some("TRACKABLE_QR_CODE_ANDROID"),
+            Self::SYSTEM_IMAGE_TRACKING_PROPERTIES_ANDROID => {
+                Some("SYSTEM_IMAGE_TRACKING_PROPERTIES_ANDROID")
+            }
+            Self::TRACKABLE_IMAGE_DATABASE_ENTRY_ANDROID => {
+                Some("TRACKABLE_IMAGE_DATABASE_ENTRY_ANDROID")
+            }
+            Self::TRACKABLE_IMAGE_DATABASE_CREATE_INFO_ANDROID => {
+                Some("TRACKABLE_IMAGE_DATABASE_CREATE_INFO_ANDROID")
+            }
+            Self::CREATE_TRACKABLE_IMAGE_DATABASE_COMPLETION_ANDROID => {
+                Some("CREATE_TRACKABLE_IMAGE_DATABASE_COMPLETION_ANDROID")
+            }
+            Self::TRACKABLE_IMAGE_CONFIGURATION_ANDROID => {
+                Some("TRACKABLE_IMAGE_CONFIGURATION_ANDROID")
+            }
+            Self::TRACKABLE_IMAGE_ANDROID => Some("TRACKABLE_IMAGE_ANDROID"),
+            Self::EVENT_DATA_IMAGE_TRACKING_LOST_ANDROID => {
+                Some("EVENT_DATA_IMAGE_TRACKING_LOST_ANDROID")
+            }
+            Self::SYSTEM_SCENE_MESHING_PROPERTIES_ANDROID => {
+                Some("SYSTEM_SCENE_MESHING_PROPERTIES_ANDROID")
+            }
+            Self::SCENE_MESHING_TRACKER_CREATE_INFO_ANDROID => {
+                Some("SCENE_MESHING_TRACKER_CREATE_INFO_ANDROID")
+            }
+            Self::SCENE_MESH_SNAPSHOT_CREATE_INFO_ANDROID => {
+                Some("SCENE_MESH_SNAPSHOT_CREATE_INFO_ANDROID")
+            }
+            Self::SCENE_MESH_SNAPSHOT_CREATION_RESULT_ANDROID => {
+                Some("SCENE_MESH_SNAPSHOT_CREATION_RESULT_ANDROID")
+            }
+            Self::SCENE_SUBMESH_STATE_ANDROID => Some("SCENE_SUBMESH_STATE_ANDROID"),
+            Self::SCENE_SUBMESH_DATA_ANDROID => Some("SCENE_SUBMESH_DATA_ANDROID"),
             Self::SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT => {
                 Some("SPATIAL_CAPABILITY_COMPONENT_TYPES_EXT")
             }
@@ -1865,7 +2031,37 @@ impl fmt::Debug for StructureType {
             Self::UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT => {
                 Some("UNPERSIST_SPATIAL_ENTITY_COMPLETION_EXT")
             }
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_OBJECT_TRACKING_ANDROID => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_OBJECT_TRACKING_ANDROID")
+            }
+            Self::SPATIAL_COMPONENT_OBJECT_SEMANTIC_LABEL_LIST_ANDROID => {
+                Some("SPATIAL_COMPONENT_OBJECT_SEMANTIC_LABEL_LIST_ANDROID")
+            }
+            Self::SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID => {
+                Some("SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID")
+            }
+            Self::SPATIAL_RAYCAST_INFO_ANDROID => Some("SPATIAL_RAYCAST_INFO_ANDROID"),
+            Self::SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID => {
+                Some("SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID")
+            }
+            Self::SPATIAL_RAYCAST_SNAPSHOT_CREATE_INFO_ANDROID => {
+                Some("SPATIAL_RAYCAST_SNAPSHOT_CREATE_INFO_ANDROID")
+            }
+            Self::SPATIAL_ANCHOR_PARENT_ANDROID => Some("SPATIAL_ANCHOR_PARENT_ANDROID"),
+            Self::SPATIAL_DISCOVERY_UNIQUE_ENTITIES_FILTER_ANDROID => {
+                Some("SPATIAL_DISCOVERY_UNIQUE_ENTITIES_FILTER_ANDROID")
+            }
+            Self::SPATIAL_COMPONENT_SUBSUMED_BY_LIST_ANDROID => {
+                Some("SPATIAL_COMPONENT_SUBSUMED_BY_LIST_ANDROID")
+            }
+            Self::SPATIAL_ANCHOR_SPACE_FROM_ID_CREATE_INFO_ANDROID => {
+                Some("SPATIAL_ANCHOR_SPACE_FROM_ID_CREATE_INFO_ANDROID")
+            }
+            Self::BATTERY_STATE_DISPLAY_EXT => Some("BATTERY_STATE_DISPLAY_EXT"),
             Self::LOADER_INIT_INFO_PROPERTIES_EXT => Some("LOADER_INIT_INFO_PROPERTIES_EXT"),
+            Self::EVENT_DATA_VIEW_CONFIGURATION_VIEWS_CHANGED_EXT => {
+                Some("EVENT_DATA_VIEW_CONFIGURATION_VIEWS_CHANGED_EXT")
+            }
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -2166,6 +2362,8 @@ impl Result {
     pub const ERROR_PERSISTED_DATA_NOT_READY_ANDROID: Result = Self(-1000457003i32);
     #[doc = "The underlying tracking service is not yet ready."]
     pub const ERROR_SERVICE_NOT_READY_ANDROID: Result = Self(-1000458000i32);
+    #[doc = "Returned by passthrough layer functions to indicate the mesh data exceeds the supported limit."]
+    pub const ERROR_MESH_DATA_LIMIT_EXCEEDED_ANDROID: Result = Self(-1000462000i32);
     #[doc = "Returned by completion function to indicate future is not ready."]
     pub const ERROR_FUTURE_PENDING_EXT: Result = Self(-1000469001i32);
     #[doc = "Returned by completion function to indicate future is not valid."]
@@ -2192,6 +2390,8 @@ impl Result {
     pub const ERROR_SPACE_GROUP_NOT_FOUND_META: Result = Self(-1000572002i32);
     #[doc = "Operation not allowed because anchor is not owned by the XrSession in which the function is being called."]
     pub const ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID: Result = Self(-1000701000i32);
+    #[doc = "Indicates that the input reference image format is not supported."]
+    pub const ERROR_IMAGE_FORMAT_UNSUPPORTED_ANDROID: Result = Self(-1000709000i32);
     pub const ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR: Result =
         Self::ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED;
     pub const ERROR_PERMISSION_INSUFFICIENT_KHR: Result = Self::ERROR_PERMISSION_INSUFFICIENT;
@@ -2211,6 +2411,11 @@ impl Result {
     pub const ERROR_SPATIAL_PERSISTENCE_SCOPE_UNSUPPORTED_EXT: Result = Self(-1000763001i32);
     #[doc = "The scope configured for the persistence context is incompatible for the current spatial entity."]
     pub const ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT: Result = Self(-1000781001i32);
+    #[doc = "Spatial entity with parent ID does not have at least one component enumerated by xrEnumerateSpatialAnchorAttachableComponentsANDROID"]
+    pub const ERROR_SPATIAL_ANCHOR_ATTACHABLE_COMPONENT_NOT_FOUND_ANDROID: Result =
+        Self(-1000790001i32);
+    #[doc = "The specified spatial entity ID is invalid for an anchor."]
+    pub const ERROR_SPATIAL_ANCHOR_ENTITY_ID_INVALID_ANDROID: Result = Self(-1000795001i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -2495,6 +2700,9 @@ impl fmt::Debug for Result {
                 Some("ERROR_PERSISTED_DATA_NOT_READY_ANDROID")
             }
             Self::ERROR_SERVICE_NOT_READY_ANDROID => Some("ERROR_SERVICE_NOT_READY_ANDROID"),
+            Self::ERROR_MESH_DATA_LIMIT_EXCEEDED_ANDROID => {
+                Some("ERROR_MESH_DATA_LIMIT_EXCEEDED_ANDROID")
+            }
             Self::ERROR_FUTURE_PENDING_EXT => Some("ERROR_FUTURE_PENDING_EXT"),
             Self::ERROR_FUTURE_INVALID_EXT => Some("ERROR_FUTURE_INVALID_EXT"),
             Self::ERROR_SYSTEM_NOTIFICATION_PERMISSION_DENIED_ML => {
@@ -2528,6 +2736,9 @@ impl fmt::Debug for Result {
             Self::ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID => {
                 Some("ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID")
             }
+            Self::ERROR_IMAGE_FORMAT_UNSUPPORTED_ANDROID => {
+                Some("ERROR_IMAGE_FORMAT_UNSUPPORTED_ANDROID")
+            }
             Self::ERROR_SPATIAL_CAPABILITY_UNSUPPORTED_EXT => {
                 Some("ERROR_SPATIAL_CAPABILITY_UNSUPPORTED_EXT")
             }
@@ -2551,6 +2762,12 @@ impl fmt::Debug for Result {
             }
             Self::ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT => {
                 Some("ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_ATTACHABLE_COMPONENT_NOT_FOUND_ANDROID => {
+                Some("ERROR_SPATIAL_ANCHOR_ATTACHABLE_COMPONENT_NOT_FOUND_ANDROID")
+            }
+            Self::ERROR_SPATIAL_ANCHOR_ENTITY_ID_INVALID_ANDROID => {
+                Some("ERROR_SPATIAL_ANCHOR_ENTITY_ID_INVALID_ANDROID")
             }
             _ => None,
         };
@@ -2922,6 +3139,9 @@ impl fmt::Display for Result {
             Self::ERROR_SERVICE_NOT_READY_ANDROID => {
                 Some("the underlying tracking service is not yet ready")
             }
+            Self::ERROR_MESH_DATA_LIMIT_EXCEEDED_ANDROID => Some(
+                "returned by passthrough layer functions to indicate the mesh data exceeds the supported limit",
+            ),
             Self::ERROR_FUTURE_PENDING_EXT => {
                 Some("returned by completion function to indicate future is not ready")
             }
@@ -2961,6 +3181,9 @@ impl fmt::Display for Result {
             Self::ERROR_ANCHOR_NOT_OWNED_BY_CALLER_ANDROID => Some(
                 "operation not allowed because anchor is not owned by the XrSession in which the function is being called",
             ),
+            Self::ERROR_IMAGE_FORMAT_UNSUPPORTED_ANDROID => {
+                Some("indicates that the input reference image format is not supported")
+            }
             Self::ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR => {
                 Some("ERROR_EXTENSION_DEPENDENCY_NOT_ENABLED_KHR")
             }
@@ -2989,6 +3212,12 @@ impl fmt::Display for Result {
             Self::ERROR_SPATIAL_PERSISTENCE_SCOPE_INCOMPATIBLE_EXT => Some(
                 "the scope configured for the persistence context is incompatible for the current spatial entity",
             ),
+            Self::ERROR_SPATIAL_ANCHOR_ATTACHABLE_COMPONENT_NOT_FOUND_ANDROID => Some(
+                "spatial entity with parent ID does not have at least one component enumerated by xrEnumerateSpatialAnchorAttachableComponentsANDROID",
+            ),
+            Self::ERROR_SPATIAL_ANCHOR_ENTITY_ID_INVALID_ANDROID => {
+                Some("the specified spatial entity ID is invalid for an anchor")
+            }
             _ => None,
         };
         if let Some(reason) = reason {
@@ -3085,6 +3314,16 @@ impl ObjectType {
     pub const SENSE_DATA_SNAPSHOT_BD: ObjectType = Self(1000389001i32);
     #[doc = "XrAnchorBD"]
     pub const ANCHOR_BD: ObjectType = Self(1000389002i32);
+    #[doc = "XrSpatialAudioRendererBD"]
+    pub const SPATIAL_AUDIO_RENDERER_BD: ObjectType = Self(1000409000i32);
+    #[doc = "XrSoundFieldBD"]
+    pub const SOUND_FIELD_BD: ObjectType = Self(1000409001i32);
+    #[doc = "XrSoundObjectBD"]
+    pub const SOUND_OBJECT_BD: ObjectType = Self(1000409002i32);
+    #[doc = "XrSoundObstacleBD"]
+    pub const SOUND_OBSTACLE_BD: ObjectType = Self(1000409003i32);
+    #[doc = "XrSoundObstacleMaterialBD"]
+    pub const SOUND_OBSTACLE_MATERIAL_BD: ObjectType = Self(1000409004i32);
     #[doc = "XrPlaneDetectorEXT"]
     pub const PLANE_DETECTOR_EXT: ObjectType = Self(1000429000i32);
     #[doc = "XrTrackableTrackerANDROID"]
@@ -3093,10 +3332,20 @@ impl ObjectType {
     pub const DEVICE_ANCHOR_PERSISTENCE_ANDROID: ObjectType = Self(1000457000i32);
     #[doc = "XrFaceTrackerANDROID"]
     pub const FACE_TRACKER_ANDROID: ObjectType = Self(1000458000i32);
+    #[doc = "XrPassthroughLayerANDROID"]
+    pub const PASSTHROUGH_LAYER_ANDROID: ObjectType = Self(1000462000i32);
     #[doc = "XrWorldMeshDetectorML"]
     pub const WORLD_MESH_DETECTOR_ML: ObjectType = Self(1000474000i32);
     #[doc = "XrFacialExpressionClientML"]
     pub const FACIAL_EXPRESSION_CLIENT_ML: ObjectType = Self(1000482000i32);
+    #[doc = "XrEnvironmentRaycasterMETA"]
+    pub const ENVIRONMENT_RAYCASTER_META: ObjectType = Self(1000592000i32);
+    #[doc = "XrTrackableImageDatabaseANDROID"]
+    pub const TRACKABLE_IMAGE_DATABASE_ANDROID: ObjectType = Self(1000709000i32);
+    #[doc = "XrSceneMeshingTrackerANDROID"]
+    pub const SCENE_MESHING_TRACKER_ANDROID: ObjectType = Self(1000718000i32);
+    #[doc = "XrSceneMeshSnapshotANDROID"]
+    pub const SCENE_MESH_SNAPSHOT_ANDROID: ObjectType = Self(1000718001i32);
     #[doc = "XrSpatialEntityEXT"]
     pub const SPATIAL_ENTITY_EXT: ObjectType = Self(1000740000i32);
     #[doc = "XrSpatialContextEXT"]
@@ -3158,12 +3407,22 @@ impl fmt::Debug for ObjectType {
             Self::SENSE_DATA_PROVIDER_BD => Some("SENSE_DATA_PROVIDER_BD"),
             Self::SENSE_DATA_SNAPSHOT_BD => Some("SENSE_DATA_SNAPSHOT_BD"),
             Self::ANCHOR_BD => Some("ANCHOR_BD"),
+            Self::SPATIAL_AUDIO_RENDERER_BD => Some("SPATIAL_AUDIO_RENDERER_BD"),
+            Self::SOUND_FIELD_BD => Some("SOUND_FIELD_BD"),
+            Self::SOUND_OBJECT_BD => Some("SOUND_OBJECT_BD"),
+            Self::SOUND_OBSTACLE_BD => Some("SOUND_OBSTACLE_BD"),
+            Self::SOUND_OBSTACLE_MATERIAL_BD => Some("SOUND_OBSTACLE_MATERIAL_BD"),
             Self::PLANE_DETECTOR_EXT => Some("PLANE_DETECTOR_EXT"),
             Self::TRACKABLE_TRACKER_ANDROID => Some("TRACKABLE_TRACKER_ANDROID"),
             Self::DEVICE_ANCHOR_PERSISTENCE_ANDROID => Some("DEVICE_ANCHOR_PERSISTENCE_ANDROID"),
             Self::FACE_TRACKER_ANDROID => Some("FACE_TRACKER_ANDROID"),
+            Self::PASSTHROUGH_LAYER_ANDROID => Some("PASSTHROUGH_LAYER_ANDROID"),
             Self::WORLD_MESH_DETECTOR_ML => Some("WORLD_MESH_DETECTOR_ML"),
             Self::FACIAL_EXPRESSION_CLIENT_ML => Some("FACIAL_EXPRESSION_CLIENT_ML"),
+            Self::ENVIRONMENT_RAYCASTER_META => Some("ENVIRONMENT_RAYCASTER_META"),
+            Self::TRACKABLE_IMAGE_DATABASE_ANDROID => Some("TRACKABLE_IMAGE_DATABASE_ANDROID"),
+            Self::SCENE_MESHING_TRACKER_ANDROID => Some("SCENE_MESHING_TRACKER_ANDROID"),
+            Self::SCENE_MESH_SNAPSHOT_ANDROID => Some("SCENE_MESH_SNAPSHOT_ANDROID"),
             Self::SPATIAL_ENTITY_EXT => Some("SPATIAL_ENTITY_EXT"),
             Self::SPATIAL_CONTEXT_EXT => Some("SPATIAL_CONTEXT_EXT"),
             Self::SPATIAL_SNAPSHOT_EXT => Some("SPATIAL_SNAPSHOT_EXT"),
@@ -3273,6 +3532,7 @@ impl ReferenceSpaceType {
     pub const COMBINED_EYE_VARJO: ReferenceSpaceType = Self(1000121000i32);
     pub const LOCALIZATION_MAP_ML: ReferenceSpaceType = Self(1000139000i32);
     pub const LOCAL_FLOOR_EXT: ReferenceSpaceType = Self::LOCAL_FLOOR;
+    pub const UNBOUNDED_ANDROID: ReferenceSpaceType = Self(1000467000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -3290,6 +3550,7 @@ impl fmt::Debug for ReferenceSpaceType {
             Self::UNBOUNDED_MSFT => Some("UNBOUNDED_MSFT"),
             Self::COMBINED_EYE_VARJO => Some("COMBINED_EYE_VARJO"),
             Self::LOCALIZATION_MAP_ML => Some("LOCALIZATION_MAP_ML"),
+            Self::UNBOUNDED_ANDROID => Some("UNBOUNDED_ANDROID"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -3797,6 +4058,50 @@ impl fmt::Debug for SpacePersistenceModeFB {
         let name = match *self {
             Self::INVALID => Some("INVALID"),
             Self::INDEFINITE => Some("INDEFINITE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSemanticLabelMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSemanticLabelMETA)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SemanticLabelMETA(i32);
+impl SemanticLabelMETA {
+    #[doc = "Unknown. This is a valid label that is used when the runtime is not able to classify the entity using another label, or when the application does not recognize the label."]
+    pub const UNKNOWN: SemanticLabelMETA = Self(0i32);
+    #[doc = "Floor of a room or space."]
+    pub const FLOOR: SemanticLabelMETA = Self(1i32);
+    #[doc = "Ceiling of a room or space."]
+    pub const CEILING: SemanticLabelMETA = Self(2i32);
+    #[doc = "Wall face of a room or space. Wall faces, along with invisible wall faces, are used to define the outer boundary of a room."]
+    pub const WALL_FACE: SemanticLabelMETA = Self(3i32);
+    #[doc = "Inner wall face, which is a wall face that exists inside a room and is not connected to the outer boundary of the room. For example, a pillar that exists at the center of a room may: be represented by using four inner wall faces."]
+    pub const INNER_WALL_FACE: SemanticLabelMETA = Self(4i32);
+    #[doc = "Invisible wall face, which is used to conceptually separate a space (e.g., separate a living space from a kitchen space in an open floor plan house even though there is no real wall between the two spaces)."]
+    pub const INVISIBLE_WALL_FACE: SemanticLabelMETA = Self(5i32);
+    #[doc = "Door frame, which usually exists on a wall face."]
+    pub const DOOR_FRAME: SemanticLabelMETA = Self(6i32);
+    #[doc = "Window frame, which usually exists on a wall face."]
+    pub const WINDOW_FRAME: SemanticLabelMETA = Self(7i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SemanticLabelMETA {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNKNOWN => Some("UNKNOWN"),
+            Self::FLOOR => Some("FLOOR"),
+            Self::CEILING => Some("CEILING"),
+            Self::WALL_FACE => Some("WALL_FACE"),
+            Self::INNER_WALL_FACE => Some("INNER_WALL_FACE"),
+            Self::INVISIBLE_WALL_FACE => Some("INVISIBLE_WALL_FACE"),
+            Self::DOOR_FRAME => Some("DOOR_FRAME"),
+            Self::WINDOW_FRAME => Some("WINDOW_FRAME"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -4485,6 +4790,10 @@ impl TrackableTypeANDROID {
     pub const OBJECT: TrackableTypeANDROID = Self(1000466000i32);
     #[doc = "Indicates that the trackable is a marker."]
     pub const MARKER: TrackableTypeANDROID = Self(1000707000i32);
+    #[doc = "Indicates that the trackable is a QR code."]
+    pub const QR_CODE: TrackableTypeANDROID = Self(1000708000i32);
+    #[doc = "Indicates that the trackable is an image."]
+    pub const IMAGE: TrackableTypeANDROID = Self(1000709000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -4500,6 +4809,8 @@ impl fmt::Debug for TrackableTypeANDROID {
             Self::DEPTH => Some("DEPTH"),
             Self::OBJECT => Some("OBJECT"),
             Self::MARKER => Some("MARKER"),
+            Self::QR_CODE => Some("QR_CODE"),
+            Self::IMAGE => Some("IMAGE"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -4628,6 +4939,189 @@ impl fmt::Debug for AnchorPersistStateANDROID {
             Self::PERSIST_NOT_REQUESTED => Some("PERSIST_NOT_REQUESTED"),
             Self::PERSIST_PENDING => Some("PERSIST_PENDING"),
             Self::PERSISTED => Some("PERSISTED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrPerformanceMetricsCounterUnitANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerformanceMetricsCounterUnitANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct PerformanceMetricsCounterUnitANDROID(i32);
+impl PerformanceMetricsCounterUnitANDROID {
+    #[doc = "The performance counter unit is generic (unspecified)."]
+    pub const GENERIC: PerformanceMetricsCounterUnitANDROID = Self(0i32);
+    #[doc = "The performance counter unit is percentage (%)."]
+    pub const PERCENTAGE: PerformanceMetricsCounterUnitANDROID = Self(1i32);
+    #[doc = "The performance counter unit is millisecond."]
+    pub const MILLISECONDS: PerformanceMetricsCounterUnitANDROID = Self(2i32);
+    #[doc = "The performance counter unit is byte."]
+    pub const BYTES: PerformanceMetricsCounterUnitANDROID = Self(3i32);
+    #[doc = "The performance counter unit is hertz (Hz)."]
+    pub const HERTZ: PerformanceMetricsCounterUnitANDROID = Self(4i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for PerformanceMetricsCounterUnitANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::GENERIC => Some("GENERIC"),
+            Self::PERCENTAGE => Some("PERCENTAGE"),
+            Self::MILLISECONDS => Some("MILLISECONDS"),
+            Self::BYTES => Some("BYTES"),
+            Self::HERTZ => Some("HERTZ"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrQrCodeTrackingModeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrQrCodeTrackingModeANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct QrCodeTrackingModeANDROID(i32);
+impl QrCodeTrackingModeANDROID {
+    #[doc = "Tracking dynamic QR codes. This mode has the highest accuracy and works on moving and static QR codes, but also has the highest power consumption."]
+    pub const DYNAMIC: QrCodeTrackingModeANDROID = Self(0i32);
+    #[doc = "Tracking static QR codes. This mode is primarily useful for QR codes that are known to be static, which leads to less power consumption in comparison to the dynamic mode."]
+    pub const STATIC: QrCodeTrackingModeANDROID = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for QrCodeTrackingModeANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DYNAMIC => Some("DYNAMIC"),
+            Self::STATIC => Some("STATIC"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrWindingOrderANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrWindingOrderANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct WindingOrderANDROID(i32);
+impl WindingOrderANDROID {
+    #[doc = "Winding order of the mesh's triangles is not known."]
+    pub const UNKNOWN: WindingOrderANDROID = Self(0i32);
+    #[doc = "Winding order of the mesh's triangles is clockwise."]
+    pub const CW: WindingOrderANDROID = Self(1i32);
+    #[doc = "Winding order of the mesh's triangles is counter-clockwise."]
+    pub const CCW: WindingOrderANDROID = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for WindingOrderANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNKNOWN => Some("UNKNOWN"),
+            Self::CW => Some("CW"),
+            Self::CCW => Some("CCW"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneMeshSemanticLabelSetANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshSemanticLabelSetANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SceneMeshSemanticLabelSetANDROID(i32);
+impl SceneMeshSemanticLabelSetANDROID {
+    #[doc = "This semantic label set represents absence of semantic labels."]
+    pub const NONE: SceneMeshSemanticLabelSetANDROID = Self(0i32);
+    #[doc = "This semantic label set represents XrSceneMeshSemanticLabelANDROID."]
+    pub const DEFAULT: SceneMeshSemanticLabelSetANDROID = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneMeshSemanticLabelSetANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NONE => Some("NONE"),
+            Self::DEFAULT => Some("DEFAULT"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneMeshSemanticLabelANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshSemanticLabelANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SceneMeshSemanticLabelANDROID(i32);
+impl SceneMeshSemanticLabelANDROID {
+    #[doc = "This semantic label indicates that the corresponding mesh element represents an unknown object."]
+    pub const OTHER: SceneMeshSemanticLabelANDROID = Self(0i32);
+    #[doc = "This semantic label indicates that the corresponding mesh element represents a floor."]
+    pub const FLOOR: SceneMeshSemanticLabelANDROID = Self(1i32);
+    #[doc = "This semantic label indicates that the corresponding mesh element represents a ceiling."]
+    pub const CEILING: SceneMeshSemanticLabelANDROID = Self(2i32);
+    #[doc = "This semantic label indicates that the corresponding mesh element represents a wall."]
+    pub const WALL: SceneMeshSemanticLabelANDROID = Self(3i32);
+    #[doc = "This semantic label indicates that the corresponding mesh element represents a table."]
+    pub const TABLE: SceneMeshSemanticLabelANDROID = Self(4i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneMeshSemanticLabelANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::OTHER => Some("OTHER"),
+            Self::FLOOR => Some("FLOOR"),
+            Self::CEILING => Some("CEILING"),
+            Self::WALL => Some("WALL"),
+            Self::TABLE => Some("TABLE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSceneMeshTrackingStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshTrackingStateANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SceneMeshTrackingStateANDROID(i32);
+impl SceneMeshTrackingStateANDROID {
+    #[doc = "The tracker is not yet ready to provide mesh data."]
+    pub const INITIALIZING: SceneMeshTrackingStateANDROID = Self(0i32);
+    #[doc = "The tracker is actively tracking."]
+    pub const TRACKING: SceneMeshTrackingStateANDROID = Self(1i32);
+    #[doc = "The tracker is waiting for valid measurements to integrate since the last mesh update."]
+    pub const WAITING: SceneMeshTrackingStateANDROID = Self(2i32);
+    #[doc = "The tracker has not received valid measurements for multiple cycles and is in an error state."]
+    pub const ERROR: SceneMeshTrackingStateANDROID = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SceneMeshTrackingStateANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::INITIALIZING => Some("INITIALIZING"),
+            Self::TRACKING => Some("TRACKING"),
+            Self::WAITING => Some("WAITING"),
+            Self::ERROR => Some("ERROR"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -5499,6 +5993,32 @@ impl fmt::Debug for BodyTrackingCalibrationStateMETA {
             Self::VALID => Some("VALID"),
             Self::CALIBRATING => Some("CALIBRATING"),
             Self::INVALID => Some("INVALID"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrBodyTrackingFidelityMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackingFidelityMETA)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct BodyTrackingFidelityMETA(i32);
+impl BodyTrackingFidelityMETA {
+    #[doc = "This value indicates that the body tracking runtime uses a simpler algorithm or less input to estimate the body pose in a way that trades off pose quality for system performance. For example, low fidelity may not accurately track a user's elbows."]
+    pub const LOW: BodyTrackingFidelityMETA = Self(1i32);
+    #[doc = "This value indicates that the body tracking runtime uses more advanced algorithms or more inputs to estimate the body pose. For example high fidelity may track a user's elbows."]
+    pub const HIGH: BodyTrackingFidelityMETA = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for BodyTrackingFidelityMETA {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::LOW => Some("LOW"),
+            Self::HIGH => Some("HIGH"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -6459,6 +6979,10 @@ impl SpatialCapabilityEXT {
     pub const MARKER_TRACKING_APRIL_TAG: SpatialCapabilityEXT = Self(1000743003i32);
     #[doc = "Capability to be able to create spatial anchors"]
     pub const ANCHOR: SpatialCapabilityEXT = Self(1000762000i32);
+    #[doc = "Object tracking"]
+    pub const OBJECT_TRACKING_AND: SpatialCapabilityEXT = Self(1000785000i32);
+    #[doc = "Raycast against depth buffer"]
+    pub const DEPTH_RAYCAST_AND: SpatialCapabilityEXT = Self(1000786000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -6475,6 +6999,8 @@ impl fmt::Debug for SpatialCapabilityEXT {
             Self::MARKER_TRACKING_ARUCO_MARKER => Some("MARKER_TRACKING_ARUCO_MARKER"),
             Self::MARKER_TRACKING_APRIL_TAG => Some("MARKER_TRACKING_APRIL_TAG"),
             Self::ANCHOR => Some("ANCHOR"),
+            Self::OBJECT_TRACKING_AND => Some("OBJECT_TRACKING_AND"),
+            Self::DEPTH_RAYCAST_AND => Some("DEPTH_RAYCAST_AND"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -6533,6 +7059,12 @@ impl SpatialComponentTypeEXT {
     pub const ANCHOR: SpatialComponentTypeEXT = Self(1000762000i32);
     #[doc = "Component that provides the persisted UUID for a spatial entity. Corresponding list structure is XrSpatialComponentPersistenceListEXT; Corresponding data structure is XrSpatialPersistenceDataEXT"]
     pub const PERSISTENCE: SpatialComponentTypeEXT = Self(1000763000i32);
+    #[doc = "Component that provides a semantic label for a object; Corresponding list structure is XrSpatialComponentObjectSemanticLabelListANDROID; Corresponding data structure is XrSpatialObjectSemanticLabelANDROID"]
+    pub const OBJECT_SEMANTIC_LABEL_AND: SpatialComponentTypeEXT = Self(1000785000i32);
+    #[doc = "Component that provides the pose of a raycast hit on an entity. Corresponding list structure is XrSpatialComponentRaycastResultListANDROID; Corresponding data structure is XrSpatialRaycastResultDataANDROID"]
+    pub const RAYCAST_RESULT_AND: SpatialComponentTypeEXT = Self(1000786000i32);
+    #[doc = "Component that provides entity ID of the entity subsuming the attached entity. Corresponding list structure is XrSpatialComponentSubsumedByListANDROID; Corresponding data structure is XrSpatialEntityIdEXT"]
+    pub const SUBSUMED_BY_AND: SpatialComponentTypeEXT = Self(1000791000i32);
     pub fn from_raw(x: i32) -> Self {
         Self(x)
     }
@@ -6554,6 +7086,9 @@ impl fmt::Debug for SpatialComponentTypeEXT {
             Self::MARKER => Some("MARKER"),
             Self::ANCHOR => Some("ANCHOR"),
             Self::PERSISTENCE => Some("PERSISTENCE"),
+            Self::OBJECT_SEMANTIC_LABEL_AND => Some("OBJECT_SEMANTIC_LABEL_AND"),
+            Self::RAYCAST_RESULT_AND => Some("RAYCAST_RESULT_AND"),
+            Self::SUBSUMED_BY_AND => Some("SUBSUMED_BY_AND"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -7103,6 +7638,410 @@ impl fmt::Debug for BodyJointSetBD {
         let name = match *self {
             Self::BODY_WITHOUT_ARM => Some("BODY_WITHOUT_ARM"),
             Self::FULL_BODY_JOINTS => Some("FULL_BODY_JOINTS"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrAudioSampleRateBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAudioSampleRateBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct AudioSampleRateBD(i32);
+impl AudioSampleRateBD {
+    #[doc = "192000 Hz"]
+    pub const RATE_192000_HZ: AudioSampleRateBD = Self(1i32);
+    #[doc = "96000 Hz"]
+    pub const RATE_96000_HZ: AudioSampleRateBD = Self(2i32);
+    #[doc = "48000 Hz"]
+    pub const RATE_48000_HZ: AudioSampleRateBD = Self(3i32);
+    #[doc = "44100 Hz"]
+    pub const RATE_44100_HZ: AudioSampleRateBD = Self(4i32);
+    #[doc = "32000 Hz"]
+    pub const RATE_32000_HZ: AudioSampleRateBD = Self(5i32);
+    #[doc = "24000 Hz"]
+    pub const RATE_24000_HZ: AudioSampleRateBD = Self(6i32);
+    #[doc = "22050 Hz"]
+    pub const RATE_22050_HZ: AudioSampleRateBD = Self(7i32);
+    #[doc = "16000 Hz"]
+    pub const RATE_16000_HZ: AudioSampleRateBD = Self(8i32);
+    #[doc = "12000 Hz"]
+    pub const RATE_12000_HZ: AudioSampleRateBD = Self(9i32);
+    #[doc = "11025 Hz"]
+    pub const RATE_11025_HZ: AudioSampleRateBD = Self(10i32);
+    #[doc = "8000 Hz"]
+    pub const RATE_8000_HZ: AudioSampleRateBD = Self(11i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for AudioSampleRateBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::RATE_192000_HZ => Some("RATE_192000_HZ"),
+            Self::RATE_96000_HZ => Some("RATE_96000_HZ"),
+            Self::RATE_48000_HZ => Some("RATE_48000_HZ"),
+            Self::RATE_44100_HZ => Some("RATE_44100_HZ"),
+            Self::RATE_32000_HZ => Some("RATE_32000_HZ"),
+            Self::RATE_24000_HZ => Some("RATE_24000_HZ"),
+            Self::RATE_22050_HZ => Some("RATE_22050_HZ"),
+            Self::RATE_16000_HZ => Some("RATE_16000_HZ"),
+            Self::RATE_12000_HZ => Some("RATE_12000_HZ"),
+            Self::RATE_11025_HZ => Some("RATE_11025_HZ"),
+            Self::RATE_8000_HZ => Some("RATE_8000_HZ"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrAudioBufferChannelLayoutBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAudioBufferChannelLayoutBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct AudioBufferChannelLayoutBD(i32);
+impl AudioBufferChannelLayoutBD {
+    #[doc = "indicates that audio samples from all channels are stored in an interleaved layout, where successive frames contain one sample per channel (e.g. LRLRLR for stereo)"]
+    pub const INTERLEAVED: AudioBufferChannelLayoutBD = Self(0i32);
+    #[doc = "indicates that audio samples are stored in a planar layout, where all samples for one channel are contiguous in memory (e.g. LLL...RRR... for stereo)"]
+    pub const PLANAR: AudioBufferChannelLayoutBD = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for AudioBufferChannelLayoutBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::INTERLEAVED => Some("INTERLEAVED"),
+            Self::PLANAR => Some("PLANAR"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSoundObstacleMaterialTypeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObstacleMaterialTypeBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SoundObstacleMaterialTypeBD(i32);
+impl SoundObstacleMaterialTypeBD {
+    #[doc = "indicates that the material is acoustic tile"]
+    pub const ACOUSTIC_TILE: SoundObstacleMaterialTypeBD = Self(0i32);
+    #[doc = "indicates that the material resembles brick"]
+    pub const BRICK: SoundObstacleMaterialTypeBD = Self(1i32);
+    #[doc = "indicates that the material resembles painted brick"]
+    pub const BRICK_PAINTED: SoundObstacleMaterialTypeBD = Self(2i32);
+    #[doc = "indicates that the material resembles carpet"]
+    pub const CARPET: SoundObstacleMaterialTypeBD = Self(3i32);
+    #[doc = "indicates that the material resembles heavy carpet"]
+    pub const CARPET_HEAVY: SoundObstacleMaterialTypeBD = Self(4i32);
+    #[doc = "indicates that the material resembles heavily padded carpet"]
+    pub const CARPET_HEAVY_PADDED: SoundObstacleMaterialTypeBD = Self(5i32);
+    #[doc = "indicates that the material resembles ceramic tile"]
+    pub const CERAMIC_TILE: SoundObstacleMaterialTypeBD = Self(6i32);
+    #[doc = "indicates that the material resembles concrete"]
+    pub const CONCRETE: SoundObstacleMaterialTypeBD = Self(7i32);
+    #[doc = "indicates that the material resembles rough concrete"]
+    pub const CONCRETE_ROUGH: SoundObstacleMaterialTypeBD = Self(8i32);
+    #[doc = "indicates that the material resembles concrete block"]
+    pub const CONCRETE_BLOCK: SoundObstacleMaterialTypeBD = Self(9i32);
+    #[doc = "indicates that the material resembles painted concrete block"]
+    pub const CONCRETE_BLOCK_PAINTED: SoundObstacleMaterialTypeBD = Self(10i32);
+    #[doc = "indicates that the material resembles curtain"]
+    pub const CURTAIN: SoundObstacleMaterialTypeBD = Self(11i32);
+    #[doc = "indicates that the material resembles foliage"]
+    pub const FOLIAGE: SoundObstacleMaterialTypeBD = Self(12i32);
+    #[doc = "indicates that the material resembles glass"]
+    pub const GLASS: SoundObstacleMaterialTypeBD = Self(13i32);
+    #[doc = "indicates that the material resembles heavy glass"]
+    pub const GLASS_HEAVY: SoundObstacleMaterialTypeBD = Self(14i32);
+    #[doc = "indicates that the material resembles grass"]
+    pub const GRASS: SoundObstacleMaterialTypeBD = Self(15i32);
+    #[doc = "indicates that the material resembles gravel"]
+    pub const GRAVEL: SoundObstacleMaterialTypeBD = Self(16i32);
+    #[doc = "indicates that the material resembles gypsum board"]
+    pub const GYPSUM_BOARD: SoundObstacleMaterialTypeBD = Self(17i32);
+    #[doc = "indicates that the material resembles plaster on brick"]
+    pub const PLASTER_ON_BRICK: SoundObstacleMaterialTypeBD = Self(18i32);
+    #[doc = "indicates that the material resembles plaster on concrete block"]
+    pub const PLASTER_ON_CONCRETE_BLOCK: SoundObstacleMaterialTypeBD = Self(19i32);
+    #[doc = "indicates that the material resembles soil"]
+    pub const SOIL: SoundObstacleMaterialTypeBD = Self(20i32);
+    #[doc = "indicates that the material resembles sound proof"]
+    pub const SOUND_PROOF: SoundObstacleMaterialTypeBD = Self(21i32);
+    #[doc = "indicates that the material resembles snow"]
+    pub const SNOW: SoundObstacleMaterialTypeBD = Self(22i32);
+    #[doc = "indicates that the material resembles steel"]
+    pub const STEEL: SoundObstacleMaterialTypeBD = Self(23i32);
+    #[doc = "indicates that the material resembles water"]
+    pub const WATER: SoundObstacleMaterialTypeBD = Self(24i32);
+    #[doc = "indicates that the material resembles thin wood"]
+    pub const WOOD_THIN: SoundObstacleMaterialTypeBD = Self(25i32);
+    #[doc = "indicates that the material resembles thick wood"]
+    pub const WOOD_THICK: SoundObstacleMaterialTypeBD = Self(26i32);
+    #[doc = "indicates that the material resembles floor"]
+    pub const WOOD_FLOOR: SoundObstacleMaterialTypeBD = Self(27i32);
+    #[doc = "indicates that the material resembles wood on concrete"]
+    pub const WOOD_ON_CONCRETE: SoundObstacleMaterialTypeBD = Self(28i32);
+    #[doc = "Customized material described by detailed acoustic surface parameters, for example, absorption, scattering, and transmission."]
+    pub const CUSTOM: SoundObstacleMaterialTypeBD = Self(29i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SoundObstacleMaterialTypeBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::ACOUSTIC_TILE => Some("ACOUSTIC_TILE"),
+            Self::BRICK => Some("BRICK"),
+            Self::BRICK_PAINTED => Some("BRICK_PAINTED"),
+            Self::CARPET => Some("CARPET"),
+            Self::CARPET_HEAVY => Some("CARPET_HEAVY"),
+            Self::CARPET_HEAVY_PADDED => Some("CARPET_HEAVY_PADDED"),
+            Self::CERAMIC_TILE => Some("CERAMIC_TILE"),
+            Self::CONCRETE => Some("CONCRETE"),
+            Self::CONCRETE_ROUGH => Some("CONCRETE_ROUGH"),
+            Self::CONCRETE_BLOCK => Some("CONCRETE_BLOCK"),
+            Self::CONCRETE_BLOCK_PAINTED => Some("CONCRETE_BLOCK_PAINTED"),
+            Self::CURTAIN => Some("CURTAIN"),
+            Self::FOLIAGE => Some("FOLIAGE"),
+            Self::GLASS => Some("GLASS"),
+            Self::GLASS_HEAVY => Some("GLASS_HEAVY"),
+            Self::GRASS => Some("GRASS"),
+            Self::GRAVEL => Some("GRAVEL"),
+            Self::GYPSUM_BOARD => Some("GYPSUM_BOARD"),
+            Self::PLASTER_ON_BRICK => Some("PLASTER_ON_BRICK"),
+            Self::PLASTER_ON_CONCRETE_BLOCK => Some("PLASTER_ON_CONCRETE_BLOCK"),
+            Self::SOIL => Some("SOIL"),
+            Self::SOUND_PROOF => Some("SOUND_PROOF"),
+            Self::SNOW => Some("SNOW"),
+            Self::STEEL => Some("STEEL"),
+            Self::WATER => Some("WATER"),
+            Self::WOOD_THIN => Some("WOOD_THIN"),
+            Self::WOOD_THICK => Some("WOOD_THICK"),
+            Self::WOOD_FLOOR => Some("WOOD_FLOOR"),
+            Self::WOOD_ON_CONCRETE => Some("WOOD_ON_CONCRETE"),
+            Self::CUSTOM => Some("CUSTOM"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSoundObjectDistanceAttenuationTypeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectDistanceAttenuationTypeBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SoundObjectDistanceAttenuationTypeBD(i32);
+impl SoundObjectDistanceAttenuationTypeBD {
+    #[doc = "Indicates that no attenuation is applied when source-listener distance varies."]
+    pub const NONE: SoundObjectDistanceAttenuationTypeBD = Self(0i32);
+    #[doc = "Indicates that attenuation scales proportional to the inverse-squared distance of source-listener distance."]
+    pub const INVERSE_SQUARE: SoundObjectDistanceAttenuationTypeBD = Self(1i32);
+    #[doc = "Indicates that attenuation equals pow(distance/refer_distance, -rolloff_factor), in which distance is clamped by minAttenuationRange and maxAttenuationRange."]
+    pub const ROLLOFF: SoundObjectDistanceAttenuationTypeBD = Self(2i32);
+    #[doc = "Indicates that the distance attenuation is customized."]
+    pub const CUSTOMIZED: SoundObjectDistanceAttenuationTypeBD = Self(100i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SoundObjectDistanceAttenuationTypeBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::NONE => Some("NONE"),
+            Self::INVERSE_SQUARE => Some("INVERSE_SQUARE"),
+            Self::ROLLOFF => Some("ROLLOFF"),
+            Self::CUSTOMIZED => Some("CUSTOMIZED"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSoundFieldChannelMaskSurroundBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldChannelMaskSurroundBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SoundFieldChannelMaskSurroundBD(i32);
+impl SoundFieldChannelMaskSurroundBD {
+    #[doc = "Bitmask of ear-level front-left speaker"]
+    pub const FRONT_LEFT: SoundFieldChannelMaskSurroundBD = Self(1i32);
+    #[doc = "Bitmask of ear-level front-right speaker"]
+    pub const FRONT_RIGHT: SoundFieldChannelMaskSurroundBD = Self(2i32);
+    #[doc = "Bitmask of ear-level front-center speaker"]
+    pub const FRONT_CENTER: SoundFieldChannelMaskSurroundBD = Self(4i32);
+    #[doc = "Bitmask of LFE speaker"]
+    pub const LOW_FREQUENCY: SoundFieldChannelMaskSurroundBD = Self(8i32);
+    #[doc = "Bitmask of ear-level back-left speaker"]
+    pub const BACK_LEFT: SoundFieldChannelMaskSurroundBD = Self(16i32);
+    #[doc = "Bitmask of ear-level back-right speaker"]
+    pub const BACK_RIGHT: SoundFieldChannelMaskSurroundBD = Self(32i32);
+    #[doc = "Bitmask of ear-level side-left speaker"]
+    pub const SIDE_LEFT: SoundFieldChannelMaskSurroundBD = Self(64i32);
+    #[doc = "Bitmask of ear-level side-right speaker"]
+    pub const SIDE_RIGHT: SoundFieldChannelMaskSurroundBD = Self(128i32);
+    #[doc = "Bitmask of height-channel front-left speaker"]
+    pub const TOP_FRONT_LEFT: SoundFieldChannelMaskSurroundBD = Self(256i32);
+    #[doc = "Bitmask of height-channel front-right speaker"]
+    pub const TOP_FRONT_RIGHT: SoundFieldChannelMaskSurroundBD = Self(512i32);
+    #[doc = "Bitmask of height-channel back-left speaker"]
+    pub const TOP_BACK_LEFT: SoundFieldChannelMaskSurroundBD = Self(1024i32);
+    #[doc = "Bitmask of height-channel back-right speaker"]
+    pub const TOP_BACK_RIGHT: SoundFieldChannelMaskSurroundBD = Self(2048i32);
+    #[doc = "Bitmask of ear-level back-center speaker"]
+    pub const BACK_CENTER: SoundFieldChannelMaskSurroundBD = Self(4096i32);
+    #[doc = "Bitmask of height-channel side-left speaker"]
+    pub const TOP_SIDE_LEFT: SoundFieldChannelMaskSurroundBD = Self(8192i32);
+    #[doc = "Bitmask of height-channel side-right speaker"]
+    pub const TOP_SIDE_RIGHT: SoundFieldChannelMaskSurroundBD = Self(16384i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_FRONT_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_FRONT_RIGHT_BD"]
+    pub const SETUP_STEREO: SoundFieldChannelMaskSurroundBD = Self(3i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_STEREO_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_LOW_FREQUENCY_BD"]
+    pub const SETUP_2_1: SoundFieldChannelMaskSurroundBD = Self(11i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_STEREO_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_FRONT_CENTER_BD"]
+    pub const SETUP_3_0: SoundFieldChannelMaskSurroundBD = Self(7i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_3_0_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_BACK_CENTER_BD"]
+    pub const SETUP_4_0: SoundFieldChannelMaskSurroundBD = Self(4099i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_BACK_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_BACK_RIGHT_BD"]
+    pub const SETUP_BACK_SURROUND: SoundFieldChannelMaskSurroundBD = Self(48i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_STEREO_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_BACK_SURROUND_BD"]
+    pub const SETUP_QUAD: SoundFieldChannelMaskSurroundBD = Self(51i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_3_0_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_LOW_FREQUENCY_BD"]
+    pub const SETUP_3_1: SoundFieldChannelMaskSurroundBD = Self(15i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_3_0_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_BACK_SURROUND_BD"]
+    pub const SETUP_5_0: SoundFieldChannelMaskSurroundBD = Self(55i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SIDE_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SIDE_RIGHT_BD"]
+    pub const SETUP_SIDE_SURROUND: SoundFieldChannelMaskSurroundBD = Self(192i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_3_0_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_SIDE_SURROUND_BD"]
+    pub const SETUP_5_0_SIDE: SoundFieldChannelMaskSurroundBD = Self(199i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_5_0_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_LOW_FREQUENCY_BD"]
+    pub const SETUP_5_1: SoundFieldChannelMaskSurroundBD = Self(63i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_5_1_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_SIDE_SURROUND_BD"]
+    pub const SETUP_5_1_SIDE: SoundFieldChannelMaskSurroundBD = Self(207i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_5_0_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_SIDE_SURROUND_BD"]
+    pub const SETUP_7_0: SoundFieldChannelMaskSurroundBD = Self(247i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_7_0_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_LOW_FREQUENCY_BD"]
+    pub const SETUP_7_1: SoundFieldChannelMaskSurroundBD = Self(255i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_5_1_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_FRONT_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_FRONT_RIGHT_BD"]
+    pub const SETUP_5_1_2: SoundFieldChannelMaskSurroundBD = Self(831i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_5_1_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_FRONT_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_FRONT_RIGHT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_BACK_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_BACK_RIGHT_BD"]
+    pub const SETUP_5_1_4: SoundFieldChannelMaskSurroundBD = Self(3903i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_7_1_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_SIDE_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_SIDE_RIGHT_BD"]
+    pub const SETUP_7_1_2: SoundFieldChannelMaskSurroundBD = Self(24831i32);
+    #[doc = "Composition of XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_SETUP_7_1_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_FRONT_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_FRONT_RIGHT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_BACK_LEFT_BD and XR_SOUND_FIELD_CHANNEL_MASK_SURROUND_TOP_BACK_RIGHT_BD"]
+    pub const SETUP_7_1_4: SoundFieldChannelMaskSurroundBD = Self(4095i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SoundFieldChannelMaskSurroundBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::FRONT_LEFT => Some("FRONT_LEFT"),
+            Self::FRONT_RIGHT => Some("FRONT_RIGHT"),
+            Self::FRONT_CENTER => Some("FRONT_CENTER"),
+            Self::LOW_FREQUENCY => Some("LOW_FREQUENCY"),
+            Self::BACK_LEFT => Some("BACK_LEFT"),
+            Self::BACK_RIGHT => Some("BACK_RIGHT"),
+            Self::SIDE_LEFT => Some("SIDE_LEFT"),
+            Self::SIDE_RIGHT => Some("SIDE_RIGHT"),
+            Self::TOP_FRONT_LEFT => Some("TOP_FRONT_LEFT"),
+            Self::TOP_FRONT_RIGHT => Some("TOP_FRONT_RIGHT"),
+            Self::TOP_BACK_LEFT => Some("TOP_BACK_LEFT"),
+            Self::TOP_BACK_RIGHT => Some("TOP_BACK_RIGHT"),
+            Self::BACK_CENTER => Some("BACK_CENTER"),
+            Self::TOP_SIDE_LEFT => Some("TOP_SIDE_LEFT"),
+            Self::TOP_SIDE_RIGHT => Some("TOP_SIDE_RIGHT"),
+            Self::SETUP_STEREO => Some("SETUP_STEREO"),
+            Self::SETUP_2_1 => Some("SETUP_2_1"),
+            Self::SETUP_3_0 => Some("SETUP_3_0"),
+            Self::SETUP_4_0 => Some("SETUP_4_0"),
+            Self::SETUP_BACK_SURROUND => Some("SETUP_BACK_SURROUND"),
+            Self::SETUP_QUAD => Some("SETUP_QUAD"),
+            Self::SETUP_3_1 => Some("SETUP_3_1"),
+            Self::SETUP_5_0 => Some("SETUP_5_0"),
+            Self::SETUP_SIDE_SURROUND => Some("SETUP_SIDE_SURROUND"),
+            Self::SETUP_5_0_SIDE => Some("SETUP_5_0_SIDE"),
+            Self::SETUP_5_1 => Some("SETUP_5_1"),
+            Self::SETUP_5_1_SIDE => Some("SETUP_5_1_SIDE"),
+            Self::SETUP_7_0 => Some("SETUP_7_0"),
+            Self::SETUP_7_1 => Some("SETUP_7_1"),
+            Self::SETUP_5_1_2 => Some("SETUP_5_1_2"),
+            Self::SETUP_5_1_4 => Some("SETUP_5_1_4"),
+            Self::SETUP_7_1_2 => Some("SETUP_7_1_2"),
+            Self::SETUP_7_1_4 => Some("SETUP_7_1_4"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSoundFieldChannelMaskAmbixBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldChannelMaskAmbixBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SoundFieldChannelMaskAmbixBD(i32);
+impl SoundFieldChannelMaskAmbixBD {
+    #[doc = "Indicates 1st-order ambisonics in AmbiX format, which uses ACN (Ambisonic Channel Number) channel ordering and SN3D normalization"]
+    pub const AMBIX_1ST_ORDER: SoundFieldChannelMaskAmbixBD = Self(1i32);
+    #[doc = "Indicates 2nd-order ambisonics in AmbiX format, which uses ACN (Ambisonic Channel Number) channel ordering and SN3D normalization"]
+    pub const AMBIX_2ND_ORDER: SoundFieldChannelMaskAmbixBD = Self(2i32);
+    #[doc = "Indicates 3rd-order ambisonics in AmbiX format, which uses ACN (Ambisonic Channel Number) channel ordering and SN3D normalization"]
+    pub const AMBIX_3RD_ORDER: SoundFieldChannelMaskAmbixBD = Self(3i32);
+    #[doc = "Indicates 4th-order ambisonics in AmbiX format, which uses ACN (Ambisonic Channel Number) channel ordering and SN3D normalization"]
+    pub const AMBIX_4TH_ORDER: SoundFieldChannelMaskAmbixBD = Self(4i32);
+    #[doc = "Indicates 5th-order-ambisonics in AmbiX format, which uses ACN (Ambisonic Channel Number) channel ordering and SN3D normalization"]
+    pub const AMBIX_5TH_ORDER: SoundFieldChannelMaskAmbixBD = Self(5i32);
+    #[doc = "Indicates 6th-order ambisonics in AmbiX format, which uses ACN (Ambisonic Channel Number) channel ordering and SN3D normalization"]
+    pub const AMBIX_6TH_ORDER: SoundFieldChannelMaskAmbixBD = Self(6i32);
+    #[doc = "Indicates 7th-order ambisonics in AmbiX format, which uses ACN (Ambisonic Channel Number) channel ordering and SN3D normalization"]
+    pub const AMBIX_7TH_ORDER: SoundFieldChannelMaskAmbixBD = Self(7i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SoundFieldChannelMaskAmbixBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::AMBIX_1ST_ORDER => Some("AMBIX_1ST_ORDER"),
+            Self::AMBIX_2ND_ORDER => Some("AMBIX_2ND_ORDER"),
+            Self::AMBIX_3RD_ORDER => Some("AMBIX_3RD_ORDER"),
+            Self::AMBIX_4TH_ORDER => Some("AMBIX_4TH_ORDER"),
+            Self::AMBIX_5TH_ORDER => Some("AMBIX_5TH_ORDER"),
+            Self::AMBIX_6TH_ORDER => Some("AMBIX_6TH_ORDER"),
+            Self::AMBIX_7TH_ORDER => Some("AMBIX_7TH_ORDER"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSoundFieldChannelMaskFumaBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldChannelMaskFumaBD)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct SoundFieldChannelMaskFumaBD(i32);
+impl SoundFieldChannelMaskFumaBD {
+    #[doc = "Indicates the 1st-order ambisonic in FuMA format, which refers to Furse-Malham channel order and maxN normalization"]
+    pub const FUMA_1ST_ORDER: SoundFieldChannelMaskFumaBD = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SoundFieldChannelMaskFumaBD {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::FUMA_1ST_ORDER => Some("FUMA_1ST_ORDER"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -7700,6 +8639,108 @@ impl fmt::Debug for LipExpressionBD {
             Self::E => Some("E"),
             Self::LNN => Some("LNN"),
             Self::SIL => Some("SIL"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrSpatialObjectSemanticLabelANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialObjectSemanticLabelANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct SpatialObjectSemanticLabelANDROID(i32);
+impl SpatialObjectSemanticLabelANDROID {
+    #[doc = "The runtime was unable to classify this entity."]
+    pub const UNCATEGORIZED: SpatialObjectSemanticLabelANDROID = Self(0i32);
+    #[doc = "The entity is a keyboard."]
+    pub const KEYBOARD: SpatialObjectSemanticLabelANDROID = Self(1i32);
+    #[doc = "The entity is a mouse."]
+    pub const MOUSE: SpatialObjectSemanticLabelANDROID = Self(2i32);
+    #[doc = "The entity is a laptop."]
+    pub const LAPTOP_BASE: SpatialObjectSemanticLabelANDROID = Self(3i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for SpatialObjectSemanticLabelANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNCATEGORIZED => Some("UNCATEGORIZED"),
+            Self::KEYBOARD => Some("KEYBOARD"),
+            Self::MOUSE => Some("MOUSE"),
+            Self::LAPTOP_BASE => Some("LAPTOP_BASE"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrEnvironmentRaycastHitStatusMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycastHitStatusMETA)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct EnvironmentRaycastHitStatusMETA(i32);
+impl EnvironmentRaycastHitStatusMETA {
+    #[doc = "The intersection with the environment is found."]
+    pub const HIT: EnvironmentRaycastHitStatusMETA = Self(1i32);
+    #[doc = "The intersection with the environment is not found."]
+    pub const NO_HIT: EnvironmentRaycastHitStatusMETA = Self(2i32);
+    #[doc = "The ray intersects with the environment, but the actual hit point is invisible."]
+    pub const HIT_POINT_OCCLUDED: EnvironmentRaycastHitStatusMETA = Self(3i32);
+    #[doc = "The hit point can't be determined because it lies outside of the field of view."]
+    pub const HIT_POINT_OUTSIDE_OF_FOV: EnvironmentRaycastHitStatusMETA = Self(4i32);
+    #[doc = "The ray is completely occluded by the environment."]
+    pub const RAY_OCCLUDED: EnvironmentRaycastHitStatusMETA = Self(5i32);
+    #[doc = "The intersection with the environment is found, but the hit orientation cannot be determined."]
+    pub const HIT_INVALID_ORIENTATION: EnvironmentRaycastHitStatusMETA = Self(6i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for EnvironmentRaycastHitStatusMETA {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::HIT => Some("HIT"),
+            Self::NO_HIT => Some("NO_HIT"),
+            Self::HIT_POINT_OCCLUDED => Some("HIT_POINT_OCCLUDED"),
+            Self::HIT_POINT_OUTSIDE_OF_FOV => Some("HIT_POINT_OUTSIDE_OF_FOV"),
+            Self::RAY_OCCLUDED => Some("RAY_OCCLUDED"),
+            Self::HIT_INVALID_ORIENTATION => Some("HIT_INVALID_ORIENTATION"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrHandGestureTypeQCOM](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrHandGestureTypeQCOM)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Default)]
+pub struct HandGestureTypeQCOM(i32);
+impl HandGestureTypeQCOM {
+    #[doc = "Indicates that no gesture can be detected."]
+    pub const UNKNOWN: HandGestureTypeQCOM = Self(-1i32);
+    #[doc = "The open hand gesture is a neutral position. It is performed by extending the hand with the fingers opened and the palm away from the user."]
+    pub const OPEN_HAND: HandGestureTypeQCOM = Self(0i32);
+    #[doc = "The grab gesture is performed by placing the hand in front of the user and closing the hand into a fist."]
+    pub const GRAB: HandGestureTypeQCOM = Self(2i32);
+    #[doc = "The pinch gesture is performed by touching the tip of the thumb to the tip of the index finger while extending the remaining fingers."]
+    pub const PINCH: HandGestureTypeQCOM = Self(7i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for HandGestureTypeQCOM {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::UNKNOWN => Some("UNKNOWN"),
+            Self::OPEN_HAND => Some("OPEN_HAND"),
+            Self::GRAB => Some("GRAB"),
+            Self::PINCH => Some("PINCH"),
             _ => None,
         };
         fmt_enum(fmt, self.0, name)
@@ -8393,6 +9434,55 @@ impl fmt::Debug for CompareOpFB {
         fmt_enum(fmt, self.0, name)
     }
 }
+#[doc = "See [XrTrackableImageFormatANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageFormatANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct TrackableImageFormatANDROID(i32);
+impl TrackableImageFormatANDROID {
+    #[doc = "RGBA image format with 8 bits per channel color and transparency data."]
+    pub const R8G8B8A8: TrackableImageFormatANDROID = Self(1i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for TrackableImageFormatANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::R8G8B8A8 => Some("R8G8B8A8"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
+#[doc = "See [XrTrackableImageTrackingModeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageTrackingModeANDROID)"]
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub struct TrackableImageTrackingModeANDROID(i32);
+impl TrackableImageTrackingModeANDROID {
+    #[doc = "This mode has the highest accuracy and allows low latency tracking of moving images. It has also has the highest power consumption."]
+    pub const DYNAMIC: TrackableImageTrackingModeANDROID = Self(1i32);
+    #[doc = "This mode should be used for images that are known to be static or semi-static. This mode leads to less power consumption in comparison to the dynamic mode. If a static image is being moved, it will be updated with a much higher latency than using the dynamic mode."]
+    pub const STATIC: TrackableImageTrackingModeANDROID = Self(2i32);
+    pub fn from_raw(x: i32) -> Self {
+        Self(x)
+    }
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+impl fmt::Debug for TrackableImageTrackingModeANDROID {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let name = match *self {
+            Self::DYNAMIC => Some("DYNAMIC"),
+            Self::STATIC => Some("STATIC"),
+            _ => None,
+        };
+        fmt_enum(fmt, self.0, name)
+    }
+}
 #[doc = "See [XrInstanceCreateFlagBits](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrInstanceCreateFlagBits)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -8849,6 +9939,19 @@ impl FoveationDynamicFlagsHTC {
     pub const FOCAL_CENTER_OFFSET_ENABLED: FoveationDynamicFlagsHTC = Self(1 << 2u64);
 }
 bitmask!(FoveationDynamicFlagsHTC);
+#[doc = "See [XrPerformanceMetricsCounterFlagsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerformanceMetricsCounterFlagsANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct PerformanceMetricsCounterFlagsANDROID(u64);
+impl PerformanceMetricsCounterFlagsANDROID {
+    #[doc = "Indicates any of the values in XrPerformanceMetricsCounterANDROID is valid."]
+    pub const ANY_VALUE_VALID: PerformanceMetricsCounterFlagsANDROID = Self(1 << 0u64);
+    #[doc = "Indicates the uintValue in XrPerformanceMetricsCounterANDROID is valid."]
+    pub const UINT_VALUE_VALID: PerformanceMetricsCounterFlagsANDROID = Self(1 << 1u64);
+    #[doc = "Indicates the floatValue in XrPerformanceMetricsCounterANDROID is valid."]
+    pub const FLOAT_VALUE_VALID: PerformanceMetricsCounterFlagsANDROID = Self(1 << 2u64);
+}
+bitmask!(PerformanceMetricsCounterFlagsANDROID);
 #[doc = "See [XrFrameEndInfoFlagsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFrameEndInfoFlagsML)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -8958,6 +10061,61 @@ impl WorldMeshDetectorFlagsML {
     pub const INDEX_ORDER_CW: WorldMeshDetectorFlagsML = Self(1 << 5u64);
 }
 bitmask!(WorldMeshDetectorFlagsML);
+#[doc = "See [XrSoundObstacleFlagsBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObstacleFlagsBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SoundObstacleFlagsBD(u64);
+impl SoundObstacleFlagsBD {
+    #[doc = "to indicate an update of enabled"]
+    pub const ENABLED: SoundObstacleFlagsBD = Self(1 << 0u64);
+    #[doc = "to indicate an update of pose"]
+    pub const POSE: SoundObstacleFlagsBD = Self(1 << 1u64);
+    #[doc = "to indicate an update of mesh"]
+    pub const MESH: SoundObstacleFlagsBD = Self(1 << 2u64);
+    #[doc = "to indicate an update of materials"]
+    pub const MATERIALS: SoundObstacleFlagsBD = Self(1 << 3u64);
+}
+bitmask!(SoundObstacleFlagsBD);
+#[doc = "See [XrSoundObjectFlagsBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectFlagsBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SoundObjectFlagsBD(u64);
+impl SoundObjectFlagsBD {
+    #[doc = "to indicate an update of enabled"]
+    pub const ENABLED: SoundObjectFlagsBD = Self(1 << 0u64);
+    #[doc = "to indicate an update of pose"]
+    pub const POSE: SoundObjectFlagsBD = Self(1 << 1u64);
+    #[doc = "to indicate an update of the directivity using an XrSoundObjectDirectivityCardioidBD chained to next"]
+    pub const DIRECTIVITY: SoundObjectFlagsBD = Self(1 << 2u64);
+    #[doc = "to indicate an update of the shape using an XrSoundObjectShapeSphereBD chained to next"]
+    pub const SHAPE: SoundObjectFlagsBD = Self(1 << 3u64);
+    #[doc = "to indicate an update of mainVolume"]
+    pub const MAIN_VOLUME: SoundObjectFlagsBD = Self(1 << 4u64);
+    #[doc = "to indicate an update of reflectionGain"]
+    pub const REFLECTION_GAIN: SoundObjectFlagsBD = Self(1 << 5u64);
+    #[doc = "to indicate an update of enableDoppler"]
+    pub const ENABLE_DOPPLER: SoundObjectFlagsBD = Self(1 << 6u64);
+    #[doc = "to indicate an update of directSoundAttenuation"]
+    pub const DIRECT_SOUND_ATTENUATION: SoundObjectFlagsBD = Self(1 << 7u64);
+    #[doc = "to indicate an update of indirectSoundAttenuation"]
+    pub const INDIRECT_SOUND_ATTENUATION: SoundObjectFlagsBD = Self(1 << 8u64);
+}
+bitmask!(SoundObjectFlagsBD);
+#[doc = "See [XrSoundFieldFlagsBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldFlagsBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SoundFieldFlagsBD(u64);
+impl SoundFieldFlagsBD {
+    #[doc = "to indicate an update of enabled"]
+    pub const ENABLED: SoundFieldFlagsBD = Self(1 << 0u64);
+    #[doc = "to indicate an update of pose and/or baseSpace"]
+    pub const ORIENTATION: SoundFieldFlagsBD = Self(1 << 1u64);
+    #[doc = "to indicate an update of mainVolume"]
+    pub const MAIN_VOLUME: SoundFieldFlagsBD = Self(1 << 2u64);
+    #[doc = "to indicate an update of lfeGain"]
+    pub const LFE_GAIN: SoundFieldFlagsBD = Self(1 << 3u64);
+}
+bitmask!(SoundFieldFlagsBD);
 #[doc = "See [XrFacialExpressionBlendShapePropertiesFlagsML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFacialExpressionBlendShapePropertiesFlagsML)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -8980,6 +10138,21 @@ impl SpatialMeshConfigFlagsBD {
     pub const ALIGN_SEMANTIC_WITH_VERTEX: SpatialMeshConfigFlagsBD = Self(1 << 1u64);
 }
 bitmask!(SpatialMeshConfigFlagsBD);
+#[doc = "See [XrBatteryStateDisplayStateFlagsEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBatteryStateDisplayStateFlagsEXT)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct BatteryStateDisplayStateFlagsEXT(u64);
+impl BatteryStateDisplayStateFlagsEXT {
+    #[doc = "Indicates validity of batteryLevel"]
+    pub const VALID: BatteryStateDisplayStateFlagsEXT = Self(1 << 0u64);
+    #[doc = "Indicates that the device associated with the interaction profile is charging."]
+    pub const CHARGING: BatteryStateDisplayStateFlagsEXT = Self(1 << 1u64);
+    #[doc = "Indicates that the device associated with the interaction profile is plugged in to a power source."]
+    pub const PLUGGED_IN: BatteryStateDisplayStateFlagsEXT = Self(1 << 2u64);
+    #[doc = "Indicates that the device associated with the interaction profile does not have a battery power source."]
+    pub const NO_BATTERY: BatteryStateDisplayStateFlagsEXT = Self(1 << 3u64);
+}
+bitmask!(BatteryStateDisplayStateFlagsEXT);
 #[doc = "See [XrInstance](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrInstance)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -9075,6 +10248,21 @@ handle!(TrackableTrackerANDROID);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct DeviceAnchorPersistenceANDROID(u64);
 handle!(DeviceAnchorPersistenceANDROID);
+#[doc = "See [XrPassthroughLayerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughLayerANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PassthroughLayerANDROID(u64);
+handle!(PassthroughLayerANDROID);
+#[doc = "See [XrSceneMeshingTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshingTrackerANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SceneMeshingTrackerANDROID(u64);
+handle!(SceneMeshingTrackerANDROID);
+#[doc = "See [XrSceneMeshSnapshotANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshSnapshotANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SceneMeshSnapshotANDROID(u64);
+handle!(SceneMeshSnapshotANDROID);
 #[doc = "See [XrFaceTrackerFB](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrFaceTrackerFB)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -9175,6 +10363,31 @@ handle!(BodyTrackerHTC);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct WorldMeshDetectorML(u64);
 handle!(WorldMeshDetectorML);
+#[doc = "See [XrSpatialAudioRendererBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAudioRendererBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SpatialAudioRendererBD(u64);
+handle!(SpatialAudioRendererBD);
+#[doc = "See [XrSoundFieldBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SoundFieldBD(u64);
+handle!(SoundFieldBD);
+#[doc = "See [XrSoundObjectBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SoundObjectBD(u64);
+handle!(SoundObjectBD);
+#[doc = "See [XrSoundObstacleBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObstacleBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SoundObstacleBD(u64);
+handle!(SoundObstacleBD);
+#[doc = "See [XrSoundObstacleMaterialBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObstacleMaterialBD)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SoundObstacleMaterialBD(u64);
+handle!(SoundObstacleMaterialBD);
 #[doc = "See [XrBodyTrackerBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackerBD)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -9210,6 +10423,11 @@ handle!(AnchorBD);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct FaceTrackerBD(u64);
 handle!(FaceTrackerBD);
+#[doc = "See [XrEnvironmentRaycasterMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycasterMETA)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct EnvironmentRaycasterMETA(u64);
+handle!(EnvironmentRaycasterMETA);
 #[doc = "See [XrSpatialGraphNodeBindingMSFT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialGraphNodeBindingMSFT)"]
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -9230,6 +10448,11 @@ handle!(SceneMSFT);
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct SpatialAnchorStoreConnectionMSFT(u64);
 handle!(SpatialAnchorStoreConnectionMSFT);
+#[doc = "See [XrTrackableImageDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageDatabaseANDROID)"]
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct TrackableImageDatabaseANDROID(u64);
+handle!(TrackableImageDatabaseANDROID);
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[doc = "See [XrVector2f](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrVector2f)"]
@@ -11787,6 +13010,52 @@ pub struct SystemPropertiesBodyTrackingCalibrationMETA {
 }
 impl SystemPropertiesBodyTrackingCalibrationMETA {
     pub const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES_BODY_TRACKING_CALIBRATION_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBodyTrackingFidelityStatusMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBodyTrackingFidelityStatusMETA) - defined by [XR_META_body_tracking_fidelity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_fidelity)"]
+pub struct BodyTrackingFidelityStatusMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub fidelity: BodyTrackingFidelityMETA,
+}
+impl BodyTrackingFidelityStatusMETA {
+    pub const TYPE: StructureType = StructureType::BODY_TRACKING_FIDELITY_STATUS_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemPropertiesBodyTrackingFidelityMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPropertiesBodyTrackingFidelityMETA) - defined by [XR_META_body_tracking_fidelity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_fidelity)"]
+pub struct SystemPropertiesBodyTrackingFidelityMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_body_tracking_fidelity: Bool32,
+}
+impl SystemPropertiesBodyTrackingFidelityMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_PROPERTIES_BODY_TRACKING_FIDELITY_META;
     #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
     #[inline]
     pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
@@ -15613,6 +16882,336 @@ impl SystemDeviceAnchorPersistencePropertiesANDROID {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPerformanceMetricsStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerformanceMetricsStateANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
+#[cfg(target_os = "android")]
+pub struct PerformanceMetricsStateANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub enabled: Bool32,
+}
+#[cfg(target_os = "android")]
+impl PerformanceMetricsStateANDROID {
+    pub const TYPE: StructureType = StructureType::PERFORMANCE_METRICS_STATE_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPerformanceMetricsCounterANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPerformanceMetricsCounterANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
+#[cfg(target_os = "android")]
+pub struct PerformanceMetricsCounterANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub counter_flags: PerformanceMetricsCounterFlagsANDROID,
+    pub counter_unit: PerformanceMetricsCounterUnitANDROID,
+    pub uint_value: u32,
+    pub float_value: f32,
+}
+#[cfg(target_os = "android")]
+impl PerformanceMetricsCounterANDROID {
+    pub const TYPE: StructureType = StructureType::PERFORMANCE_METRICS_COUNTER_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemQrCodeTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemQrCodeTrackingPropertiesANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
+#[cfg(target_os = "android")]
+pub struct SystemQrCodeTrackingPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_qr_code_tracking: Bool32,
+    pub supports_qr_code_size_estimation: Bool32,
+    pub max_qr_code_count: u16,
+}
+#[cfg(target_os = "android")]
+impl SystemQrCodeTrackingPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_QR_CODE_TRACKING_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableQrCodeConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableQrCodeConfigurationANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
+#[cfg(target_os = "android")]
+pub struct TrackableQrCodeConfigurationANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tracking_mode: QrCodeTrackingModeANDROID,
+    pub qr_code_edge_size: f32,
+}
+#[cfg(target_os = "android")]
+impl TrackableQrCodeConfigurationANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_QR_CODE_CONFIGURATION_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableQrCodeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableQrCodeANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
+#[cfg(target_os = "android")]
+pub struct TrackableQrCodeANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tracking_state: TrackingStateANDROID,
+    pub last_updated_time: Time,
+    pub center_pose: Posef,
+    pub extents: Extent2Df,
+    pub buffer_capacity_input: u32,
+    pub buffer_count_output: u32,
+    pub buffer: *mut c_char,
+}
+#[cfg(target_os = "android")]
+impl TrackableQrCodeANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_QR_CODE_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemPassthroughLayerPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPassthroughLayerPropertiesANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
+#[cfg(target_os = "android")]
+pub struct SystemPassthroughLayerPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_passthrough_layer: Bool32,
+    pub max_mesh_index_count: u32,
+    pub max_mesh_vertex_count: u32,
+}
+#[cfg(target_os = "android")]
+impl SystemPassthroughLayerPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_PASSTHROUGH_LAYER_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPassthroughLayerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughLayerCreateInfoANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
+#[cfg(target_os = "android")]
+pub struct PassthroughLayerCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub vertex_capacity: u32,
+    pub index_capacity: u32,
+}
+#[cfg(target_os = "android")]
+impl PassthroughLayerCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::PASSTHROUGH_LAYER_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrPassthroughLayerMeshANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrPassthroughLayerMeshANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
+#[cfg(target_os = "android")]
+pub struct PassthroughLayerMeshANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub winding_order: WindingOrderANDROID,
+    pub vertex_count: u32,
+    pub vertices: *const Vector3f,
+    pub index_count: u32,
+    pub indices: *const u16,
+}
+#[cfg(target_os = "android")]
+impl PassthroughLayerMeshANDROID {
+    pub const TYPE: StructureType = StructureType::PASSTHROUGH_LAYER_MESH_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCompositionLayerPassthroughANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCompositionLayerPassthroughANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
+#[cfg(target_os = "android")]
+pub struct CompositionLayerPassthroughANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub layer_flags: CompositionLayerFlags,
+    pub space: Space,
+    pub pose: Posef,
+    pub scale: Vector3f,
+    pub opacity: f32,
+    pub layer: PassthroughLayerANDROID,
+}
+#[cfg(target_os = "android")]
+impl CompositionLayerPassthroughANDROID {
+    pub const TYPE: StructureType = StructureType::COMPOSITION_LAYER_PASSTHROUGH_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemSceneMeshingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemSceneMeshingPropertiesANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+#[cfg(target_os = "android")]
+pub struct SystemSceneMeshingPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_scene_meshing: Bool32,
+}
+#[cfg(target_os = "android")]
+impl SystemSceneMeshingPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_SCENE_MESHING_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSceneMeshingTrackerCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshingTrackerCreateInfoANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+#[cfg(target_os = "android")]
+pub struct SceneMeshingTrackerCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub semantic_label_set: SceneMeshSemanticLabelSetANDROID,
+    pub enable_normals: Bool32,
+}
+#[cfg(target_os = "android")]
+impl SceneMeshingTrackerCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::SCENE_MESHING_TRACKER_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSceneMeshSnapshotCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshSnapshotCreateInfoANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+#[cfg(target_os = "android")]
+pub struct SceneMeshSnapshotCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+    pub bounding_box: Boxf,
+}
+#[cfg(target_os = "android")]
+impl SceneMeshSnapshotCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::SCENE_MESH_SNAPSHOT_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSceneMeshSnapshotCreationResultANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneMeshSnapshotCreationResultANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+#[cfg(target_os = "android")]
+pub struct SceneMeshSnapshotCreationResultANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub snapshot: SceneMeshSnapshotANDROID,
+    pub tracking_state: SceneMeshTrackingStateANDROID,
+}
+#[cfg(target_os = "android")]
+impl SceneMeshSnapshotCreationResultANDROID {
+    pub const TYPE: StructureType = StructureType::SCENE_MESH_SNAPSHOT_CREATION_RESULT_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSceneSubmeshStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneSubmeshStateANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+#[cfg(target_os = "android")]
+pub struct SceneSubmeshStateANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub submesh_id: Uuid,
+    pub last_updated_time: Time,
+    pub submesh_pose_in_base_space: Posef,
+    pub bounds: Extent3Df,
+}
+#[cfg(target_os = "android")]
+impl SceneSubmeshStateANDROID {
+    pub const TYPE: StructureType = StructureType::SCENE_SUBMESH_STATE_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSceneSubmeshDataANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSceneSubmeshDataANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+#[cfg(target_os = "android")]
+pub struct SceneSubmeshDataANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub submesh_id: Uuid,
+    pub vertex_capacity_input: u32,
+    pub vertex_count_output: u32,
+    pub vertex_positions: *mut Vector3f,
+    pub vertex_normals: *mut Vector3f,
+    pub vertex_semantics: *mut u8,
+    pub index_capacity_input: u32,
+    pub index_count_output: u32,
+    pub indices: *mut u32,
+}
+#[cfg(target_os = "android")]
+impl SceneSubmeshDataANDROID {
+    pub const TYPE: StructureType = StructureType::SCENE_SUBMESH_DATA_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemPlaneDetectionPropertiesEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemPlaneDetectionPropertiesEXT) - defined by [XR_EXT_plane_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_plane_detection)"]
 pub struct SystemPlaneDetectionPropertiesEXT {
     pub ty: StructureType,
@@ -17397,6 +18996,201 @@ impl SystemNotificationsSetInfoML {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAudioRendererCreateInfoBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAudioRendererCreateInfoBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SpatialAudioRendererCreateInfoBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub frames_per_buffer: u32,
+    pub sample_rate: AudioSampleRateBD,
+}
+impl SpatialAudioRendererCreateInfoBD {
+    pub const TYPE: StructureType = StructureType::SPATIAL_AUDIO_RENDERER_CREATE_INFO_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrAudioBufferBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAudioBufferBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct AudioBufferBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub channel_layout: AudioBufferChannelLayoutBD,
+    pub buffer_channels: u32,
+    pub buffer_length: u32,
+    pub buffer: *mut f32,
+}
+impl AudioBufferBD {
+    pub const TYPE: StructureType = StructureType::AUDIO_BUFFER_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundObjectDirectivityCardioidBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectDirectivityCardioidBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundObjectDirectivityCardioidBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub alpha: f32,
+    pub order: f32,
+}
+impl SoundObjectDirectivityCardioidBD {
+    pub const TYPE: StructureType = StructureType::SOUND_OBJECT_DIRECTIVITY_CARDIOID_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundObjectShapeSphereBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectShapeSphereBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundObjectShapeSphereBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub radius: f32,
+}
+impl SoundObjectShapeSphereBD {
+    pub const TYPE: StructureType = StructureType::SOUND_OBJECT_SHAPE_SPHERE_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundObjectDistanceAttenuationBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectDistanceAttenuationBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundObjectDistanceAttenuationBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub distance_attenuation_type: SoundObjectDistanceAttenuationTypeBD,
+    pub min_attenuation_range: f32,
+    pub max_attenuation_range: f32,
+    pub reference_distance: f32,
+    pub rolloff_factor: f32,
+    pub custom_distance_attenuation_curve: *mut SoundObjectDistanceAttenuationCurveBD,
+}
+impl SoundObjectDistanceAttenuationBD {
+    pub const TYPE: StructureType = StructureType::SOUND_OBJECT_DISTANCE_ATTENUATION_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrAttenuationCurvePointBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrAttenuationCurvePointBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct AttenuationCurvePointBD {
+    pub distance: f32,
+    pub gain: f32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundObjectDistanceAttenuationCurveBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectDistanceAttenuationCurveBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundObjectDistanceAttenuationCurveBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub curve_point_count: u32,
+    pub curve_points: *mut AttenuationCurvePointBD,
+}
+impl SoundObjectDistanceAttenuationCurveBD {
+    pub const TYPE: StructureType = StructureType::SOUND_OBJECT_DISTANCE_ATTENUATION_CURVE_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundObjectConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObjectConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundObjectConfigBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub enabled: Bool32,
+    pub pose: Posef,
+    pub base_space: Space,
+    pub main_volume: f32,
+    pub reflection_gain: f32,
+    pub enable_doppler: Bool32,
+    pub direct_sound_attenuation: *const SoundObjectDistanceAttenuationBD,
+    pub indirect_sound_attenuation: *const SoundObjectDistanceAttenuationBD,
+}
+impl SoundObjectConfigBD {
+    pub const TYPE: StructureType = StructureType::SOUND_OBJECT_CONFIG_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundFieldConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundFieldConfigBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub enabled: Bool32,
+    pub orientation: Quaternionf,
+    pub base_space: Space,
+    pub main_volume: f32,
+    pub lfe_gain: f32,
+}
+impl SoundFieldConfigBD {
+    pub const TYPE: StructureType = StructureType::SOUND_FIELD_CONFIG_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundFieldChannelDefinitionSurroundBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldChannelDefinitionSurroundBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundFieldChannelDefinitionSurroundBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub channel_mask: SoundFieldChannelMaskSurroundBD,
+}
+impl SoundFieldChannelDefinitionSurroundBD {
+    pub const TYPE: StructureType = StructureType::SOUND_FIELD_CHANNEL_DEFINITION_SURROUND_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundFieldChannelDefinitionAmbixBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldChannelDefinitionAmbixBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundFieldChannelDefinitionAmbixBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub channel_mask: SoundFieldChannelMaskAmbixBD,
+}
+impl SoundFieldChannelDefinitionAmbixBD {
+    pub const TYPE: StructureType = StructureType::SOUND_FIELD_CHANNEL_DEFINITION_AMBIX_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundFieldChannelDefinitionFumaBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundFieldChannelDefinitionFumaBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundFieldChannelDefinitionFumaBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub channel_mask: SoundFieldChannelMaskFumaBD,
+}
+impl SoundFieldChannelDefinitionFumaBD {
+    pub const TYPE: StructureType = StructureType::SOUND_FIELD_CHANNEL_DEFINITION_FUMA_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundTriangleMeshBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundTriangleMeshBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundTriangleMeshBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub vertex_count: u32,
+    pub vertices: *mut Vector3f,
+    pub index_count: u32,
+    pub indices: *mut u32,
+}
+impl SoundTriangleMeshBD {
+    pub const TYPE: StructureType = StructureType::SOUND_TRIANGLE_MESH_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundObstacleConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObstacleConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundObstacleConfigBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub enabled: Bool32,
+    pub pose: Posef,
+    pub base_space: Space,
+    pub material_count: u32,
+    pub materials: *mut SoundObstacleMaterialBD,
+}
+impl SoundObstacleConfigBD {
+    pub const TYPE: StructureType = StructureType::SOUND_OBSTACLE_CONFIG_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSoundObstacleMaterialConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSoundObstacleMaterialConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+pub struct SoundObstacleMaterialConfigBD {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub material_type: SoundObstacleMaterialTypeBD,
+    pub band_count: u32,
+    pub band_frequencies: *mut f32,
+    pub band_absorptions: *mut f32,
+    pub band_scatterings: *mut f32,
+    pub band_transmissions: *mut f32,
+}
+impl SoundObstacleMaterialConfigBD {
+    pub const TYPE: StructureType = StructureType::SOUND_OBSTACLE_MATERIAL_CONFIG_BD;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialAnchorsCreateInfoBaseHeaderML](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorsCreateInfoBaseHeaderML) - defined by [XR_ML_spatial_anchors](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ML_spatial_anchors)"]
 pub struct SpatialAnchorsCreateInfoBaseHeaderML {
     pub ty: StructureType,
@@ -18918,6 +20712,88 @@ pub struct LoaderInitPropertyValueEXT {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationDepthRaycastANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationDepthRaycastANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
+#[cfg(target_os = "android")]
+pub struct SpatialCapabilityConfigurationDepthRaycastANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+}
+#[cfg(target_os = "android")]
+impl SpatialCapabilityConfigurationDepthRaycastANDROID {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialRaycastInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialRaycastInfoANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
+#[cfg(target_os = "android")]
+pub struct SpatialRaycastInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub space: Space,
+    pub time: Time,
+    pub origin: Vector3f,
+    pub direction: Vector3f,
+    pub max_distance: f32,
+}
+#[cfg(target_os = "android")]
+impl SpatialRaycastInfoANDROID {
+    pub const TYPE: StructureType = StructureType::SPATIAL_RAYCAST_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrSpatialRaycastResultDataANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialRaycastResultDataANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
+#[cfg(target_os = "android")]
+pub struct SpatialRaycastResultDataANDROID {
+    pub hit_pose: Posef,
+    pub distance_squared: f32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentRaycastResultListANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentRaycastResultListANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
+#[cfg(target_os = "android")]
+pub struct SpatialComponentRaycastResultListANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub raycast_result_count: u32,
+    pub raycast_results: *mut SpatialRaycastResultDataANDROID,
+}
+#[cfg(target_os = "android")]
+impl SpatialComponentRaycastResultListANDROID {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialRaycastSnapshotCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialRaycastSnapshotCreateInfoANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
+#[cfg(target_os = "android")]
+pub struct SpatialRaycastSnapshotCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub component_type_count: u32,
+    pub component_types: *const SpatialComponentTypeEXT,
+    pub raycast_info: *const SpatialRaycastInfoANDROID,
+}
+#[cfg(target_os = "android")]
+impl SpatialRaycastSnapshotCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::SPATIAL_RAYCAST_SNAPSHOT_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSpatialCapabilityConfigurationArucoMarkerEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationArucoMarkerEXT) - defined by [XR_EXT_spatial_marker_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_spatial_marker_tracking)"]
 pub struct SpatialCapabilityConfigurationArucoMarkerEXT {
     pub ty: StructureType,
@@ -19027,6 +20903,63 @@ impl SpatialComponentMarkerListEXT {
     }
 }
 #[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrExtent3DiMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrExtent3DiMETA) - defined by [XR_META_tile_properties_hint](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_tile_properties_hint)"]
+pub struct Extent3DiMETA {
+    pub width: i32,
+    pub height: i32,
+    pub depth: i32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTilePropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTilePropertiesMETA) - defined by [XR_META_tile_properties_hint](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_tile_properties_hint)"]
+pub struct TilePropertiesMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub tile_dimensions: Extent3DiMETA,
+    pub apron_dimensions: Extent2Di,
+    pub origin: Offset2Di,
+}
+impl TilePropertiesMETA {
+    pub const TYPE: StructureType = StructureType::TILE_PROPERTIES_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTilePropertiesHintMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTilePropertiesHintMETA) - defined by [XR_META_tile_properties_hint](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_tile_properties_hint)"]
+pub struct TilePropertiesHintMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub properties_count: u32,
+    pub properties: *const TilePropertiesMETA,
+}
+impl TilePropertiesHintMETA {
+    pub const TYPE: StructureType = StructureType::TILE_PROPERTIES_HINT_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Debug)]
 #[doc = "See [XrSystemFacialSimulationPropertiesBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemFacialSimulationPropertiesBD) - defined by [XR_BD_facial_simulation](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_facial_simulation)"]
 pub struct SystemFacialSimulationPropertiesBD {
@@ -19121,6 +21054,395 @@ impl LipExpressionDataBD {
         }
         x
     }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemImageTrackingPropertiesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemImageTrackingPropertiesANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+#[cfg(target_os = "android")]
+pub struct SystemImageTrackingPropertiesANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_image_tracking: Bool32,
+    pub supports_physical_size_estimation: Bool32,
+    pub max_tracked_image_count: u32,
+    pub max_loaded_image_count: u32,
+}
+#[cfg(target_os = "android")]
+impl SystemImageTrackingPropertiesANDROID {
+    pub const TYPE: StructureType = StructureType::SYSTEM_IMAGE_TRACKING_PROPERTIES_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableImageDatabaseEntryANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageDatabaseEntryANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+#[cfg(target_os = "android")]
+pub struct TrackableImageDatabaseEntryANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub tracking_mode: TrackableImageTrackingModeANDROID,
+    pub physical_width: f32,
+    pub image_width: u32,
+    pub image_height: u32,
+    pub format: TrackableImageFormatANDROID,
+    pub buffer_size: u32,
+    pub buffer: *const u8,
+}
+#[cfg(target_os = "android")]
+impl TrackableImageDatabaseEntryANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_DATABASE_ENTRY_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableImageDatabaseCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageDatabaseCreateInfoANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+#[cfg(target_os = "android")]
+pub struct TrackableImageDatabaseCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub entry_count: u32,
+    pub entries: *const TrackableImageDatabaseEntryANDROID,
+}
+#[cfg(target_os = "android")]
+impl TrackableImageDatabaseCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_DATABASE_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrCreateTrackableImageDatabaseCompletionANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrCreateTrackableImageDatabaseCompletionANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+#[cfg(target_os = "android")]
+pub struct CreateTrackableImageDatabaseCompletionANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub database: TrackableImageDatabaseANDROID,
+}
+#[cfg(target_os = "android")]
+impl CreateTrackableImageDatabaseCompletionANDROID {
+    pub const TYPE: StructureType =
+        StructureType::CREATE_TRACKABLE_IMAGE_DATABASE_COMPLETION_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableImageConfigurationANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageConfigurationANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+#[cfg(target_os = "android")]
+pub struct TrackableImageConfigurationANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub database_count: u32,
+    pub databases: *const TrackableImageDatabaseANDROID,
+}
+#[cfg(target_os = "android")]
+impl TrackableImageConfigurationANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_CONFIGURATION_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrTrackableImageANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrTrackableImageANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+#[cfg(target_os = "android")]
+pub struct TrackableImageANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub tracking_state: TrackingStateANDROID,
+    pub last_updated_time: Time,
+    pub database: TrackableImageDatabaseANDROID,
+    pub database_entry_index: u32,
+    pub center_pose: Posef,
+    pub extents: Extent2Df,
+}
+#[cfg(target_os = "android")]
+impl TrackableImageANDROID {
+    pub const TYPE: StructureType = StructureType::TRACKABLE_IMAGE_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataImageTrackingLostANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataImageTrackingLostANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+#[cfg(target_os = "android")]
+pub struct EventDataImageTrackingLostANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub time: Time,
+}
+#[cfg(target_os = "android")]
+impl EventDataImageTrackingLostANDROID {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_IMAGE_TRACKING_LOST_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialCapabilityConfigurationObjectTrackingANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialCapabilityConfigurationObjectTrackingANDROID) - defined by [XR_ANDROID_spatial_object_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_object_tracking)"]
+#[cfg(target_os = "android")]
+pub struct SpatialCapabilityConfigurationObjectTrackingANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub capability: SpatialCapabilityEXT,
+    pub enabled_component_count: u32,
+    pub enabled_components: *const SpatialComponentTypeEXT,
+    pub active_semantic_label_count: u32,
+    pub active_semantic_labels: *const SpatialObjectSemanticLabelANDROID,
+}
+#[cfg(target_os = "android")]
+impl SpatialCapabilityConfigurationObjectTrackingANDROID {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_CAPABILITY_CONFIGURATION_OBJECT_TRACKING_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentObjectSemanticLabelListANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentObjectSemanticLabelListANDROID) - defined by [XR_ANDROID_spatial_object_tracking](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_object_tracking)"]
+#[cfg(target_os = "android")]
+pub struct SpatialComponentObjectSemanticLabelListANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub semantic_label_count: u32,
+    pub semantic_labels: *mut SpatialObjectSemanticLabelANDROID,
+}
+#[cfg(target_os = "android")]
+impl SpatialComponentObjectSemanticLabelListANDROID {
+    pub const TYPE: StructureType =
+        StructureType::SPATIAL_COMPONENT_OBJECT_SEMANTIC_LABEL_LIST_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorParentANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorParentANDROID) - defined by [XR_ANDROID_spatial_entity_bound_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_entity_bound_anchor)"]
+#[cfg(target_os = "android")]
+pub struct SpatialAnchorParentANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub parent_id: SpatialEntityIdEXT,
+}
+#[cfg(target_os = "android")]
+impl SpatialAnchorParentANDROID {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_PARENT_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialAnchorSpaceFromIdCreateInfoANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialAnchorSpaceFromIdCreateInfoANDROID) - defined by [XR_ANDROID_spatial_anchor_space](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_anchor_space)"]
+#[cfg(target_os = "android")]
+pub struct SpatialAnchorSpaceFromIdCreateInfoANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub anchor_entity_id: SpatialEntityIdEXT,
+}
+#[cfg(target_os = "android")]
+impl SpatialAnchorSpaceFromIdCreateInfoANDROID {
+    pub const TYPE: StructureType = StructureType::SPATIAL_ANCHOR_SPACE_FROM_ID_CREATE_INFO_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialDiscoveryUniqueEntitiesFilterANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialDiscoveryUniqueEntitiesFilterANDROID) - defined by [XR_ANDROID_spatial_component_subsumed_by](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_component_subsumed_by)"]
+#[cfg(target_os = "android")]
+pub struct SpatialDiscoveryUniqueEntitiesFilterANDROID {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[cfg(target_os = "android")]
+impl SpatialDiscoveryUniqueEntitiesFilterANDROID {
+    pub const TYPE: StructureType = StructureType::SPATIAL_DISCOVERY_UNIQUE_ENTITIES_FILTER_ANDROID;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSpatialComponentSubsumedByListANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSpatialComponentSubsumedByListANDROID) - defined by [XR_ANDROID_spatial_component_subsumed_by](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_component_subsumed_by)"]
+#[cfg(target_os = "android")]
+pub struct SpatialComponentSubsumedByListANDROID {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub subsumed_unique_id_count: u32,
+    pub subsumed_unique_ids: *mut SpatialEntityIdEXT,
+}
+#[cfg(target_os = "android")]
+impl SpatialComponentSubsumedByListANDROID {
+    pub const TYPE: StructureType = StructureType::SPATIAL_COMPONENT_SUBSUMED_BY_LIST_ANDROID;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEventDataViewConfigurationViewsChangedEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEventDataViewConfigurationViewsChangedEXT) - defined by [XR_EXT_view_configuration_views_change](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_view_configuration_views_change)"]
+pub struct EventDataViewConfigurationViewsChangedEXT {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub system_id: SystemId,
+    pub view_configuration_type: ViewConfigurationType,
+}
+impl EventDataViewConfigurationViewsChangedEXT {
+    pub const TYPE: StructureType = StructureType::EVENT_DATA_VIEW_CONFIGURATION_VIEWS_CHANGED_EXT;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrBatteryStateDisplayEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrBatteryStateDisplayEXT) - defined by [XR_EXT_interaction_profile_battery_state_display](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_interaction_profile_battery_state_display)"]
+pub struct BatteryStateDisplayEXT {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub state_flags: BatteryStateDisplayStateFlagsEXT,
+    pub battery_level: f32,
+}
+impl BatteryStateDisplayEXT {
+    pub const TYPE: StructureType = StructureType::BATTERY_STATE_DISPLAY_EXT;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrSystemEnvironmentRaycastPropertiesMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrSystemEnvironmentRaycastPropertiesMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+pub struct SystemEnvironmentRaycastPropertiesMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub supports_environment_raycast: Bool32,
+}
+impl SystemEnvironmentRaycastPropertiesMETA {
+    pub const TYPE: StructureType = StructureType::SYSTEM_ENVIRONMENT_RAYCAST_PROPERTIES_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEnvironmentRaycasterCreateInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycasterCreateInfoMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+pub struct EnvironmentRaycasterCreateInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+impl EnvironmentRaycasterCreateInfoMETA {
+    pub const TYPE: StructureType = StructureType::ENVIRONMENT_RAYCASTER_CREATE_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEnvironmentRaycasterCreateCompletionMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycasterCreateCompletionMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+pub struct EnvironmentRaycasterCreateCompletionMETA {
+    pub ty: StructureType,
+    pub next: *mut c_void,
+    pub future_result: Result,
+    pub environment_raycaster: EnvironmentRaycasterMETA,
+}
+impl EnvironmentRaycasterCreateCompletionMETA {
+    pub const TYPE: StructureType = StructureType::ENVIRONMENT_RAYCASTER_CREATE_COMPLETION_META;
+    #[doc = r" Construct a partially-initialized value suitable for passing to OpenXR"]
+    #[inline]
+    pub fn out(next: *mut BaseOutStructure) -> MaybeUninit<Self> {
+        let mut x = MaybeUninit::<Self>::uninit();
+        unsafe {
+            (x.as_mut_ptr() as *mut BaseOutStructure).write(BaseOutStructure {
+                ty: Self::TYPE,
+                next,
+            });
+        }
+        x
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEnvironmentRaycastFilterBaseHeaderMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycastFilterBaseHeaderMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+pub struct EnvironmentRaycastFilterBaseHeaderMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEnvironmentRaycastFilterDistanceMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycastFilterDistanceMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+pub struct EnvironmentRaycastFilterDistanceMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub max_distance: f32,
+}
+impl EnvironmentRaycastFilterDistanceMETA {
+    pub const TYPE: StructureType = StructureType::ENVIRONMENT_RAYCAST_FILTER_DISTANCE_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEnvironmentRaycastHitGetInfoMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycastHitGetInfoMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+pub struct EnvironmentRaycastHitGetInfoMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub base_space: Space,
+    pub time: Time,
+    pub origin: Vector3f,
+    pub direction: Vector3f,
+    pub filter_count: u32,
+    pub filters: *const *const EnvironmentRaycastFilterBaseHeaderMETA,
+}
+impl EnvironmentRaycastHitGetInfoMETA {
+    pub const TYPE: StructureType = StructureType::ENVIRONMENT_RAYCAST_HIT_GET_INFO_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+#[doc = "See [XrEnvironmentRaycastHitMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrEnvironmentRaycastHitMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+pub struct EnvironmentRaycastHitMETA {
+    pub ty: StructureType,
+    pub next: *const c_void,
+    pub status: EnvironmentRaycastHitStatusMETA,
+    pub pose: Posef,
+}
+impl EnvironmentRaycastHitMETA {
+    pub const TYPE: StructureType = StructureType::ENVIRONMENT_RAYCAST_HIT_META;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[doc = "See [XrHandGestureQCOM](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XrHandGestureQCOM) - defined by [XR_QCOM_hand_tracking_gesture](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_QCOM_hand_tracking_gesture)"]
+pub struct HandGestureQCOM {
+    pub gesture: HandGestureTypeQCOM,
+    pub gesture_ratio: f32,
+    pub flip_ratio: f32,
 }
 #[doc = r" Function pointer prototypes"]
 pub mod pfn {
@@ -20298,6 +22620,11 @@ pub mod pfn {
         create_info: *const MarkerSpaceCreateInfoVARJO,
         space: *mut Space,
     ) -> Result;
+    #[doc = "See [xrRequestBodyTrackingFidelityMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRequestBodyTrackingFidelityMETA) - defined by [XR_META_body_tracking_fidelity](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_body_tracking_fidelity)"]
+    pub type RequestBodyTrackingFidelityMETA = unsafe extern "system" fn(
+        body_tracker: BodyTrackerFB,
+        fidelity: BodyTrackingFidelityMETA,
+    ) -> Result;
     #[doc = "See [xrSetDigitalLensControlALMALENCE](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetDigitalLensControlALMALENCE) - defined by [XR_ALMALENCE_digital_lens_control](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ALMALENCE_digital_lens_control)"]
     pub type SetDigitalLensControlALMALENCE = unsafe extern "system" fn(
         session: Session,
@@ -20604,6 +22931,104 @@ pub mod pfn {
     pub type UnpersistAnchorANDROID = unsafe extern "system" fn(
         handle: DeviceAnchorPersistenceANDROID,
         anchor_id: *const UuidEXT,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumeratePerformanceMetricsCounterPathsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumeratePerformanceMetricsCounterPathsANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
+    pub type EnumeratePerformanceMetricsCounterPathsANDROID = unsafe extern "system" fn(
+        instance: Instance,
+        counter_path_capacity_input: u32,
+        counter_path_count_output: *mut u32,
+        counter_paths: *mut Path,
+    )
+        -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrSetPerformanceMetricsStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetPerformanceMetricsStateANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
+    pub type SetPerformanceMetricsStateANDROID = unsafe extern "system" fn(
+        session: Session,
+        state: *const PerformanceMetricsStateANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetPerformanceMetricsStateANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetPerformanceMetricsStateANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
+    pub type GetPerformanceMetricsStateANDROID = unsafe extern "system" fn(
+        session: Session,
+        state: *mut PerformanceMetricsStateANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrQueryPerformanceMetricsCounterANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQueryPerformanceMetricsCounterANDROID) - defined by [XR_ANDROID_performance_metrics](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_performance_metrics)"]
+    pub type QueryPerformanceMetricsCounterANDROID = unsafe extern "system" fn(
+        session: Session,
+        counter_path: Path,
+        counter: *mut PerformanceMetricsCounterANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetTrackableQrCodeANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableQrCodeANDROID) - defined by [XR_ANDROID_trackables_qr_code](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_qr_code)"]
+    pub type GetTrackableQrCodeANDROID = unsafe extern "system" fn(
+        tracker: TrackableTrackerANDROID,
+        get_info: *const TrackableGetInfoANDROID,
+        qr_code_output: *mut TrackableQrCodeANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreatePassthroughLayerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreatePassthroughLayerANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
+    pub type CreatePassthroughLayerANDROID = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const PassthroughLayerCreateInfoANDROID,
+        layer: *mut PassthroughLayerANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrDestroyPassthroughLayerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyPassthroughLayerANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
+    pub type DestroyPassthroughLayerANDROID =
+        unsafe extern "system" fn(layer: PassthroughLayerANDROID) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrSetPassthroughLayerMeshANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetPassthroughLayerMeshANDROID) - defined by [XR_ANDROID_composition_layer_passthrough_mesh](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_composition_layer_passthrough_mesh)"]
+    pub type SetPassthroughLayerMeshANDROID = unsafe extern "system" fn(
+        layer: PassthroughLayerANDROID,
+        mesh: *const PassthroughLayerMeshANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumerateSupportedSemanticLabelSetsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedSemanticLabelSetsANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+    pub type EnumerateSupportedSemanticLabelSetsANDROID = unsafe extern "system" fn(
+        instance: Instance,
+        system_id: SystemId,
+        supported_semantic_label_sets_input_capacity: u32,
+        supported_semantic_label_sets_output_count: *mut u32,
+        supported_semantic_label_sets: *mut SceneMeshSemanticLabelSetANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateSceneMeshingTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSceneMeshingTrackerANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+    pub type CreateSceneMeshingTrackerANDROID = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SceneMeshingTrackerCreateInfoANDROID,
+        tracker: *mut SceneMeshingTrackerANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrDestroySceneMeshingTrackerANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySceneMeshingTrackerANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+    pub type DestroySceneMeshingTrackerANDROID =
+        unsafe extern "system" fn(tracker: SceneMeshingTrackerANDROID) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateSceneMeshSnapshotANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSceneMeshSnapshotANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+    pub type CreateSceneMeshSnapshotANDROID = unsafe extern "system" fn(
+        tracker: SceneMeshingTrackerANDROID,
+        create_info: *const SceneMeshSnapshotCreateInfoANDROID,
+        out_snapshot_creation_result: *mut SceneMeshSnapshotCreationResultANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrDestroySceneMeshSnapshotANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySceneMeshSnapshotANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+    pub type DestroySceneMeshSnapshotANDROID =
+        unsafe extern "system" fn(snapshot: SceneMeshSnapshotANDROID) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetAllSubmeshStatesANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetAllSubmeshStatesANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+    pub type GetAllSubmeshStatesANDROID = unsafe extern "system" fn(
+        snapshot: SceneMeshSnapshotANDROID,
+        submesh_state_capacity_input: u32,
+        submesh_state_count_output: *mut u32,
+        submesh_states: *mut SceneSubmeshStateANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetSubmeshDataANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSubmeshDataANDROID) - defined by [XR_ANDROID_scene_meshing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_scene_meshing)"]
+    pub type GetSubmeshDataANDROID = unsafe extern "system" fn(
+        snapshot: SceneMeshSnapshotANDROID,
+        submesh_data_count: u32,
+        inout_submesh_data: *mut SceneSubmeshDataANDROID,
     ) -> Result;
     #[doc = "See [xrCreatePlaneDetectorEXT](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreatePlaneDetectorEXT) - defined by [XR_EXT_plane_detection](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_plane_detection)"]
     pub type CreatePlaneDetectorEXT = unsafe extern "system" fn(
@@ -21266,6 +23691,105 @@ pub mod pfn {
         info: *const InteractionRenderModelTopLevelUserPathGetInfoEXT,
         top_level_user_path: *mut Path,
     ) -> Result;
+    #[doc = "See [xrEnumerateSupportedAudioSampleRateBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSupportedAudioSampleRateBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type EnumerateSupportedAudioSampleRateBD = unsafe extern "system" fn(
+        session: Session,
+        sample_rate_capacity_input: u32,
+        sample_rate_count_output: *mut u32,
+        sample_rates: *mut AudioSampleRateBD,
+    ) -> Result;
+    #[doc = "See [xrQueryFramesPerBufferRangeBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrQueryFramesPerBufferRangeBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type QueryFramesPerBufferRangeBD = unsafe extern "system" fn(
+        session: Session,
+        sample_rate: AudioSampleRateBD,
+        min: *mut u32,
+        max: *mut u32,
+    ) -> Result;
+    #[doc = "See [xrCreateSpatialAudioRendererBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAudioRendererBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type CreateSpatialAudioRendererBD = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const SpatialAudioRendererCreateInfoBD,
+        renderer: *mut SpatialAudioRendererBD,
+    ) -> Result;
+    #[doc = "See [xrDestroySpatialAudioRendererBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySpatialAudioRendererBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type DestroySpatialAudioRendererBD =
+        unsafe extern "system" fn(renderer: SpatialAudioRendererBD) -> Result;
+    #[doc = "See [xrCreateSoundObstacleMaterialBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSoundObstacleMaterialBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type CreateSoundObstacleMaterialBD = unsafe extern "system" fn(
+        renderer: SpatialAudioRendererBD,
+        config: *const SoundObstacleMaterialConfigBD,
+        material: *mut SoundObstacleMaterialBD,
+    ) -> Result;
+    #[doc = "See [xrUpdateSoundObstacleMaterialConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUpdateSoundObstacleMaterialConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type UpdateSoundObstacleMaterialConfigBD = unsafe extern "system" fn(
+        material: SoundObstacleMaterialBD,
+        config: *const SoundObstacleMaterialConfigBD,
+    ) -> Result;
+    #[doc = "See [xrDestroySoundObstacleMaterialBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySoundObstacleMaterialBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type DestroySoundObstacleMaterialBD =
+        unsafe extern "system" fn(material: SoundObstacleMaterialBD) -> Result;
+    #[doc = "See [xrCreateSoundObstacleBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSoundObstacleBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type CreateSoundObstacleBD = unsafe extern "system" fn(
+        renderer: SpatialAudioRendererBD,
+        config: *const SoundObstacleConfigBD,
+        mesh: *const SoundTriangleMeshBD,
+        sound_obstacle: *mut SoundObstacleBD,
+    ) -> Result;
+    #[doc = "See [xrUpdateSoundObstacleConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUpdateSoundObstacleConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type UpdateSoundObstacleConfigBD = unsafe extern "system" fn(
+        sound_obstacle: SoundObstacleBD,
+        config: *const SoundObstacleConfigBD,
+        mesh: *const SoundTriangleMeshBD,
+        flags: SoundObstacleFlagsBD,
+    ) -> Result;
+    #[doc = "See [xrDestroySoundObstacleBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySoundObstacleBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type DestroySoundObstacleBD =
+        unsafe extern "system" fn(sound_obstacle: SoundObstacleBD) -> Result;
+    #[doc = "See [xrCreateSoundObjectBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSoundObjectBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type CreateSoundObjectBD = unsafe extern "system" fn(
+        renderer: SpatialAudioRendererBD,
+        config: *const SoundObjectConfigBD,
+        sound_object: *mut SoundObjectBD,
+    ) -> Result;
+    #[doc = "See [xrUpdateSoundObjectConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUpdateSoundObjectConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type UpdateSoundObjectConfigBD = unsafe extern "system" fn(
+        sound_object: SoundObjectBD,
+        config: *const SoundObjectConfigBD,
+        flags: SoundObjectFlagsBD,
+    ) -> Result;
+    #[doc = "See [xrSubmitSoundObjectBufferBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSubmitSoundObjectBufferBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type SubmitSoundObjectBufferBD = unsafe extern "system" fn(
+        sound_object: SoundObjectBD,
+        buffer: *const AudioBufferBD,
+    ) -> Result;
+    #[doc = "See [xrDestroySoundObjectBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySoundObjectBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type DestroySoundObjectBD =
+        unsafe extern "system" fn(sound_object: SoundObjectBD) -> Result;
+    #[doc = "See [xrCreateSoundFieldBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSoundFieldBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type CreateSoundFieldBD = unsafe extern "system" fn(
+        renderer: SpatialAudioRendererBD,
+        config: *const SoundFieldConfigBD,
+        sound_field: *mut SoundFieldBD,
+    ) -> Result;
+    #[doc = "See [xrUpdateSoundFieldConfigBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrUpdateSoundFieldConfigBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type UpdateSoundFieldConfigBD = unsafe extern "system" fn(
+        sound_field: SoundFieldBD,
+        config: *const SoundFieldConfigBD,
+        flags: SoundFieldFlagsBD,
+    ) -> Result;
+    #[doc = "See [xrSubmitSoundFieldBufferBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSubmitSoundFieldBufferBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type SubmitSoundFieldBufferBD = unsafe extern "system" fn(
+        sound_field: SoundFieldBD,
+        buffer: *const AudioBufferBD,
+    ) -> Result;
+    #[doc = "See [xrDestroySoundFieldBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroySoundFieldBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type DestroySoundFieldBD = unsafe extern "system" fn(sound_field: SoundFieldBD) -> Result;
+    #[doc = "See [xrWaitAudioPeriodBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrWaitAudioPeriodBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type WaitAudioPeriodBD =
+        unsafe extern "system" fn(renderer: SpatialAudioRendererBD, timeout: Duration) -> Result;
+    #[doc = "See [xrEndAudioPeriodBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEndAudioPeriodBD) - defined by [XR_BD_spatial_audio_rendering](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_audio_rendering)"]
+    pub type EndAudioPeriodBD =
+        unsafe extern "system" fn(renderer: SpatialAudioRendererBD) -> Result;
     #[doc = "See [xrGetSpatialEntityUuidBD](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetSpatialEntityUuidBD) - defined by [XR_BD_spatial_sensing](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_BD_spatial_sensing)"]
     pub type GetSpatialEntityUuidBD = unsafe extern "system" fn(
         snapshot: SenseDataSnapshotBD,
@@ -21466,6 +23990,109 @@ pub mod pfn {
         tracker: FaceTrackerBD,
         mode: *mut FacialSimulationModeBD,
     ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateTrackableImageDatabaseAsyncANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateTrackableImageDatabaseAsyncANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+    pub type CreateTrackableImageDatabaseAsyncANDROID = unsafe extern "system" fn(
+        session: Session,
+        create_info: *const TrackableImageDatabaseCreateInfoANDROID,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateTrackableImageDatabaseCompleteANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateTrackableImageDatabaseCompleteANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+    pub type CreateTrackableImageDatabaseCompleteANDROID = unsafe extern "system" fn(
+        session: Session,
+        future: FutureEXT,
+        completion: *mut CreateTrackableImageDatabaseCompletionANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrDestroyTrackableImageDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyTrackableImageDatabaseANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+    pub type DestroyTrackableImageDatabaseANDROID =
+        unsafe extern "system" fn(database: TrackableImageDatabaseANDROID) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrAddTrackableImageDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrAddTrackableImageDatabaseANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+    pub type AddTrackableImageDatabaseANDROID = unsafe extern "system" fn(
+        tracker: TrackableTrackerANDROID,
+        database: TrackableImageDatabaseANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrRemoveTrackableImageDatabaseANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrRemoveTrackableImageDatabaseANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+    pub type RemoveTrackableImageDatabaseANDROID = unsafe extern "system" fn(
+        tracker: TrackableTrackerANDROID,
+        database: TrackableImageDatabaseANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrGetTrackableImageANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetTrackableImageANDROID) - defined by [XR_ANDROID_trackables_image](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_trackables_image)"]
+    pub type GetTrackableImageANDROID = unsafe extern "system" fn(
+        tracker: TrackableTrackerANDROID,
+        get_info: *const TrackableGetInfoANDROID,
+        trackable: *mut TrackableImageANDROID,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrEnumerateSpatialAnchorAttachableComponentsANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrEnumerateSpatialAnchorAttachableComponentsANDROID) - defined by [XR_ANDROID_spatial_entity_bound_anchor](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_entity_bound_anchor)"]
+    pub type EnumerateSpatialAnchorAttachableComponentsANDROID =
+        unsafe extern "system" fn(
+            instance: Instance,
+            system_id: SystemId,
+            attachable_component_capacity_input: u32,
+            attachable_component_count_output: *mut u32,
+            attachable_components: *mut SpatialComponentTypeEXT,
+        ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateSpatialAnchorSpaceANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorSpaceANDROID) - defined by [XR_ANDROID_spatial_anchor_space](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_anchor_space)"]
+    pub type CreateSpatialAnchorSpaceANDROID = unsafe extern "system" fn(
+        session: Session,
+        spatial_context: SpatialContextEXT,
+        create_info: *const SpatialAnchorCreateInfoEXT,
+        anchor_entity_id: *mut SpatialEntityIdEXT,
+        anchor_space: *mut Space,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateSpatialAnchorSpaceFromIdANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialAnchorSpaceFromIdANDROID) - defined by [XR_ANDROID_spatial_anchor_space](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_anchor_space)"]
+    pub type CreateSpatialAnchorSpaceFromIdANDROID = unsafe extern "system" fn(
+        session: Session,
+        spatial_context: SpatialContextEXT,
+        create_info: *const SpatialAnchorSpaceFromIdCreateInfoANDROID,
+        anchor_space: *mut Space,
+    ) -> Result;
+    #[doc = "See [xrSetTilePropertiesHintMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrSetTilePropertiesHintMETA) - defined by [XR_META_tile_properties_hint](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_tile_properties_hint)"]
+    pub type SetTilePropertiesHintMETA = unsafe extern "system" fn(
+        session: Session,
+        properties: *const TilePropertiesHintMETA,
+    ) -> Result;
+    #[doc = "See [xrCreateEnvironmentRaycasterAsyncMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateEnvironmentRaycasterAsyncMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+    pub type CreateEnvironmentRaycasterAsyncMETA = unsafe extern "system" fn(
+        session: Session,
+        info: *const EnvironmentRaycasterCreateInfoMETA,
+        future: *mut FutureEXT,
+    ) -> Result;
+    #[doc = "See [xrCreateEnvironmentRaycasterCompleteMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateEnvironmentRaycasterCompleteMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+    pub type CreateEnvironmentRaycasterCompleteMETA = unsafe extern "system" fn(
+        session: Session,
+        future: FutureEXT,
+        completion: *mut EnvironmentRaycasterCreateCompletionMETA,
+    ) -> Result;
+    #[doc = "See [xrDestroyEnvironmentRaycasterMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrDestroyEnvironmentRaycasterMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+    pub type DestroyEnvironmentRaycasterMETA =
+        unsafe extern "system" fn(environment_raycaster: EnvironmentRaycasterMETA) -> Result;
+    #[doc = "See [xrPerformEnvironmentRaycastMETA](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrPerformEnvironmentRaycastMETA) - defined by [XR_META_environment_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_META_environment_raycast)"]
+    pub type PerformEnvironmentRaycastMETA = unsafe extern "system" fn(
+        environment_raycaster: EnvironmentRaycasterMETA,
+        info: *const EnvironmentRaycastHitGetInfoMETA,
+        hit_point: *mut EnvironmentRaycastHitMETA,
+    ) -> Result;
+    #[cfg(target_os = "android")]
+    #[doc = "See [xrCreateSpatialRaycastSnapshotANDROID](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrCreateSpatialRaycastSnapshotANDROID) - defined by [XR_ANDROID_spatial_discovery_raycast](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_ANDROID_spatial_discovery_raycast)"]
+    pub type CreateSpatialRaycastSnapshotANDROID = unsafe extern "system" fn(
+        spatial_context: SpatialContextEXT,
+        create_info: *const SpatialRaycastSnapshotCreateInfoANDROID,
+        snapshot: *mut SpatialSnapshotEXT,
+    ) -> Result;
+    #[doc = "See [xrGetHandGestureQCOM](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetHandGestureQCOM) - defined by [XR_QCOM_hand_tracking_gesture](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_QCOM_hand_tracking_gesture)"]
+    pub type GetHandGestureQCOM = unsafe extern "system" fn(
+        hand_tracker: HandTrackerEXT,
+        time: Time,
+        hand_gesture: *mut HandGestureQCOM,
+    ) -> Result;
     #[doc = "See [xrGetVulkanGraphicsRequirements2KHR](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#xrGetVulkanGraphicsRequirements2KHR) - defined by [XR_KHR_vulkan_enable](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_vulkan_enable)"]
     pub type GetVulkanGraphicsRequirements2KHR = unsafe extern "system" fn(
         instance: Instance,
@@ -21501,22 +24128,76 @@ pub const ANDROID_passthrough_camera_state_SPEC_VERSION: u32 = 1u32;
 pub const ANDROID_PASSTHROUGH_CAMERA_STATE_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_passthrough_camera_state\0";
 #[cfg(target_os = "android")]
+pub const ANDROID_composition_layer_passthrough_mesh_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_COMPOSITION_LAYER_PASSTHROUGH_MESH_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_composition_layer_passthrough_mesh\0";
+#[cfg(target_os = "android")]
 pub const ANDROID_raycast_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const ANDROID_RAYCAST_EXTENSION_NAME: &[u8] = b"XR_ANDROID_raycast\0";
 #[cfg(target_os = "android")]
+pub const ANDROID_performance_metrics_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_PERFORMANCE_METRICS_EXTENSION_NAME: &[u8] = b"XR_ANDROID_performance_metrics\0";
+#[cfg(target_os = "android")]
 pub const ANDROID_trackables_object_SPEC_VERSION: u32 = 2u32;
 #[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_OBJECT_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_object\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_unbounded_reference_space_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_unbounded_reference_space\0";
 #[cfg(target_os = "android")]
 pub const ANDROID_anchor_sharing_export_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const ANDROID_ANCHOR_SHARING_EXPORT_EXTENSION_NAME: &[u8] =
     b"XR_ANDROID_anchor_sharing_export\0";
 #[cfg(target_os = "android")]
+pub const ANDROID_mouse_interaction_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_MOUSE_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_ANDROID_mouse_interaction\0";
+#[cfg(target_os = "android")]
 pub const ANDROID_trackables_marker_SPEC_VERSION: u32 = 1u32;
 #[cfg(target_os = "android")]
 pub const ANDROID_TRACKABLES_MARKER_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_marker\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_trackables_qr_code_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_TRACKABLES_QR_CODE_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_qr_code\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_trackables_image_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_TRACKABLES_IMAGE_EXTENSION_NAME: &[u8] = b"XR_ANDROID_trackables_image\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_scene_meshing_SPEC_VERSION: u32 = 3u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_SCENE_MESHING_EXTENSION_NAME: &[u8] = b"XR_ANDROID_scene_meshing\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_spatial_object_tracking_SPEC_VERSION: u32 = 2u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_SPATIAL_OBJECT_TRACKING_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_spatial_object_tracking\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_spatial_discovery_raycast_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_SPATIAL_DISCOVERY_RAYCAST_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_spatial_discovery_raycast\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_spatial_entity_bound_anchor_SPEC_VERSION: u32 = 2u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_SPATIAL_ENTITY_BOUND_ANCHOR_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_spatial_entity_bound_anchor\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_spatial_component_subsumed_by_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_SPATIAL_COMPONENT_SUBSUMED_BY_EXTENSION_NAME: &[u8] =
+    b"XR_ANDROID_spatial_component_subsumed_by\0";
+#[cfg(target_os = "android")]
+pub const ANDROID_spatial_anchor_space_SPEC_VERSION: u32 = 1u32;
+#[cfg(target_os = "android")]
+pub const ANDROID_SPATIAL_ANCHOR_SPACE_EXTENSION_NAME: &[u8] = b"XR_ANDROID_spatial_anchor_space\0";
 pub const BD_controller_interaction_SPEC_VERSION: u32 = 2u32;
 pub const BD_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_BD_controller_interaction\0";
 pub const BD_body_tracking_SPEC_VERSION: u32 = 1u32;
@@ -21540,6 +24221,8 @@ pub const BD_SPATIAL_PLANE_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_plane\0";
 pub const BD_ultra_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const BD_ULTRA_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_BD_ultra_controller_interaction\0";
+pub const BD_spatial_audio_rendering_SPEC_VERSION: u32 = 1u32;
+pub const BD_SPATIAL_AUDIO_RENDERING_EXTENSION_NAME: &[u8] = b"XR_BD_spatial_audio_rendering\0";
 pub const EPIC_view_configuration_fov_SPEC_VERSION: u32 = 2u32;
 pub const EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME: &[u8] = b"XR_EPIC_view_configuration_fov\0";
 pub const EXT_performance_settings_SPEC_VERSION: u32 = 4u32;
@@ -21614,8 +24297,14 @@ pub const EXT_SPATIAL_PERSISTENCE_EXTENSION_NAME: &[u8] = b"XR_EXT_spatial_persi
 pub const EXT_spatial_persistence_operations_SPEC_VERSION: u32 = 1u32;
 pub const EXT_SPATIAL_PERSISTENCE_OPERATIONS_EXTENSION_NAME: &[u8] =
     b"XR_EXT_spatial_persistence_operations\0";
+pub const EXT_interaction_profile_battery_state_display_SPEC_VERSION: u32 = 1u32;
+pub const EXT_INTERACTION_PROFILE_BATTERY_STATE_DISPLAY_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_interaction_profile_battery_state_display\0";
 pub const EXT_loader_init_properties_SPEC_VERSION: u32 = 1u32;
 pub const EXT_LOADER_INIT_PROPERTIES_EXTENSION_NAME: &[u8] = b"XR_EXT_loader_init_properties\0";
+pub const EXT_view_configuration_views_change_SPEC_VERSION: u32 = 1u32;
+pub const EXT_VIEW_CONFIGURATION_VIEWS_CHANGE_EXTENSION_NAME: &[u8] =
+    b"XR_EXT_view_configuration_views_change\0";
 pub const FB_composition_layer_image_layout_SPEC_VERSION: u32 = 1u32;
 pub const FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME: &[u8] =
     b"XR_FB_composition_layer_image_layout\0";
@@ -21807,7 +24496,7 @@ pub const KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME: &[u8] =
     b"XR_KHR_composition_layer_equirect2\0";
 pub const KHR_binding_modification_SPEC_VERSION: u32 = 1u32;
 pub const KHR_BINDING_MODIFICATION_EXTENSION_NAME: &[u8] = b"XR_KHR_binding_modification\0";
-pub const KHR_extended_struct_name_lengths_SPEC_VERSION: u32 = 1u32;
+pub const KHR_extended_struct_name_lengths_SPEC_VERSION: u32 = 2u32;
 pub const KHR_EXTENDED_STRUCT_NAME_LENGTHS_EXTENSION_NAME: &[u8] =
     b"XR_KHR_extended_struct_name_lengths\0";
 pub const KHR_swapchain_usage_input_attachment_bit_SPEC_VERSION: u32 = 3u32;
@@ -21867,6 +24556,8 @@ pub const META_PASSTHROUGH_LAYER_RESUMED_EVENT_EXTENSION_NAME: &[u8] =
 pub const META_body_tracking_calibration_SPEC_VERSION: u32 = 1u32;
 pub const META_BODY_TRACKING_CALIBRATION_EXTENSION_NAME: &[u8] =
     b"XR_META_body_tracking_calibration\0";
+pub const META_body_tracking_fidelity_SPEC_VERSION: u32 = 1u32;
+pub const META_BODY_TRACKING_FIDELITY_EXTENSION_NAME: &[u8] = b"XR_META_body_tracking_fidelity\0";
 pub const META_spatial_entity_sharing_SPEC_VERSION: u32 = 1u32;
 pub const META_SPATIAL_ENTITY_SHARING_EXTENSION_NAME: &[u8] = b"XR_META_spatial_entity_sharing\0";
 pub const META_environment_depth_SPEC_VERSION: u32 = 2u32;
@@ -21874,11 +24565,18 @@ pub const META_ENVIRONMENT_DEPTH_EXTENSION_NAME: &[u8] = b"XR_META_environment_d
 pub const META_simultaneous_hands_and_controllers_SPEC_VERSION: u32 = 1u32;
 pub const META_SIMULTANEOUS_HANDS_AND_CONTROLLERS_EXTENSION_NAME: &[u8] =
     b"XR_META_simultaneous_hands_and_controllers\0";
+pub const META_spatial_entity_semantic_label_SPEC_VERSION: u32 = 1u32;
+pub const META_SPATIAL_ENTITY_SEMANTIC_LABEL_EXTENSION_NAME: &[u8] =
+    b"XR_META_spatial_entity_semantic_label\0";
 pub const META_colocation_discovery_SPEC_VERSION: u32 = 1u32;
 pub const META_COLOCATION_DISCOVERY_EXTENSION_NAME: &[u8] = b"XR_META_colocation_discovery\0";
 pub const META_spatial_entity_group_sharing_SPEC_VERSION: u32 = 1u32;
 pub const META_SPATIAL_ENTITY_GROUP_SHARING_EXTENSION_NAME: &[u8] =
     b"XR_META_spatial_entity_group_sharing\0";
+pub const META_environment_raycast_SPEC_VERSION: u32 = 1u32;
+pub const META_ENVIRONMENT_RAYCAST_EXTENSION_NAME: &[u8] = b"XR_META_environment_raycast\0";
+pub const META_tile_properties_hint_SPEC_VERSION: u32 = 1u32;
+pub const META_TILE_PROPERTIES_HINT_EXTENSION_NAME: &[u8] = b"XR_META_tile_properties_hint\0";
 pub const ML_ml2_controller_interaction_SPEC_VERSION: u32 = 1u32;
 pub const ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] =
     b"XR_ML_ml2_controller_interaction\0";
@@ -21967,6 +24665,8 @@ pub const OPPO_CONTROLLER_INTERACTION_EXTENSION_NAME: &[u8] = b"XR_OPPO_controll
 pub const QCOM_tracking_optimization_settings_SPEC_VERSION: u32 = 1u32;
 pub const QCOM_TRACKING_OPTIMIZATION_SETTINGS_EXTENSION_NAME: &[u8] =
     b"XR_QCOM_tracking_optimization_settings\0";
+pub const QCOM_hand_tracking_gesture_SPEC_VERSION: u32 = 1u32;
+pub const QCOM_HAND_TRACKING_GESTURE_EXTENSION_NAME: &[u8] = b"XR_QCOM_hand_tracking_gesture\0";
 pub const ULTRALEAP_hand_tracking_forearm_SPEC_VERSION: u32 = 1u32;
 pub const ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME: &[u8] =
     b"XR_ULTRALEAP_hand_tracking_forearm\0";

@@ -1498,7 +1498,9 @@ impl Parser {
             // generating them unconditionally causes resolution errors on non-Android platforms.
             // Future logic should distinguish between actual OS dependencies and vendor-specific logical types.
             .filter(|&x| {
-                x != "XrRaycastHitResultANDROID" && x != "XrTrackableMarkerDatabaseEntryANDROID"
+                x != "XrRaycastHitResultANDROID"
+                    && x != "XrTrackableMarkerDatabaseEntryANDROID"
+                    && x != "XrSpatialRaycastResultDataANDROID"
             })
             .chain(
                 self.enums
@@ -1516,6 +1518,9 @@ impl Parser {
             name.starts_with("XrEventData")
                 && !name.ends_with("BaseHeader")
                 && !name.ends_with("Buffer")
+                // FIXME: "Android XR" vendor extensions get falsely gated behind `#[cfg(target_os = "android")]`,
+                //  which makes implementing this event impossible on non-Android platforms
+                && *name != "XrEventDataImageTrackingLostANDROID"
         }) {
             let raw_ident = xr_ty_name(raw_name);
             let name = &raw_name["XrEventData".len()..];
@@ -1786,8 +1791,11 @@ impl Parser {
 
         let (type_params, type_args, marker, marker_init) = base_meta.type_params();
         let builders = children.iter().map(|name| {
-            if name == "XrCompositionLayerPassthroughHTC" {
-                // XrCompositionLayerPassthroughHTC has problems with its setters so we skip for now.
+            if name == "XrCompositionLayerPassthroughHTC"
+                || name == "XrCompositionLayerPassthroughANDROID"
+            {
+                // requires high-level implementation similar to `XrCompositionLayerPassthroughFB`,
+                // otherwise some setters on the generated builder won't compile
                 return quote! {};
             }
             let ident = xr_ty_name(name);
@@ -2322,6 +2330,11 @@ fn xr_enum_value_name(ty: &str, name: &str) -> Ident {
         "XrLoaderInterfaceStructs" => "XR_LOADER_INTERFACE_STRUCT_".len(),
         "XrSpatialMarkerArucoDict" => "XR_SPATIAL_MARKER_ARUCO_".len(),
         "XrSpatialMarkerAprilTagDict" => "XR_SPATIAL_MARKER_APRIL_TAG_".len(),
+        "XrAudioSampleRate" => "XR_AUDIO_SAMPLE_".len(),
+        "XrSoundFieldChannelMaskAmbix" | "XrSoundFieldChannelMaskFuma" => {
+            // AmbiX sound field and FuMA sound field channel masks share a common prefix
+            "XR_SOUND_FIELD_CHANNEL_MASK_".len()
+        }
         _ => ty.to_shouty_snake_case().len() + 1,
     };
     let end = if !ext.is_empty() {
