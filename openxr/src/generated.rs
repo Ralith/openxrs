@@ -12,16 +12,18 @@ pub use sys::platform::{
 };
 pub use sys::{
     ActionType, AnchorPersistStateANDROID, AndroidSurfaceSwapchainFlagsFB, AndroidThreadTypeKHR,
-    BlendFactorFB, BodyJointBD, BodyJointConfidenceHTC, BodyJointFB, BodyJointHTC,
-    BodyJointLocationBD, BodyJointLocationFB, BodyJointLocationHTC, BodyJointSetBD, BodyJointSetFB,
-    BodyJointSetHTC, BodySkeletonJointFB, BodySkeletonJointHTC, BodyTrackingCalibrationStateMETA,
-    Boxf, Color3f, Color4f, ColorSpaceFB, CompareOpFB, CompositionLayerFlags,
-    CompositionLayerImageLayoutFlagsFB, CompositionLayerSecureContentFlagsFB,
-    CompositionLayerSettingsFlagsFB, CompositionLayerSpaceWarpInfoFlagsFB,
-    DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageTypeFlagsEXT,
-    DigitalLensControlFlagsALMALENCE, EnvironmentBlendMode,
-    EnvironmentDepthProviderCreateFlagsMETA, EnvironmentDepthSwapchainCreateFlagsMETA, Extent2Df,
-    Extent2Di, Extent3Df, ExternalCameraAttachedToDeviceOCULUS, ExternalCameraExtrinsicsOCULUS,
+    AttenuationCurvePointBD, AudioBufferChannelLayoutBD, AudioSampleRateBD,
+    BatteryStateDisplayStateFlagsEXT, BlendFactorFB, BodyJointBD, BodyJointConfidenceHTC,
+    BodyJointFB, BodyJointHTC, BodyJointLocationBD, BodyJointLocationFB, BodyJointLocationHTC,
+    BodyJointSetBD, BodyJointSetFB, BodyJointSetHTC, BodySkeletonJointFB, BodySkeletonJointHTC,
+    BodyTrackingCalibrationStateMETA, BodyTrackingFidelityMETA, Boxf, Color3f, Color4f,
+    ColorSpaceFB, CompareOpFB, CompositionLayerFlags, CompositionLayerImageLayoutFlagsFB,
+    CompositionLayerSecureContentFlagsFB, CompositionLayerSettingsFlagsFB,
+    CompositionLayerSpaceWarpInfoFlagsFB, DebugUtilsMessageSeverityFlagsEXT,
+    DebugUtilsMessageTypeFlagsEXT, DigitalLensControlFlagsALMALENCE, EnvironmentBlendMode,
+    EnvironmentDepthProviderCreateFlagsMETA, EnvironmentDepthSwapchainCreateFlagsMETA,
+    EnvironmentRaycastHitStatusMETA, Extent2Df, Extent2Di, Extent3Df, Extent3DiMETA,
+    ExternalCameraAttachedToDeviceOCULUS, ExternalCameraExtrinsicsOCULUS,
     ExternalCameraIntrinsicsOCULUS, ExternalCameraStatusFlagsOCULUS, EyeCalibrationStatusML,
     EyeExpressionHTC, EyePositionFB, EyeVisibility, FaceConfidence2FB, FaceConfidenceFB,
     FaceConfidenceRegionsANDROID, FaceExpression2FB, FaceExpressionBD, FaceExpressionFB,
@@ -33,48 +35,55 @@ pub use sys::{
     FoveationEyeTrackedProfileCreateFlagsMETA, FoveationEyeTrackedStateFlagsMETA, FoveationLevelFB,
     FoveationLevelHTC, FoveationModeHTC, Fovf, FrameEndInfoFlagsML, FrameSynthesisInfoFlagsEXT,
     Frustumf, FullBodyJointMETA, FutureStateEXT, GlobalDimmerFrameEndInfoFlagsML, HandEXT,
-    HandForearmJointULTRALEAP, HandJointEXT, HandJointLocationEXT, HandJointSetEXT,
-    HandJointVelocityEXT, HandJointsMotionRangeEXT, HandMeshVertexMSFT, HandPoseTypeMSFT,
-    HandTrackingAimFlagsFB, HandTrackingDataSourceEXT, HeadsetFitStatusML,
-    InputSourceLocalizedNameFlags, InstanceCreateFlags, KeyboardTrackingFlagsFB,
-    KeyboardTrackingQueryFlagsFB, LipExpressionBD, LipExpressionHTC, LoaderInterfaceStructs,
-    LocalDimmingModeMETA, LocalizationMapConfidenceML, LocalizationMapErrorFlagsML,
-    LocalizationMapStateML, LocalizationMapTypeML, MarkerAprilTagDictML, MarkerArucoDictML,
-    MarkerDetectorCameraML, MarkerDetectorCornerRefineMethodML, MarkerDetectorFpsML,
-    MarkerDetectorFullAnalysisIntervalML, MarkerDetectorProfileML, MarkerDetectorResolutionML,
-    MarkerDetectorStatusML, MarkerTypeML, MeshComputeLodMSFT, NegotiateApiLayerRequest,
-    NegotiateLoaderInfo, NegotiateRuntimeRequest, ObjectLabelANDROID, ObjectType, Offset2Df,
-    Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX, OverlaySessionCreateFlagsEXTX,
-    PassthroughCameraStateANDROID, PassthroughCapabilityFlagsFB, PassthroughColorLutChannelsMETA,
-    PassthroughFlagsFB, PassthroughFormHTC, PassthroughLayerPurposeFB,
-    PassthroughPreferenceFlagsMETA, PassthroughStateChangedFlagsFB, PerfSettingsDomainEXT,
-    PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT, PerfSettingsSubDomainEXT,
-    PerformanceMetricsCounterFlagsMETA, PerformanceMetricsCounterUnitMETA, PersistenceLocationBD,
-    PlaneDetectionCapabilityFlagsEXT, PlaneDetectionStateEXT, PlaneDetectorFlagsEXT,
-    PlaneDetectorOrientationEXT, PlaneDetectorSemanticTypeEXT, PlaneLabelANDROID,
-    PlaneOrientationBD, PlaneTypeANDROID, Posef, Quaternionf, Rect2Df, Rect2Di, Rect3DfFB,
-    ReferenceSpaceType, RenderModelFlagsFB, ReprojectionModeMSFT, SceneComponentTypeMSFT,
-    SceneComputeConsistencyMSFT, SceneComputeFeatureMSFT, SceneComputeStateMSFT,
-    SceneMarkerQRCodeSymbolTypeMSFT, SceneMarkerTypeMSFT, SceneObjectTypeMSFT,
-    ScenePlaneAlignmentTypeMSFT, SemanticLabelBD, SemanticLabelsSupportFlagsFB,
-    SenseDataProviderStateBD, SenseDataProviderTypeBD, SessionCreateFlags, SessionState,
-    SpaceComponentTypeFB, SpaceLocationData, SpaceLocationFlags, SpacePersistenceModeFB,
-    SpaceQueryActionFB, SpaceStorageLocationFB, SpaceVelocityData, SpaceVelocityFlags,
-    SpatialAnchorCompletionResultML, SpatialAnchorConfidenceML, SpatialBounded2DDataEXT,
-    SpatialBufferEXT, SpatialBufferTypeEXT, SpatialCapabilityEXT, SpatialCapabilityFeatureEXT,
-    SpatialComponentTypeEXT, SpatialEntityComponentTypeBD, SpatialEntityTrackingStateEXT,
-    SpatialGraphNodeTypeMSFT, SpatialMarkerAprilTagDictEXT, SpatialMarkerArucoDictEXT,
-    SpatialMarkerDataEXT, SpatialMeshConfigFlagsBD, SpatialMeshDataEXT, SpatialMeshLodBD,
-    SpatialPersistenceContextResultEXT, SpatialPersistenceScopeEXT, SpatialPersistenceStateEXT,
-    SpatialPlaneAlignmentEXT, SpatialPlaneSemanticLabelEXT, SpatialPolygon2DDataEXT, Spheref,
-    StructureType, SwapchainCreateFlags, SwapchainCreateFoveationFlagsFB,
-    SwapchainStateFoveationFlagsFB, SwapchainUsageFlags, SystemGraphicsProperties,
-    TrackableMarkerDictionaryANDROID, TrackableMarkerTrackingModeANDROID, TrackableTypeANDROID,
+    HandForearmJointULTRALEAP, HandGestureQCOM, HandGestureTypeQCOM, HandJointEXT,
+    HandJointLocationEXT, HandJointSetEXT, HandJointVelocityEXT, HandJointsMotionRangeEXT,
+    HandMeshVertexMSFT, HandPoseTypeMSFT, HandTrackingAimFlagsFB, HandTrackingDataSourceEXT,
+    HeadsetFitStatusML, InputSourceLocalizedNameFlags, InstanceCreateFlags,
+    KeyboardTrackingFlagsFB, KeyboardTrackingQueryFlagsFB, LipExpressionBD, LipExpressionHTC,
+    LoaderInterfaceStructs, LocalDimmingModeMETA, LocalizationMapConfidenceML,
+    LocalizationMapErrorFlagsML, LocalizationMapStateML, LocalizationMapTypeML,
+    MarkerAprilTagDictML, MarkerArucoDictML, MarkerDetectorCameraML,
+    MarkerDetectorCornerRefineMethodML, MarkerDetectorFpsML, MarkerDetectorFullAnalysisIntervalML,
+    MarkerDetectorProfileML, MarkerDetectorResolutionML, MarkerDetectorStatusML, MarkerTypeML,
+    MeshComputeLodMSFT, NegotiateApiLayerRequest, NegotiateLoaderInfo, NegotiateRuntimeRequest,
+    ObjectLabelANDROID, ObjectType, Offset2Df, Offset2Di, Offset3DfFB, OverlayMainSessionFlagsEXTX,
+    OverlaySessionCreateFlagsEXTX, PassthroughCameraStateANDROID, PassthroughCapabilityFlagsFB,
+    PassthroughColorLutChannelsMETA, PassthroughFlagsFB, PassthroughFormHTC,
+    PassthroughLayerPurposeFB, PassthroughPreferenceFlagsMETA, PassthroughStateChangedFlagsFB,
+    PerfSettingsDomainEXT, PerfSettingsLevelEXT, PerfSettingsNotificationLevelEXT,
+    PerfSettingsSubDomainEXT, PerformanceMetricsCounterFlagsANDROID,
+    PerformanceMetricsCounterFlagsMETA, PerformanceMetricsCounterUnitANDROID,
+    PerformanceMetricsCounterUnitMETA, PersistenceLocationBD, PlaneDetectionCapabilityFlagsEXT,
+    PlaneDetectionStateEXT, PlaneDetectorFlagsEXT, PlaneDetectorOrientationEXT,
+    PlaneDetectorSemanticTypeEXT, PlaneLabelANDROID, PlaneOrientationBD, PlaneTypeANDROID, Posef,
+    QrCodeTrackingModeANDROID, Quaternionf, Rect2Df, Rect2Di, Rect3DfFB, ReferenceSpaceType,
+    RenderModelFlagsFB, ReprojectionModeMSFT, SceneComponentTypeMSFT, SceneComputeConsistencyMSFT,
+    SceneComputeFeatureMSFT, SceneComputeStateMSFT, SceneMarkerQRCodeSymbolTypeMSFT,
+    SceneMarkerTypeMSFT, SceneMeshSemanticLabelANDROID, SceneMeshSemanticLabelSetANDROID,
+    SceneMeshTrackingStateANDROID, SceneObjectTypeMSFT, ScenePlaneAlignmentTypeMSFT,
+    SemanticLabelBD, SemanticLabelMETA, SemanticLabelsSupportFlagsFB, SenseDataProviderStateBD,
+    SenseDataProviderTypeBD, SessionCreateFlags, SessionState, SoundFieldChannelMaskAmbixBD,
+    SoundFieldChannelMaskFumaBD, SoundFieldChannelMaskSurroundBD, SoundFieldFlagsBD,
+    SoundObjectDistanceAttenuationTypeBD, SoundObjectFlagsBD, SoundObstacleFlagsBD,
+    SoundObstacleMaterialTypeBD, SpaceComponentTypeFB, SpaceLocationData, SpaceLocationFlags,
+    SpacePersistenceModeFB, SpaceQueryActionFB, SpaceStorageLocationFB, SpaceVelocityData,
+    SpaceVelocityFlags, SpatialAnchorCompletionResultML, SpatialAnchorConfidenceML,
+    SpatialBounded2DDataEXT, SpatialBufferEXT, SpatialBufferTypeEXT, SpatialCapabilityEXT,
+    SpatialCapabilityFeatureEXT, SpatialComponentTypeEXT, SpatialEntityComponentTypeBD,
+    SpatialEntityTrackingStateEXT, SpatialGraphNodeTypeMSFT, SpatialMarkerAprilTagDictEXT,
+    SpatialMarkerArucoDictEXT, SpatialMarkerDataEXT, SpatialMeshConfigFlagsBD, SpatialMeshDataEXT,
+    SpatialMeshLodBD, SpatialObjectSemanticLabelANDROID, SpatialPersistenceContextResultEXT,
+    SpatialPersistenceScopeEXT, SpatialPersistenceStateEXT, SpatialPlaneAlignmentEXT,
+    SpatialPlaneSemanticLabelEXT, SpatialPolygon2DDataEXT, Spheref, StructureType,
+    SwapchainCreateFlags, SwapchainCreateFoveationFlagsFB, SwapchainStateFoveationFlagsFB,
+    SwapchainUsageFlags, SystemGraphicsProperties, TrackableImageFormatANDROID,
+    TrackableImageTrackingModeANDROID, TrackableMarkerDictionaryANDROID,
+    TrackableMarkerTrackingModeANDROID, TrackableTypeANDROID,
     TrackingOptimizationSettingsDomainQCOM, TrackingOptimizationSettingsHintQCOM,
     TrackingStateANDROID, TriangleMeshFlagsFB, Vector2f, Vector3f, Vector4f, Vector4sFB,
     ViewConfigurationType, ViewStateFlags, VirtualKeyboardInputSourceMETA,
     VirtualKeyboardInputStateFlagsMETA, VirtualKeyboardLocationTypeMETA, VisibilityMaskTypeKHR,
-    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR, WindingOrderFB,
+    VulkanDeviceCreateFlagsKHR, VulkanInstanceCreateFlagsKHR, WindingOrderANDROID, WindingOrderFB,
     WorldMeshBlockResultML, WorldMeshBlockStatusML, WorldMeshDetectorFlagsML,
     WorldMeshDetectorLodML,
 };
@@ -92,13 +101,37 @@ pub struct ExtensionSet {
     #[cfg(target_os = "android")]
     pub android_passthrough_camera_state: bool,
     #[cfg(target_os = "android")]
+    pub android_composition_layer_passthrough_mesh: bool,
+    #[cfg(target_os = "android")]
     pub android_raycast: bool,
+    #[cfg(target_os = "android")]
+    pub android_performance_metrics: bool,
     #[cfg(target_os = "android")]
     pub android_trackables_object: bool,
     #[cfg(target_os = "android")]
+    pub android_unbounded_reference_space: bool,
+    #[cfg(target_os = "android")]
     pub android_anchor_sharing_export: bool,
     #[cfg(target_os = "android")]
+    pub android_mouse_interaction: bool,
+    #[cfg(target_os = "android")]
     pub android_trackables_marker: bool,
+    #[cfg(target_os = "android")]
+    pub android_trackables_qr_code: bool,
+    #[cfg(target_os = "android")]
+    pub android_trackables_image: bool,
+    #[cfg(target_os = "android")]
+    pub android_scene_meshing: bool,
+    #[cfg(target_os = "android")]
+    pub android_spatial_object_tracking: bool,
+    #[cfg(target_os = "android")]
+    pub android_spatial_discovery_raycast: bool,
+    #[cfg(target_os = "android")]
+    pub android_spatial_entity_bound_anchor: bool,
+    #[cfg(target_os = "android")]
+    pub android_spatial_component_subsumed_by: bool,
+    #[cfg(target_os = "android")]
+    pub android_spatial_anchor_space: bool,
     pub bd_controller_interaction: bool,
     pub bd_body_tracking: bool,
     pub bd_facial_simulation: bool,
@@ -110,6 +143,7 @@ pub struct ExtensionSet {
     pub bd_future_progress: bool,
     pub bd_spatial_plane: bool,
     pub bd_ultra_controller_interaction: bool,
+    pub bd_spatial_audio_rendering: bool,
     pub epic_view_configuration_fov: bool,
     pub ext_performance_settings: bool,
     pub ext_thermal_query: bool,
@@ -143,7 +177,9 @@ pub struct ExtensionSet {
     pub ext_spatial_anchor: bool,
     pub ext_spatial_persistence: bool,
     pub ext_spatial_persistence_operations: bool,
+    pub ext_interaction_profile_battery_state_display: bool,
     pub ext_loader_init_properties: bool,
+    pub ext_view_configuration_views_change: bool,
     pub fb_composition_layer_image_layout: bool,
     pub fb_composition_layer_alpha_blend: bool,
     #[cfg(target_os = "android")]
@@ -253,11 +289,15 @@ pub struct ExtensionSet {
     pub meta_touch_controller_plus: bool,
     pub meta_passthrough_layer_resumed_event: bool,
     pub meta_body_tracking_calibration: bool,
+    pub meta_body_tracking_fidelity: bool,
     pub meta_spatial_entity_sharing: bool,
     pub meta_environment_depth: bool,
     pub meta_simultaneous_hands_and_controllers: bool,
+    pub meta_spatial_entity_semantic_label: bool,
     pub meta_colocation_discovery: bool,
     pub meta_spatial_entity_group_sharing: bool,
+    pub meta_environment_raycast: bool,
+    pub meta_tile_properties_hint: bool,
     pub ml_ml2_controller_interaction: bool,
     pub ml_frame_end_info: bool,
     pub ml_global_dimmer: bool,
@@ -293,6 +333,7 @@ pub struct ExtensionSet {
     pub oculus_external_camera: bool,
     pub oppo_controller_interaction: bool,
     pub qcom_tracking_optimization_settings: bool,
+    pub qcom_hand_tracking_gesture: bool,
     pub ultraleap_hand_tracking_forearm: bool,
     pub valve_analog_threshold: bool,
     pub varjo_quad_views: bool,
@@ -339,20 +380,68 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                     out.android_passthrough_camera_state = true;
                 }
                 #[cfg(target_os = "android")]
+                raw::CompositionLayerPassthroughMeshANDROID::NAME => {
+                    out.android_composition_layer_passthrough_mesh = true;
+                }
+                #[cfg(target_os = "android")]
                 raw::RaycastANDROID::NAME => {
                     out.android_raycast = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::PerformanceMetricsANDROID::NAME => {
+                    out.android_performance_metrics = true;
                 }
                 #[cfg(target_os = "android")]
                 raw::TrackablesObjectANDROID::NAME => {
                     out.android_trackables_object = true;
                 }
                 #[cfg(target_os = "android")]
+                raw::UnboundedReferenceSpaceANDROID::NAME => {
+                    out.android_unbounded_reference_space = true;
+                }
+                #[cfg(target_os = "android")]
                 raw::AnchorSharingExportANDROID::NAME => {
                     out.android_anchor_sharing_export = true;
                 }
                 #[cfg(target_os = "android")]
+                raw::MouseInteractionANDROID::NAME => {
+                    out.android_mouse_interaction = true;
+                }
+                #[cfg(target_os = "android")]
                 raw::TrackablesMarkerANDROID::NAME => {
                     out.android_trackables_marker = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::TrackablesQrCodeANDROID::NAME => {
+                    out.android_trackables_qr_code = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::TrackablesImageANDROID::NAME => {
+                    out.android_trackables_image = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::SceneMeshingANDROID::NAME => {
+                    out.android_scene_meshing = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::SpatialObjectTrackingANDROID::NAME => {
+                    out.android_spatial_object_tracking = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::SpatialDiscoveryRaycastANDROID::NAME => {
+                    out.android_spatial_discovery_raycast = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::SpatialEntityBoundAnchorANDROID::NAME => {
+                    out.android_spatial_entity_bound_anchor = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::SpatialComponentSubsumedByANDROID::NAME => {
+                    out.android_spatial_component_subsumed_by = true;
+                }
+                #[cfg(target_os = "android")]
+                raw::SpatialAnchorSpaceANDROID::NAME => {
+                    out.android_spatial_anchor_space = true;
                 }
                 raw::ControllerInteractionBD::NAME => {
                     out.bd_controller_interaction = true;
@@ -386,6 +475,9 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                 }
                 raw::UltraControllerInteractionBD::NAME => {
                     out.bd_ultra_controller_interaction = true;
+                }
+                raw::SpatialAudioRenderingBD::NAME => {
+                    out.bd_spatial_audio_rendering = true;
                 }
                 raw::ViewConfigurationFovEPIC::NAME => {
                     out.epic_view_configuration_fov = true;
@@ -484,8 +576,14 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                 raw::SpatialPersistenceOperationsEXT::NAME => {
                     out.ext_spatial_persistence_operations = true;
                 }
+                raw::InteractionProfileBatteryStateDisplayEXT::NAME => {
+                    out.ext_interaction_profile_battery_state_display = true;
+                }
                 raw::LoaderInitPropertiesEXT::NAME => {
                     out.ext_loader_init_properties = true;
+                }
+                raw::ViewConfigurationViewsChangeEXT::NAME => {
+                    out.ext_view_configuration_views_change = true;
                 }
                 raw::CompositionLayerImageLayoutFB::NAME => {
                     out.fb_composition_layer_image_layout = true;
@@ -794,6 +892,9 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                 raw::BodyTrackingCalibrationMETA::NAME => {
                     out.meta_body_tracking_calibration = true;
                 }
+                raw::BodyTrackingFidelityMETA::NAME => {
+                    out.meta_body_tracking_fidelity = true;
+                }
                 raw::SpatialEntitySharingMETA::NAME => {
                     out.meta_spatial_entity_sharing = true;
                 }
@@ -803,11 +904,20 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                 raw::SimultaneousHandsAndControllersMETA::NAME => {
                     out.meta_simultaneous_hands_and_controllers = true;
                 }
+                raw::SpatialEntitySemanticLabelMETA::NAME => {
+                    out.meta_spatial_entity_semantic_label = true;
+                }
                 raw::ColocationDiscoveryMETA::NAME => {
                     out.meta_colocation_discovery = true;
                 }
                 raw::SpatialEntityGroupSharingMETA::NAME => {
                     out.meta_spatial_entity_group_sharing = true;
+                }
+                raw::EnvironmentRaycastMETA::NAME => {
+                    out.meta_environment_raycast = true;
+                }
+                raw::TilePropertiesHintMETA::NAME => {
+                    out.meta_tile_properties_hint = true;
                 }
                 raw::Ml2ControllerInteractionML::NAME => {
                     out.ml_ml2_controller_interaction = true;
@@ -908,6 +1018,9 @@ impl<'a> FromIterator<&'a [u8]> for ExtensionSet {
                 raw::TrackingOptimizationSettingsQCOM::NAME => {
                     out.qcom_tracking_optimization_settings = true;
                 }
+                raw::HandTrackingGestureQCOM::NAME => {
+                    out.qcom_hand_tracking_gesture = true;
+                }
                 raw::HandTrackingForearmULTRALEAP::NAME => {
                     out.ultraleap_hand_tracking_forearm = true;
                 }
@@ -974,16 +1087,52 @@ impl ExtensionSet {
             android_passthrough_camera_state: self.android_passthrough_camera_state
                 && !other.android_passthrough_camera_state,
             #[cfg(target_os = "android")]
+            android_composition_layer_passthrough_mesh: self
+                .android_composition_layer_passthrough_mesh
+                && !other.android_composition_layer_passthrough_mesh,
+            #[cfg(target_os = "android")]
             android_raycast: self.android_raycast && !other.android_raycast,
+            #[cfg(target_os = "android")]
+            android_performance_metrics: self.android_performance_metrics
+                && !other.android_performance_metrics,
             #[cfg(target_os = "android")]
             android_trackables_object: self.android_trackables_object
                 && !other.android_trackables_object,
             #[cfg(target_os = "android")]
+            android_unbounded_reference_space: self.android_unbounded_reference_space
+                && !other.android_unbounded_reference_space,
+            #[cfg(target_os = "android")]
             android_anchor_sharing_export: self.android_anchor_sharing_export
                 && !other.android_anchor_sharing_export,
             #[cfg(target_os = "android")]
+            android_mouse_interaction: self.android_mouse_interaction
+                && !other.android_mouse_interaction,
+            #[cfg(target_os = "android")]
             android_trackables_marker: self.android_trackables_marker
                 && !other.android_trackables_marker,
+            #[cfg(target_os = "android")]
+            android_trackables_qr_code: self.android_trackables_qr_code
+                && !other.android_trackables_qr_code,
+            #[cfg(target_os = "android")]
+            android_trackables_image: self.android_trackables_image
+                && !other.android_trackables_image,
+            #[cfg(target_os = "android")]
+            android_scene_meshing: self.android_scene_meshing && !other.android_scene_meshing,
+            #[cfg(target_os = "android")]
+            android_spatial_object_tracking: self.android_spatial_object_tracking
+                && !other.android_spatial_object_tracking,
+            #[cfg(target_os = "android")]
+            android_spatial_discovery_raycast: self.android_spatial_discovery_raycast
+                && !other.android_spatial_discovery_raycast,
+            #[cfg(target_os = "android")]
+            android_spatial_entity_bound_anchor: self.android_spatial_entity_bound_anchor
+                && !other.android_spatial_entity_bound_anchor,
+            #[cfg(target_os = "android")]
+            android_spatial_component_subsumed_by: self.android_spatial_component_subsumed_by
+                && !other.android_spatial_component_subsumed_by,
+            #[cfg(target_os = "android")]
+            android_spatial_anchor_space: self.android_spatial_anchor_space
+                && !other.android_spatial_anchor_space,
             bd_controller_interaction: self.bd_controller_interaction
                 && !other.bd_controller_interaction,
             bd_body_tracking: self.bd_body_tracking && !other.bd_body_tracking,
@@ -998,6 +1147,8 @@ impl ExtensionSet {
             bd_spatial_plane: self.bd_spatial_plane && !other.bd_spatial_plane,
             bd_ultra_controller_interaction: self.bd_ultra_controller_interaction
                 && !other.bd_ultra_controller_interaction,
+            bd_spatial_audio_rendering: self.bd_spatial_audio_rendering
+                && !other.bd_spatial_audio_rendering,
             epic_view_configuration_fov: self.epic_view_configuration_fov
                 && !other.epic_view_configuration_fov,
             ext_performance_settings: self.ext_performance_settings
@@ -1047,8 +1198,13 @@ impl ExtensionSet {
             ext_spatial_persistence: self.ext_spatial_persistence && !other.ext_spatial_persistence,
             ext_spatial_persistence_operations: self.ext_spatial_persistence_operations
                 && !other.ext_spatial_persistence_operations,
+            ext_interaction_profile_battery_state_display: self
+                .ext_interaction_profile_battery_state_display
+                && !other.ext_interaction_profile_battery_state_display,
             ext_loader_init_properties: self.ext_loader_init_properties
                 && !other.ext_loader_init_properties,
+            ext_view_configuration_views_change: self.ext_view_configuration_views_change
+                && !other.ext_view_configuration_views_change,
             fb_composition_layer_image_layout: self.fb_composition_layer_image_layout
                 && !other.fb_composition_layer_image_layout,
             fb_composition_layer_alpha_blend: self.fb_composition_layer_alpha_blend
@@ -1215,15 +1371,23 @@ impl ExtensionSet {
                 && !other.meta_passthrough_layer_resumed_event,
             meta_body_tracking_calibration: self.meta_body_tracking_calibration
                 && !other.meta_body_tracking_calibration,
+            meta_body_tracking_fidelity: self.meta_body_tracking_fidelity
+                && !other.meta_body_tracking_fidelity,
             meta_spatial_entity_sharing: self.meta_spatial_entity_sharing
                 && !other.meta_spatial_entity_sharing,
             meta_environment_depth: self.meta_environment_depth && !other.meta_environment_depth,
             meta_simultaneous_hands_and_controllers: self.meta_simultaneous_hands_and_controllers
                 && !other.meta_simultaneous_hands_and_controllers,
+            meta_spatial_entity_semantic_label: self.meta_spatial_entity_semantic_label
+                && !other.meta_spatial_entity_semantic_label,
             meta_colocation_discovery: self.meta_colocation_discovery
                 && !other.meta_colocation_discovery,
             meta_spatial_entity_group_sharing: self.meta_spatial_entity_group_sharing
                 && !other.meta_spatial_entity_group_sharing,
+            meta_environment_raycast: self.meta_environment_raycast
+                && !other.meta_environment_raycast,
+            meta_tile_properties_hint: self.meta_tile_properties_hint
+                && !other.meta_tile_properties_hint,
             ml_ml2_controller_interaction: self.ml_ml2_controller_interaction
                 && !other.ml_ml2_controller_interaction,
             ml_frame_end_info: self.ml_frame_end_info && !other.ml_frame_end_info,
@@ -1275,6 +1439,8 @@ impl ExtensionSet {
                 && !other.oppo_controller_interaction,
             qcom_tracking_optimization_settings: self.qcom_tracking_optimization_settings
                 && !other.qcom_tracking_optimization_settings,
+            qcom_hand_tracking_gesture: self.qcom_hand_tracking_gesture
+                && !other.qcom_hand_tracking_gesture,
             ultraleap_hand_tracking_forearm: self.ultraleap_hand_tracking_forearm
                 && !other.ultraleap_hand_tracking_forearm,
             valve_analog_threshold: self.valve_analog_threshold && !other.valve_analog_threshold,
@@ -1323,16 +1489,52 @@ impl ExtensionSet {
             android_passthrough_camera_state: self.android_passthrough_camera_state
                 && other.android_passthrough_camera_state,
             #[cfg(target_os = "android")]
+            android_composition_layer_passthrough_mesh: self
+                .android_composition_layer_passthrough_mesh
+                && other.android_composition_layer_passthrough_mesh,
+            #[cfg(target_os = "android")]
             android_raycast: self.android_raycast && other.android_raycast,
+            #[cfg(target_os = "android")]
+            android_performance_metrics: self.android_performance_metrics
+                && other.android_performance_metrics,
             #[cfg(target_os = "android")]
             android_trackables_object: self.android_trackables_object
                 && other.android_trackables_object,
             #[cfg(target_os = "android")]
+            android_unbounded_reference_space: self.android_unbounded_reference_space
+                && other.android_unbounded_reference_space,
+            #[cfg(target_os = "android")]
             android_anchor_sharing_export: self.android_anchor_sharing_export
                 && other.android_anchor_sharing_export,
             #[cfg(target_os = "android")]
+            android_mouse_interaction: self.android_mouse_interaction
+                && other.android_mouse_interaction,
+            #[cfg(target_os = "android")]
             android_trackables_marker: self.android_trackables_marker
                 && other.android_trackables_marker,
+            #[cfg(target_os = "android")]
+            android_trackables_qr_code: self.android_trackables_qr_code
+                && other.android_trackables_qr_code,
+            #[cfg(target_os = "android")]
+            android_trackables_image: self.android_trackables_image
+                && other.android_trackables_image,
+            #[cfg(target_os = "android")]
+            android_scene_meshing: self.android_scene_meshing && other.android_scene_meshing,
+            #[cfg(target_os = "android")]
+            android_spatial_object_tracking: self.android_spatial_object_tracking
+                && other.android_spatial_object_tracking,
+            #[cfg(target_os = "android")]
+            android_spatial_discovery_raycast: self.android_spatial_discovery_raycast
+                && other.android_spatial_discovery_raycast,
+            #[cfg(target_os = "android")]
+            android_spatial_entity_bound_anchor: self.android_spatial_entity_bound_anchor
+                && other.android_spatial_entity_bound_anchor,
+            #[cfg(target_os = "android")]
+            android_spatial_component_subsumed_by: self.android_spatial_component_subsumed_by
+                && other.android_spatial_component_subsumed_by,
+            #[cfg(target_os = "android")]
+            android_spatial_anchor_space: self.android_spatial_anchor_space
+                && other.android_spatial_anchor_space,
             bd_controller_interaction: self.bd_controller_interaction
                 && other.bd_controller_interaction,
             bd_body_tracking: self.bd_body_tracking && other.bd_body_tracking,
@@ -1347,6 +1549,8 @@ impl ExtensionSet {
             bd_spatial_plane: self.bd_spatial_plane && other.bd_spatial_plane,
             bd_ultra_controller_interaction: self.bd_ultra_controller_interaction
                 && other.bd_ultra_controller_interaction,
+            bd_spatial_audio_rendering: self.bd_spatial_audio_rendering
+                && other.bd_spatial_audio_rendering,
             epic_view_configuration_fov: self.epic_view_configuration_fov
                 && other.epic_view_configuration_fov,
             ext_performance_settings: self.ext_performance_settings
@@ -1396,8 +1600,13 @@ impl ExtensionSet {
             ext_spatial_persistence: self.ext_spatial_persistence && other.ext_spatial_persistence,
             ext_spatial_persistence_operations: self.ext_spatial_persistence_operations
                 && other.ext_spatial_persistence_operations,
+            ext_interaction_profile_battery_state_display: self
+                .ext_interaction_profile_battery_state_display
+                && other.ext_interaction_profile_battery_state_display,
             ext_loader_init_properties: self.ext_loader_init_properties
                 && other.ext_loader_init_properties,
+            ext_view_configuration_views_change: self.ext_view_configuration_views_change
+                && other.ext_view_configuration_views_change,
             fb_composition_layer_image_layout: self.fb_composition_layer_image_layout
                 && other.fb_composition_layer_image_layout,
             fb_composition_layer_alpha_blend: self.fb_composition_layer_alpha_blend
@@ -1564,15 +1773,23 @@ impl ExtensionSet {
                 && other.meta_passthrough_layer_resumed_event,
             meta_body_tracking_calibration: self.meta_body_tracking_calibration
                 && other.meta_body_tracking_calibration,
+            meta_body_tracking_fidelity: self.meta_body_tracking_fidelity
+                && other.meta_body_tracking_fidelity,
             meta_spatial_entity_sharing: self.meta_spatial_entity_sharing
                 && other.meta_spatial_entity_sharing,
             meta_environment_depth: self.meta_environment_depth && other.meta_environment_depth,
             meta_simultaneous_hands_and_controllers: self.meta_simultaneous_hands_and_controllers
                 && other.meta_simultaneous_hands_and_controllers,
+            meta_spatial_entity_semantic_label: self.meta_spatial_entity_semantic_label
+                && other.meta_spatial_entity_semantic_label,
             meta_colocation_discovery: self.meta_colocation_discovery
                 && other.meta_colocation_discovery,
             meta_spatial_entity_group_sharing: self.meta_spatial_entity_group_sharing
                 && other.meta_spatial_entity_group_sharing,
+            meta_environment_raycast: self.meta_environment_raycast
+                && other.meta_environment_raycast,
+            meta_tile_properties_hint: self.meta_tile_properties_hint
+                && other.meta_tile_properties_hint,
             ml_ml2_controller_interaction: self.ml_ml2_controller_interaction
                 && other.ml_ml2_controller_interaction,
             ml_frame_end_info: self.ml_frame_end_info && other.ml_frame_end_info,
@@ -1624,6 +1841,8 @@ impl ExtensionSet {
                 && other.oppo_controller_interaction,
             qcom_tracking_optimization_settings: self.qcom_tracking_optimization_settings
                 && other.qcom_tracking_optimization_settings,
+            qcom_hand_tracking_gesture: self.qcom_hand_tracking_gesture
+                && other.qcom_hand_tracking_gesture,
             ultraleap_hand_tracking_forearm: self.ultraleap_hand_tracking_forearm
                 && other.ultraleap_hand_tracking_forearm,
             valve_analog_threshold: self.valve_analog_threshold && other.valve_analog_threshold,
@@ -1689,8 +1908,20 @@ impl ExtensionSet {
         }
         #[cfg(target_os = "android")]
         {
+            if self.android_composition_layer_passthrough_mesh {
+                out.push(raw::CompositionLayerPassthroughMeshANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
             if self.android_raycast {
                 out.push(raw::RaycastANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_performance_metrics {
+                out.push(raw::PerformanceMetricsANDROID::NAME);
             }
         }
         #[cfg(target_os = "android")]
@@ -1701,14 +1932,74 @@ impl ExtensionSet {
         }
         #[cfg(target_os = "android")]
         {
+            if self.android_unbounded_reference_space {
+                out.push(raw::UnboundedReferenceSpaceANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
             if self.android_anchor_sharing_export {
                 out.push(raw::AnchorSharingExportANDROID::NAME);
             }
         }
         #[cfg(target_os = "android")]
         {
+            if self.android_mouse_interaction {
+                out.push(raw::MouseInteractionANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
             if self.android_trackables_marker {
                 out.push(raw::TrackablesMarkerANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_trackables_qr_code {
+                out.push(raw::TrackablesQrCodeANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_trackables_image {
+                out.push(raw::TrackablesImageANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_scene_meshing {
+                out.push(raw::SceneMeshingANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_spatial_object_tracking {
+                out.push(raw::SpatialObjectTrackingANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_spatial_discovery_raycast {
+                out.push(raw::SpatialDiscoveryRaycastANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_spatial_entity_bound_anchor {
+                out.push(raw::SpatialEntityBoundAnchorANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_spatial_component_subsumed_by {
+                out.push(raw::SpatialComponentSubsumedByANDROID::NAME);
+            }
+        }
+        #[cfg(target_os = "android")]
+        {
+            if self.android_spatial_anchor_space {
+                out.push(raw::SpatialAnchorSpaceANDROID::NAME);
             }
         }
         {
@@ -1764,6 +2055,11 @@ impl ExtensionSet {
         {
             if self.bd_ultra_controller_interaction {
                 out.push(raw::UltraControllerInteractionBD::NAME);
+            }
+        }
+        {
+            if self.bd_spatial_audio_rendering {
+                out.push(raw::SpatialAudioRenderingBD::NAME);
             }
         }
         {
@@ -1928,8 +2224,18 @@ impl ExtensionSet {
             }
         }
         {
+            if self.ext_interaction_profile_battery_state_display {
+                out.push(raw::InteractionProfileBatteryStateDisplayEXT::NAME);
+            }
+        }
+        {
             if self.ext_loader_init_properties {
                 out.push(raw::LoaderInitPropertiesEXT::NAME);
+            }
+        }
+        {
+            if self.ext_view_configuration_views_change {
+                out.push(raw::ViewConfigurationViewsChangeEXT::NAME);
             }
         }
         {
@@ -2438,6 +2744,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.meta_body_tracking_fidelity {
+                out.push(raw::BodyTrackingFidelityMETA::NAME);
+            }
+        }
+        {
             if self.meta_spatial_entity_sharing {
                 out.push(raw::SpatialEntitySharingMETA::NAME);
             }
@@ -2453,6 +2764,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.meta_spatial_entity_semantic_label {
+                out.push(raw::SpatialEntitySemanticLabelMETA::NAME);
+            }
+        }
+        {
             if self.meta_colocation_discovery {
                 out.push(raw::ColocationDiscoveryMETA::NAME);
             }
@@ -2460,6 +2776,16 @@ impl ExtensionSet {
         {
             if self.meta_spatial_entity_group_sharing {
                 out.push(raw::SpatialEntityGroupSharingMETA::NAME);
+            }
+        }
+        {
+            if self.meta_environment_raycast {
+                out.push(raw::EnvironmentRaycastMETA::NAME);
+            }
+        }
+        {
+            if self.meta_tile_properties_hint {
+                out.push(raw::TilePropertiesHintMETA::NAME);
             }
         }
         {
@@ -2626,6 +2952,11 @@ impl ExtensionSet {
             }
         }
         {
+            if self.qcom_hand_tracking_gesture {
+                out.push(raw::HandTrackingGestureQCOM::NAME);
+            }
+        }
+        {
             if self.ultraleap_hand_tracking_forearm {
                 out.push(raw::HandTrackingForearmULTRALEAP::NAME);
             }
@@ -2712,13 +3043,38 @@ pub struct InstanceExtensions {
     #[cfg(target_os = "android")]
     pub android_passthrough_camera_state: Option<raw::PassthroughCameraStateANDROID>,
     #[cfg(target_os = "android")]
+    pub android_composition_layer_passthrough_mesh:
+        Option<raw::CompositionLayerPassthroughMeshANDROID>,
+    #[cfg(target_os = "android")]
     pub android_raycast: Option<raw::RaycastANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_performance_metrics: Option<raw::PerformanceMetricsANDROID>,
     #[cfg(target_os = "android")]
     pub android_trackables_object: Option<raw::TrackablesObjectANDROID>,
     #[cfg(target_os = "android")]
+    pub android_unbounded_reference_space: Option<raw::UnboundedReferenceSpaceANDROID>,
+    #[cfg(target_os = "android")]
     pub android_anchor_sharing_export: Option<raw::AnchorSharingExportANDROID>,
     #[cfg(target_os = "android")]
+    pub android_mouse_interaction: Option<raw::MouseInteractionANDROID>,
+    #[cfg(target_os = "android")]
     pub android_trackables_marker: Option<raw::TrackablesMarkerANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_trackables_qr_code: Option<raw::TrackablesQrCodeANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_trackables_image: Option<raw::TrackablesImageANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_scene_meshing: Option<raw::SceneMeshingANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_spatial_object_tracking: Option<raw::SpatialObjectTrackingANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_spatial_discovery_raycast: Option<raw::SpatialDiscoveryRaycastANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_spatial_entity_bound_anchor: Option<raw::SpatialEntityBoundAnchorANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_spatial_component_subsumed_by: Option<raw::SpatialComponentSubsumedByANDROID>,
+    #[cfg(target_os = "android")]
+    pub android_spatial_anchor_space: Option<raw::SpatialAnchorSpaceANDROID>,
     pub bd_controller_interaction: Option<raw::ControllerInteractionBD>,
     pub bd_body_tracking: Option<raw::BodyTrackingBD>,
     pub bd_facial_simulation: Option<raw::FacialSimulationBD>,
@@ -2730,6 +3086,7 @@ pub struct InstanceExtensions {
     pub bd_future_progress: Option<raw::FutureProgressBD>,
     pub bd_spatial_plane: Option<raw::SpatialPlaneBD>,
     pub bd_ultra_controller_interaction: Option<raw::UltraControllerInteractionBD>,
+    pub bd_spatial_audio_rendering: Option<raw::SpatialAudioRenderingBD>,
     pub epic_view_configuration_fov: Option<raw::ViewConfigurationFovEPIC>,
     pub ext_performance_settings: Option<raw::PerformanceSettingsEXT>,
     pub ext_thermal_query: Option<raw::ThermalQueryEXT>,
@@ -2763,7 +3120,10 @@ pub struct InstanceExtensions {
     pub ext_spatial_anchor: Option<raw::SpatialAnchorEXT>,
     pub ext_spatial_persistence: Option<raw::SpatialPersistenceEXT>,
     pub ext_spatial_persistence_operations: Option<raw::SpatialPersistenceOperationsEXT>,
+    pub ext_interaction_profile_battery_state_display:
+        Option<raw::InteractionProfileBatteryStateDisplayEXT>,
     pub ext_loader_init_properties: Option<raw::LoaderInitPropertiesEXT>,
+    pub ext_view_configuration_views_change: Option<raw::ViewConfigurationViewsChangeEXT>,
     pub fb_composition_layer_image_layout: Option<raw::CompositionLayerImageLayoutFB>,
     pub fb_composition_layer_alpha_blend: Option<raw::CompositionLayerAlphaBlendFB>,
     #[cfg(target_os = "android")]
@@ -2875,11 +3235,15 @@ pub struct InstanceExtensions {
     pub meta_touch_controller_plus: Option<raw::TouchControllerPlusMETA>,
     pub meta_passthrough_layer_resumed_event: Option<raw::PassthroughLayerResumedEventMETA>,
     pub meta_body_tracking_calibration: Option<raw::BodyTrackingCalibrationMETA>,
+    pub meta_body_tracking_fidelity: Option<raw::BodyTrackingFidelityMETA>,
     pub meta_spatial_entity_sharing: Option<raw::SpatialEntitySharingMETA>,
     pub meta_environment_depth: Option<raw::EnvironmentDepthMETA>,
     pub meta_simultaneous_hands_and_controllers: Option<raw::SimultaneousHandsAndControllersMETA>,
+    pub meta_spatial_entity_semantic_label: Option<raw::SpatialEntitySemanticLabelMETA>,
     pub meta_colocation_discovery: Option<raw::ColocationDiscoveryMETA>,
     pub meta_spatial_entity_group_sharing: Option<raw::SpatialEntityGroupSharingMETA>,
+    pub meta_environment_raycast: Option<raw::EnvironmentRaycastMETA>,
+    pub meta_tile_properties_hint: Option<raw::TilePropertiesHintMETA>,
     pub ml_ml2_controller_interaction: Option<raw::Ml2ControllerInteractionML>,
     pub ml_frame_end_info: Option<raw::FrameEndInfoML>,
     pub ml_global_dimmer: Option<raw::GlobalDimmerML>,
@@ -2915,6 +3279,7 @@ pub struct InstanceExtensions {
     pub oculus_external_camera: Option<raw::ExternalCameraOCULUS>,
     pub oppo_controller_interaction: Option<raw::ControllerInteractionOPPO>,
     pub qcom_tracking_optimization_settings: Option<raw::TrackingOptimizationSettingsQCOM>,
+    pub qcom_hand_tracking_gesture: Option<raw::HandTrackingGestureQCOM>,
     pub ultraleap_hand_tracking_forearm: Option<raw::HandTrackingForearmULTRALEAP>,
     pub valve_analog_threshold: Option<raw::AnalogThresholdVALVE>,
     pub varjo_quad_views: Option<raw::QuadViewsVARJO>,
@@ -2973,8 +3338,24 @@ impl InstanceExtensions {
                     None
                 },
                 #[cfg(target_os = "android")]
+                android_composition_layer_passthrough_mesh: if required
+                    .android_composition_layer_passthrough_mesh
+                {
+                    Some(raw::CompositionLayerPassthroughMeshANDROID::load(
+                        entry, instance,
+                    )?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
                 android_raycast: if required.android_raycast {
                     Some(raw::RaycastANDROID::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_performance_metrics: if required.android_performance_metrics {
+                    Some(raw::PerformanceMetricsANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
@@ -2985,14 +3366,77 @@ impl InstanceExtensions {
                     None
                 },
                 #[cfg(target_os = "android")]
+                android_unbounded_reference_space: if required.android_unbounded_reference_space {
+                    Some(raw::UnboundedReferenceSpaceANDROID {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
                 android_anchor_sharing_export: if required.android_anchor_sharing_export {
                     Some(raw::AnchorSharingExportANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
                 #[cfg(target_os = "android")]
+                android_mouse_interaction: if required.android_mouse_interaction {
+                    Some(raw::MouseInteractionANDROID {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
                 android_trackables_marker: if required.android_trackables_marker {
                     Some(raw::TrackablesMarkerANDROID::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_trackables_qr_code: if required.android_trackables_qr_code {
+                    Some(raw::TrackablesQrCodeANDROID::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_trackables_image: if required.android_trackables_image {
+                    Some(raw::TrackablesImageANDROID::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_scene_meshing: if required.android_scene_meshing {
+                    Some(raw::SceneMeshingANDROID::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_spatial_object_tracking: if required.android_spatial_object_tracking {
+                    Some(raw::SpatialObjectTrackingANDROID {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_spatial_discovery_raycast: if required.android_spatial_discovery_raycast {
+                    Some(raw::SpatialDiscoveryRaycastANDROID::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_spatial_entity_bound_anchor: if required.android_spatial_entity_bound_anchor
+                {
+                    Some(raw::SpatialEntityBoundAnchorANDROID::load(entry, instance)?)
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_spatial_component_subsumed_by: if required
+                    .android_spatial_component_subsumed_by
+                {
+                    Some(raw::SpatialComponentSubsumedByANDROID {})
+                } else {
+                    None
+                },
+                #[cfg(target_os = "android")]
+                android_spatial_anchor_space: if required.android_spatial_anchor_space {
+                    Some(raw::SpatialAnchorSpaceANDROID::load(entry, instance)?)
                 } else {
                     None
                 },
@@ -3048,6 +3492,11 @@ impl InstanceExtensions {
                 },
                 bd_ultra_controller_interaction: if required.bd_ultra_controller_interaction {
                     Some(raw::UltraControllerInteractionBD {})
+                } else {
+                    None
+                },
+                bd_spatial_audio_rendering: if required.bd_spatial_audio_rendering {
+                    Some(raw::SpatialAudioRenderingBD::load(entry, instance)?)
                 } else {
                     None
                 },
@@ -3214,8 +3663,21 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
+                ext_interaction_profile_battery_state_display: if required
+                    .ext_interaction_profile_battery_state_display
+                {
+                    Some(raw::InteractionProfileBatteryStateDisplayEXT {})
+                } else {
+                    None
+                },
                 ext_loader_init_properties: if required.ext_loader_init_properties {
                     Some(raw::LoaderInitPropertiesEXT {})
+                } else {
+                    None
+                },
+                ext_view_configuration_views_change: if required.ext_view_configuration_views_change
+                {
+                    Some(raw::ViewConfigurationViewsChangeEXT {})
                 } else {
                     None
                 },
@@ -3743,6 +4205,11 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
+                meta_body_tracking_fidelity: if required.meta_body_tracking_fidelity {
+                    Some(raw::BodyTrackingFidelityMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
                 meta_spatial_entity_sharing: if required.meta_spatial_entity_sharing {
                     Some(raw::SpatialEntitySharingMETA::load(entry, instance)?)
                 } else {
@@ -3762,6 +4229,11 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
+                meta_spatial_entity_semantic_label: if required.meta_spatial_entity_semantic_label {
+                    Some(raw::SpatialEntitySemanticLabelMETA {})
+                } else {
+                    None
+                },
                 meta_colocation_discovery: if required.meta_colocation_discovery {
                     Some(raw::ColocationDiscoveryMETA::load(entry, instance)?)
                 } else {
@@ -3769,6 +4241,16 @@ impl InstanceExtensions {
                 },
                 meta_spatial_entity_group_sharing: if required.meta_spatial_entity_group_sharing {
                     Some(raw::SpatialEntityGroupSharingMETA {})
+                } else {
+                    None
+                },
+                meta_environment_raycast: if required.meta_environment_raycast {
+                    Some(raw::EnvironmentRaycastMETA::load(entry, instance)?)
+                } else {
+                    None
+                },
+                meta_tile_properties_hint: if required.meta_tile_properties_hint {
+                    Some(raw::TilePropertiesHintMETA::load(entry, instance)?)
                 } else {
                     None
                 },
@@ -3946,6 +4428,11 @@ impl InstanceExtensions {
                 } else {
                     None
                 },
+                qcom_hand_tracking_gesture: if required.qcom_hand_tracking_gesture {
+                    Some(raw::HandTrackingGestureQCOM::load(entry, instance)?)
+                } else {
+                    None
+                },
                 ultraleap_hand_tracking_forearm: if required.ultraleap_hand_tracking_forearm {
                     Some(raw::HandTrackingForearmULTRALEAP {})
                 } else {
@@ -4070,6 +4557,7 @@ pub enum Event<'a> {
     InteractionRenderModelsChangedEXT,
     SenseDataProviderStateChangedBD(SenseDataProviderStateChangedBD<'a>),
     SenseDataUpdatedBD(SenseDataUpdatedBD<'a>),
+    ViewConfigurationViewsChangedEXT(ViewConfigurationViewsChangedEXT<'a>),
 }
 impl<'a> Event<'a> {
     #[doc = r" Decode an event"]
@@ -4293,6 +4781,12 @@ impl<'a> Event<'a> {
                 sys::StructureType::EVENT_DATA_SENSE_DATA_UPDATED_BD => {
                     let typed = &*(raw as *const sys::EventDataSenseDataUpdatedBD);
                     Event::SenseDataUpdatedBD(SenseDataUpdatedBD::new(typed))
+                }
+                sys::StructureType::EVENT_DATA_VIEW_CONFIGURATION_VIEWS_CHANGED_EXT => {
+                    let typed = &*(raw as *const sys::EventDataViewConfigurationViewsChangedEXT);
+                    Event::ViewConfigurationViewsChangedEXT(ViewConfigurationViewsChangedEXT::new(
+                        typed,
+                    ))
                 }
                 _ => {
                     return None;
@@ -5291,6 +5785,26 @@ impl<'a> SenseDataUpdatedBD<'a> {
         (self.0).provider
     }
 }
+#[derive(Copy, Clone)]
+pub struct ViewConfigurationViewsChangedEXT<'a>(&'a sys::EventDataViewConfigurationViewsChangedEXT);
+impl<'a> ViewConfigurationViewsChangedEXT<'a> {
+    #[inline]
+    #[doc = r" # Safety"]
+    #[doc = r" `inner` must be valid event data according to the OpenXR spec. Refer to"]
+    #[doc = "[sys::EventDataViewConfigurationViewsChangedEXT]"]
+    #[doc = r" for more information."]
+    pub unsafe fn new(inner: &'a sys::EventDataViewConfigurationViewsChangedEXT) -> Self {
+        Self(inner)
+    }
+    #[inline]
+    pub fn system_id(self) -> SystemId {
+        (self.0).system_id
+    }
+    #[inline]
+    pub fn view_configuration_type(self) -> ViewConfigurationType {
+        (self.0).view_configuration_type
+    }
+}
 pub mod raw {
     use crate::{Entry, Result};
     use std::mem;
@@ -5770,6 +6284,46 @@ pub mod raw {
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
+    pub struct CompositionLayerPassthroughMeshANDROID {
+        pub create_passthrough_layer: pfn::CreatePassthroughLayerANDROID,
+        pub destroy_passthrough_layer: pfn::DestroyPassthroughLayerANDROID,
+        pub set_passthrough_layer_mesh: pfn::SetPassthroughLayerMeshANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl CompositionLayerPassthroughMeshANDROID {
+        pub const VERSION: u32 = sys::ANDROID_composition_layer_passthrough_mesh_SPEC_VERSION;
+        pub const NAME: &'static [u8] =
+            sys::ANDROID_COMPOSITION_LAYER_PASSTHROUGH_MESH_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    create_passthrough_layer: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrCreatePassthroughLayerANDROID")?,
+                    ),
+                    destroy_passthrough_layer: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrDestroyPassthroughLayerANDROID",
+                        )?,
+                    ),
+                    set_passthrough_layer_mesh: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrSetPassthroughLayerMeshANDROID",
+                        )?,
+                    ),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
     pub struct RaycastANDROID {
         pub enumerate_raycast_supported_trackable_types:
             pfn::EnumerateRaycastSupportedTrackableTypesANDROID,
@@ -5802,6 +6356,51 @@ pub mod raw {
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
+    pub struct PerformanceMetricsANDROID {
+        pub enumerate_performance_metrics_counter_paths:
+            pfn::EnumeratePerformanceMetricsCounterPathsANDROID,
+        pub set_performance_metrics_state: pfn::SetPerformanceMetricsStateANDROID,
+        pub get_performance_metrics_state: pfn::GetPerformanceMetricsStateANDROID,
+        pub query_performance_metrics_counter: pfn::QueryPerformanceMetricsCounterANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl PerformanceMetricsANDROID {
+        pub const VERSION: u32 = sys::ANDROID_performance_metrics_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_PERFORMANCE_METRICS_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    enumerate_performance_metrics_counter_paths: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrEnumeratePerformanceMetricsCounterPathsANDROID",
+                        )?,
+                    ),
+                    set_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        c"xrSetPerformanceMetricsStateANDROID",
+                    )?),
+                    get_performance_metrics_state: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        c"xrGetPerformanceMetricsStateANDROID",
+                    )?),
+                    query_performance_metrics_counter: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrQueryPerformanceMetricsCounterANDROID",
+                        )?,
+                    ),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
     pub struct TrackablesObjectANDROID {
         pub get_trackable_object: pfn::GetTrackableObjectANDROID,
     }
@@ -5823,6 +6422,14 @@ pub mod raw {
                 })
             }
         }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct UnboundedReferenceSpaceANDROID {}
+    #[cfg(target_os = "android")]
+    impl UnboundedReferenceSpaceANDROID {
+        pub const VERSION: u32 = sys::ANDROID_unbounded_reference_space_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME;
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
@@ -5854,6 +6461,14 @@ pub mod raw {
     }
     #[cfg(target_os = "android")]
     #[derive(Copy, Clone)]
+    pub struct MouseInteractionANDROID {}
+    #[cfg(target_os = "android")]
+    impl MouseInteractionANDROID {
+        pub const VERSION: u32 = sys::ANDROID_mouse_interaction_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_MOUSE_INTERACTION_EXTENSION_NAME;
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
     pub struct TrackablesMarkerANDROID {
         pub get_trackable_marker: pfn::GetTrackableMarkerANDROID,
     }
@@ -5871,6 +6486,253 @@ pub mod raw {
                 Ok(Self {
                     get_trackable_marker: mem::transmute(
                         entry.get_instance_proc_addr(instance, c"xrGetTrackableMarkerANDROID")?,
+                    ),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct TrackablesQrCodeANDROID {
+        pub get_trackable_qr_code: pfn::GetTrackableQrCodeANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl TrackablesQrCodeANDROID {
+        pub const VERSION: u32 = sys::ANDROID_trackables_qr_code_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_TRACKABLES_QR_CODE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    get_trackable_qr_code: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetTrackableQrCodeANDROID")?,
+                    ),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct TrackablesImageANDROID {
+        pub create_trackable_image_database_async: pfn::CreateTrackableImageDatabaseAsyncANDROID,
+        pub create_trackable_image_database_complete:
+            pfn::CreateTrackableImageDatabaseCompleteANDROID,
+        pub destroy_trackable_image_database: pfn::DestroyTrackableImageDatabaseANDROID,
+        pub add_trackable_image_database: pfn::AddTrackableImageDatabaseANDROID,
+        pub remove_trackable_image_database: pfn::RemoveTrackableImageDatabaseANDROID,
+        pub get_trackable_image: pfn::GetTrackableImageANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl TrackablesImageANDROID {
+        pub const VERSION: u32 = sys::ANDROID_trackables_image_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_TRACKABLES_IMAGE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    create_trackable_image_database_async: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateTrackableImageDatabaseAsyncANDROID",
+                        )?,
+                    ),
+                    create_trackable_image_database_complete: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateTrackableImageDatabaseCompleteANDROID",
+                        )?,
+                    ),
+                    destroy_trackable_image_database: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrDestroyTrackableImageDatabaseANDROID",
+                        )?,
+                    ),
+                    add_trackable_image_database: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrAddTrackableImageDatabaseANDROID",
+                        )?,
+                    ),
+                    remove_trackable_image_database: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        c"xrRemoveTrackableImageDatabaseANDROID",
+                    )?),
+                    get_trackable_image: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetTrackableImageANDROID")?,
+                    ),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct SceneMeshingANDROID {
+        pub enumerate_supported_semantic_label_sets:
+            pfn::EnumerateSupportedSemanticLabelSetsANDROID,
+        pub create_scene_meshing_tracker: pfn::CreateSceneMeshingTrackerANDROID,
+        pub destroy_scene_meshing_tracker: pfn::DestroySceneMeshingTrackerANDROID,
+        pub create_scene_mesh_snapshot: pfn::CreateSceneMeshSnapshotANDROID,
+        pub destroy_scene_mesh_snapshot: pfn::DestroySceneMeshSnapshotANDROID,
+        pub get_all_submesh_states: pfn::GetAllSubmeshStatesANDROID,
+        pub get_submesh_data: pfn::GetSubmeshDataANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl SceneMeshingANDROID {
+        pub const VERSION: u32 = sys::ANDROID_scene_meshing_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_SCENE_MESHING_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    enumerate_supported_semantic_label_sets: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrEnumerateSupportedSemanticLabelSetsANDROID",
+                        )?,
+                    ),
+                    create_scene_meshing_tracker: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateSceneMeshingTrackerANDROID",
+                        )?,
+                    ),
+                    destroy_scene_meshing_tracker: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        c"xrDestroySceneMeshingTrackerANDROID",
+                    )?),
+                    create_scene_mesh_snapshot: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateSceneMeshSnapshotANDROID",
+                        )?,
+                    ),
+                    destroy_scene_mesh_snapshot: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrDestroySceneMeshSnapshotANDROID",
+                        )?,
+                    ),
+                    get_all_submesh_states: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetAllSubmeshStatesANDROID")?,
+                    ),
+                    get_submesh_data: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetSubmeshDataANDROID")?,
+                    ),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct SpatialObjectTrackingANDROID {}
+    #[cfg(target_os = "android")]
+    impl SpatialObjectTrackingANDROID {
+        pub const VERSION: u32 = sys::ANDROID_spatial_object_tracking_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_OBJECT_TRACKING_EXTENSION_NAME;
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct SpatialDiscoveryRaycastANDROID {
+        pub create_spatial_raycast_snapshot: pfn::CreateSpatialRaycastSnapshotANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl SpatialDiscoveryRaycastANDROID {
+        pub const VERSION: u32 = sys::ANDROID_spatial_discovery_raycast_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_DISCOVERY_RAYCAST_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    create_spatial_raycast_snapshot: mem::transmute(entry.get_instance_proc_addr(
+                        instance,
+                        c"xrCreateSpatialRaycastSnapshotANDROID",
+                    )?),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct SpatialEntityBoundAnchorANDROID {
+        pub enumerate_spatial_anchor_attachable_components:
+            pfn::EnumerateSpatialAnchorAttachableComponentsANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl SpatialEntityBoundAnchorANDROID {
+        pub const VERSION: u32 = sys::ANDROID_spatial_entity_bound_anchor_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_ENTITY_BOUND_ANCHOR_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    enumerate_spatial_anchor_attachable_components: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrEnumerateSpatialAnchorAttachableComponentsANDROID",
+                        )?,
+                    ),
+                })
+            }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct SpatialComponentSubsumedByANDROID {}
+    #[cfg(target_os = "android")]
+    impl SpatialComponentSubsumedByANDROID {
+        pub const VERSION: u32 = sys::ANDROID_spatial_component_subsumed_by_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_COMPONENT_SUBSUMED_BY_EXTENSION_NAME;
+    }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    pub struct SpatialAnchorSpaceANDROID {
+        pub create_spatial_anchor_space: pfn::CreateSpatialAnchorSpaceANDROID,
+        pub create_spatial_anchor_space_from_id: pfn::CreateSpatialAnchorSpaceFromIdANDROID,
+    }
+    #[cfg(target_os = "android")]
+    impl SpatialAnchorSpaceANDROID {
+        pub const VERSION: u32 = sys::ANDROID_spatial_anchor_space_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::ANDROID_SPATIAL_ANCHOR_SPACE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    create_spatial_anchor_space: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateSpatialAnchorSpaceANDROID",
+                        )?,
+                    ),
+                    create_spatial_anchor_space_from_id: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateSpatialAnchorSpaceFromIdANDROID",
+                        )?,
                     ),
                 })
             }
@@ -6193,6 +7055,116 @@ pub mod raw {
     impl UltraControllerInteractionBD {
         pub const VERSION: u32 = sys::BD_ultra_controller_interaction_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::BD_ULTRA_CONTROLLER_INTERACTION_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct SpatialAudioRenderingBD {
+        pub enumerate_supported_audio_sample_rate: pfn::EnumerateSupportedAudioSampleRateBD,
+        pub query_frames_per_buffer_range: pfn::QueryFramesPerBufferRangeBD,
+        pub create_spatial_audio_renderer: pfn::CreateSpatialAudioRendererBD,
+        pub destroy_spatial_audio_renderer: pfn::DestroySpatialAudioRendererBD,
+        pub create_sound_obstacle_material: pfn::CreateSoundObstacleMaterialBD,
+        pub update_sound_obstacle_material_config: pfn::UpdateSoundObstacleMaterialConfigBD,
+        pub destroy_sound_obstacle_material: pfn::DestroySoundObstacleMaterialBD,
+        pub create_sound_obstacle: pfn::CreateSoundObstacleBD,
+        pub update_sound_obstacle_config: pfn::UpdateSoundObstacleConfigBD,
+        pub destroy_sound_obstacle: pfn::DestroySoundObstacleBD,
+        pub create_sound_object: pfn::CreateSoundObjectBD,
+        pub update_sound_object_config: pfn::UpdateSoundObjectConfigBD,
+        pub submit_sound_object_buffer: pfn::SubmitSoundObjectBufferBD,
+        pub destroy_sound_object: pfn::DestroySoundObjectBD,
+        pub create_sound_field: pfn::CreateSoundFieldBD,
+        pub update_sound_field_config: pfn::UpdateSoundFieldConfigBD,
+        pub submit_sound_field_buffer: pfn::SubmitSoundFieldBufferBD,
+        pub destroy_sound_field: pfn::DestroySoundFieldBD,
+        pub wait_audio_period: pfn::WaitAudioPeriodBD,
+        pub end_audio_period: pfn::EndAudioPeriodBD,
+    }
+    impl SpatialAudioRenderingBD {
+        pub const VERSION: u32 = sys::BD_spatial_audio_rendering_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::BD_SPATIAL_AUDIO_RENDERING_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    enumerate_supported_audio_sample_rate: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrEnumerateSupportedAudioSampleRateBD",
+                        )?,
+                    ),
+                    query_frames_per_buffer_range: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrQueryFramesPerBufferRangeBD")?,
+                    ),
+                    create_spatial_audio_renderer: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrCreateSpatialAudioRendererBD")?,
+                    ),
+                    destroy_spatial_audio_renderer: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrDestroySpatialAudioRendererBD")?,
+                    ),
+                    create_sound_obstacle_material: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrCreateSoundObstacleMaterialBD")?,
+                    ),
+                    update_sound_obstacle_material_config: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrUpdateSoundObstacleMaterialConfigBD",
+                        )?,
+                    ),
+                    destroy_sound_obstacle_material: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrDestroySoundObstacleMaterialBD",
+                        )?,
+                    ),
+                    create_sound_obstacle: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSoundObstacleBD")?,
+                    ),
+                    update_sound_obstacle_config: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrUpdateSoundObstacleConfigBD")?,
+                    ),
+                    destroy_sound_obstacle: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySoundObstacleBD")?,
+                    ),
+                    create_sound_object: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSoundObjectBD")?,
+                    ),
+                    update_sound_object_config: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrUpdateSoundObjectConfigBD")?,
+                    ),
+                    submit_sound_object_buffer: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSubmitSoundObjectBufferBD")?,
+                    ),
+                    destroy_sound_object: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySoundObjectBD")?,
+                    ),
+                    create_sound_field: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrCreateSoundFieldBD")?,
+                    ),
+                    update_sound_field_config: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrUpdateSoundFieldConfigBD")?,
+                    ),
+                    submit_sound_field_buffer: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSubmitSoundFieldBufferBD")?,
+                    ),
+                    destroy_sound_field: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrDestroySoundFieldBD")?,
+                    ),
+                    wait_audio_period: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrWaitAudioPeriodBD")?,
+                    ),
+                    end_audio_period: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrEndAudioPeriodBD")?,
+                    ),
+                })
+            }
+        }
     }
     #[derive(Copy, Clone)]
     pub struct ViewConfigurationFovEPIC {}
@@ -6888,10 +7860,23 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct InteractionProfileBatteryStateDisplayEXT {}
+    impl InteractionProfileBatteryStateDisplayEXT {
+        pub const VERSION: u32 = sys::EXT_interaction_profile_battery_state_display_SPEC_VERSION;
+        pub const NAME: &'static [u8] =
+            sys::EXT_INTERACTION_PROFILE_BATTERY_STATE_DISPLAY_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct LoaderInitPropertiesEXT {}
     impl LoaderInitPropertiesEXT {
         pub const VERSION: u32 = sys::EXT_loader_init_properties_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::EXT_LOADER_INIT_PROPERTIES_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct ViewConfigurationViewsChangeEXT {}
+    impl ViewConfigurationViewsChangeEXT {
+        pub const VERSION: u32 = sys::EXT_view_configuration_views_change_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::EXT_VIEW_CONFIGURATION_VIEWS_CHANGE_EXTENSION_NAME;
     }
     #[derive(Copy, Clone)]
     pub struct CompositionLayerImageLayoutFB {}
@@ -8814,6 +9799,31 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct BodyTrackingFidelityMETA {
+        pub request_body_tracking_fidelity: pfn::RequestBodyTrackingFidelityMETA,
+    }
+    impl BodyTrackingFidelityMETA {
+        pub const VERSION: u32 = sys::META_body_tracking_fidelity_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_BODY_TRACKING_FIDELITY_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    request_body_tracking_fidelity: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrRequestBodyTrackingFidelityMETA",
+                        )?,
+                    ),
+                })
+            }
+        }
+    }
+    #[derive(Copy, Clone)]
     pub struct SpatialEntitySharingMETA {
         pub share_spaces: pfn::ShareSpacesMETA,
     }
@@ -8959,6 +9969,12 @@ pub mod raw {
         }
     }
     #[derive(Copy, Clone)]
+    pub struct SpatialEntitySemanticLabelMETA {}
+    impl SpatialEntitySemanticLabelMETA {
+        pub const VERSION: u32 = sys::META_spatial_entity_semantic_label_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_SPATIAL_ENTITY_SEMANTIC_LABEL_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
     pub struct ColocationDiscoveryMETA {
         pub start_colocation_discovery: pfn::StartColocationDiscoveryMETA,
         pub stop_colocation_discovery: pfn::StopColocationDiscoveryMETA,
@@ -9004,6 +10020,72 @@ pub mod raw {
     impl SpatialEntityGroupSharingMETA {
         pub const VERSION: u32 = sys::META_spatial_entity_group_sharing_SPEC_VERSION;
         pub const NAME: &'static [u8] = sys::META_SPATIAL_ENTITY_GROUP_SHARING_EXTENSION_NAME;
+    }
+    #[derive(Copy, Clone)]
+    pub struct EnvironmentRaycastMETA {
+        pub create_environment_raycaster_async: pfn::CreateEnvironmentRaycasterAsyncMETA,
+        pub create_environment_raycaster_complete: pfn::CreateEnvironmentRaycasterCompleteMETA,
+        pub destroy_environment_raycaster: pfn::DestroyEnvironmentRaycasterMETA,
+        pub perform_environment_raycast: pfn::PerformEnvironmentRaycastMETA,
+    }
+    impl EnvironmentRaycastMETA {
+        pub const VERSION: u32 = sys::META_environment_raycast_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_ENVIRONMENT_RAYCAST_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    create_environment_raycaster_async: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateEnvironmentRaycasterAsyncMETA",
+                        )?,
+                    ),
+                    create_environment_raycaster_complete: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrCreateEnvironmentRaycasterCompleteMETA",
+                        )?,
+                    ),
+                    destroy_environment_raycaster: mem::transmute(
+                        entry.get_instance_proc_addr(
+                            instance,
+                            c"xrDestroyEnvironmentRaycasterMETA",
+                        )?,
+                    ),
+                    perform_environment_raycast: mem::transmute(
+                        entry
+                            .get_instance_proc_addr(instance, c"xrPerformEnvironmentRaycastMETA")?,
+                    ),
+                })
+            }
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct TilePropertiesHintMETA {
+        pub set_tile_properties_hint: pfn::SetTilePropertiesHintMETA,
+    }
+    impl TilePropertiesHintMETA {
+        pub const VERSION: u32 = sys::META_tile_properties_hint_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::META_TILE_PROPERTIES_HINT_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    set_tile_properties_hint: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrSetTilePropertiesHintMETA")?,
+                    ),
+                })
+            }
+        }
     }
     #[derive(Copy, Clone)]
     pub struct Ml2ControllerInteractionML {}
@@ -9821,6 +10903,28 @@ pub mod raw {
                             instance,
                             c"xrSetTrackingOptimizationSettingsHintQCOM",
                         )?,
+                    ),
+                })
+            }
+        }
+    }
+    #[derive(Copy, Clone)]
+    pub struct HandTrackingGestureQCOM {
+        pub get_hand_gesture: pfn::GetHandGestureQCOM,
+    }
+    impl HandTrackingGestureQCOM {
+        pub const VERSION: u32 = sys::QCOM_hand_tracking_gesture_SPEC_VERSION;
+        pub const NAME: &'static [u8] = sys::QCOM_HAND_TRACKING_GESTURE_EXTENSION_NAME;
+        #[doc = r" Load the extension's function pointer table"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" `instance` must be a valid instance handle."]
+        pub unsafe fn load(entry: &Entry, instance: sys::Instance) -> Result<Self> {
+            unsafe {
+                Ok(Self {
+                    get_hand_gesture: mem::transmute(
+                        entry.get_instance_proc_addr(instance, c"xrGetHandGestureQCOM")?,
                     ),
                 })
             }
@@ -12151,6 +13255,77 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
+        inner: sys::SpatialCapabilityConfigurationDepthRaycastANDROID,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SpatialCapabilityConfigurationDepthRaycastANDROID {
+                    ty: sys::StructureType::SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(
+            inner: sys::SpatialCapabilityConfigurationDepthRaycastANDROID,
+        ) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SpatialCapabilityConfigurationDepthRaycastANDROID {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SpatialCapabilityConfigurationDepthRaycastANDROID {
+            &self.inner
+        }
+        #[inline]
+        pub fn capability(mut self, value: SpatialCapabilityEXT) -> Self {
+            self.inner.capability = value;
+            self
+        }
+        #[inline]
+        pub fn enabled_components(mut self, value: &'a [SpatialComponentTypeEXT]) -> Self {
+            self.inner.enabled_components = value.as_ptr() as *const _ as _;
+            self.inner.enabled_component_count = value.len() as u32;
+            self
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> Deref for SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
+        type Target = SpatialCapabilityConfigurationBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> Default for SpatialCapabilityConfigurationDepthRaycastANDROID<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
     #[derive(Copy, Clone)]
     #[repr(transparent)]
     pub struct SpatialCapabilityConfigurationArucoMarkerEXT<'a> {
@@ -12421,6 +13596,87 @@ pub(crate) mod builder {
             Self::new()
         }
     }
+    #[cfg(target_os = "android")]
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
+        inner: sys::SpatialCapabilityConfigurationObjectTrackingANDROID,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::SpatialCapabilityConfigurationObjectTrackingANDROID {
+                    ty:
+                        sys::StructureType::SPATIAL_CAPABILITY_CONFIGURATION_OBJECT_TRACKING_ANDROID,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(
+            inner: sys::SpatialCapabilityConfigurationObjectTrackingANDROID,
+        ) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::SpatialCapabilityConfigurationObjectTrackingANDROID {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::SpatialCapabilityConfigurationObjectTrackingANDROID {
+            &self.inner
+        }
+        #[inline]
+        pub fn capability(mut self, value: SpatialCapabilityEXT) -> Self {
+            self.inner.capability = value;
+            self
+        }
+        #[inline]
+        pub fn enabled_components(mut self, value: &'a [SpatialComponentTypeEXT]) -> Self {
+            self.inner.enabled_components = value.as_ptr() as *const _ as _;
+            self.inner.enabled_component_count = value.len() as u32;
+            self
+        }
+        #[inline]
+        pub fn active_semantic_labels(
+            mut self,
+            value: &'a [SpatialObjectSemanticLabelANDROID],
+        ) -> Self {
+            self.inner.active_semantic_labels = value.as_ptr() as *const _ as _;
+            self.inner.active_semantic_label_count = value.len() as u32;
+            self
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> Deref for SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
+        type Target = SpatialCapabilityConfigurationBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    #[cfg(target_os = "android")]
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> Default for SpatialCapabilityConfigurationObjectTrackingANDROID<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
     #[repr(transparent)]
     pub struct SpatialAnchorsQueryInfoBase<'a> {
         _inner: sys::SpatialAnchorsQueryInfoBaseHeaderML,
@@ -12496,6 +13752,70 @@ pub(crate) mod builder {
     }
     #[allow(clippy::needless_lifetimes)]
     impl<'a> Default for SpatialAnchorsQueryInfoRadiusML<'a> {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+    #[repr(transparent)]
+    pub struct EnvironmentRaycastFilterBase<'a> {
+        _inner: sys::EnvironmentRaycastFilterBaseHeaderMETA,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[derive(Copy, Clone)]
+    #[repr(transparent)]
+    pub struct EnvironmentRaycastFilterDistanceMETA<'a> {
+        inner: sys::EnvironmentRaycastFilterDistanceMETA,
+        _marker: PhantomData<&'a ()>,
+    }
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> EnvironmentRaycastFilterDistanceMETA<'a> {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                inner: sys::EnvironmentRaycastFilterDistanceMETA {
+                    ty: sys::StructureType::ENVIRONMENT_RAYCAST_FILTER_DISTANCE_META,
+                    ..unsafe { mem::zeroed() }
+                },
+                _marker: PhantomData,
+            }
+        }
+        #[doc = r" Initialize with the supplied raw values"]
+        #[doc = r""]
+        #[doc = r" # Safety"]
+        #[doc = r""]
+        #[doc = r" The guarantees normally enforced by this builder (e.g. lifetimes) must be"]
+        #[doc = r" preserved."]
+        #[inline]
+        pub unsafe fn from_raw(inner: sys::EnvironmentRaycastFilterDistanceMETA) -> Self {
+            Self {
+                inner,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn into_raw(self) -> sys::EnvironmentRaycastFilterDistanceMETA {
+            self.inner
+        }
+        #[inline]
+        pub fn as_raw(&self) -> &sys::EnvironmentRaycastFilterDistanceMETA {
+            &self.inner
+        }
+        #[inline]
+        pub fn max_distance(mut self, value: f32) -> Self {
+            self.inner.max_distance = value;
+            self
+        }
+    }
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> Deref for EnvironmentRaycastFilterDistanceMETA<'a> {
+        type Target = EnvironmentRaycastFilterBase<'a>;
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            unsafe { mem::transmute(&self.inner) }
+        }
+    }
+    #[allow(clippy::needless_lifetimes)]
+    impl<'a> Default for EnvironmentRaycastFilterDistanceMETA<'a> {
         fn default() -> Self {
             Self::new()
         }
