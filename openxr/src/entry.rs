@@ -181,8 +181,11 @@ impl Entry {
         Ok(())
     }
 
-    /// Create an OpenXR instance with certain extensions enabled. Android support can be enabled by
-    /// setting `khr_android_create_instance` to `true`.
+    /// Create an OpenXR instance with certain extensions enabled.
+    ///
+    /// On Android, pass [`AndroidPlatformInfo`] as `platform_info`
+    /// and set `khr_android_create_instance` to `true`.
+    /// On other platforms, pass `()`.
     ///
     /// Most applications will want to enable at least one graphics API extension
     /// (e.g. `khr_vulkan_enable2`) so that a `Session` can be created for rendering.
@@ -191,6 +194,7 @@ impl Entry {
         app_info: &ApplicationInfo,
         required_extensions: &ExtensionSet,
         layers: &[&str],
+        platform_info: impl PlatformInfo,
     ) -> Result<Instance> {
         assert!(
             app_info.application_name.len() < sys::MAX_APPLICATION_NAME_SIZE,
@@ -216,29 +220,9 @@ impl Entry {
             .map(|x| x.as_ptr() as *const _)
             .collect::<Vec<_>>();
 
-        #[cfg(not(target_os = "android"))]
-        let next = ptr::null();
-        #[cfg(target_os = "android")]
-        let android_info = {
-            let context = ndk_context::android_context();
-
-            sys::InstanceCreateInfoAndroidKHR {
-                ty: sys::InstanceCreateInfoAndroidKHR::TYPE,
-                next: ptr::null(),
-                application_vm: context.vm(),
-                application_activity: context.context(),
-            }
-        };
-        #[cfg(target_os = "android")]
-        let next = if required_extensions.khr_android_create_instance {
-            &android_info as *const _ as _
-        } else {
-            ptr::null()
-        };
-
         let mut info = sys::InstanceCreateInfo {
             ty: sys::InstanceCreateInfo::TYPE,
-            next,
+            next: ptr::null_mut(),
             create_flags: Default::default(),
             application_info: sys::ApplicationInfo {
                 application_name: [0; sys::MAX_APPLICATION_NAME_SIZE],
@@ -258,9 +242,7 @@ impl Entry {
         );
         place_cstr(&mut info.application_info.engine_name, app_info.engine_name);
         unsafe {
-            let mut handle = sys::Instance::NULL;
-            cvt((self.fp().create_instance)(&info, &mut handle))?;
-
+            let handle = platform_info.create_instance(self, info)?;
             let exts = InstanceExtensions::load(self, handle, required_extensions)?;
             Instance::from_raw(self.clone(), handle, exts)
         }
@@ -413,4 +395,78 @@ pub struct ApiLayerProperties {
     pub spec_version: Version,
     pub layer_version: u32,
     pub description: String,
+}
+
+/// # Safety
+///
+/// [`PlatformInfo::create_instance`] must return a valid [`sys::Instance`] handle, or an error.
+pub unsafe trait PlatformInfo {
+    /// # Safety
+    ///
+    /// `info` must be valid to be passed to `xrCreateInstance`
+    unsafe fn create_instance(
+        &self,
+        entry: &Entry,
+        info: sys::InstanceCreateInfo,
+    ) -> Result<sys::Instance>;
+}
+
+unsafe impl PlatformInfo for () {
+    unsafe fn create_instance(
+        &self,
+        entry: &Entry,
+        info: sys::InstanceCreateInfo,
+    ) -> Result<sys::Instance> {
+        let mut handle = sys::Instance::NULL;
+        // SAFETY: guaranteed by the caller
+        cvt(unsafe { (entry.fp().create_instance)(&info, &mut handle) })?;
+        Ok(handle)
+    }
+}
+
+#[cfg(target_os = "android")]
+pub struct AndroidPlatformInfo {
+    activity: *mut std::ffi::c_void,
+}
+
+#[cfg(target_os = "android")]
+impl AndroidPlatformInfo {
+    /// Creates a struct holding Android specific information for instance creation.
+    ///
+    /// Some information will also be fetched from [`ndk_context`],
+    /// so your NDK glue code has to initialize it.
+    ///
+    /// # Safety
+    ///
+    /// The `activity` pointer has to be a valid JNI reference to an `android.app.Activity`,
+    /// as required by the [XR_KHR_android_create_instance] extension.
+    ///
+    /// [XR_KHR_android_create_instance]: https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_android_create_instance
+    pub unsafe fn new(activity: *mut std::ffi::c_void) -> Self {
+        Self { activity }
+    }
+}
+
+#[cfg(target_os = "android")]
+unsafe impl PlatformInfo for AndroidPlatformInfo {
+    unsafe fn create_instance(
+        &self,
+        entry: &Entry,
+        mut info: sys::InstanceCreateInfo,
+    ) -> Result<sys::Instance> {
+        let context = ndk_context::android_context();
+        let mut android_info = sys::InstanceCreateInfoAndroidKHR {
+            ty: sys::InstanceCreateInfoAndroidKHR::TYPE,
+            next: info.next,
+            application_vm: context.vm(),
+            application_activity: self.activity,
+        };
+        info.next = (&mut android_info as *mut sys::InstanceCreateInfoAndroidKHR).cast();
+
+        let mut handle = sys::Instance::NULL;
+        // SAFETY: `info` was guaranteed to be valid by the caller,
+        // and a valid struct was added into the next chain
+        cvt(unsafe { (entry.fp().create_instance)(&info, &mut handle) })?;
+        Ok(handle)
+    }
 }

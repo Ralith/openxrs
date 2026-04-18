@@ -36,6 +36,12 @@ fn main() {
             },
             &xr::ExtensionSet::default(),
             &[],
+            #[cfg(not(target_os = "android"))]
+            (),
+            #[cfg(target_os = "android")]
+            unsafe {
+                openxr::AndroidPlatformInfo::new(ndk_glue::native_activity().activity().cast())
+            },
         )
         .unwrap();
     let instance_props = instance.properties().unwrap();

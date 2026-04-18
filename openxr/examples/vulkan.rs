@@ -72,6 +72,12 @@ pub fn main() {
             },
             &enabled_extensions,
             &[],
+            #[cfg(not(target_os = "android"))]
+            (),
+            #[cfg(target_os = "android")]
+            unsafe {
+                openxr::AndroidPlatformInfo::new(ndk_glue::native_activity().activity().cast())
+            },
         )
         .unwrap();
     let instance_props = xr_instance.properties().unwrap();
@@ -257,13 +263,21 @@ pub fn main() {
                         vk::PipelineShaderStageCreateInfo {
                             stage: vk::ShaderStageFlags::VERTEX,
                             module: vert,
-                            p_name: c"main".as_ptr(),
+                            #[allow(
+                                clippy::manual_c_str_literals,
+                                reason = "ndk_glue::main cannot parse c string literals"
+                            )]
+                            p_name: b"main\0".as_ptr() as _,
                             ..Default::default()
                         },
                         vk::PipelineShaderStageCreateInfo {
                             stage: vk::ShaderStageFlags::FRAGMENT,
                             module: frag,
-                            p_name: c"main".as_ptr(),
+                            #[allow(
+                                clippy::manual_c_str_literals,
+                                reason = "ndk_glue::main cannot parse c string literals"
+                            )]
+                            p_name: b"main\0".as_ptr() as _,
                             ..Default::default()
                         },
                     ])
