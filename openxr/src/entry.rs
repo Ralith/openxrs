@@ -30,8 +30,8 @@ impl Entry {
     /// actually linked into the binary, e.g. by enabling the `static` feature or manually linking
     /// to an external loader or implementation.
     #[cfg(feature = "linked")]
-    pub fn linked() -> Self {
-        Self {
+    pub fn linked() -> Result<Self> {
+        let entry = Self {
             inner: Arc::new(Inner {
                 raw: RawEntry {
                     get_instance_proc_addr: sys::get_instance_proc_addr,
@@ -43,7 +43,10 @@ impl Entry {
                 #[cfg(feature = "loaded")]
                 _lib_guard: None,
             }),
-        }
+        };
+        #[cfg(target_os = "android")]
+        entry.initialize_android_loader()?;
+        Ok(entry)
     }
 
     /// Load entry points at run time from the dynamic library `openxr_loader` according to the
@@ -56,8 +59,8 @@ impl Entry {
     /// The OpenXR loader shared library in the dynamic loader's search path must conform to the
     /// OpenXR specification.
     #[cfg(feature = "loaded")]
-    pub unsafe fn load() -> std::result::Result<Self, LoadError> {
-        unsafe {
+    pub unsafe fn load() -> std::result::Result<Self, EntryError> {
+        let entry = unsafe {
             #[cfg(target_os = "windows")]
             const PATH: &str = "openxr_loader.dll";
             #[cfg(target_os = "macos")]
@@ -65,7 +68,10 @@ impl Entry {
             #[cfg(not(any(target_os = "windows", target_os = "macos")))]
             const PATH: &str = "libopenxr_loader.so";
             Self::load_from(Path::new(PATH))
-        }
+        }?;
+        #[cfg(target_os = "android")]
+        entry.initialize_android_loader().map_err(EntryError::Xr)?;
+        Ok(entry)
     }
 
     /// Load entry points at run time from the dynamic library identified by `path`
@@ -77,19 +83,21 @@ impl Entry {
     /// `path` must be a shared library that provides OpenXR-compliant definitions for every core
     /// OpenXR entry point.
     #[cfg(feature = "loaded")]
-    pub unsafe fn load_from(path: &Path) -> std::result::Result<Self, LoadError> {
-        unsafe {
-            let lib = Library::new(path).map_err(LoadError)?;
-            Ok(Self {
+    pub unsafe fn load_from(path: &Path) -> std::result::Result<Self, EntryError> {
+        let entry = unsafe {
+            let lib = Library::new(path).map_err(|err| EntryError::Load(LoadError(err)))?;
+            Self {
                 inner: Arc::new(Inner {
                     raw: RawEntry {
                         get_instance_proc_addr: *lib
                             .get(b"xrGetInstanceProcAddr\0")
-                            .map_err(LoadError)?,
-                        create_instance: *lib.get(b"xrCreateInstance\0").map_err(LoadError)?,
+                            .map_err(|err| EntryError::Load(LoadError(err)))?,
+                        create_instance: *lib
+                            .get(b"xrCreateInstance\0")
+                            .map_err(|err| EntryError::Load(LoadError(err)))?,
                         enumerate_instance_extension_properties: *lib
                             .get(b"xrEnumerateInstanceExtensionProperties\0")
-                            .map_err(LoadError)?,
+                            .map_err(|err| EntryError::Load(LoadError(err)))?,
                         enumerate_api_layer_properties: lib
                             .get(b"xrEnumerateApiLayerProperties\0")
                             .map(|s| *s)
@@ -97,8 +105,11 @@ impl Entry {
                     },
                     _lib_guard: Some(lib),
                 }),
-            })
-        }
+            }
+        };
+        #[cfg(target_os = "android")]
+        entry.initialize_android_loader().map_err(EntryError::Xr)?;
+        Ok(entry)
     }
 
     /// Load entry points using an arbitrary `xrGetInstanceProcAddr` implementation
@@ -111,8 +122,8 @@ impl Entry {
     pub unsafe fn from_get_instance_proc_addr(
         get_instance_proc_addr: sys::pfn::GetInstanceProcAddr,
     ) -> Result<Self> {
-        unsafe {
-            Ok(Self {
+        let entry = unsafe {
+            Self {
                 inner: Arc::new(Inner {
                     raw: RawEntry {
                         get_instance_proc_addr,
@@ -139,8 +150,11 @@ impl Entry {
                     #[cfg(feature = "loaded")]
                     _lib_guard: None,
                 }),
-            })
-        }
+            }
+        };
+        #[cfg(target_os = "android")]
+        entry.initialize_android_loader()?;
+        Ok(entry)
     }
 
     /// Access the raw function pointers
@@ -158,9 +172,9 @@ impl Entry {
         unsafe { get_instance_proc_addr_helper(self.fp().get_instance_proc_addr, instance, name) }
     }
 
-    /// Initialize Android loader. This must be called before `create_instance()`.
+    /// Initialize Android loader. This must be called before any other OpenXR call.
     #[cfg(target_os = "android")]
-    pub fn initialize_android_loader(&self) -> Result<()> {
+    fn initialize_android_loader(&self) -> Result<()> {
         let loader_init = unsafe { raw::LoaderInitKHR::load(self, sys::Instance::NULL)? };
 
         let context = ndk_context::android_context();
@@ -172,6 +186,8 @@ impl Entry {
             application_context: context.context(),
         };
 
+        // The loader init extension doesn't forbid calling initialization multiple times,
+        // and the Khronos Loader implementation handles it correctly.
         unsafe {
             cvt((loader_init.initialize_loader)(
                 &loader_info as *const _ as _,
@@ -340,6 +356,36 @@ pub struct RawEntry {
     pub create_instance: sys::pfn::CreateInstance,
     pub enumerate_instance_extension_properties: sys::pfn::EnumerateInstanceExtensionProperties,
     pub enumerate_api_layer_properties: sys::pfn::EnumerateApiLayerProperties,
+}
+
+/// An error encountered while creating an [`Entry`]
+#[cfg(feature = "loaded")]
+#[derive(Debug)]
+pub enum EntryError {
+    Load(LoadError),
+    Xr(sys::Result),
+}
+
+#[cfg(feature = "loaded")]
+impl fmt::Display for EntryError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            EntryError::Load(_) => f.write_str(
+                "failed loading OpenXR loader or a required symbol from dynamic library",
+            ),
+            EntryError::Xr(_) => f.write_str("failed initializing OpenXR loader"),
+        }
+    }
+}
+
+#[cfg(feature = "loaded")]
+impl std::error::Error for EntryError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            EntryError::Load(err) => Some(err),
+            EntryError::Xr(err) => Some(err),
+        }
+    }
 }
 
 /// An error encountered while loading entry points from a dynamic library at run time
