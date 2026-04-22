@@ -32,15 +32,12 @@ pub fn main() {
     .expect("setting Ctrl-C handler");
 
     #[cfg(feature = "static")]
-    let entry = xr::Entry::linked();
+    let entry = xr::Entry::linked().unwrap();
     #[cfg(not(feature = "static"))]
     let entry = unsafe {
         xr::Entry::load()
             .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature")
     };
-
-    #[cfg(target_os = "android")]
-    entry.initialize_android_loader().unwrap();
 
     // OpenXR will fail to initialize if we ask for an extension that OpenXR can't provide! So we
     // need to check all our extensions before initializing OpenXR with them. Note that even if the
