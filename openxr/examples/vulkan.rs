@@ -31,11 +31,16 @@ pub fn main() {
     })
     .expect("setting Ctrl-C handler");
 
+    #[cfg(not(target_os = "android"))]
+    let platform_info = ();
+    #[cfg(target_os = "android")]
+    let platform_info =
+        unsafe { openxr::AndroidPlatformInfo::new(ndk_glue::native_activity().activity().cast()) };
     #[cfg(feature = "static")]
-    let entry = xr::Entry::linked().unwrap();
+    let entry = xr::Entry::linked(&platform_info).unwrap();
     #[cfg(not(feature = "static"))]
     let entry = unsafe {
-        xr::Entry::load()
+        xr::Entry::load(&platform_info)
             .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature")
     };
 
@@ -69,12 +74,7 @@ pub fn main() {
             },
             &enabled_extensions,
             &[],
-            #[cfg(not(target_os = "android"))]
-            (),
-            #[cfg(target_os = "android")]
-            unsafe {
-                openxr::AndroidPlatformInfo::new(ndk_glue::native_activity().activity().cast())
-            },
+            &platform_info,
         )
         .unwrap();
     let instance_props = xr_instance.properties().unwrap();
