@@ -2,11 +2,16 @@ use openxr as xr;
 
 #[cfg_attr(target_os = "android", ndk_glue::main)]
 fn main() {
+    #[cfg(not(target_os = "android"))]
+    let platform_info = ();
+    #[cfg(target_os = "android")]
+    let platform_info =
+        unsafe { openxr::AndroidPlatformInfo::new(ndk_glue::native_activity().activity().cast()) };
     #[cfg(feature = "linked")]
-    let entry = xr::Entry::linked().unwrap();
+    let entry = xr::Entry::linked(&platform_info).unwrap();
     #[cfg(not(feature = "linked"))]
     let entry = unsafe {
-        xr::Entry::load()
+        xr::Entry::load(&platform_info)
             .expect("couldn't find the OpenXR loader; try enabling the \"static\" feature")
     };
 
@@ -33,12 +38,7 @@ fn main() {
             },
             &xr::ExtensionSet::default(),
             &[],
-            #[cfg(not(target_os = "android"))]
-            (),
-            #[cfg(target_os = "android")]
-            unsafe {
-                openxr::AndroidPlatformInfo::new(ndk_glue::native_activity().activity().cast())
-            },
+            &platform_info,
         )
         .unwrap();
     let instance_props = instance.properties().unwrap();

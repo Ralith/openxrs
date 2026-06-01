@@ -29,8 +29,11 @@ impl Entry {
     /// Available if the `linked` feature is enabled. You must ensure that the entry points are
     /// actually linked into the binary, e.g. by enabling the `static` feature or manually linking
     /// to an external loader or implementation.
+    ///
+    /// Needs an [`AndroidPlatformInfo`] to correctly initialize the loader on Android.
+    /// Other platforms can pass `()`.
     #[cfg(feature = "linked")]
-    pub fn linked() -> Result<Self> {
+    pub fn linked(platform_info: &impl PlatformInfo) -> Result<Self> {
         let entry = Self {
             inner: Arc::new(Inner {
                 raw: RawEntry {
@@ -44,8 +47,7 @@ impl Entry {
                 _lib_guard: None,
             }),
         };
-        #[cfg(target_os = "android")]
-        entry.initialize_android_loader()?;
+        platform_info.init_loader(&entry)?;
         Ok(entry)
     }
 
@@ -54,12 +56,15 @@ impl Entry {
     ///
     /// Available if the `loaded` feature is enabled.
     ///
+    /// Needs an [`AndroidPlatformInfo`] to correctly initialize the loader on Android.
+    /// Other platforms can pass `()`.
+    ///
     /// # Safety
     ///
     /// The OpenXR loader shared library in the dynamic loader's search path must conform to the
     /// OpenXR specification.
     #[cfg(feature = "loaded")]
-    pub unsafe fn load() -> std::result::Result<Self, EntryError> {
+    pub unsafe fn load(platform_info: &impl PlatformInfo) -> std::result::Result<Self, EntryError> {
         let entry = unsafe {
             #[cfg(target_os = "windows")]
             const PATH: &str = "openxr_loader.dll";
@@ -67,10 +72,9 @@ impl Entry {
             const PATH: &str = "libopenxr_loader.dylib";
             #[cfg(not(any(target_os = "windows", target_os = "macos")))]
             const PATH: &str = "libopenxr_loader.so";
-            Self::load_from(Path::new(PATH))
+            Self::load_from(Path::new(PATH), platform_info)
         }?;
-        #[cfg(target_os = "android")]
-        entry.initialize_android_loader().map_err(EntryError::Xr)?;
+        platform_info.init_loader(&entry).map_err(EntryError::Xr)?;
         Ok(entry)
     }
 
@@ -78,12 +82,18 @@ impl Entry {
     ///
     /// Available if the `loaded` feature is enabled.
     ///
+    /// Needs an [`AndroidPlatformInfo`] to correctly initialize the loader on Android.
+    /// Other platforms can pass `()`.
+    ///
     /// # Safety
     ///
     /// `path` must be a shared library that provides OpenXR-compliant definitions for every core
     /// OpenXR entry point.
     #[cfg(feature = "loaded")]
-    pub unsafe fn load_from(path: &Path) -> std::result::Result<Self, EntryError> {
+    pub unsafe fn load_from(
+        path: &Path,
+        platform_info: &impl PlatformInfo,
+    ) -> std::result::Result<Self, EntryError> {
         let entry = unsafe {
             let lib = Library::new(path).map_err(|err| EntryError::Load(LoadError(err)))?;
             Self {
@@ -107,12 +117,14 @@ impl Entry {
                 }),
             }
         };
-        #[cfg(target_os = "android")]
-        entry.initialize_android_loader().map_err(EntryError::Xr)?;
+        platform_info.init_loader(&entry).map_err(EntryError::Xr)?;
         Ok(entry)
     }
 
     /// Load entry points using an arbitrary `xrGetInstanceProcAddr` implementation
+    ///
+    /// Needs an [`AndroidPlatformInfo`] to correctly initialize the loader on Android.
+    /// Other platforms can pass `()`.
     ///
     /// # Safety
     ///
@@ -121,6 +133,7 @@ impl Entry {
     #[allow(clippy::missing_transmute_annotations)]
     pub unsafe fn from_get_instance_proc_addr(
         get_instance_proc_addr: sys::pfn::GetInstanceProcAddr,
+        platform_info: &impl PlatformInfo,
     ) -> Result<Self> {
         let entry = unsafe {
             Self {
@@ -152,8 +165,7 @@ impl Entry {
                 }),
             }
         };
-        #[cfg(target_os = "android")]
-        entry.initialize_android_loader()?;
+        platform_info.init_loader(&entry)?;
         Ok(entry)
     }
 
@@ -172,31 +184,6 @@ impl Entry {
         unsafe { get_instance_proc_addr_helper(self.fp().get_instance_proc_addr, instance, name) }
     }
 
-    /// Initialize Android loader. This must be called before any other OpenXR call.
-    #[cfg(target_os = "android")]
-    fn initialize_android_loader(&self) -> Result<()> {
-        let loader_init = unsafe { raw::LoaderInitKHR::load(self, sys::Instance::NULL)? };
-
-        let context = ndk_context::android_context();
-
-        let loader_info = sys::LoaderInitInfoAndroidKHR {
-            ty: sys::LoaderInitInfoAndroidKHR::TYPE,
-            next: ptr::null(),
-            application_vm: context.vm(),
-            application_context: context.context(),
-        };
-
-        // The loader init extension doesn't forbid calling initialization multiple times,
-        // and the Khronos Loader implementation handles it correctly.
-        unsafe {
-            cvt((loader_init.initialize_loader)(
-                &loader_info as *const _ as _,
-            ))?;
-        }
-
-        Ok(())
-    }
-
     /// Create an OpenXR instance with certain extensions enabled.
     ///
     /// On Android, pass [`AndroidPlatformInfo`] as `platform_info`
@@ -210,7 +197,7 @@ impl Entry {
         app_info: &ApplicationInfo,
         required_extensions: &ExtensionSet,
         layers: &[&str],
-        platform_info: impl PlatformInfo,
+        platform_info: &impl PlatformInfo,
     ) -> Result<Instance> {
         assert!(
             app_info.application_name.len() < sys::MAX_APPLICATION_NAME_SIZE,
@@ -455,6 +442,11 @@ pub unsafe trait PlatformInfo {
         entry: &Entry,
         info: sys::InstanceCreateInfo,
     ) -> Result<sys::Instance>;
+
+    /// Callback for platform-specific loader initialization.
+    fn init_loader(&self, _entry: &Entry) -> Result<()> {
+        Ok(())
+    }
 }
 
 unsafe impl PlatformInfo for () {
@@ -514,5 +506,28 @@ unsafe impl PlatformInfo for AndroidPlatformInfo {
         // and a valid struct was added into the next chain
         cvt(unsafe { (entry.fp().create_instance)(&info, &mut handle) })?;
         Ok(handle)
+    }
+
+    fn init_loader(&self, entry: &Entry) -> Result<()> {
+        let loader_init = unsafe { raw::LoaderInitKHR::load(entry, sys::Instance::NULL)? };
+
+        let context = ndk_context::android_context();
+
+        let loader_info = sys::LoaderInitInfoAndroidKHR {
+            ty: sys::LoaderInitInfoAndroidKHR::TYPE,
+            next: ptr::null(),
+            application_vm: context.vm(),
+            application_context: self.activity,
+        };
+
+        // The loader init extension doesn't forbid calling initialization multiple times,
+        // and the Khronos Loader implementation handles it correctly.
+        unsafe {
+            cvt((loader_init.initialize_loader)(
+                &loader_info as *const _ as _,
+            ))?;
+        }
+
+        Ok(())
     }
 }
