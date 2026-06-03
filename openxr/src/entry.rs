@@ -65,17 +65,14 @@ impl Entry {
     /// OpenXR specification.
     #[cfg(feature = "loaded")]
     pub unsafe fn load(platform_info: &impl PlatformInfo) -> std::result::Result<Self, EntryError> {
-        let entry = unsafe {
-            #[cfg(target_os = "windows")]
-            const PATH: &str = "openxr_loader.dll";
-            #[cfg(target_os = "macos")]
-            const PATH: &str = "libopenxr_loader.dylib";
-            #[cfg(not(any(target_os = "windows", target_os = "macos")))]
-            const PATH: &str = "libopenxr_loader.so";
-            Self::load_from(Path::new(PATH), platform_info)
-        }?;
-        platform_info.init_loader(&entry).map_err(EntryError::Xr)?;
-        Ok(entry)
+        #[cfg(target_os = "windows")]
+        const PATH: &str = "openxr_loader.dll";
+        #[cfg(target_os = "macos")]
+        const PATH: &str = "libopenxr_loader.dylib";
+        #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+        const PATH: &str = "libopenxr_loader.so";
+
+        unsafe { Self::load_from(Path::new(PATH), platform_info) }
     }
 
     /// Load entry points at run time from the dynamic library identified by `path`
