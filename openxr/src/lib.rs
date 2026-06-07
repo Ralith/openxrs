@@ -43,6 +43,7 @@ mod passthrough;
 pub use passthrough::*;
 mod localization_map_ml;
 pub use localization_map_ml::*;
+mod recommended_layer_resolution_meta;
 
 pub use builder::{
     CompositionLayerBase, CompositionLayerCubeKHR, CompositionLayerCylinderKHR,
