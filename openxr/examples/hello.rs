@@ -5,8 +5,12 @@ fn main() {
     #[cfg(not(target_os = "android"))]
     let platform_info = ();
     #[cfg(target_os = "android")]
-    let platform_info =
-        unsafe { openxr::AndroidPlatformInfo::new(ndk_glue::native_activity().activity().cast()) };
+    let platform_info = unsafe {
+        openxr::AndroidPlatformInfo::new(
+            ndk_glue::native_activity().vm().cast(),
+            ndk_glue::native_activity().activity().cast(),
+        )
+    };
     #[cfg(feature = "linked")]
     let entry = xr::Entry::linked(&platform_info).unwrap();
     #[cfg(not(feature = "linked"))]

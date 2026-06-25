@@ -33,7 +33,7 @@ impl Entry {
     /// Needs an [`AndroidPlatformInfo`] to correctly initialize the loader on Android.
     /// Other platforms can pass `()`.
     #[cfg(feature = "linked")]
-    pub fn linked(platform_info: &impl PlatformInfo) -> Result<Self> {
+    pub fn linked(platform_info: &(impl PlatformInfo + ?Sized)) -> Result<Self> {
         let entry = Self {
             inner: Arc::new(Inner {
                 raw: RawEntry {
@@ -64,7 +64,9 @@ impl Entry {
     /// The OpenXR loader shared library in the dynamic loader's search path must conform to the
     /// OpenXR specification.
     #[cfg(feature = "loaded")]
-    pub unsafe fn load(platform_info: &impl PlatformInfo) -> std::result::Result<Self, EntryError> {
+    pub unsafe fn load(
+        platform_info: &(impl PlatformInfo + ?Sized),
+    ) -> std::result::Result<Self, EntryError> {
         #[cfg(target_os = "windows")]
         const PATH: &str = "openxr_loader.dll";
         #[cfg(target_os = "macos")]
@@ -89,7 +91,7 @@ impl Entry {
     #[cfg(feature = "loaded")]
     pub unsafe fn load_from(
         path: &Path,
-        platform_info: &impl PlatformInfo,
+        platform_info: &(impl PlatformInfo + ?Sized),
     ) -> std::result::Result<Self, EntryError> {
         let entry = unsafe {
             let lib = Library::new(path).map_err(|err| EntryError::Load(LoadError(err)))?;
@@ -130,7 +132,7 @@ impl Entry {
     #[allow(clippy::missing_transmute_annotations)]
     pub unsafe fn from_get_instance_proc_addr(
         get_instance_proc_addr: sys::pfn::GetInstanceProcAddr,
-        platform_info: &impl PlatformInfo,
+        platform_info: &(impl PlatformInfo + ?Sized),
     ) -> Result<Self> {
         let entry = unsafe {
             Self {
@@ -194,7 +196,7 @@ impl Entry {
         app_info: &ApplicationInfo,
         required_extensions: &ExtensionSet,
         layers: &[&str],
-        platform_info: &impl PlatformInfo,
+        platform_info: &(impl PlatformInfo + ?Sized),
     ) -> Result<Instance> {
         assert!(
             app_info.application_name.len() < sys::MAX_APPLICATION_NAME_SIZE,
@@ -461,24 +463,28 @@ unsafe impl PlatformInfo for () {
 
 #[cfg(target_os = "android")]
 pub struct AndroidPlatformInfo {
+    java_vm: *mut std::ffi::c_void,
     activity: *mut std::ffi::c_void,
 }
 
 #[cfg(target_os = "android")]
 impl AndroidPlatformInfo {
-    /// Creates a struct holding Android specific information for instance creation.
-    ///
-    /// Some information will also be fetched from [`ndk_context`],
-    /// so your NDK glue code has to initialize it.
+    /// Creates a struct holding Android specific information for [Entry] and [Instance] creation.
     ///
     /// # Safety
     ///
-    /// The `activity` pointer has to be a valid JNI reference to an `android.app.Activity`,
-    /// as required by the [XR_KHR_android_create_instance] extension.
+    /// The arguments have to be valid to use for the
+    /// [XR_KHR_loader_init_android] and [XR_KHR_android_create_instance] extensions.
     ///
+    /// That means
+    /// - `java_vm` has te be a valid pointer to the JNI `JavaVM`, cast to a void pointer
+    /// - `activity` has to be a valid JNI reference to the `android.app.Activity`
+    ///   that will drive the session lifecycle of the [Instance], cast to a void pointer
+    ///
+    /// [XR_KHR_loader_init_android]: https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_loader_init_android
     /// [XR_KHR_android_create_instance]: https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_android_create_instance
-    pub unsafe fn new(activity: *mut std::ffi::c_void) -> Self {
-        Self { activity }
+    pub unsafe fn new(java_vm: *mut std::ffi::c_void, activity: *mut std::ffi::c_void) -> Self {
+        Self { java_vm, activity }
     }
 }
 
@@ -489,11 +495,10 @@ unsafe impl PlatformInfo for AndroidPlatformInfo {
         entry: &Entry,
         mut info: sys::InstanceCreateInfo,
     ) -> Result<sys::Instance> {
-        let context = ndk_context::android_context();
         let mut android_info = sys::InstanceCreateInfoAndroidKHR {
             ty: sys::InstanceCreateInfoAndroidKHR::TYPE,
             next: info.next,
-            application_vm: context.vm(),
+            application_vm: self.java_vm,
             application_activity: self.activity,
         };
         info.next = (&mut android_info as *mut sys::InstanceCreateInfoAndroidKHR).cast();
@@ -508,12 +513,10 @@ unsafe impl PlatformInfo for AndroidPlatformInfo {
     fn init_loader(&self, entry: &Entry) -> Result<()> {
         let loader_init = unsafe { raw::LoaderInitKHR::load(entry, sys::Instance::NULL)? };
 
-        let context = ndk_context::android_context();
-
         let loader_info = sys::LoaderInitInfoAndroidKHR {
             ty: sys::LoaderInitInfoAndroidKHR::TYPE,
             next: ptr::null(),
-            application_vm: context.vm(),
+            application_vm: self.java_vm,
             application_context: self.activity,
         };
 
