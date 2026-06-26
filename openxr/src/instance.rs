@@ -686,6 +686,13 @@ impl Instance {
             .as_ref()
             .expect("KHR_vulkan_enable not loaded")
     }
+    #[cfg(target_vendor = "apple")]
+    pub(crate) fn metal(&self) -> &raw::MetalEnableKHR {
+        self.exts()
+            .khr_metal_enable
+            .as_ref()
+            .expect("KHR_metal_enable not loaded")
+    }
     pub(crate) fn opengl(&self) -> &raw::OpenglEnableKHR {
         self.exts()
             .khr_opengl_enable

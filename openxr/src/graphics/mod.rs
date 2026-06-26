@@ -44,6 +44,11 @@ pub use d3d::D3D12;
 pub mod vulkan;
 pub use vulkan::Vulkan;
 
+#[cfg(target_vendor = "apple")]
+pub mod metal;
+#[cfg(target_vendor = "apple")]
+pub use metal::Metal;
+
 pub mod opengl;
 pub use opengl::OpenGL;
 
