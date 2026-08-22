@@ -22,6 +22,16 @@ The crate exposes a number of cargo features:
   accessed with `Entry::linked()`. This is the easiest way to get
   going, provided your environment has a working C++ compiler and
   CMake installation.
+
+  The `OPENXRS_ANDROID_STL` environment variable can be used to change which C++ runtime library is used.
+  Valid values are:
+  - `static` (default) will statically link the C++ runtime library (`c++_static`).
+    This should not be used if you have any *other* copy of the C++ runtime library in your application.
+    See https://developer.android.com/ndk/guides/cpp-support.
+  - `shared` will dynamically link the C++ runtime library (`c++_shared`).
+    You will have to include the `libc++_shared.so` library in your APK.
+  - `none` will not link a C++ runtime library.
+    You will have to manually provide the C++ runtime library.
 - `loaded` allows access to a manually identified OpenXR
   implementation at run time. This allows for cases where a built-in
   Khronos loader, normally responsible for that task, cannot be used.
