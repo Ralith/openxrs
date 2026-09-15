@@ -71,7 +71,9 @@ impl Entry {
         const PATH: &str = "openxr_loader.dll";
         #[cfg(target_os = "macos")]
         const PATH: &str = "libopenxr_loader.dylib";
-        #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+        #[cfg(target_os = "linux")]
+        const PATH: &str = "libopenxr_loader.so.1";
+        #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
         const PATH: &str = "libopenxr_loader.so";
 
         unsafe { Self::load_from(Path::new(PATH), platform_info) }
