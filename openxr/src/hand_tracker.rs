@@ -34,7 +34,11 @@ impl HandTracker {
         }
     }
 
-    pub(crate) fn create<G>(session: &Session<G>, hand: Hand) -> Result<Self> {
+    fn create_helper<G>(
+        session: &Session<G>,
+        hand: Hand,
+        next: *const sys::BaseInStructure,
+    ) -> Result<Self> {
         let Some(fp) = session.inner.instance.exts().ext_hand_tracking.as_ref() else {
             return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
         };
@@ -42,7 +46,7 @@ impl HandTracker {
         let mut handle = sys::HandTrackerEXT::NULL;
         let info = sys::HandTrackerCreateInfoEXT {
             ty: sys::HandTrackerCreateInfoEXT::TYPE,
-            next: ptr::null(),
+            next: next as _,
             hand,
             // If this ever changes, update the joint_counts set in `Space::locate_hand_joints`
             hand_joint_set: sys::HandJointSetEXT::DEFAULT,
@@ -58,6 +62,35 @@ impl HandTracker {
             session: session.inner.clone(),
             handle,
         })
+    }
+
+    pub(crate) fn create<G>(session: &Session<G>, hand: Hand) -> Result<Self> {
+        Self::create_helper(session, hand, ptr::null())
+    }
+
+    pub(crate) fn create_with_data_sources<G>(
+        session: &Session<G>,
+        hand: Hand,
+        data_sources: &[HandTrackingDataSourceEXT],
+    ) -> Result<Self> {
+        if session
+            .inner
+            .instance
+            .exts()
+            .ext_hand_tracking_data_source
+            .is_none()
+        {
+            return Err(sys::Result::ERROR_EXTENSION_NOT_PRESENT);
+        }
+
+        let data_source_info = sys::HandTrackingDataSourceInfoEXT {
+            ty: sys::HandTrackingDataSourceInfoEXT::TYPE,
+            next: ptr::null(),
+            requested_data_source_count: data_sources.len() as u32,
+            requested_data_sources: data_sources.as_ptr() as *mut _, // Runtime shouldn't mutate this anyway
+        };
+
+        Self::create_helper(session, hand, &data_source_info as *const _ as _)
     }
 
     #[inline]
