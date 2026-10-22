@@ -395,6 +395,18 @@ impl<G> Session<G> {
         HandTracker::create(self, hand)
     }
 
+    #[inline]
+    /// Create a hand tracker with requested data sources
+    ///
+    /// Requires [`XR_EXT_hand_tracking`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_hand_tracking) and [`XR_EXT_hand_tracking_data_source`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_hand_tracking_data_source)
+    pub fn create_hand_tracker_with_data_sources(
+        &self,
+        hand: Hand,
+        data_sources: &[HandTrackingDataSourceEXT],
+    ) -> Result<HandTracker> {
+        HandTracker::create_with_data_sources(self, hand, data_sources)
+    }
+
     /// Enumerate the list of supported color spaces for [`Session::set_color_space`]
     ///
     /// Requires [`XR_FB_color_space`](https://www.khronos.org/registry/OpenXR/specs/1.1/html/xrspec.html#XR_FB_color_space)

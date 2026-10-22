@@ -122,15 +122,11 @@ impl Space {
         }
     }
 
-    /// Determine the locations of the joints of a hand tracker relative to this space at a
-    /// specified time, if currently known by the runtime.
-    ///
-    /// XR_EXT_hand_tracking must be enabled.
-    #[inline]
-    pub fn locate_hand_joints(
+    fn locate_hand_joints_helper(
         &self,
         tracker: &HandTracker,
         time: Time,
+        next: *mut sys::BaseOutStructure,
     ) -> Result<Option<HandJointLocations>> {
         // This assert allows this function to be safe.
         assert_eq!(
@@ -148,7 +144,7 @@ impl Space {
             let mut locations = MaybeUninit::<[HandJointLocation; HAND_JOINT_COUNT]>::uninit();
             let mut location_info = sys::HandJointLocationsEXT {
                 ty: sys::HandJointLocationsEXT::TYPE,
-                next: ptr::null_mut(),
+                next: next as _,
                 is_active: false.into(),
                 joint_count: HAND_JOINT_COUNT as u32,
                 joint_locations: locations.as_mut_ptr() as _,
@@ -166,6 +162,42 @@ impl Space {
         }
     }
 
+    /// Determine the locations of the joints of a hand tracker relative to this space at a
+    /// specified time, if currently known by the runtime.
+    ///
+    /// XR_EXT_hand_tracking must be enabled.
+    #[inline]
+    pub fn locate_hand_joints(
+        &self,
+        tracker: &HandTracker,
+        time: Time,
+    ) -> Result<Option<HandJointLocations>> {
+        self.locate_hand_joints_helper(tracker, time, ptr::null_mut())
+    }
+
+    /// Determine the locations of the joints of a hand tracker relative to this space at a
+    /// specified time, if currently known by the runtime, as well as the data source used
+    /// to generate the hand joints.
+    ///
+    /// XR_EXT_hand_tracking and XR_EXT_hand_tracking_data_source must be enabled, and the
+    /// hand tracker must have been created with [`HandTracker::create_with_data_sources`].
+    #[inline]
+    pub fn locate_hand_joints_with_data_source(
+        &self,
+        tracker: &HandTracker,
+        time: Time,
+    ) -> Result<Option<(HandJointLocations, HandTrackingDataSourceEXT)>> {
+        let mut data_source_state = sys::HandTrackingDataSourceStateEXT::out(ptr::null_mut());
+        Ok(self
+            .locate_hand_joints_helper(tracker, time, data_source_state.as_mut_ptr() as _)?
+            .map(|locations| {
+                (
+                    locations,
+                    unsafe { data_source_state.assume_init() }.data_source,
+                )
+            }))
+    }
+
     /// Determine the locations and velocities of the joints of a hand tracker relative to this
     /// space at a specified time, if currently known by the runtime.
     ///
@@ -176,45 +208,56 @@ impl Space {
         tracker: &HandTracker,
         time: Time,
     ) -> Result<Option<(HandJointLocations, HandJointVelocities)>> {
-        // This assert allows this function to be safe.
-        assert_eq!(
-            &*self.session as *const session::SessionInner,
-            &*tracker.session as *const session::SessionInner,
-            "`self` and `tracker` must have been created, allocated, or retrieved from the same `Session`"
-        );
-        unsafe {
-            let locate_info = sys::HandJointsLocateInfoEXT {
-                ty: sys::HandJointsLocateInfoEXT::TYPE,
-                next: ptr::null(),
-                base_space: self.as_raw(),
-                time,
-            };
-            let mut velocities = MaybeUninit::<[HandJointVelocity; HAND_JOINT_COUNT]>::uninit();
-            let mut velocity_info = sys::HandJointVelocitiesEXT {
-                ty: sys::HandJointVelocitiesEXT::TYPE,
-                next: ptr::null_mut(),
-                joint_count: HAND_JOINT_COUNT as u32,
-                joint_velocities: velocities.as_mut_ptr() as _,
-            };
-            let mut locations = MaybeUninit::<[HandJointLocation; HAND_JOINT_COUNT]>::uninit();
-            let mut location_info = sys::HandJointLocationsEXT {
-                ty: sys::HandJointLocationsEXT::TYPE,
-                next: &mut velocity_info as *mut _ as _,
-                is_active: false.into(),
-                joint_count: HAND_JOINT_COUNT as u32,
-                joint_locations: locations.as_mut_ptr() as _,
-            };
-            cvt((tracker.fp().locate_hand_joints)(
-                tracker.as_raw(),
-                &locate_info,
-                &mut location_info,
-            ))?;
-            Ok(if location_info.is_active.into() {
-                Some((locations.assume_init(), velocities.assume_init()))
-            } else {
-                None
-            })
-        }
+        let mut velocities = MaybeUninit::<[HandJointVelocity; HAND_JOINT_COUNT]>::uninit();
+        let mut velocity_info = sys::HandJointVelocitiesEXT {
+            ty: sys::HandJointVelocitiesEXT::TYPE,
+            next: ptr::null_mut(),
+            joint_count: HAND_JOINT_COUNT as u32,
+            joint_velocities: velocities.as_mut_ptr() as _,
+        };
+
+        Ok(self
+            .locate_hand_joints_helper(tracker, time, &mut velocity_info as *mut _ as _)?
+            .map(|locations| (locations, unsafe { velocities.assume_init() })))
+    }
+
+    /// Determine the locations and velocities of the joints of a hand tracker relative to this
+    /// space at a specified time, if currently known by the runtime, as well as the data source
+    /// used to generate the hand joints.
+    ///
+    /// XR_EXT_hand_tracking and XR_EXT_hand_tracking_data_source must be enabled, and the
+    /// hand tracker must have been created with [`HandTracker::create_with_data_sources`].
+    #[inline]
+    pub fn relate_hand_joints_with_data_source(
+        &self,
+        tracker: &HandTracker,
+        time: Time,
+    ) -> Result<
+        Option<(
+            HandJointLocations,
+            HandJointVelocities,
+            HandTrackingDataSourceEXT,
+        )>,
+    > {
+        let mut data_source_state = sys::HandTrackingDataSourceStateEXT::out(ptr::null_mut());
+
+        let mut velocities = MaybeUninit::<[HandJointVelocity; HAND_JOINT_COUNT]>::uninit();
+        let mut velocity_info = sys::HandJointVelocitiesEXT {
+            ty: sys::HandJointVelocitiesEXT::TYPE,
+            next: data_source_state.as_mut_ptr() as _,
+            joint_count: HAND_JOINT_COUNT as u32,
+            joint_velocities: velocities.as_mut_ptr() as _,
+        };
+
+        Ok(self
+            .locate_hand_joints_helper(tracker, time, &mut velocity_info as *mut _ as _)?
+            .map(|locations| {
+                (
+                    locations,
+                    unsafe { velocities.assume_init() },
+                    unsafe { data_source_state.assume_init() }.data_source,
+                )
+            }))
     }
 
     // Private helper
