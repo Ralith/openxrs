@@ -1,24 +1,31 @@
 fn main() {
     #[cfg(feature = "static")]
     {
-        let dst = cmake::Config::new("OpenXR-SDK")
-            .define("BUILD_API_LAYERS", "OFF")
+        let target_os = std::env::var_os("CARGO_CFG_TARGET_OS")
+            .expect("missing CARGO_CFG_TARGET_OS environment variable");
+
+        let mut cfg = cmake::Config::new("OpenXR-SDK");
+        cfg.define("BUILD_API_LAYERS", "OFF")
             .define("BUILD_TESTS", "OFF")
             .define("OpenGL_GL_PREFERENCE", "GLVND")
             .define("DYNAMIC_LOADER", "OFF")
-            .define("CMAKE_INSTALL_LIBDIR", "lib")
             .define("BUILD_WITH_SYSTEM_JSONCPP", "OFF") // See https://github.com/KhronosGroup/OpenXR-SDK-Source/issues/481
             .profile("Release")
-            .build();
+            // Prevent cmake-rs trying to install to /usr with the default "install" target. Also, minimize work.
+            .build_target("openxr_loader");
+        // Match the logic used in OpenXR-SDK-Source/src/loader/manifest_file.cpp to include
+        // SYSCONFDIR, derived from CMAKE_INSTALL_PREFIX
+        if target_os != "windows" && target_os != "android" {
+            // Clobber harmful default from cmake-rs: https://github.com/rust-lang/cmake-rs/issues/230
+            cfg.define("CMAKE_INSTALL_PREFIX", "/usr");
+        }
+        let dst = cfg.build();
 
         println!(
             "cargo:rustc-link-search=native={}",
-            dst.join("lib").display()
+            dst.join("build/src/loader").display()
         );
         println!("cargo:rustc-link-lib=static=openxr_loader");
-
-        let target_os = std::env::var_os("CARGO_CFG_TARGET_OS")
-            .expect("missing CARGO_CFG_TARGET_OS environment variable");
 
         if target_os == "macos" || target_os == "freebsd" {
             println!("cargo:rustc-link-lib=c++");
