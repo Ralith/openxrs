@@ -46,34 +46,36 @@ use crate::*;
 ///     .end(
 ///         state.predicted_display_time,
 ///         openxr::EnvironmentBlendMode::OPAQUE,
-///         &[&openxr::CompositionLayerProjection::new()
-///             .space(world_space)
-///             .views(&[
-///                 openxr::CompositionLayerProjectionView::new()
-///                     .pose(views[0].pose)
-///                     .fov(views[0].fov)
-///                     .sub_image(
-///                         openxr::SwapchainSubImage::new()
-///                             .swapchain(swapchain)
-///                             .image_array_index(0)
-///                             .image_rect(openxr::Rect2Di {
-///                                 offset: openxr::Offset2Di { x: 0, y: 0 },
-///                                 extent: view_resolution[0],
-///                             }),
-///                     ),
-///                 openxr::CompositionLayerProjectionView::new()
-///                     .pose(views[1].pose)
-///                     .fov(views[1].fov)
-///                     .sub_image(
-///                         openxr::SwapchainSubImage::new()
-///                             .swapchain(swapchain)
-///                             .image_array_index(1)
-///                             .image_rect(openxr::Rect2Di {
-///                                 offset: openxr::Offset2Di { x: 0, y: 0 },
-///                                 extent: view_resolution[1],
-///                             }),
-///                     ),
-///             ])],
+///         &[&openxr::CompositionLayer::Projection {
+///             layer_flags: Default::default(),
+///             space: world_space,
+///             views: &[
+///                 openxr::CompositionLayerProjectionView {
+///                     pose: views[0].pose,
+///                     fov: views[0].fov,
+///                     sub_image: openxr::SwapchainSubImage {
+///                         swapchain,
+///                         image_array_index: 0,
+///                         image_rect: openxr::Rect2Di {
+///                             offset: openxr::Offset2Di { x: 0, y: 0 },
+///                             extent: view_resolution[0],
+///                         },
+///                     },
+///                 },
+///                 openxr::CompositionLayerProjectionView {
+///                     pose: views[1].pose,
+///                     fov: views[1].fov,
+///                     sub_image: openxr::SwapchainSubImage {
+///                         swapchain,
+///                         image_array_index: 1,
+///                         image_rect: openxr::Rect2Di {
+///                             offset: openxr::Offset2Di { x: 0, y: 0 },
+///                             extent: view_resolution[1],
+///                         },
+///                     },
+///                 },
+///             ],
+///         }],
 ///     )
 ///     .unwrap();
 /// # }
@@ -105,8 +107,13 @@ impl<G: Graphics> FrameStream<G> {
         &mut self,
         display_time: Time,
         environment_blend_mode: EnvironmentBlendMode,
-        layers: &[&CompositionLayerBase<'_, G>],
+        layers: &[&CompositionLayer<'_, G>],
     ) -> Result<()> {
+        let layers = layers
+            .iter()
+            .inspect(|layer| self.session.assert_layer_validity(layer))
+            .map(|layer| layer.as_raw())
+            .collect::<Vec<_>>();
         assert!(layers.len() <= u32::MAX as usize);
         let info = sys::FrameEndInfo {
             ty: sys::FrameEndInfo::TYPE,
@@ -136,18 +143,29 @@ impl<G: Graphics> FrameStream<G> {
         &mut self,
         display_time: Time,
         environment_blend_mode: EnvironmentBlendMode,
-        layers: &[&CompositionLayerBase<'_, G>],
+        layers: &[&CompositionLayer<'_, G>],
         secondary_info: SecondaryEndInfo<'_, '_, '_, G>,
     ) -> Result<()> {
+        let layers = layers
+            .iter()
+            .inspect(|layer| self.session.assert_layer_validity(layer))
+            .map(|layer| layer.as_raw())
+            .collect::<Vec<_>>();
         assert!(layers.len() <= u32::MAX as usize);
-        assert!(secondary_info.layers.len() <= u32::MAX as usize);
+        let secondary_layers = secondary_info
+            .layers
+            .iter()
+            .inspect(|layer| self.session.assert_layer_validity(layer))
+            .map(|layer| layer.as_raw())
+            .collect::<Vec<_>>();
+        assert!(secondary_layers.len() <= u32::MAX as usize);
         let single_secondary_info = [sys::SecondaryViewConfigurationLayerInfoMSFT {
             ty: sys::SecondaryViewConfigurationLayerInfoMSFT::TYPE,
             next: ptr::null(),
             view_configuration_type: secondary_info.ty,
             environment_blend_mode: secondary_info.environment_blend_mode,
-            layer_count: secondary_info.layers.len() as u32,
-            layers: secondary_info.layers.as_ptr() as *const _,
+            layer_count: secondary_layers.len() as u32,
+            layers: secondary_layers.as_ptr() as *const _,
         }];
         let secondary_info = sys::SecondaryViewConfigurationFrameEndInfoMSFT {
             ty: sys::SecondaryViewConfigurationFrameEndInfoMSFT::TYPE,
