@@ -111,7 +111,7 @@ impl<G: Graphics> FrameStream<G> {
     ) -> Result<()> {
         let layers = layers
             .iter()
-            .inspect(|layer| self.assert_layer_validity(layer))
+            .inspect(|layer| self.session.assert_layer_validity(layer))
             .map(|layer| layer.as_raw())
             .collect::<Vec<_>>();
         assert!(layers.len() <= u32::MAX as usize);
@@ -148,14 +148,14 @@ impl<G: Graphics> FrameStream<G> {
     ) -> Result<()> {
         let layers = layers
             .iter()
-            .inspect(|layer| self.assert_layer_validity(layer))
+            .inspect(|layer| self.session.assert_layer_validity(layer))
             .map(|layer| layer.as_raw())
             .collect::<Vec<_>>();
         assert!(layers.len() <= u32::MAX as usize);
         let secondary_layers = secondary_info
             .layers
             .iter()
-            .inspect(|layer| self.assert_layer_validity(layer))
+            .inspect(|layer| self.session.assert_layer_validity(layer))
             .map(|layer| layer.as_raw())
             .collect::<Vec<_>>();
         assert!(secondary_layers.len() <= u32::MAX as usize);
@@ -191,82 +191,5 @@ impl<G: Graphics> FrameStream<G> {
     #[inline]
     fn fp(&self) -> &raw::Instance {
         self.session.instance().fp()
-    }
-
-    /// Check the invariants of the passed `layer`.
-    /// The lifetimes guarantee the validity of non-null handles.
-    fn assert_layer_validity(&self, layer: &CompositionLayer<'_, G>) {
-        match layer {
-            CompositionLayer::Projection { space, views, .. } => {
-                assert!(!views.is_empty());
-                assert_eq!(self.session.as_raw(), space.session_handle());
-                for CompositionLayerProjectionView { sub_image, .. } in *views {
-                    assert_eq!(self.session.as_raw(), sub_image.swapchain.session_handle());
-                }
-            }
-            CompositionLayer::Quad {
-                space, sub_image, ..
-            } => {
-                assert_eq!(space.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.face_count(), 1);
-            }
-            CompositionLayer::CylinderKHR {
-                space, sub_image, ..
-            } => {
-                assert!(
-                    self.session
-                        .instance()
-                        .exts()
-                        .khr_composition_layer_cylinder
-                        .is_some()
-                );
-                assert_eq!(space.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.face_count(), 1);
-            }
-            CompositionLayer::CubeKHR {
-                space, swapchain, ..
-            } => {
-                assert!(
-                    self.session
-                        .instance()
-                        .exts()
-                        .khr_composition_layer_cube
-                        .is_some()
-                );
-                assert_eq!(space.session_handle(), self.session.as_raw());
-                assert_eq!(swapchain.session_handle(), self.session.as_raw());
-                assert_eq!(swapchain.face_count(), 6);
-            }
-            CompositionLayer::EquirectKHR {
-                space, sub_image, ..
-            } => {
-                assert!(
-                    self.session
-                        .instance()
-                        .exts()
-                        .khr_composition_layer_equirect
-                        .is_some()
-                );
-                assert_eq!(space.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.face_count(), 1);
-            }
-            CompositionLayer::Equirect2KHR {
-                space, sub_image, ..
-            } => {
-                assert!(
-                    self.session
-                        .instance()
-                        .exts()
-                        .khr_composition_layer_equirect2
-                        .is_some()
-                );
-                assert_eq!(space.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.session_handle(), self.session.as_raw());
-                assert_eq!(sub_image.swapchain.face_count(), 1);
-            }
-        }
     }
 }

@@ -20,6 +20,9 @@ impl<G: Graphics> Swapchain<G> {
     /// # Safety
     ///
     /// `handle` must be a valid swapchain handle associated with `session` and created with `face_count`.
+    ///
+    /// `handle` may be `NULL` when used for a `layer` when calling [`Session::get_recommended_layer_resolution`].
+    /// A [`Swapchain`] with a `NULL` handle must not be used for any other function.
     #[inline]
     pub unsafe fn from_raw(session: Session<G>, handle: sys::Swapchain, face_count: u32) -> Self {
         Self {
@@ -147,8 +150,11 @@ impl<G: Graphics> AsHandle for Swapchain<G> {
 
 impl<G: Graphics> Drop for Swapchain<G> {
     fn drop(&mut self) {
-        unsafe {
-            (self.fp().destroy_swapchain)(self.as_raw());
+        // `NULL` swapchain is allowed to call [`Session::get_recommended_layer_resolution`]
+        if self.as_raw() != sys::Swapchain::NULL {
+            unsafe {
+                (self.fp().destroy_swapchain)(self.as_raw());
+            }
         }
     }
 }

@@ -23,8 +23,7 @@ impl<G: Graphics> Session<G> {
             .as_ref()
             .expect("XR_META_recommended_layer_resolution not loaded");
 
-        // TODO assert_layer_validity
-        // TODO allow layer with `NULL` swapchain
+        self.assert_layer_validity(layer);
 
         let resolution = unsafe {
             let mut resolution = sys::RecommendedLayerResolutionMETA::out(ptr::null_mut());
