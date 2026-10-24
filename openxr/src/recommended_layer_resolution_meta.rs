@@ -13,7 +13,7 @@ impl<G: Graphics> Session<G> {
     pub fn get_recommended_layer_resolution(
         &self,
         display_time: Time,
-        layer: &CompositionLayerBase<'_, G>,
+        layer: &CompositionLayer<'_, G>,
     ) -> Result<Option<Extent2Di>> {
         let ext = self
             .inner
@@ -23,12 +23,14 @@ impl<G: Graphics> Session<G> {
             .as_ref()
             .expect("XR_META_recommended_layer_resolution not loaded");
 
+        self.assert_layer_validity(layer);
+
         let resolution = unsafe {
             let mut resolution = sys::RecommendedLayerResolutionMETA::out(ptr::null_mut());
             let info = sys::RecommendedLayerResolutionGetInfoMETA {
                 ty: sys::RecommendedLayerResolutionGetInfoMETA::TYPE,
                 next: ptr::null(),
-                layer: layer as *const _ as *const _,
+                layer: layer.as_raw().as_base(),
                 predicted_display_time: display_time,
             };
             cvt((ext.get_recommended_layer_resolution)(

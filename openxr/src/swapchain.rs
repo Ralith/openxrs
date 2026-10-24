@@ -10,6 +10,8 @@ pub struct Swapchain<G: Graphics> {
     _marker: PhantomData<G>,
     /// Whether `wait_image` was called more recently than `release_image`
     waited: bool,
+    /// Required for validation when submitting layers
+    face_count: u32,
 }
 
 impl<G: Graphics> Swapchain<G> {
@@ -17,14 +19,18 @@ impl<G: Graphics> Swapchain<G> {
     ///
     /// # Safety
     ///
-    /// `handle` must be a valid swapchain handle associated with `session` and created with `flags`.
+    /// `handle` must be a valid swapchain handle associated with `session` and created with `face_count`.
+    ///
+    /// `handle` may be `NULL` when used for a `layer` when calling [`Session::get_recommended_layer_resolution`].
+    /// A [`Swapchain`] with a `NULL` handle must not be used for any other function.
     #[inline]
-    pub unsafe fn from_raw(session: Session<G>, handle: sys::Swapchain) -> Self {
+    pub unsafe fn from_raw(session: Session<G>, handle: sys::Swapchain, face_count: u32) -> Self {
         Self {
             session,
             handle,
             _marker: PhantomData,
             waited: false,
+            face_count,
         }
     }
 
@@ -38,6 +44,16 @@ impl<G: Graphics> Swapchain<G> {
     #[inline]
     pub fn instance(&self) -> &Instance {
         self.session.instance()
+    }
+
+    #[inline]
+    pub(crate) fn session_handle(&self) -> sys::Session {
+        self.session.as_raw()
+    }
+
+    #[inline]
+    pub(crate) fn face_count(&self) -> u32 {
+        self.face_count
     }
 
     /// Set the debug name of this `Swapchain`, if `XR_EXT_debug_utils` is loaded
@@ -134,8 +150,11 @@ impl<G: Graphics> AsHandle for Swapchain<G> {
 
 impl<G: Graphics> Drop for Swapchain<G> {
     fn drop(&mut self) {
-        unsafe {
-            (self.fp().destroy_swapchain)(self.as_raw());
+        // `NULL` swapchain is allowed to call [`Session::get_recommended_layer_resolution`]
+        if self.as_raw() != sys::Swapchain::NULL {
+            unsafe {
+                (self.fp().destroy_swapchain)(self.as_raw());
+            }
         }
     }
 }

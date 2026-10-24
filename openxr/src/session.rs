@@ -529,8 +529,13 @@ impl<G: Graphics> Session<G> {
         Ok(raw.into_iter().map(G::raise_format).collect())
     }
 
+    /// # Safety
+    ///
+    /// `sample_count`, `width`, `height`, `array_size`, and `mip_count` in `info`
+    /// must not be 0 or greater than the graphics API's maximum limit
     #[inline]
-    pub fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
+    pub unsafe fn create_swapchain(&self, info: &SwapchainCreateInfo<G>) -> Result<Swapchain<G>> {
+        assert!(info.face_count == 1 || info.face_count == 6);
         let mut out = sys::Swapchain::NULL;
         let info = sys::SwapchainCreateInfo {
             ty: sys::SwapchainCreateInfo::TYPE,
@@ -547,7 +552,7 @@ impl<G: Graphics> Session<G> {
         };
         unsafe {
             cvt((self.fp().create_swapchain)(self.as_raw(), &info, &mut out))?;
-            Ok(Swapchain::from_raw(self.clone(), out))
+            Ok(Swapchain::from_raw(self.clone(), out, info.face_count))
         }
     }
 
@@ -576,6 +581,74 @@ impl<G: Graphics> Session<G> {
         purpose: PassthroughLayerPurposeFB,
     ) -> Result<PassthroughLayerFB> {
         PassthroughLayerFB::create(self, passthrough, flags, purpose)
+    }
+
+    /// Check the invariants of the passed `layer`.
+    /// The lifetimes guarantee the validity of non-null handles.
+    pub(crate) fn assert_layer_validity(&self, layer: &CompositionLayer<'_, G>) {
+        match layer {
+            CompositionLayer::Projection { space, views, .. } => {
+                assert!(!views.is_empty());
+                assert_eq!(self.as_raw(), space.session_handle());
+                for CompositionLayerProjectionView { sub_image, .. } in *views {
+                    assert_eq!(self.as_raw(), sub_image.swapchain.session_handle());
+                }
+            }
+            CompositionLayer::Quad {
+                space, sub_image, ..
+            } => {
+                assert_eq!(space.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+            CompositionLayer::CylinderKHR {
+                space, sub_image, ..
+            } => {
+                assert!(
+                    self.instance()
+                        .exts()
+                        .khr_composition_layer_cylinder
+                        .is_some()
+                );
+                assert_eq!(space.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+            CompositionLayer::CubeKHR {
+                space, swapchain, ..
+            } => {
+                assert!(self.instance().exts().khr_composition_layer_cube.is_some());
+                assert_eq!(space.session_handle(), self.as_raw());
+                assert_eq!(swapchain.session_handle(), self.as_raw());
+                assert_eq!(swapchain.face_count(), 6);
+            }
+            CompositionLayer::EquirectKHR {
+                space, sub_image, ..
+            } => {
+                assert!(
+                    self.instance()
+                        .exts()
+                        .khr_composition_layer_equirect
+                        .is_some()
+                );
+                assert_eq!(space.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+            CompositionLayer::Equirect2KHR {
+                space, sub_image, ..
+            } => {
+                assert!(
+                    self.instance()
+                        .exts()
+                        .khr_composition_layer_equirect2
+                        .is_some()
+                );
+                assert_eq!(space.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.session_handle(), self.as_raw());
+                assert_eq!(sub_image.swapchain.face_count(), 1);
+            }
+        }
     }
 }
 
