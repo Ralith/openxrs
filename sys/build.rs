@@ -21,9 +21,15 @@ fn main() {
         }
         let dst = cfg.build();
 
+        let loader_build_directory = dst.join("build/src/loader");
         println!(
             "cargo:rustc-link-search=native={}",
-            dst.join("build/src/loader").display()
+            loader_build_directory.display()
+        );
+        println!(
+            "cargo:rustc-link-search=native={}",
+            // multi-config generators (Visual Studio, Xcode, Ninja Multi-Config) append the configuration name to the path
+            loader_build_directory.join("Release").display()
         );
         println!("cargo:rustc-link-lib=static=openxr_loader");
 
