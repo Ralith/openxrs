@@ -2,79 +2,72 @@ name: CI
 
 on:
   push:
-    branches: ["master"]
+    branches: [ "master" ]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   test:
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            rust: stable
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
-            rust: beta
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
-            rust: stable
-            target: aarch64-linux-android
-          - os: windows-latest
-            rust: stable
-            target: x86_64-pc-windows-msvc
-          - os: macOS-latest
-            rust: stable
-            target: x86_64-apple-darwin
+        features: [ "openxr/loaded", "openxr/static" ]
+        config:
+          - { os: ubuntu-latest, rust: stable, target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest, rust: beta, target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest, rust: stable, target: aarch64-linux-android, host_tag: linux-x86_64 }
+          - { os: windows-latest, rust: stable, target: x86_64-pc-windows-msvc }
+          - { os: windows-latest, rust: stable, target: aarch64-linux-android, host_tag: windows-x86_64 }
+          - { os: macOS-latest, rust: stable, target: aarch64-apple-darwin }
+          - { os: macOS-latest, rust: stable, target: aarch64-linux-android, host_tag: darwin-x86_64 }
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
+      - name: Install foreign dependencies
+        if: matrix.config.target == 'x86_64-unknown-linux-gnu' && matrix.features == 'openxr/static'
+        run: sudo apt-get update && sudo apt-get -y install libx11-dev # the OpenXR SDK CMake setup requires headers for a presentation backend on Linux even when only building the loader
+      - uses: actions/checkout@v7
         with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          target: ${{ matrix.target }}
-          override: true
-      - uses: actions-rs/cargo@v1
-        if: matrix.target != 'aarch64-linux-android'
+          submodules: ${{ matrix.features == 'openxr/static' && 'recursive' || 'false' }} # only the "static" feature requires the SDK submodule to build the loader
+          persist-credentials: 'false'
+      - uses: dtolnay/rust-toolchain@master
         with:
-          command: build
-          args: --workspace --all-targets --target ${{ matrix.target }}
-      - uses: actions-rs/cargo@v1
-        if: matrix.target == 'aarch64-linux-android'
-        env:
-          TARGET_aarch64_linux_android_CC: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-clang
-          TARGET_aarch64_linux_android_CXX: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-clang++
-          TARGET_aarch64_linux_android_AR: ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar
-          RUSTFLAGS: -C linker=aarch64-linux-android-ld.gold
-        with:
-          command: build
-          args: --target ${{ matrix.target }} --manifest-path openxr/Cargo.toml
-      - uses: actions-rs/cargo@v1
-        if: matrix.target != 'aarch64-linux-android'
-        with:
-          command: test
-          args: --workspace
+          toolchain: ${{ matrix.config.rust }}
+          targets: ${{ matrix.config.target }}
+      - name: build
+        if: matrix.config.target != 'aarch64-linux-android'
+        run: cargo build --verbose --locked --workspace --all-targets --target ${{ matrix.config.target }} --no-default-features --features ${{ matrix.features }}
+      - name: build (Android)
+        if: matrix.config.target == 'aarch64-linux-android'
+        shell: bash
+        run: |
+          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/${{ matrix.config.host_tag }}/bin/clang"
+          export RUSTFLAGS="-Clink-arg=--target=aarch64-linux-android21"
+          export CC_aarch64_linux_android="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/${{ matrix.config.host_tag }}/bin/clang"
+          export CXX_aarch64_linux_android="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/${{ matrix.config.host_tag }}/bin/clang++"
+          export AR_aarch64_linux_android="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/${{ matrix.config.host_tag }}/bin/llvm-ar"
+          export CFLAGS_aarch64_linux_android="--target=aarch64-linux-android21"
+          export CXXFLAGS_aarch64_linux_android="--target=aarch64-linux-android21"
+          export CMAKE_GENERATOR_aarch64_linux_android=Ninja
+          cargo --verbose --locked build --target ${{ matrix.config.target }} --no-default-features --features ${{ matrix.features }} --package openxr
+          cargo --verbose --locked build --target ${{ matrix.config.target }} --no-default-features --features ${{ matrix.features }} --example vulkan-android
+      - name: test
+        if: matrix.config.target != 'aarch64-linux-android'
+        run: cargo --verbose --locked test --workspace --target ${{ matrix.config.target }} --no-default-features --features ${{ matrix.features }}
 
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Install foreign dependencies
-        run: sudo apt update && sudo apt-get -y install libxxf86vm-dev libxrandr-dev libgl1-mesa-dev
-      - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v7
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
+          persist-credentials: 'false'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
           components: rustfmt, clippy
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-      - uses: actions-rs/cargo@v1
+      - name: fmt
+        run: cargo --verbose --locked fmt --all -- --check
+      - name: clippy
         if: always()
-        with:
-          command: clippy
-          args: --workspace --all-targets -- -D warnings
+        run: cargo --verbose --locked clippy --workspace --all-targets -- -D warnings
