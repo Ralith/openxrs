@@ -3,6 +3,5 @@
 /sys/target
 /generator/target
 **/*.rs.bk
-Cargo.lock
 *.so
 *.dll
